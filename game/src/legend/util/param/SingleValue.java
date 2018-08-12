@@ -28,4 +28,8 @@ public class SingleValue<T> implements IValue<T>{
     public void set(T value){
         this.value = value;
     }
+
+    public String toString(){
+        return value.toString();
+    }
 }

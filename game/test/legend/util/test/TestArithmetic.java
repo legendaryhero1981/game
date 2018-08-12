@@ -1,10 +1,7 @@
 package legend.util.test;
 
-import static java.nio.file.Paths.get;
 import static legend.util.ConsoleUtil.CS;
-import static legend.util.MD5Util.getMD5L16;
 
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +18,7 @@ public class TestArithmetic implements ICommonVar{
 
     @Test
     public void test(){
-        CS.sl(getMD5L16(get("F:/games/KingdomComeDeliverance/修改/Mods/UltimateRealismOverhaul/data/libs/tables/rpg/buff.xml")));
+        testGCD();
     }
 
     // @Test
@@ -43,19 +40,18 @@ public class TestArithmetic implements ICommonVar{
                 CS.s(1);
             // 打印该层的英文字符串
             for(;j <= r;j++)
-                System.out.print((char)(c + i));
+                CS.s(String.valueOf((char)(c + i)));
             // 打印换行
             CS.l(1);
         }
     }
 
     // @Test
-    public void testGCD() throws IOException{
+    public void testGCD(){
         Scanner scanner = new Scanner(System.in);
         // 正则匹配任意一个自然数
         Pattern pattern = Pattern.compile("^[1-9]\\d*$");
         Matcher matcher = null;
-        // CS.sl(Pattern.compile("[+*][?]$").matcher("-f*?").find());
         // 正则匹配输入，直到输入任意一个自然数为止
         do{
             CS.sl("请输入第一个自然数");

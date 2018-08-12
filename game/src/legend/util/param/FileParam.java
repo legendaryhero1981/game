@@ -51,6 +51,7 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
     private long cacheFileSize;
     private int cacheFilesCount;
     private int cacheDirsCount;
+    private int limit;
     private Optional<String> detailOptional;
     private Optional<String> cmdOptional;
     private Optional<Boolean> progressOptional;
@@ -68,6 +69,7 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();
+        limit = Integer.MAX_VALUE;
     }
 
     @Override
@@ -87,6 +89,7 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         fileParam.maxSize = maxSize;
         fileParam.level = level;
         fileParam.deflaterLevel = deflaterLevel;
+        fileParam.limit = limit;
         return fileParam;
     }
 
@@ -162,14 +165,27 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
     public boolean isQueryCmds(){
         switch(cmd){
             case CMD_FIND:
+            case CMD_FND_DIR:
+            case CMD_FND_DIR_OLY:
             case CMD_FND_SIZ:
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:
-            case CMD_FND_DIR:
             case CMD_FND_DIR_SIZ:
             case CMD_FND_DIR_SIZ_ASC:
             case CMD_FND_DIR_SIZ_DSC:
-            case CMD_FND_DIR_OLY:
+            case CMD_FND_DIR_DIR_SIZ_ASC:
+            case CMD_FND_DIR_DIR_SIZ_DSC:
+            case CMD_FND_DIR_OLY_SIZ_ASC:
+            case CMD_FND_DIR_OLY_SIZ_DSC:
+            case CMD_FND_PTH_ABS:
+            case CMD_FND_PTH_RLT:
+            case CMD_FND_PTH_SRC:
+            case CMD_FND_PTH_DIR_ABS:
+            case CMD_FND_PTH_DIR_RLT:
+            case CMD_FND_PTH_DIR_SRC:
+            case CMD_FND_PTH_DIR_OLY_ABS:
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            case CMD_FND_PTH_DIR_OLY_SRC:
             return true;
         }
         return false;
@@ -405,6 +421,14 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
 
     public void setCacheDirsCount(int cacheDirsCount){
         this.cacheDirsCount = cacheDirsCount;
+    }
+
+    public int getLimit(){
+        return limit;
+    }
+
+    public void setLimit(int limit){
+        this.limit = limit;
     }
 
     public Optional<String> getDetailOptional(){

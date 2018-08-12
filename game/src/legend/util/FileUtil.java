@@ -39,10 +39,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Matcher;
@@ -102,16 +106,28 @@ public class FileUtil implements ICommonVar{
             param.createOptional();
             boolean cache = param.useCache(CACHE);
             if(!cache){
-                if(param.isQueryCmds()) param.getProgressOptional().ifPresent(t->PG.reset(1,1,1));
+                boolean isQueryCmds = param.isQueryCmds();
+                if(isQueryCmds) param.getProgressOptional().ifPresent(t->PG.reset(1,1,1));
                 param.cachePathStream(find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel()).count();
                 param.getPathDeque().clear();
-                if(!param.isQueryCmds()) param.getProgressOptional().ifPresent(t->PG.reset(param.getPathMap().size(),PROGRESS_POSITION));
+                if(!isQueryCmds) param.getProgressOptional().ifPresent(t->PG.reset(param.getPathMap().size(),PROGRESS_POSITION));
             }
             switch(param.getCmd()){
                 case CMD_FIND:
                 case CMD_FND_DIR:
                 case CMD_FND_DIR_OLY:
                 findFiles(param);
+                break;
+                case CMD_FND_PTH_ABS:
+                case CMD_FND_PTH_RLT:
+                case CMD_FND_PTH_SRC:
+                case CMD_FND_PTH_DIR_ABS:
+                case CMD_FND_PTH_DIR_RLT:
+                case CMD_FND_PTH_DIR_SRC:
+                case CMD_FND_PTH_DIR_OLY_ABS:
+                case CMD_FND_PTH_DIR_OLY_RLT:
+                case CMD_FND_PTH_DIR_OLY_SRC:
+                findFilePaths(param);
                 break;
                 case CMD_DELETE:
                 case CMD_DEL_DIR:
@@ -158,17 +174,13 @@ public class FileUtil implements ICommonVar{
                 break;
                 case CMD_ZIP_DEF:
                 case CMD_ZIP_DIR_DEF:
+                case CMD_PAK_DEF:
+                case CMD_PAK_DIR_DEF:
                 zipFiles(param);
                 break;
                 case CMD_ZIP_INF:
-                unzipFiles(param);
-                break;
-                case CMD_PAK_DEF:
-                case CMD_PAK_DIR_DEF:
-                pakFiles(param);
-                break;
                 case CMD_PAK_INF:
-                unpakFiles(param);
+                unzipFiles(param);
                 break;
                 case CMD_FND_SIZ:
                 case CMD_FND_SIZ_ASC:
@@ -176,7 +188,13 @@ public class FileUtil implements ICommonVar{
                 case CMD_FND_DIR_SIZ:
                 case CMD_FND_DIR_SIZ_ASC:
                 case CMD_FND_DIR_SIZ_DSC:
-                findSizeFiles(param);
+                findFileSizes(param);
+                break;
+                case CMD_FND_DIR_DIR_SIZ_ASC:
+                case CMD_FND_DIR_DIR_SIZ_DSC:
+                case CMD_FND_DIR_OLY_SIZ_ASC:
+                case CMD_FND_DIR_OLY_SIZ_DSC:
+                findDirSizes(param);
             }
             if(cache){
                 CACHE.getFilesSize().addAndGet(param.getFilesSize().addAndGet(CACHE.getCacheFileSize()));
@@ -326,13 +344,57 @@ public class FileUtil implements ICommonVar{
                     param.setReplacePattern(compile(REG_REN_UP_FST));
                 });
                 switch(param.getCmd()){
+                    case CMD_FIND:
+                    case CMD_FND_DIR:
+                    case CMD_FND_DIR_OLY:
+                    case CMD_FND_PTH_ABS:
+                    case CMD_FND_PTH_RLT:
+                    case CMD_FND_PTH_SRC:
+                    case CMD_FND_PTH_DIR_ABS:
+                    case CMD_FND_PTH_DIR_RLT:
+                    case CMD_FND_PTH_DIR_SRC:
+                    case CMD_FND_PTH_DIR_OLY_ABS:
+                    case CMD_FND_PTH_DIR_OLY_RLT:
+                    case CMD_FND_PTH_DIR_OLY_SRC:
+                    param.setSrcPath(get(as[2]));
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[3]);
+                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
+                    case CMD_FND_SIZ_ASC:
+                    case CMD_FND_SIZ_DSC:
+                    case CMD_FND_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_SIZ_DSC:
+                    param.setPathMap(new ConcurrentSkipListMap<BasicFileAttributes,Path>(new FileSizeComparator(param)));
+                    case CMD_FND_SIZ:
+                    case CMD_FND_DIR_SIZ:
+                    matchSizes(param,as[2].toUpperCase());
+                    param.setSrcPath(get(as[3]));
+                    optional.filter(s->s.length > 4).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[4]);
+                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                    });
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    break;
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
+                    case CMD_FND_DIR_OLY_SIZ_ASC:
+                    case CMD_FND_DIR_OLY_SIZ_DSC:
+                    param.setPathMap(new ConcurrentSkipListMap<BasicFileAttributes,Path>(new FileSizeComparator(param)));
+                    matchSizes(param,as[2].toUpperCase());
+                    param.setSrcPath(get(as[3]));
+                    optional.filter(s->s.length > 4).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[4]);
+                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                    });
+                    param.setLevel(1);
+                    break;
                     case CMD_REN_DIR_LOW:
                     case CMD_REN_DIR_UP:
                     case CMD_REN_DIR_UP_FST:
                     param.setRePathMap(new ConcurrentSkipListMap<Path,Path>(new PathMapComparator(param)));
-                    case CMD_FIND:
-                    case CMD_FND_DIR:
-                    case CMD_FND_DIR_OLY:
                     case CMD_DELETE:
                     case CMD_DEL_DIR:
                     case CMD_DEL_DIR_NUL:
@@ -351,17 +413,6 @@ public class FileUtil implements ICommonVar{
                     case CMD_ZIP_INF:
                     param.setSrcPath(get(as[2]));
                     param.setDestPath(get(as[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
-                    break;
-                    case CMD_FND_SIZ_ASC:
-                    case CMD_FND_DIR_SIZ_ASC:
-                    case CMD_FND_SIZ_DSC:
-                    case CMD_FND_DIR_SIZ_DSC:
-                    param.setPathMap(new ConcurrentSkipListMap<BasicFileAttributes,Path>(new FileSizeComparator(param)));
-                    case CMD_FND_SIZ:
-                    case CMD_FND_DIR_SIZ:
-                    matchSizes(param,as[2].toUpperCase());
-                    param.setSrcPath(get(as[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_RENAME:
@@ -411,17 +462,64 @@ public class FileUtil implements ICommonVar{
 
     private static void findFiles(FileParam param){
         param.getDetailOptional().ifPresent(s->{
+            boolean cache = param.getOpt().contains(OPT_CACHE);
+            BlockingDeque<Path> pathDeque = new LinkedBlockingDeque<>();
             param.cachePathStream(param.getPathMap().values().stream()).sorted(new PathDequeComparator(param)).forEach(p->{
+                pathDeque.addLast(p);
+                if(p.toFile().isDirectory()) if(cache) param.getPathDeque().push(p);
+                else param.getPathDeque().addLast(p);
+            });
+            param.cachePathStream(pathDeque.stream()).limit(param.getLimit()).forEach(p->{
                 File file = p.toFile();
                 if(file.isFile()) showFile(new String[]{V_FIND},new FileSizeMatcher(file),p);
-                else param.getPathDeque().push(p);
+                else showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p);
             });
-            param.cachePathStream(param.getPathDeque().stream()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p));
         });
     }
 
-    private static void findSizeFiles(FileParam param){
-        param.getDetailOptional().ifPresent(s->param.getPathMap().forEach((a, p)->CS.formatSize(a.size(),UNIT_TYPE.GB).s(4).sl(p.toString())));
+    private static void findFilePaths(FileParam param){
+        param.getDetailOptional().ifPresent(s->{
+            boolean cache = param.getOpt().contains(OPT_CACHE);
+            BlockingDeque<Path> pathDeque = new LinkedBlockingDeque<>();
+            param.cachePathStream(param.getPathMap().values().stream()).sorted(new PathDequeComparator(param)).forEach(p->{
+                pathDeque.addLast(p);
+                if(p.toFile().isDirectory()) if(cache) param.getPathDeque().push(p);
+                else param.getPathDeque().addLast(p);
+            });
+            param.cachePathStream(pathDeque.stream()).limit(param.getLimit()).forEach(p->showFilePath(param,p));
+        });
+    }
+
+    private static void findFileSizes(FileParam param){
+        param.getDetailOptional().ifPresent(s->param.getPathMap().entrySet().stream().limit(param.getLimit()).forEach(e->CS.formatSize(e.getKey().size(),UNIT_TYPE.GB).s(4).sl(e.getValue().toString())));
+    }
+
+    private static void findDirSizes(FileParam param){
+        ConcurrentMap<Path,Long> sizeMap = new ConcurrentHashMap<>();
+        param.getPathMap().entrySet().stream().forEach(e->{
+            Path path = e.getValue();
+            if(path.toFile().isFile()) sizeMap.put(path,e.getKey().size());
+            else param.getPathDeque().push(path);
+        });
+        CACHE.setCmd(CMD_FND_SIZ);
+        CACHE.setPattern(compile(REG_ANY));
+        CACHE.setLevel(Integer.MAX_VALUE);
+        param.getPathDeque().parallelStream().forEach(p->{
+            if(p.equals(param.getSrcPath())) return;
+            FileParam fp = CACHE.cloneValue();
+            fp.setSrcPath(p);
+            cacheFiles(fp);
+            long size = fp.getFilesSize().get();
+            sizeMap.put(p,size);
+            param.getFilesSize().addAndGet(size);
+        });
+        param.getDetailOptional().ifPresent(s->{
+            sizeMap.entrySet().stream().sorted(new PathEntryComparator(param)).limit(param.getLimit()).forEach(e->{
+                Path path = e.getKey();
+                if(path.toFile().isFile()) CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_FLE + gs(2) + path.toString());
+                else CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_DIR + gs(2) + path.toString());
+            });
+        });
     }
 
     private static void deleteFiles(FileParam param, boolean cache){
@@ -662,7 +760,12 @@ public class FileUtil implements ICommonVar{
         });
     }
 
-    private static void pakFiles(FileParam param){
+    private static void zipFiles(FileParam param){
+        switch(param.getCmd()){
+            case CMD_ZIP_DEF:
+            case CMD_ZIP_DIR_DEF:
+            param.setSrcPath(param.getSrcPath().getParent());
+        }
         param.getPathMap().forEach((a, p)->{
             if(a.isRegularFile()){
                 param.getDetailOptional().ifPresent(s->showFile(new String[]{V_CPRS},new FileSizeMatcher(a),p));
@@ -670,57 +773,6 @@ public class FileUtil implements ICommonVar{
             }else{
                 param.getDetailOptional().ifPresent(s->CS.sl(V_CPRS + N_DIR_NUL + gs(1) + p));
                 param.getCmdOptional().ifPresent(s->zipDir(param,param.getSrcPath(),p));
-            }
-            param.getProgressOptional().ifPresent(t->PG.update(1,PROGRESS_SCALE));
-        });
-    }
-
-    private static void unpakFiles(FileParam param){
-        param.getPathMap().forEach((a, p)->{
-            param.getDetailOptional().ifPresent(s->CS.s(V_DCPRS + N_FLE + gs(1) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
-            SingleValue<ZipEntry> value = new SingleValue<>(null);
-            File file = p.toFile();
-            try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
-                int size = zipFile.size();
-                for(value.set(zipInputStream.getNextEntry());nonEmpty(value.get());value.set(zipInputStream.getNextEntry())){
-                    param.getFilesCount().incrementAndGet();
-                    ZipEntry entry = value.get();
-                    Path dest = p.getParent().resolve(entry.getName());
-                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
-                        param.getDirsCount().incrementAndGet();
-                        param.getDetailOptional().ifPresent(s->CS.sl(V_EXTR + N_DIR_NUL + gs(1) + dest));
-                        param.getCmdOptional().ifPresent(s->dest.toFile().mkdirs());
-                    }else{
-                        param.getCmdOptional().ifPresent(s->{
-                            try(InputStream inputStream = zipFile.getInputStream(entry)){
-                                dest.getParent().toFile().mkdirs();
-                                dest.toFile().setWritable(true,true);
-                                if(nonEmpty(inputStream)) Files.copy(inputStream,dest,StandardCopyOption.REPLACE_EXISTING);
-                            }catch(Exception e){
-                                CS.sl(gsph(ERR_ZIP_FLE_EXTR,entry.getName(),e.toString()));
-                            }
-                        });
-                        zipInputStream.closeEntry();
-                        if(0 == entry.getSize()) param.getDetailOptional().ifPresent(s->CS.sl(V_EXTR + N_FLE_NUL + gs(3) + dest));
-                        else param.getDetailOptional().ifPresent(s->CS.sl(V_EXTR + N_FLE + gs(3) + dest));
-                    }
-                    param.getProgressOptional().ifPresent(t->PG.update(PG.countUpdate(size,1),PROGRESS_SCALE));
-                }
-            }catch(Exception e){
-                CS.sl(gsph(ERR_ZIP_FLE_DCPRS,p.toString(),e.toString()));
-            }
-            param.getDetailOptional().ifPresent(s->CS.l(1).s(V_DCPRS + N_FLE + gs(1) + p + gs(1) + V_DONE + S_PERIOD).l(2));
-        });
-    }
-
-    private static void zipFiles(FileParam param){
-        param.getPathMap().forEach((a, p)->{
-            if(a.isRegularFile()){
-                param.getDetailOptional().ifPresent(s->showFile(new String[]{V_CPRS},new FileSizeMatcher(a),p));
-                param.getCmdOptional().ifPresent(s->zipFile(param,param.getSrcPath().getParent(),p));
-            }else{
-                param.getDetailOptional().ifPresent(s->CS.sl(V_CPRS + N_DIR_NUL + gs(1) + p));
-                param.getCmdOptional().ifPresent(s->zipDir(param,param.getSrcPath().getParent(),p));
             }
             param.getProgressOptional().ifPresent(t->PG.update(1,PROGRESS_SCALE));
         });
@@ -736,17 +788,24 @@ public class FileUtil implements ICommonVar{
                 for(value.set(zipInputStream.getNextEntry());nonEmpty(value.get());value.set(zipInputStream.getNextEntry())){
                     param.getFilesCount().incrementAndGet();
                     ZipEntry entry = value.get();
-                    Path dest = param.getDestPath().resolve(entry.getName());
+                    SingleValue<Path> dest = new SingleValue<>(null);
+                    switch(param.getCmd()){
+                        case CMD_ZIP_INF:
+                        dest.set(param.getDestPath().resolve(entry.getName()));
+                        break;
+                        case CMD_PAK_INF:
+                        dest.set(p.getParent().resolve(entry.getName()));
+                    }
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
                         param.getDirsCount().incrementAndGet();
                         param.getDetailOptional().ifPresent(s->CS.sl(V_EXTR + N_DIR_NUL + gs(1) + dest));
-                        param.getCmdOptional().ifPresent(s->dest.toFile().mkdirs());
+                        param.getCmdOptional().ifPresent(s->dest.get().toFile().mkdirs());
                     }else{
                         param.getCmdOptional().ifPresent(s->{
                             try(InputStream inputStream = zipFile.getInputStream(entry)){
-                                dest.getParent().toFile().mkdirs();
-                                dest.toFile().setWritable(true,true);
-                                if(nonEmpty(inputStream)) Files.copy(inputStream,dest,StandardCopyOption.REPLACE_EXISTING);
+                                dest.get().getParent().toFile().mkdirs();
+                                dest.get().toFile().setWritable(true,true);
+                                if(nonEmpty(inputStream)) Files.copy(inputStream,dest.get(),StandardCopyOption.REPLACE_EXISTING);
                             }catch(Exception e){
                                 CS.sl(gsph(ERR_ZIP_FLE_EXTR,entry.getName(),e.toString()));
                             }
@@ -863,6 +922,31 @@ public class FileUtil implements ICommonVar{
         }
     }
 
+    private static void showFilePath(FileParam param, Path path){
+        switch(param.getCmd()){
+            case CMD_FND_PTH_RLT:
+            case CMD_FND_PTH_DIR_RLT:
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            CS.sl(param.getSrcPath().relativize(path).toString());
+            break;
+            case CMD_FND_PTH_SRC:
+            case CMD_FND_PTH_DIR_SRC:
+            case CMD_FND_PTH_DIR_OLY_SRC:
+            CS.sl(param.getSrcPath().getFileName().resolve(param.getSrcPath().relativize(path)).toString());
+            break;
+            default:
+            CS.sl(path.toString());
+        }
+    }
+
+    private static void cacheFiles(FileParam param){
+        try{
+            param.cachePathStream(find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel()).count();
+        }catch(Exception e){
+            CS.sl(gsph(ERR_DIR_VST,param.getSrcPath().toString(),e.toString()));
+        }
+    }
+
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
         private FileParam param;
 
@@ -898,11 +982,21 @@ public class FileUtil implements ICommonVar{
                     case CMD_REN_DIR_UP:
                     case CMD_REN_DIR_UP_FST:
                     case CMD_FND_DIR_OLY:
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
+                    case CMD_FND_DIR_OLY_SIZ_ASC:
+                    case CMD_FND_DIR_OLY_SIZ_DSC:
+                    case CMD_FND_PTH_DIR_OLY_ABS:
+                    case CMD_FND_PTH_DIR_OLY_RLT:
+                    case CMD_FND_PTH_DIR_OLY_SRC:
                     if(find) param.getPathMap().put(a,p);
                     break;
-                    case CMD_FND_DIR:
-                    case CMD_MOV_DIR:
                     case CMD_DEL_DIR:
+                    case CMD_MOV_DIR:
+                    case CMD_FND_DIR:
+                    case CMD_FND_PTH_DIR_ABS:
+                    case CMD_FND_PTH_DIR_RLT:
+                    case CMD_FND_PTH_DIR_SRC:
                     if(find = find || matchPath(p)){
                         param.getPathDeque().push(p);
                         param.getPathMap().put(a,p);
@@ -943,6 +1037,9 @@ public class FileUtil implements ICommonVar{
             switch(param.getCmd()){
                 case CMD_FIND:
                 case CMD_FND_SIZ:
+                case CMD_FND_PTH_ABS:
+                case CMD_FND_PTH_RLT:
+                case CMD_FND_PTH_SRC:
                 case CMD_COPY:
                 case CMD_DELETE:
                 case CMD_MOVE:
@@ -964,7 +1061,16 @@ public class FileUtil implements ICommonVar{
         }
 
         private boolean matchDirOnly(){
-            return CMD_FND_DIR_OLY.equals(param.getCmd());
+            switch(param.getCmd()){
+                case CMD_FND_DIR_OLY:
+                case CMD_FND_DIR_OLY_SIZ_ASC:
+                case CMD_FND_DIR_OLY_SIZ_DSC:
+                case CMD_FND_PTH_DIR_OLY_ABS:
+                case CMD_FND_PTH_DIR_OLY_RLT:
+                case CMD_FND_PTH_DIR_OLY_SRC:
+                return true;
+            }
+            return false;
         }
     }
 
@@ -1002,6 +1108,32 @@ public class FileUtil implements ICommonVar{
                 return a1.size() > a2.size() ? 1 : -1;
                 default:
                 return a1.size() < a2.size() ? 1 : -1;
+            }
+        }
+    }
+
+    private static class PathEntryComparator implements Comparator<Entry<Path,Long>>{
+        private FileParam param;
+
+        private PathEntryComparator(FileParam param){
+            this.param = param;
+        }
+
+        @Override
+        public int compare(Entry<Path,Long> e1, Entry<Path,Long> e2){
+            long l1 = e1.getValue();
+            long l2 = e2.getValue();
+            if(l1 == l2) return e1.getKey().compareTo(e2.getKey());
+            return sort(l1,l2);
+        }
+
+        private int sort(long l1, long l2){
+            switch(param.getCmd()){
+                case CMD_FND_DIR_DIR_SIZ_ASC:
+                case CMD_FND_DIR_OLY_SIZ_ASC:
+                return l1 > l2 ? 1 : -1;
+                default:
+                return l1 < l2 ? 1 : -1;
             }
         }
     }
@@ -1061,6 +1193,16 @@ public class FileUtil implements ICommonVar{
             switch(param.getCmd()){
                 case CMD_FIND:
                 case CMD_FND_DIR:
+                case CMD_FND_DIR_OLY:
+                case CMD_FND_PTH_ABS:
+                case CMD_FND_PTH_RLT:
+                case CMD_FND_PTH_SRC:
+                case CMD_FND_PTH_DIR_ABS:
+                case CMD_FND_PTH_DIR_RLT:
+                case CMD_FND_PTH_DIR_SRC:
+                case CMD_FND_PTH_DIR_OLY_ABS:
+                case CMD_FND_PTH_DIR_OLY_RLT:
+                case CMD_FND_PTH_DIR_OLY_SRC:
                 return n1 > n2 ? 1 : -1;
                 default:
                 return n1 < n2 ? 1 : -1;

@@ -17,12 +17,7 @@ public class TestFileUtil extends TestBase{
     @Override
     public void monkParam(){
         String s = "";
-        s = "-rdu*  (?i)(e).*\\.(e).*$  D:/games";
-//        s = "-fd*  .  G:/cache/temp/src/FINAL FANTASY XV";
-//        s = "-dd*  .  G:/cache/temp/src/FINAL FANTASY XV";
-//        s = "-ddn*  .  G:/cache/temp/src/FINAL FANTASY XV";
-//        s = "-cd*  .  G:/cache/temp/src/FINAL FANTASY XV  G:/cache/temp";
-//        s = "-md*  .  G:/cache/temp/src/FINAL FANTASY XV  G:/cache/temp";
+        s = "-fddsa*  .  0  G:/games/Severance  10";
         super.monkParam(s);
     }
 }
