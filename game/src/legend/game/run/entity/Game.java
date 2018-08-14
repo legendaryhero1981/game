@@ -1,7 +1,6 @@
 package legend.game.run.entity;
 
-import static legend.intf.ICommonVar.WAIT_TIME;
-import static legend.intf.ICommonVar.gs;
+import static legend.intf.ICommon.gs;
 import static legend.util.ValueUtil.isEmpty;
 
 import java.util.List;
@@ -11,9 +10,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import legend.game.run.intf.IMain;
+
 @XmlRootElement(name = "Game")
 @XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentPath","agentExe","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
-public class Game{
+public class Game implements IMain{
     @XmlElement
     private String comment = "";
     @XmlElement

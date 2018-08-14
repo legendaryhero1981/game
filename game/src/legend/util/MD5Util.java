@@ -2,7 +2,7 @@ package legend.util;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.file.Files.newByteChannel;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 
 import java.io.File;
@@ -11,9 +11,9 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 
-import legend.intf.ICommonVar;
+import legend.util.intf.IMD5Util;
 
-public class MD5Util implements ICommonVar{
+public class MD5Util implements IMD5Util{
     private MD5Util(){}
 
     public static String getGuidU32(String s){

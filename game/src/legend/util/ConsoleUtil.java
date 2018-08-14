@@ -1,9 +1,9 @@
 package legend.util;
 
 import static java.lang.System.exit;
-import static legend.intf.ICommonVar.gl;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gl;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ValueUtil.isNull;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.ValueUtil.nonNull;
@@ -12,9 +12,9 @@ import java.io.PrintStream;
 import java.util.Scanner;
 import java.util.function.BooleanSupplier;
 
-import legend.intf.ICommonVar;
+import legend.util.intf.IConsoleUtil;
 
-public class ConsoleUtil implements ICommonVar{
+public class ConsoleUtil implements IConsoleUtil{
     public static final ConsoleUtil CS;
     public static final FileSizeUtil FS;
     public static final Scanner IN;

@@ -8,13 +8,14 @@ import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
 import static legend.util.TimeUtil.runWithConsole;
 
-import legend.intf.ICommonVar;
-import legend.intf.IProgress;
+import legend.game.poe2.intf.IMain;
 import legend.util.MD5Util;
 import legend.util.ProgressUtil;
+import legend.util.intf.IFileUtil;
+import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 
-public class Main implements ICommonVar{
+public class Main implements IMain{
     private static final IProgress progress;
     private static final FileParam srcParam;
     static{
@@ -72,7 +73,7 @@ public class Main implements ICommonVar{
             switch(args[0]){
                 case POE_DATA_ENCODE:
                 case POE_DATA_DECODE:
-                srcParam.setCmd(CMD_FIND);
+                srcParam.setCmd(IFileUtil.CMD_FIND);
                 srcParam.setPattern(compile(args[1]));
                 srcParam.setSrcPath(get(args[2]));
                 break;

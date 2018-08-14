@@ -18,6 +18,7 @@ public class TestFileUtil extends TestBase{
     public void monkParam(){
         String s = "";
         s = "-fddsa*  .  G:/games/Severance  1mb  10";
+//        s = "-fddsa*  .  F:/games";
 //        s = "-cd@`::-md`  .::*  G:/cache/temp/FINAL FANTASY XV::G:/cache/temp/src/FINAL FANTASY XV  G:/cache/temp/src::G:/cache/temp/backup";
         super.monkParam(s);
     }

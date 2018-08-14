@@ -1,7 +1,7 @@
 package legend.util.param;
 
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 
-import legend.intf.ICommonVar;
 import legend.intf.IValue;
+import legend.util.intf.IFileUtil;
 
-public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
+public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Path srcPath;
     private Path destPath;
     private Path backupPath;

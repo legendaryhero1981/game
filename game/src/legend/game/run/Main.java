@@ -2,10 +2,10 @@ package legend.game.run;
 
 import static java.io.File.createTempFile;
 import static java.nio.file.Paths.get;
-import static legend.intf.ICommonVar.gl;
-import static legend.intf.ICommonVar.glph;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gl;
+import static legend.intf.ICommon.glph;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.JaxbUtil.convertToJavaBean;
@@ -30,9 +30,9 @@ import java.util.regex.Pattern;
 
 import legend.game.run.entity.Game;
 import legend.game.run.entity.Games;
-import legend.intf.ICommonVar;
+import legend.game.run.intf.IMain;
 
-public final class Main implements ICommonVar{
+public final class Main implements IMain{
     private static final Path config;
     private static final StringBuilder script;
     private static final String[] names;

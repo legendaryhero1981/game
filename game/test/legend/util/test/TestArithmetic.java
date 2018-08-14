@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import legend.intf.ICommonVar;
+import legend.intf.ICommon;
 import legend.util.test.model.GCDModel;
 
-public class TestArithmetic implements ICommonVar{
+public class TestArithmetic implements ICommon{
     public static void main(String[] args){
         new TestArithmetic().test();
     }

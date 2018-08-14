@@ -1,11 +1,11 @@
 package legend.util;
 
 import static java.lang.String.valueOf;
-import static legend.intf.ICommonVar.esc;
-import static legend.intf.ICommonVar.gl;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gl;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.intf.IJaxbUtil.esc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,9 +31,9 @@ import org.xml.sax.ext.LexicalHandler;
 
 import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
-import legend.intf.ICommonVar;
+import legend.util.intf.IJaxbUtil;
 
-public class JaxbUtil implements ICommonVar{
+public class JaxbUtil implements IJaxbUtil{
     private JaxbUtil(){}
 
     public static void convertToXml(Path path, Object object){

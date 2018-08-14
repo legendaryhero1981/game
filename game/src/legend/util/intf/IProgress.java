@@ -1,4 +1,4 @@
-package legend.intf;
+package legend.util.intf;
 
 import java.util.function.Consumer;
 

@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 
 import legend.game.dos2.entity.Content;
 import legend.game.dos2.entity.ContentList;
-import legend.intf.ICommonVar;
-import legend.intf.IProgress;
+import legend.game.dos2.intf.IMain;
 import legend.util.ProgressUtil;
+import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 
-public final class Main implements ICommonVar{
+public final class Main implements IMain{
     private static FileParam param;
     private static final IProgress progress;
     static{

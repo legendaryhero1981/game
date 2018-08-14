@@ -8,8 +8,8 @@ import static java.nio.file.Files.move;
 import static java.nio.file.Files.write;
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.TimeUtil.countDuration;
@@ -51,12 +51,13 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import legend.intf.ICommonVar;
-import legend.intf.IProgress;
+import legend.util.intf.IConsoleUtil;
+import legend.util.intf.IFileUtil;
+import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
 
-public class FileUtil implements ICommonVar{
+public class FileUtil implements IFileUtil,IConsoleUtil{
     private static final FileParam CACHE;
     private static final ConsoleUtil CS;
     private static final IProgress PG;
@@ -109,7 +110,7 @@ public class FileUtil implements ICommonVar{
                 case CMD_FIND:
                 case CMD_FND_DIR:
                 case CMD_FND_DIR_OLY:
-                findFiles(param);
+                findSortedFiles(param);
                 break;
                 case CMD_FND_PTH_ABS:
                 case CMD_FND_PTH_RLT:
@@ -120,7 +121,7 @@ public class FileUtil implements ICommonVar{
                 case CMD_FND_PTH_DIR_OLY_ABS:
                 case CMD_FND_PTH_DIR_OLY_RLT:
                 case CMD_FND_PTH_DIR_OLY_SRC:
-                findFilePaths(param);
+                findSortedFilePaths(param);
                 break;
                 case CMD_FND_SIZ:
                 case CMD_FND_DIR_SIZ:
@@ -431,7 +432,7 @@ public class FileUtil implements ICommonVar{
         return fileParams;
     }
 
-    private static void findFiles(FileParam param){
+    private static void findSortedFiles(FileParam param){
         if(param.needCaching()) param.getPathMap().values().parallelStream().forEach(p->{
             if(p.toFile().isDirectory()) param.getPathList().add(p);
         });
@@ -444,11 +445,11 @@ public class FileUtil implements ICommonVar{
         });
     }
 
-    private static void findFilePaths(FileParam param){
+    private static void findSortedFilePaths(FileParam param){
         if(param.needCaching()) param.getPathMap().values().parallelStream().forEach(p->{
             if(p.toFile().isDirectory()) param.getPathList().add(p);
         });
-        param.getDetailOptional().ifPresent(s->param.getPathMap().values().stream().limit(param.getLimit()).forEach(p->showFilePath(param,p)));
+        param.getDetailOptional().ifPresent(s->param.getPathMap().values().stream().sorted(new PathListComparator(param)).limit(param.getLimit()).forEach(p->showFilePath(param,p)));
     }
 
     private static void findFileSizes(FileParam param){
@@ -463,24 +464,21 @@ public class FileUtil implements ICommonVar{
         if(param.needCaching()) param.getPathMap().values().parallelStream().forEach(p->{
             if(p.toFile().isDirectory()) param.getPathList().add(p);
         });
+        param.getPathMap().entrySet().parallelStream().forEach(e->{
+            Path p = e.getValue();
+            if(p.toFile().isFile()) param.getSizeMap().put(p,e.getKey().size());
+            else if(!p.equals(param.getSrcPath())){
+                FileParam fp = new FileParam();
+                fp.setCmd(CMD_FND_SIZ);
+                fp.setPattern(compile(REG_ANY));
+                fp.setSrcPath(p);
+                cacheFiles(fp);
+                fp.clearCache();
+                long size = fp.getFilesSize().get();
+                if(param.matchFilesSize(size)) param.getSizeMap().put(p,size);
+            }
+        });
         param.getDetailOptional().ifPresent(s->{
-            param.getPathMap().entrySet().parallelStream().forEach(e->{
-                Path p = e.getValue();
-                if(p.toFile().isFile()) param.getSizeMap().put(p,e.getKey().size());
-                else if(!p.equals(param.getSrcPath())){
-                    FileParam fp = new FileParam();
-                    fp.setCmd(CMD_FND_SIZ);
-                    fp.setPattern(compile(REG_ANY));
-                    fp.setSrcPath(p);
-                    cacheFiles(fp);
-                    fp.clearCache();
-                    long size = fp.getFilesSize().get();
-                    if(param.matchFilesSize(size)){
-                        param.getSizeMap().put(p,size);
-                        param.getFilesSize().addAndGet(size);
-                    }
-                }
-            });
             param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param)).limit(param.getLimit()).forEach(e->{
                 Path path = e.getKey();
                 if(path.toFile().isFile()) CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_FLE + gs(2) + path.toString());
@@ -518,7 +516,7 @@ public class FileUtil implements ICommonVar{
     private static void delNulDirs(FileParam param){
         param.getPathList().stream().sorted(new PathListComparator(param)).forEach(p->{
             param.getDetailOptional().ifPresent(s->CS.sl(V_DEL + N_DIR_NUL + gs(1) + p));
-            param.getCmdOptional().ifPresent(s->deleteFile(p));
+            if(0 == p.toFile().list().length) param.getCmdOptional().ifPresent(s->deleteFile(p));
             param.getProgressOptional().ifPresent(t->PG.update(1,PROGRESS_SCALE));
         });
     }
@@ -761,7 +759,7 @@ public class FileUtil implements ICommonVar{
             case CMD_ZIP_DIR_DEF:
             param.setSrcPath(param.getSrcPath().getParent());
         }
-        param.getPathMap().entrySet().parallelStream().forEach(e->{
+        param.getPathMap().entrySet().stream().forEach(e->{
             Path p = e.getValue();
             BasicFileAttributes a = e.getKey();
             if(a.isRegularFile()){
@@ -1015,9 +1013,8 @@ public class FileUtil implements ICommonVar{
                     case CMD_DEL_DIR_NUL:
                     if(find = find || matchPath(p)){
                         param.getPathDeque().push(p);
-                        param.getPathMap().put(a,p);
+                        param.getPathList().add(p);
                     }
-                    find = find && 0 == p.toFile().list().length;
                 }
             }
             if(find) if(a.isDirectory()) param.getDirsCount().incrementAndGet();

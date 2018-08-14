@@ -3,9 +3,9 @@ package legend;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.isEmpty;
 
-import legend.intf.ICommonVar;
+import legend.intf.IMain;
 
-public final class Main implements ICommonVar{
+public final class Main implements IMain{
     public static void main(String[] args){
         CS.showHelp(HELP_MAIN,()->isEmpty(args));
         String[] sa = moveLeft(args,1);

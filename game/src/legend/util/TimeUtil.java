@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import legend.intf.ICommonVar;
+import legend.util.intf.ITimeUtil;
 
-public class TimeUtil implements ICommonVar{
+public class TimeUtil implements ITimeUtil{
     private static AtomicLong time;
     private static AtomicLong totalTime;
     static{
@@ -27,7 +27,7 @@ public class TimeUtil implements ICommonVar{
     }
 
     public static <T> void runWithConsole(Consumer<T> consumer, String[] args, String help){
-        CS.showHelp(help,()->isEmpty(args)||isEmpty(args[0]));
+        CS.showHelp(help,()->isEmpty(args) || isEmpty(args[0]));
         CS.s(ST_PRG_START).l(2).s(ST_PRG_DONE + N_TIME + S_COLON + getDurationString(consumer) + S_PERIOD).l(2);
     }
 

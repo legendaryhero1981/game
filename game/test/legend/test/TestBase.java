@@ -1,8 +1,8 @@
 package legend.test;
 
-import legend.intf.ICommonVar;
+import legend.intf.ICommon;
 
-public abstract class TestBase implements ICommonVar{
+public abstract class TestBase implements ICommon{
     protected String[] args;
 
     protected void monkParam(String s){

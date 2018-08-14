@@ -2,8 +2,8 @@ package legend.game.kcd;
 
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.copyFile;
 import static legend.util.FileUtil.createZipFile;
@@ -44,13 +44,14 @@ import legend.game.kcd.entity.mod.Kcd.MergeSet;
 import legend.game.kcd.entity.mod.Mapping;
 import legend.game.kcd.entity.mod.Merge;
 import legend.game.kcd.entity.mod.Mod;
-import legend.intf.ICommonVar;
-import legend.intf.IProgress;
+import legend.game.kcd.intf.IMain;
 import legend.util.ProgressUtil;
+import legend.util.intf.IFileUtil;
+import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
 
-public final class Main implements ICommonVar{
+public final class Main implements IMain,IFileUtil{
     private static final IProgress progress;
     private static final Path kcdPath;
     private static final FileParam srcParam;
@@ -246,7 +247,7 @@ public final class Main implements ICommonVar{
             });
             // 删除MOD目录中所有非.PAK文件
             param.clearCache();
-            param.setCmd(CMD_DEL);
+            param.setCmd(CMD_DELETE);
             param.setPattern(compile(REG_MOD_NOT_PAK));
             dealFiles(param);
             param.clearCache();
@@ -627,27 +628,32 @@ public final class Main implements ICommonVar{
             List<Mapping> m = merge.getMappings();
             Path path = getRepairPath(merge);
             makeDirs(path);
-            String[] md5 = new String[]{"",""};
-            for(int i = 0,j = 0,l = m.size();i < l;j = i){
-                if(existsPath(path)){
-                    md5[0] = getMD5L16(path);
-                    if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),path.toString(),path.toString()));
-                    else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString(),path.toString()));
-                    md5[1] = getMD5L16(path);
-                    if(md5[0].equals(md5[1])){
-                        i = j;
-                        continue;
+            SingleValue<Boolean> result = new SingleValue<>(true);
+            SingleValue<String> value = new SingleValue<>(m.get(0).getMd5());
+            m.parallelStream().forEach(mapping->result.set(result.get() && value.get().equals(mapping.getMd5())));
+            if(!result.get()){
+                String[] md5 = new String[]{"",""};
+                for(int i = 0,j = 0,l = m.size();i < l;j = i){
+                    if(existsPath(path)){
+                        md5[0] = getMD5L16(path);
+                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),path.toString(),path.toString()));
+                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString(),path.toString()));
+                        md5[1] = getMD5L16(path);
+                        if(md5[0].equals(md5[1])){
+                            i = j;
+                            continue;
+                        }
+                    }else{
+                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
+                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
+                        if(!existsPath(path)){
+                            progress.update(progress.countUpdate(size,1,0.8f),scale);
+                            break;
+                        }
                     }
-                }else{
-                    if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
-                    else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
-                    if(!existsPath(path)){
-                        progress.update(progress.countUpdate(size,1,0.8f),scale);
-                        break;
-                    }
+                    progress.update(progress.countUpdate(size * l,++i - j,0.8f),scale);
                 }
-                progress.update(progress.countUpdate(size * l,++i - j,0.8f),scale);
-            }
+            }else copyFile(getModPath(m.get(0)),path);
             if(existsPath(path)) merges.add(merge);
             else merge.getMappings().parallelStream().forEach(mapping->{
                 String mod = mapping.getMod();

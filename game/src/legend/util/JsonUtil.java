@@ -2,9 +2,9 @@ package legend.util;
 
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
-import static legend.intf.ICommonVar.gl;
-import static legend.intf.ICommonVar.gs;
-import static legend.intf.ICommonVar.gsph;
+import static legend.intf.ICommon.gl;
+import static legend.intf.ICommon.gs;
+import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-import legend.intf.ICommonVar;
+import legend.util.intf.IJsonUtil;
 
-public class JsonUtil implements ICommonVar{
+public class JsonUtil implements IJsonUtil{
     private JsonUtil(){}
 
     public static void trimJson(Path path){

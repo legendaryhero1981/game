@@ -1,11 +1,5 @@
 package legend.game.kcd.entity.mod;
 
-import static legend.intf.ICommonVar.MOD_INGNORE_DESC;
-import static legend.intf.ICommonVar.MOD_MERGE;
-import static legend.intf.ICommonVar.MOD_ORDER_CONFLICT;
-import static legend.intf.ICommonVar.MOD_ORDER_INGNORE;
-import static legend.intf.ICommonVar.MOD_ORDER_MERGE;
-import static legend.intf.ICommonVar.REG_ORDER;
 import static legend.util.ValueUtil.nonEmpty;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -13,9 +7,11 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import legend.game.kcd.intf.IMain;
+
 @XmlRootElement(name = "Mod")
 @XmlType(propOrder = {"mod","desc","order"})
-public class Mod{
+public class Mod implements IMain{
     @XmlElement
     @XmlID
     private String mod = "";
