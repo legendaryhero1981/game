@@ -39,15 +39,19 @@ poe     永恒之柱2：死火 汉化文件和Mod文件处理。
 
 输入 game file
 
+作者：李允
+版本：V2.0
+
+
 参数说明：
 
-file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex [sizeExpr] [replacement] src [dest] [backup] [limit] [zipName] [zipLevel] [level]
+file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
 
 命令参数：
 
 regex		文件名查询正则表达式，.匹配任意文件名和目录名。
 
-sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；例如：0（任意大小），100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。
+sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。
 
 replacement	文件名替换正则表达式。
 
@@ -125,34 +129,34 @@ file -fpdor[+*@?] regex src [limit] [level]
 file -fpdos[+*@?] regex src [limit] [level]
 根据regex查找src中的子目录（同-fdo），显示子目录的相对路径名（包含src目录名称）。
 
-file -fs[+*@?] regex sizeExpr src [limit] [level]
+file -fs[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件。
 
-file -fsa[+*@?] regex sizeExpr src [limit] [level]
+file -fsa[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递增排序。
 
-file -fsd[+*@?] regex sizeExpr src [limit] [level]
+file -fsd[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递减排序。
 
-file -fds[+*@?] regex sizeExpr src [limit] [level]
+file -fds[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和子目录；若匹配到目录，则其中所有文件只需匹配sizeExpr；也适用于-fdsa和-fdsd。
 
-file -fdsa[+*@?] regex sizeExpr src [limit] [level]
+file -fdsa[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和子目录，按文件大小递增排序。
 
-file -fdsd[+*@?] regex sizeExpr src [limit] [level]
+file -fdsd[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。
 
-file -fdosa[+*@?] regex sizeExpr src [limit] [level]
+file -fdosa[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。
 
-file -fdosd[+*@?] regex sizeExpr src [limit] [level]
+file -fdosd[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。
 
-file -fddsa[+*@?] regex sizeExpr src [limit] [level]
+file -fddsa[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。
 
-file -fddsd[+*@?] regex sizeExpr src [limit] [level]
+file -fddsd[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。
 
 file -d[+*@?] regex src [level]
@@ -164,7 +168,7 @@ file -dd[+*@?] regex src [level]
 file -ddn[+*@?] regex src [level]
 根据regex删除src中所有匹配的空文件和空目录。
 
-file -r[+*@?] regex replacement src [level]
+file -r[+*@?] regex src replacement [level]
 根据regex和replacement重命名src中的文件。
 
 file -rl[+*@?] regex src [level]
@@ -176,7 +180,7 @@ file -ru[+*@?] regex src [level]
 file -ruf[+*@?] regex src [level]
 根据regex将src中所有匹配文件名中英文单词首字母替换为大写。
 
-file -rd[+*@?] regex replacement src [level]
+file -rd[+*@?] regex src replacement [level]
 根据regex和replacement重命名src中的文件和子目录。
 
 file -rdl[+*@?] regex src [level]
@@ -274,34 +278,34 @@ file -fpdor+ . "F:/games/DARK SOULS REMASTERED"
 file -fpdos+ . "F:/games/DARK SOULS REMASTERED"
 查询该目录中的所有子目录，显示子目录的相对路径名（包含该目录名称）。
 
-file -fs+ . 1MB-1GB "F:/games/FINAL FANTASY XV"
+file -fs+ . "F:/games/FINAL FANTASY XV" 1MB-1GB
 查询该目录中大小介于1兆字节到1千兆字节之间的所有文件。
 
-file -fsa+ . 1MB,1GB "F:/games/FINAL FANTASY XV"
+file -fsa+ . "F:/games/FINAL FANTASY XV" 1MB,1GB
 先查询（作用同-fs），再按文件大小递增排序。
 
-file -fsd+ . 1MB;1GB "F:/games/FINAL FANTASY XV"
+file -fsd+ . "F:/games/FINAL FANTASY XV" 1MB;1GB
 先查询（作用同-fs），再按文件大小递减排序。
 
-file -fds+ \Ajp$ 1MB-1GB "F:/games/FINAL FANTASY XV"
+file -fds+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB-1GB
 查询该目录中所有子目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件。
 
-file -fdsa+ \Ajp$ 1MB,1GB "F:/games/FINAL FANTASY XV"
+file -fdsa+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB,1GB
 先查询（作用同-fds），再按文件大小递增排序。
 
-file -fdsd+ \Ajp$ 1MB;1GB "F:/games/FINAL FANTASY XV"
+file -fdsd+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB;1GB
 先查询（作用同-fds），再按文件大小递减排序。
 
-file -fdosa+ \Ajp$100KB;10MB "F:/games/DARK SOULS REMASTERED"
+file -fdosa+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
 先查询该目录中的第一级子目录，再按子目录大小递增排序。
 
-file -fdosd+ \Ajp$ 100KB;10MB "F:/games/DARK SOULS REMASTERED"
+file -fdosd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
 先查询该目录中的第一级子目录，再按子目录大小递减排序。
 
-file -fddsa+ \Ajp$ 100KB;10MB "F:/games/DARK SOULS REMASTERED"
+file -fddsa+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
 先查询该目录中的文件和第一级子目录，再按子目录大小递增排序。
 
-file -fddsd+ \Ajp$ 100KB;10MB"F:/games/DARK SOULS REMASTERED"
+file -fddsd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
 先查询该目录中的文件和第一级子目录，再按子目录大小递减排序。
 
 file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
@@ -313,7 +317,7 @@ file -dd "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
 file -ddn . "F:/games/FINAL FANTASY XV"
 先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。
 
-file -r (.*_)(?i)cn(\..{0,2}strings$) $1en$2 "F:/games/Fallout 4/Data/Strings"
+file -r (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" $1en$2
 先查询（作用同-f）再以en替换掉所有匹配文件名中的cn（其余字符不变）。
 
 file -rl (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
@@ -325,7 +329,7 @@ file -ru (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 file -ruf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 先查询（作用同-f）再将该目录中所有匹配文件名中英单词首字母替换为大写。
 
-file -rd (.*_)(?i)cn(\..{0,2}strings$) $1en$2 "F:/games/Fallout 4"
+file -rd (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4" $1en$2
 先查询（作用同-fd）再以en替换掉所有匹配文件名和目录名中的cn（其余字符不变）。
 
 file -rdl (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
