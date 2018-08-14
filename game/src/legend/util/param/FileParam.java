@@ -1,8 +1,8 @@
 package legend.util.param;
 
+import static legend.intf.ICommonVar.gs;
 import static legend.intf.ICommonVar.gsph;
 import static legend.util.ConsoleUtil.CS;
-import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.nio.file.Path;
@@ -12,11 +12,11 @@ import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 
@@ -36,36 +36,38 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
     private String opt;
     private long minSize;
     private long maxSize;
+    private int limit;
     private int level;
     private int deflaterLevel;
     private ZipOutputStream zipOutputStream;
-    private Stream<Path> pathStream;
     private ConcurrentMap<BasicFileAttributes,Path> pathMap;
     private ConcurrentMap<Path,Path> rePathMap;
     private ConcurrentMap<Path,List<Path>> pathsMap;
+    private ConcurrentMap<Path,Long> sizeMap;
     private BlockingDeque<Path> pathDeque;
+    private List<Path> pathList;
     private AtomicLong filesSize;
     private AtomicInteger filesCount;
     private AtomicInteger dirsCount;
-    private boolean cache;
+    private boolean usingCaching;
     private long cacheFileSize;
     private int cacheFilesCount;
     private int cacheDirsCount;
-    private int limit;
     private Optional<String> detailOptional;
     private Optional<String> cmdOptional;
     private Optional<Boolean> progressOptional;
 
     public FileParam(){
-        cmd = "";
-        opt = OPT_NONE;
+        cmds = cmd = opt = CMD_OPT_NONE;
         maxSize = Long.MAX_VALUE;
         level = RECURSION_LEVEL;
         deflaterLevel = Deflater.DEFAULT_COMPRESSION;
         pathMap = new ConcurrentHashMap<>();
         rePathMap = new ConcurrentHashMap<>();
         pathsMap = new ConcurrentHashMap<>();
+        sizeMap = new ConcurrentHashMap<>();
         pathDeque = new LinkedBlockingDeque<>();
+        pathList = new CopyOnWriteArrayList<>();
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();
@@ -95,7 +97,16 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
 
     @Override
     public void close() throws Exception{
-        close(zipOutputStream,pathStream);
+        close(zipOutputStream);
+    }
+
+    public void cacheZipOutputStream(ZipOutputStream zipOutputStream){
+        try{
+            close(this.zipOutputStream);
+        }catch(Exception e){
+            CS.sl(gsph(ERR_RES_CLS,e.toString()));
+        }
+        this.zipOutputStream = zipOutputStream;
     }
 
     public void createOptional(){
@@ -112,54 +123,58 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    public Stream<Path> cachePathStream(Stream<Path> pathStream){
-        try{
-            close(this.pathStream);
-        }catch(Exception e){
-            CS.sl(gsph(ERR_RES_CLS,e.toString()));
-        }
-        return (this.pathStream = pathStream);
-    }
-
-    public void cacheZipOutputStream(ZipOutputStream zipOutputStream){
-        try{
-            close(this.zipOutputStream);
-        }catch(Exception e){
-            CS.sl(gsph(ERR_RES_CLS,e.toString()));
-        }
-        this.zipOutputStream = zipOutputStream;
-    }
-
     public void saveCache(FileParam cache){
-        if(!canSaveCache()) return;
-        cache.clearCache();
-        cache.setPathMap(pathMap);
-        cache.setRePathMap(rePathMap);
-        cache.setPathDeque(pathDeque);
-        cache.setCacheFileSize(filesSize.get());
-        cache.setCacheDirsCount(dirsCount.get());
-        cache.setCacheFilesCount(filesCount.get());
-        cache.setCache(true);
+        if(usingCaching){
+            cache.getFilesSize().addAndGet(filesSize.addAndGet(cache.getCacheFileSize()));
+            cache.getFilesCount().addAndGet(filesCount.addAndGet(cache.getCacheFilesCount()));
+            cache.getDirsCount().addAndGet(dirsCount.addAndGet(cache.getCacheDirsCount()));
+        }else{
+            cache.getFilesSize().addAndGet(filesSize.get());
+            cache.getFilesCount().addAndGet(filesCount.get());
+            cache.getDirsCount().addAndGet(dirsCount.get());
+        }
+        if(canSaveCache(cache)){
+            cache.clearCache();
+            cache.setPathMap(pathMap);
+            cache.setRePathMap(rePathMap);
+            cache.setPathsMap(pathsMap);
+            cache.setSizeMap(sizeMap);
+            cache.setPathDeque(pathDeque);
+            cache.setPathList(pathList);
+            cache.setPattern(pattern);
+            cache.setSrcPath(srcPath);
+            cache.setCacheFileSize(filesSize.get());
+            cache.setCacheFilesCount(filesCount.get());
+            cache.setCacheDirsCount(dirsCount.get());
+        }
     }
 
     public boolean useCache(FileParam cache){
+        String[] s = cmds.split(SPRT_ARG);
         if(canUseCache(cache)){
             clearCache();
             pathMap = cache.getPathMap();
             rePathMap = cache.getRePathMap();
+            pathsMap = cache.getPathsMap();
+            sizeMap = cache.getSizeMap();
             pathDeque = cache.getPathDeque();
-            return true;
-        }
-        return false;
+            pathList = cache.getPathList();
+            pattern = cache.pattern;
+            srcPath = cache.srcPath;
+            if(s.length > 2){
+                s[1] = pattern.toString();
+                s[2] = srcPath.toString();
+            }
+            cmds = gs(s);
+            usingCaching = true;
+        }else usingCaching = false;
+        cmds = gs(s);
+        return usingCaching;
     }
 
     public boolean canUseCache(FileParam cache){
-        if(!cache.isCache() || opt.contains(OPT_CACHE) || isQueryCmds()) return false;
-        if(isEmpty(cache.getPathMap())){
-            opt += OPT_CACHE;
-            return false;
-        }else return true;
+        if(cache.getPathMap().isEmpty() || opt.contains(OPT_CACHE) || isQueryCmds()) return false;
+        return true;
     }
 
     public boolean isQueryCmds(){
@@ -191,14 +206,29 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         return false;
     }
 
+    public boolean needCaching(){
+        return opt.contains(OPT_CACHE);
+    }
+
+    public boolean usingCaching(){
+        return usingCaching;
+    }
+
     public boolean needRefreshCache(FileParam cache){
-        return opt.contains(OPT_CACHE) || canUseCache(cache);
+        return needCaching() || canUseCache(cache);
     }
 
     public void clearCache(){
         pathMap.clear();
         rePathMap.clear();
+        pathsMap.clear();
+        sizeMap.clear();
         pathDeque.clear();
+        pathList.clear();
+    }
+
+    public float getFilesAndDirsCount(){
+        return filesCount.get() + dirsCount.get();
     }
 
     @SuppressWarnings("unchecked")
@@ -207,8 +237,7 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
             if(nonEmpty(type)) type.close();
     }
 
-    private boolean canSaveCache(){
-        if(!opt.contains(OPT_CACHE)) return false;
+    private boolean canSaveCache(FileParam cache){
         switch(cmd){
             case CMD_DELETE:
             case CMD_DEL_DIR:
@@ -217,9 +246,11 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR:
             case CMD_BAK_UGD:
             case CMD_BAK_RST:
+            cache.clearCache();
             return false;
             default:
-            return true;
+            if(opt.contains(OPT_CACHE)) return true;
+            return false;
         }
     }
 
@@ -319,6 +350,14 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         this.maxSize = maxSize;
     }
 
+    public int getLimit(){
+        return limit;
+    }
+
+    public void setLimit(int limit){
+        this.limit = limit;
+    }
+
     public int getLevel(){
         return level;
     }
@@ -337,10 +376,6 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
 
     public ZipOutputStream getZipOutputStream(){
         return zipOutputStream;
-    }
-
-    public Stream<Path> getPathStream(){
-        return pathStream;
     }
 
     public ConcurrentMap<BasicFileAttributes,Path> getPathMap(){
@@ -367,12 +402,28 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
         this.pathsMap = pathsMap;
     }
 
+    public ConcurrentMap<Path,Long> getSizeMap(){
+        return sizeMap;
+    }
+
+    public void setSizeMap(ConcurrentMap<Path,Long> sizeMap){
+        this.sizeMap = sizeMap;
+    }
+
     public BlockingDeque<Path> getPathDeque(){
         return pathDeque;
     }
 
     public void setPathDeque(BlockingDeque<Path> pathDeque){
         this.pathDeque = pathDeque;
+    }
+
+    public List<Path> getPathList(){
+        return pathList;
+    }
+
+    public void setPathList(List<Path> pathList){
+        this.pathList = pathList;
     }
 
     public AtomicLong getFilesSize(){
@@ -389,14 +440,6 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
 
     public AtomicInteger getDirsCount(){
         return dirsCount;
-    }
-
-    public boolean isCache(){
-        return cache;
-    }
-
-    public void setCache(boolean cache){
-        this.cache = cache;
     }
 
     public long getCacheFileSize(){
@@ -421,14 +464,6 @@ public class FileParam implements ICommonVar,IValue<FileParam>,AutoCloseable{
 
     public void setCacheDirsCount(int cacheDirsCount){
         this.cacheDirsCount = cacheDirsCount;
-    }
-
-    public int getLimit(){
-        return limit;
-    }
-
-    public void setLimit(int limit){
-        this.limit = limit;
     }
 
     public Optional<String> getDetailOptional(){

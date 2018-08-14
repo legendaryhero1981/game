@@ -72,7 +72,7 @@ public class ProgressUtil implements ICommonVar{
         @Override
         public void finish(){
             service.execute(()->await(finish,ERR_RUN));
-            sleep(SLEEP + 2,ERR_RUN);
+            sleep(SLEEP * 2,ERR_RUN);
         }
 
         @Override

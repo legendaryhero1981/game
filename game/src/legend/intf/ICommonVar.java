@@ -29,11 +29,14 @@ public interface ICommonVar{
     static String gs(int n){
         return gs(S_SPACE,n);
     }
-    static String gs(String[] ss){
+    static String gs(String[] ss,String sprt){
         String r = "";
         for(String s : ss)
-            r += s + S_SPACE;
-        return r.isEmpty() ? r : r.substring(0,r.length() - 1);
+            r += s + sprt;
+        return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());
+    }
+    static String gs(String[] ss){
+        return gs(ss,S_SPACE);
     }
     static String glph(String s, int n, String... ph){
         String r = gl(s,n);
@@ -47,25 +50,6 @@ public interface ICommonVar{
     static String gph(int n){
         return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
     }
-    String SPRT_LINE = System.lineSeparator();
-    String SPRT_FILE = File.separator;
-    String SPRT_FILE_ZIP = "/";
-    String AUTHOR = "作者：李允" + gl(1);
-    String VERSION = "版本：V2.0" + gl(3);
-    String APP_INFO = AUTHOR + VERSION;
-    String MAIN_FILE = "file";
-    String MAIN_RUN = "run";
-    String MAIN_EOC = "eoc";
-    String MAIN_KCD = "kcd";
-    String MAIN_POE = "poe";
-    String HELP_MAIN = APP_INFO + "参数说明：" + gl(2)
-    + "game file|run|eoc|kcd|poe" + gl(2)
-    + "命令列表：" + gl(2)
-    + "file\t游戏文件处理命令，通过正则匹配批量查询和处理目录和文件。" + gl(2)
-    + "run\t参数化运行游戏，通过配置文件对所有游戏可执行文件进行统一管理。" + gl(2)
-    + "eoc\t神界：原罪2 汉化文件处理。" + gl(2)
-    + "kcd\t天国：拯救 汉化文件和Mod整合处理。" + gl(2)
-    + "poe\t永恒之柱2：死火 汉化文件和Mod文件处理。";
     static String esc(String s,String... args){
         if(isEmpty(s)) return "";
         if(isEmpty(args)) return s;
@@ -90,6 +74,26 @@ public interface ICommonVar{
             }
         return value.get();
     }
+    // legend.Main
+    String SPRT_LINE = System.lineSeparator();
+    String SPRT_FILE = File.separator;
+    String SPRT_FILE_ZIP = "/";
+    String AUTHOR = "作者：李允" + gl(1);
+    String VERSION = "版本：V2.0" + gl(3);
+    String APP_INFO = AUTHOR + VERSION;
+    String MAIN_FILE = "file";
+    String MAIN_RUN = "run";
+    String MAIN_EOC = "eoc";
+    String MAIN_KCD = "kcd";
+    String MAIN_POE = "poe";
+    String HELP_MAIN = APP_INFO + "参数说明：" + gl(2)
+    + "game file|run|eoc|kcd|poe" + gl(2)
+    + "命令列表：" + gl(2)
+    + "file\t游戏文件处理命令，通过正则匹配批量查询和处理目录和文件。" + gl(2)
+    + "run\t参数化运行游戏，通过配置文件对所有游戏可执行文件进行统一管理。" + gl(2)
+    + "eoc\t神界：原罪2 汉化文件处理。" + gl(2)
+    + "kcd\t天国：拯救 汉化文件和Mod整合处理。" + gl(2)
+    + "poe\t永恒之柱2：死火 汉化文件和Mod文件处理。";
     // legend.util.TimeUtil
     int UNIT_MINUTE = 60;
     int UNIT_SECOND = 60;
@@ -100,7 +104,7 @@ public interface ICommonVar{
     }
     int UNIT_SIZE = 0x400;
     int RECURSION_LEVEL = 100;
-    int PROGRESS_POSITION = 10;
+    int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String RES_LEVEL = "100";
     String SIZE_TB = "TB";
@@ -157,7 +161,7 @@ public interface ICommonVar{
     String CMD_PAK_DEF = "-pd";
     String CMD_PAK_DIR_DEF = "-pdd";
     String CMD_PAK_INF = "-pi";
-    String OPT_NONE = "";
+    String CMD_OPT_NONE = "";
     String OPT_INSIDE = "`";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";
@@ -179,7 +183,7 @@ public interface ICommonVar{
     String PH_ARG8 = PLACE_HOLDER + "8" + PLACE_HOLDER;
     String PH_ARG9 = PLACE_HOLDER + "9" + PLACE_HOLDER;
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE  + OPT_INSIDE + "]+$";
-    String REG_OPT = "(.*?)([" + OPT_DETAIL + OPT_SIMULATE  + OPT_ASK  + OPT_CACHE + "]+)$";
+    String REG_OPT = "(.*?)([" + OPT_DETAIL + OPT_SIMULATE  + OPT_ASK  + OPT_CACHE + OPT_INSIDE + "]+)$";
     String REG_ANY = ".";  
     String REG_ASK_NO = "\\A[nN]$";
     String REG_PH_ARG = "\\A[" + OPT_ASK + "]+$";
@@ -271,10 +275,10 @@ public interface ICommonVar{
     String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FLE_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String HELP_FILE = APP_INFO + "参数说明：" + gl(2)
-    + "file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex [sizeExpr] [replacement] src [dest] [backup] [limit] [zipName] [zipLevel] [level]" + gl(2)
+    + "file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]" + gl(2)
     + "命令参数：" + gl(2)
     + "regex\t\t文件名查询正则表达式，.匹配任意文件名和目录名。" + gl(2)
-    + "sizeExpr\t\t文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；例如：0（任意大小），100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。" + gl(2)
+    + "sizeExpr\t\t文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。" + gl(2)
     + "replacement\t文件名替换正则表达式。" + gl(2)
     + "src\t\t输入文件目录。" + gl(2)
     + "dest\t\t输出文件目录。" + gl(2)
@@ -307,24 +311,24 @@ public interface ICommonVar{
     + "file -fpdoa[+*@?] regex src [limit] [level]" + gl(1) + "根据regex查找src中的子目录（同-fdo），显示子目录的绝对路径名。" + gl(2)
     + "file -fpdor[+*@?] regex src [limit] [level]" + gl(1) + "根据regex查找src中的子目录（同-fdo），显示子目录的相对路径名（不包含src目录名称）。" + gl(2)
     + "file -fpdos[+*@?] regex src [limit] [level]" + gl(1) + "根据regex查找src中的子目录（同-fdo），显示子目录的相对路径名（包含src目录名称）。" + gl(2)
-    + "file -fs[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件。" + gl(2)
-    + "file -fsa[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递增排序。" + gl(2)
-    + "file -fsd[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递减排序。" + gl(2)
-    + "file -fds[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录；若匹配到目录，则其中所有文件只需匹配sizeExpr；也适用于-fdsa和-fdsd。" + gl(2)
-    + "file -fdsa[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递增排序。" + gl(2)
-    + "file -fdsd[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。" + gl(2)
-    + "file -fdosa[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。" + gl(2)
-    + "file -fdosd[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。" + gl(2)
-    + "file -fddsa[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。" + gl(2)
-    + "file -fddsd[+*@?] regex sizeExpr src [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。" + gl(2)
+    + "file -fs[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件。" + gl(2)
+    + "file -fsa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递增排序。" + gl(2)
+    + "file -fsd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递减排序。" + gl(2)
+    + "file -fds[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录；若匹配到目录，则其中所有文件只需匹配sizeExpr；也适用于-fdsa和-fdsd。" + gl(2)
+    + "file -fdsa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递增排序。" + gl(2)
+    + "file -fdsd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。" + gl(2)
+    + "file -fdosa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。" + gl(2)
+    + "file -fdosd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。" + gl(2)
+    + "file -fddsa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。" + gl(2)
+    + "file -fddsd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。" + gl(2)
     + "file -d[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配文件。" + gl(2)
     + "file -dd[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配文件和子目录及其中所有文件。" + gl(2)
     + "file -ddn[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配的空文件和空目录。" + gl(2)
-    + "file -r[+*@?] regex replacement src [level]" + gl(1) + "根据regex和replacement重命名src中的文件。" + gl(2)
+    + "file -r[+*@?] regex src replacement [level]" + gl(1) + "根据regex和replacement重命名src中的文件。" + gl(2)
     + "file -rl[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\\.txt$则文件名和扩展名都会被替换；也适用于-ru和-ruf。" + gl(2)
     + "file -ru[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名中英文字母替换为大写。" + gl(2)
     + "file -ruf[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名中英文单词首字母替换为大写。" + gl(2)
-    + "file -rd[+*@?] regex replacement src [level]" + gl(1) + "根据regex和replacement重命名src中的文件和子目录。" + gl(2)
+    + "file -rd[+*@?] regex src replacement [level]" + gl(1) + "根据regex和replacement重命名src中的文件和子目录。" + gl(2)
     + "file -rdl[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\\.txt$则文件名和扩展名都会被替换；也适用于-rdu和-rduf。" + gl(2)
     + "file -rdu[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文字母替换为大写。" + gl(2)
     + "file -rduf[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文单词首字母替换为大写。" + gl(2)
@@ -357,24 +361,24 @@ public interface ICommonVar{
     + "file -fpdoa+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有子目录，显示子目录的绝对路径名。" + gl(2)
     + "file -fpdor+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有子目录，显示子目录的相对路径名（不包含该目录名称）。" + gl(2)
     + "file -fpdos+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有子目录，显示子目录的相对路径名（包含该目录名称）。" + gl(2)
-    + "file -fs+ . 1MB-1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件。" + gl(2)
-    + "file -fsa+ . 1MB,1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fs），再按文件大小递增排序。" + gl(2)
-    + "file -fsd+ . 1MB;1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fs），再按文件大小递减排序。" + gl(2)
-    + "file -fds+ \\Ajp$ 1MB-1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "查询该目录中所有子目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件。" + gl(2)
-    + "file -fdsa+ \\Ajp$ 1MB,1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fds），再按文件大小递增排序。" + gl(2)
-    + "file -fdsd+ \\Ajp$ 1MB;1GB \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fds），再按文件大小递减排序。" + gl(2)
-    + "file -fdosa+ \\Ajp$100KB;10MB \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "先查询该目录中的第一级子目录，再按子目录大小递增排序。" + gl(2)
-    + "file -fdosd+ \\Ajp$ 100KB;10MB \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "先查询该目录中的第一级子目录，再按子目录大小递减排序。" + gl(2)
-    + "file -fddsa+ \\Ajp$ 100KB;10MB \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "先查询该目录中的文件和第一级子目录，再按子目录大小递增排序。" + gl(2)
-    + "file -fddsd+ \\Ajp$ 100KB;10MB\"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "先查询该目录中的文件和第一级子目录，再按子目录大小递减排序。" + gl(2)
+    + "file -fs+ . \"F:/games/FINAL FANTASY XV\" 1MB-1GB" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件。" + gl(2)
+    + "file -fsa+ . \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "先查询（作用同-fs），再按文件大小递增排序。" + gl(2)
+    + "file -fsd+ . \"F:/games/FINAL FANTASY XV\" 1MB;1GB" + gl(1) + "先查询（作用同-fs），再按文件大小递减排序。" + gl(2)
+    + "file -fds+ \\Ajp$ \"F:/games/FINAL FANTASY XV\" 1MB-1GB" + gl(1) + "查询该目录中所有子目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件。" + gl(2)
+    + "file -fdsa+ \\Ajp$ \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "先查询（作用同-fds），再按文件大小递增排序。" + gl(2)
+    + "file -fdsd+ \\Ajp$ \"F:/games/FINAL FANTASY XV\" 1MB;1GB" + gl(1) + "先查询（作用同-fds），再按文件大小递减排序。" + gl(2)
+    + "file -fdosa+ \\Ajp$ \"F:/games/DARK SOULS REMASTERED\" 100KB;10MB" + gl(1) + "先查询该目录中的第一级子目录，再按子目录大小递增排序。" + gl(2)
+    + "file -fdosd+ \\Ajp$ \"F:/games/DARK SOULS REMASTERED\" 100KB;10MB" + gl(1) + "先查询该目录中的第一级子目录，再按子目录大小递减排序。" + gl(2)
+    + "file -fddsa+ \\Ajp$ \"F:/games/DARK SOULS REMASTERED\" 100KB;10MB" + gl(1) + "先查询该目录中的文件和第一级子目录，再按子目录大小递增排序。" + gl(2)
+    + "file -fddsd+ \\Ajp$ \"F:/games/DARK SOULS REMASTERED\" 100KB;10MB" + gl(1) + "先查询该目录中的文件和第一级子目录，再按子目录大小递减排序。" + gl(2)
     + "file -d (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再删除该目录中所有匹配文件。" + gl(2)
     + "file -dd \"\\Ade$|\\Afr$|\\Aru$|\\Aus$\" \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配文件和子目录及其中所有文件。" + gl(2)
     + "file -ddn . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。" + gl(2)
-    + "file -r (.*_)(?i)cn(\\..{0,2}strings$) $1en$2 \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再以en替换掉所有匹配文件名中的cn（其余字符不变）。" + gl(2)
+    + "file -r (.*_)(?i)cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" $1en$2" + gl(1) + "先查询（作用同-f）再以en替换掉所有匹配文件名中的cn（其余字符不变）。" + gl(2)
     + "file -rl (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再将该目录中所有匹配文件名中英文字母替换为小写。" + gl(2)
     + "file -ru (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再将该目录中所有匹配文件名中英文字母替换为大写。" + gl(2)
     + "file -ruf (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再将该目录中所有匹配文件名中英单词首字母替换为大写。" + gl(2)
-    + "file -rd (.*_)(?i)cn(\\..{0,2}strings$) $1en$2 \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再以en替换掉所有匹配文件名和目录名中的cn（其余字符不变）。" + gl(2)
+    + "file -rd (.*_)(?i)cn(\\..{0,2}strings$) \"F:/games/Fallout 4\" $1en$2" + gl(1) + "先查询（作用同-fd）再以en替换掉所有匹配文件名和目录名中的cn（其余字符不变）。" + gl(2)
     + "file -rdl (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英文字母替换为小写。" + gl(2)
     + "file -rdu (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英文字母替换为大写。" + gl(2)
     + "file -rduf (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英单词首字母替换为大写。" + gl(2)
@@ -690,7 +694,7 @@ public interface ICommonVar{
     + gs(4) + "Game::afterWait\t\t执行游戏后等待afterWait秒，再执行Game::after命令；仅当Game::after不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。"  + gl(1)
     + gs(4) + "Game::watchWait\t游戏监控进程的等待时间，每隔watchWait秒后检测一次游戏进程是否存在；仅当Game::watch不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。"  + gl(1)
     + gs(4) + "Game::watch\t\t由Game::before或Game::after脚本启动的进程的名称（例如：editplus.exe）或进程的可执行文件路径名（例如：F:/tools/EditPlus/editplus.exe），在游戏进程结束后监控程序会自动关闭之。" + gl(1) + gs(4);
-    String HELP_RUN = "参数说明：" + gl(2)
+    String HELP_RUN = APP_INFO + "参数说明：" + gl(2)
     + "run -c|-a|-d|-v|-x|-l|-la id path exe name [comment]" + gl(2)
     + "id\t\t游戏标识，在" + RUN_FILE_CONFIG + "文件中唯一标识一个游戏配置节点。" + gl(2)
     + "path\t\t游戏可执行文件路径。" + gl(2)

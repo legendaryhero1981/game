@@ -1,7 +1,9 @@
 package legend.util.test;
 
 import static legend.util.ConsoleUtil.CS;
+import static java.nio.file.Paths.get;
 
+import java.nio.file.Path;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,9 @@ public class TestArithmetic implements ICommonVar{
 
     @Test
     public void test(){
-        testGCD();
+        Path a = get("G:/cache/temp/src");
+        Path b = get("G:/cache/temp/FINAL FANTASY XV");
+        CS.sl(a.relativize(b).toString());
     }
 
     // @Test
