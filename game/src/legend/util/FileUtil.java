@@ -602,7 +602,7 @@ public class FileUtil implements ICommonVar{
     }
 
     private static void renameDirs(FileParam param){
-        param.getRePathMap().entrySet().stream().sorted(new PathPathComparator(param)).forEach(e->{
+        param.getRePathMap().entrySet().stream().sorted(new PathPathComparator()).forEach(e->{
             Path src = e.getKey(), dest = e.getValue();
             File file = src.toFile();
             param.getDetailOptional().ifPresent(s->showDir(new String[]{V_REN,V_BY},new FileSizeMatcher(file),src,dest));
@@ -648,7 +648,7 @@ public class FileUtil implements ICommonVar{
                 param.getRePathMap().put(src,dest);
             });
         }
-        param.getRePathMap().entrySet().stream().sorted(new PathPathComparator(param)).forEach(e->{
+        param.getRePathMap().entrySet().stream().sorted(new PathPathComparator()).forEach(e->{
             Path src = e.getKey(), dest = e.getValue();
             param.getDetailOptional().ifPresent(s->CS.sl(V_MOV + N_DIR_NUL + gs(1) + src + V_TO + dest));
             param.getCmdOptional().ifPresent(s->{
@@ -1127,25 +1127,12 @@ public class FileUtil implements ICommonVar{
     }
 
     private static class PathPathComparator implements Comparator<Entry<Path,Path>>{
-        private FileParam param;
-
-        private PathPathComparator(FileParam param){
-            this.param = param;
-        }
-
         @Override
         public int compare(Entry<Path,Path> e1, Entry<Path,Path> e2){
-            Path path1 = e1.getKey();
-            Path path2 = e2.getKey();
-            Path p = param.getSrcPath();
-            int n1 = 0, n2 = 0;
-            for(Path p1 = path1.getParent(),p2 = path2.getParent();nonEmpty(p1) && nonEmpty(p2);p1 = p1.getParent(),p2 = p2.getParent()){
-                if(p1.startsWith(p)) n1++;
-                if(p2.startsWith(p)) n2++;
-                if(!p1.startsWith(p) || !p2.startsWith(p)) break;
-            }
+            Path p1 = e1.getKey(), p2 = e2.getKey();
+            int n1 = p1.getNameCount(), n2 = p2.getNameCount();
             if(n1 == n2){
-                String s1 = path1.toString(), s2 = path2.toString();
+                String s1 = p1.toString(), s2 = p2.toString();
                 int l1 = s1.length(), l2 = s2.length();
                 if(l1 == l2) return s1.compareTo(s2);
                 return l1 < l2 ? 1 : -1;
