@@ -197,7 +197,7 @@ public final class Main implements IMain{
                 else game.setComment(game.getName());
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR});
+                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
             game.trim();
         }catch(Exception e){

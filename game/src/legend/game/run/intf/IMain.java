@@ -70,7 +70,7 @@ public interface IMain extends ICommon{
     String ERR_CONFIG_NON = N_GAME_CONFIG + "\"" + RUN_FILE_CONFIG + "\"" + V_NON_EXISTS;
     String ERR_CONFIG_NUL = N_GAME_CONFIG + "\"" + RUN_FILE_CONFIG + "\"" + V_BY_NUL;
     String ERR_ID_NON = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + V_NON_EXISTS;
-    String ERR_ID_EXISTS = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + V_ALREADY_EXISTS;
+    String ERR_ID_EXISTS = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + V_ARD_EXISTS;
     String ERR_VALIDATE = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_VALIDATE;
     String ERR_EXE_NUL = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + N_EXE + V_BY_NUL;
     String ERR_CREATE_FAIL = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;

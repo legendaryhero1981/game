@@ -112,7 +112,7 @@ public final class Main implements IMain{
     }
 
     private static void dealParam(String[] args){
-        CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR},()->args.length != 3);
+        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length != 3);
         try{
             switch(args[0]){
                 case DOS2_DEBUG:
@@ -122,7 +122,7 @@ public final class Main implements IMain{
                 param.setDestPath(get(args[2]));
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR});
+                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
         }catch(Exception e){
             CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});

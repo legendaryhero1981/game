@@ -6,7 +6,6 @@ import static legend.intf.ICommon.gs;
 import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.copyFile;
-import static legend.util.FileUtil.createZipFile;
 import static legend.util.FileUtil.dealFiles;
 import static legend.util.FileUtil.deleteFile;
 import static legend.util.FileUtil.existsPath;
@@ -181,30 +180,34 @@ public final class Main implements IMain,IFileUtil{
         merges.parallelStream().forEach(merge->copyFile(getRepairPath(merge),getMergePath(merge)));
         srcParam.setCmd(CMD_PAK_DEF);
         srcParam.setSrcPath(mergePath.resolve(MOD_DATA));
-        srcParam.setDestPath(gameMergePath.resolve(MOD_DATA).resolve(PAK_MERGE));
+        srcParam.setDestPath(gameMergePath.resolve(MOD_DATA));
+        srcParam.setZipName(PAK_MERGE);
         srcParam.setZipLevel(0);
-        dealZipFile(srcParam);
+        dealFile(srcParam);
         progress.update(40);
         srcParam.setSrcPath(mergePath.resolve(MOD_LOCAL).resolve(MOD_CHS));
-        srcParam.setDestPath(gameMergePath.resolve(MOD_LOCAL).resolve(PAK_CHINESES));
-        dealZipFile(srcParam);
+        srcParam.setDestPath(gameMergePath.resolve(MOD_LOCAL));
+        srcParam.setZipName(PAK_CHINESES);
+        dealFile(srcParam);
         progress.update(20);
         srcParam.setSrcPath(srcParam.getSrcPath().resolveSibling(MOD_ENG));
-        srcParam.setDestPath(srcParam.getDestPath().resolveSibling(PAK_ENGLISH));
-        dealZipFile(srcParam);
+        srcParam.setZipName(PAK_ENGLISH);
+        dealFile(srcParam);
         progress.update(20);
         conflicts.parallelStream().forEach(conflict->{
             FileParam param = srcParam.cloneValue();
             Path path = conflictPath.resolve(conflict.getMod()).resolve(MOD_DATA);
             param.setSrcPath(path);
-            param.setDestPath(gameModPath.resolve(conflict.getMod()).resolve(MOD_DATA).resolve(conflict.getMod() + EXT_PAK));
-            dealZipFile(param);
+            param.setDestPath(gameModPath.resolve(conflict.getMod()).resolve(MOD_DATA));
+            param.setZipName(conflict.getMod() + EXT_PAK);
+            dealFile(param);
             param.setSrcPath(path.resolveSibling(MOD_LOCAL).resolve(MOD_CHS));
-            param.setDestPath(gameModPath.resolve(conflict.getMod()).resolve(MOD_LOCAL).resolve(PAK_CHINESES));
-            dealZipFile(param);
+            param.setDestPath(gameModPath.resolve(conflict.getMod()).resolve(MOD_LOCAL));
+            param.setZipName(PAK_CHINESES);
+            dealFile(param);
             param.setSrcPath(path.resolveSibling(MOD_LOCAL).resolve(MOD_ENG));
-            param.setDestPath(srcParam.getDestPath().resolveSibling(PAK_ENGLISH));
-            dealZipFile(param);
+            param.setZipName(PAK_ENGLISH);
+            dealFile(param);
         });
         progress.update(20);
         mergeOrder(progress);
@@ -521,18 +524,10 @@ public final class Main implements IMain,IFileUtil{
                 case KCD_MOD_MRG_U:
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR});
+                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
         }catch(Exception e){
             CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
-        }
-    }
-
-    private static void dealZipFile(FileParam param){
-        if(nonEmptyDir(param.getSrcPath())){
-            createZipFile(param);
-            dealFiles(param);
-            param.clearCache();
         }
     }
 

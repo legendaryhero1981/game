@@ -216,19 +216,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         return exists(path);
     }
 
-    public static void createZipFile(FileParam param){
-        try{
-            param.getDestPath().getParent().toFile().mkdirs();
-            File file = param.getDestPath().toFile();
-            file.setWritable(true,true);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-            zipOutputStream.setLevel(param.getZipLevel());
-            param.cacheZipOutputStream(zipOutputStream);
-        }catch(Exception e){
-            CS.sl(gsph(ERR_ZIP_FLE_CRT,param.getDestPath().toString(),e.toString()));
-        }
-    }
-
     public static void writeFile(Path path, Collection<String> lines){
         try{
             write(makeDirs(path),lines);
@@ -286,20 +273,20 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static List<FileParam> dealParam(String[] args){
-        CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR},()->args.length < 3);
+        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa = new String[args.length][];
         aa[0] = args[0].split(REG_SPRT_ARG);
         Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
-        CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR},()->mrpt.matches());
+        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
         Matcher mph = compile(REG_PH_ARG).matcher("");
         for(int i = 0;i < aa[0].length;i++){
             mph.reset(aa[0][i]);
-            CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR},()->mph.matches());
+            CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
         for(int i = 1;i < args.length;i++){
             aa[i] = args[i].split(REG_SPRT_ARG);
             mrpt.reset(aa[i][0]);
-            if(aa[0].length != aa[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR});
+            if(aa[0].length != aa[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
         for(int i = 0;i < aa.length;i++){
             String s = aa[i][0];
@@ -415,20 +402,20 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     break;
                     case CMD_ZIP_DEF:
                     case CMD_ZIP_DIR_DEF:
-                    param.setDestPath(get(as[3]).resolve(as[4] + EXT_ZIP));
+                    param.setDestPath(get(as[3]));
+                    param.setZipName(as[4] + EXT_ZIP);
                     optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
-                    optional.filter(s->!param.getOpt().contains(OPT_SIMULATE)).ifPresent(s1->createZipFile(param));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     case CMD_PAK_DEF:
                     case CMD_PAK_DIR_DEF:
-                    param.setDestPath(get(as[3]).resolve(as[4] + EXT_PAK));
+                    param.setDestPath(get(as[3]));
+                    param.setZipName(as[4] + EXT_PAK);
                     param.setZipLevel(0);
-                    optional.filter(s->!param.getOpt().contains(OPT_SIMULATE)).ifPresent(s1->createZipFile(param));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     default:
-                    CS.showError(ERR_ARG_ANLS,new String[]{ST_ARG_ERR});
+                    CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
                 }
             }catch(Exception e){
                 CS.showError(ERR_ARG_ANLS,new String[]{e.toString()});
@@ -760,11 +747,14 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void zipFiles(FileParam param){
+        Path path = param.getDestPath().resolve(param.getZipName());
+        CS.showError(ERR_ZIP_FLE_CRT,new String[]{path.toString(),gsph(ERR_ZIP_FILE_SAME,path.toString())},()->param.getPathMap().containsValue(path));
         switch(param.getCmd()){
             case CMD_ZIP_DEF:
             case CMD_ZIP_DIR_DEF:
             param.setSrcPath(param.getSrcPath().getParent());
         }
+        param.getCmdOptional().ifPresent(s->createZipFile(param));
         param.getPathMap().entrySet().stream().forEach(e->{
             Path p = e.getValue();
             BasicFileAttributes a = e.getKey();
@@ -786,6 +776,15 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             File file = p.toFile();
             param.getDetailOptional().ifPresent(s->CS.s(V_DCPRS + N_FLE + gs(1) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
+                CS.showError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
+                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) return false;
+                    switch(param.getCmd()){
+                        case CMD_ZIP_INF:
+                        return p.equals(param.getDestPath().resolve(entry.getName()));
+                        default:
+                        return p.equals(p.getParent().resolve(entry.getName()));
+                    }
+                }));
                 int size = zipFile.size();
                 for(value.set(zipInputStream.getNextEntry());nonEmpty(value.get());value.set(zipInputStream.getNextEntry())){
                     param.getFilesCount().incrementAndGet();
@@ -795,7 +794,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                         case CMD_ZIP_INF:
                         dest.set(param.getDestPath().resolve(entry.getName()));
                         break;
-                        case CMD_PAK_INF:
+                        default:
                         dest.set(p.getParent().resolve(entry.getName()));
                     }
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
@@ -882,6 +881,19 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         while(!starts.isEmpty()){
             int start = starts.remove(), end = ends.remove();
             stringBuffer.replace(start,end,string.substring(start,end));
+        }
+    }
+
+    private static void createZipFile(FileParam param){
+        try{
+            param.getDestPath().toFile().mkdirs();
+            File file = param.getDestPath().resolve(param.getZipName()).toFile();
+            file.setWritable(true,true);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+            zipOutputStream.setLevel(param.getZipLevel());
+            param.cacheZipOutputStream(zipOutputStream);
+        }catch(Exception e){
+            CS.sl(gsph(ERR_ZIP_FLE_CRT,param.getDestPath().resolve(param.getZipName()).toString(),e.toString()));
         }
     }
 
