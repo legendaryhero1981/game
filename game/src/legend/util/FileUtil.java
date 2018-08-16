@@ -81,8 +81,9 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             String opt = FP.getOpt();
             param.useCache(CACHE);
             boolean progress = !opt.matches(REG_NON_PROG);
-            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_START,FP.getCmds())).l(2);
-            else CS.s(gsph(ST_CMD_START,FP.getCmds())).l(2);
+            String command = FP.getWholeCommand();
+            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_START,command)).l(2);
+            else CS.s(gsph(ST_CMD_START,command)).l(2);
             if(FP.getOpt().contains(OPT_ASK)){
                 CS.s(ST_ASK_CONT);
                 String line = decTotalDuration(()->IN.nextLine());
@@ -93,8 +94,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 }else resetTime();
             }else if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
             else countDuration(t->dealFiles(FP));
-            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_DONE,FP.getCmds()) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(param.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
-            else CS.s(gsph(ST_CMD_DONE,FP.getCmds()) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(FP.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
+            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_DONE,command) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(param.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
+            else CS.s(gsph(ST_CMD_DONE,command) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(FP.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
         }
     }
 
@@ -221,7 +222,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             File file = param.getDestPath().toFile();
             file.setWritable(true,true);
             ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-            zipOutputStream.setLevel(param.getDeflaterLevel());
+            zipOutputStream.setLevel(param.getZipLevel());
             param.cacheZipOutputStream(zipOutputStream);
         }catch(Exception e){
             CS.sl(gsph(ERR_ZIP_FLE_CRT,param.getDestPath().toString(),e.toString()));
@@ -321,7 +322,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         List<FileParam> fileParams = new ArrayList<>(ss.length);
         for(String[] as : ss){
             FileParam param = new FileParam();
-            param.setCmds(gs(as,SPRT_ARG));
             try{
                 Optional<String[]> optional = Optional.of(as);
                 param.setCmd(as[0]);
@@ -354,10 +354,13 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_SIZ_DSC:
                     case CMD_FND_DIR_SIZ_ASC:
                     case CMD_FND_DIR_SIZ_DSC:
-                    optional.filter(s->s.length > 3).ifPresent(s->matchSizes(param,as[3].toUpperCase()));
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        param.setSizeExpr(s[3]);
+                        matchSizes(param,as[3].toUpperCase());
+                    });
                     optional.filter(s->s.length > 4).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[4]);
-                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                        param.setLimit(0 < filesCountLimit && Integer.MAX_VALUE > filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
                     });
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
@@ -365,10 +368,13 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_DIR_DIR_SIZ_DSC:
                     case CMD_FND_DIR_OLY_SIZ_ASC:
                     case CMD_FND_DIR_OLY_SIZ_DSC:
-                    optional.filter(s->s.length > 3).ifPresent(s->matchSizes(param,as[3].toUpperCase()));
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        param.setSizeExpr(s[3]);
+                        matchSizes(param,as[3].toUpperCase());
+                    });
                     optional.filter(s->s.length > 4).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[4]);
-                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                        param.setLimit(0 < filesCountLimit && Integer.MAX_VALUE > filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
                     });
                     param.setLevel(1);
                     break;
@@ -410,14 +416,14 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_ZIP_DEF:
                     case CMD_ZIP_DIR_DEF:
                     param.setDestPath(get(as[3]).resolve(as[4] + EXT_ZIP));
-                    optional.filter(s->s.length > 5).ifPresent(s2->param.setDeflaterLevel(Integer.parseInt(s2[5])));
+                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
                     optional.filter(s->!param.getOpt().contains(OPT_SIMULATE)).ifPresent(s1->createZipFile(param));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     case CMD_PAK_DEF:
                     case CMD_PAK_DIR_DEF:
                     param.setDestPath(get(as[3]).resolve(as[4] + EXT_PAK));
-                    param.setDeflaterLevel(0);
+                    param.setZipLevel(0);
                     optional.filter(s->!param.getOpt().contains(OPT_SIMULATE)).ifPresent(s1->createZipFile(param));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;

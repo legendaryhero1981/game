@@ -5,7 +5,6 @@ import static legend.intf.ICommon.gl;
 import legend.intf.ICommon;
 
 public interface IFileUtil extends ICommon{
-    int RECURSION_LEVEL = 100;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String RES_LEVEL = "100";
@@ -78,15 +77,15 @@ public interface IFileUtil extends ICommon{
     + "file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]" + gl(2)
     + "命令参数：" + gl(2)
     + "regex\t\t文件名查询正则表达式，.匹配任意文件名和目录名。" + gl(2)
-    + "sizeExpr\t\t文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。" + gl(2)
-    + "replacement\t文件名替换正则表达式。" + gl(2)
     + "src\t\t输入文件目录。" + gl(2)
     + "dest\t\t输出文件目录。" + gl(2)
     + "backup\t\t备份文件目录。" + gl(2)
-    + "limit\t\t查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：0~2147483647，指定0或不指定则取默认值2147483647。" + gl(2)
+    + "sizeExpr\t\t文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。" + gl(2)
+    + "replacement\t文件名替换正则表达式。" + gl(2)
     + "zipName\t\t压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）。" + gl(2)
-    + "zipLevel\t\t文件压缩级别，取值-1：程序智能选择最佳压缩率；0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则取默认值-1。" + gl(2)
-    + "level\t\t文件目录最大查询层数，不指定则取默认值100层。" + gl(2)
+    + "zipLevel\t\t文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。" + gl(2)
+    + "limit\t\t查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。" + gl(2)
+    + "level\t\t文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。" + gl(2)
     + "命令选项：" + gl(2)
     + "+ 可添加在命令选项末尾，表示输出详细信息；可与@或?连用；例如：-f+@?。" + gl(2)
     + "* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与@或?连用；例如：-f*?@。" + gl(2)
@@ -117,10 +116,10 @@ public interface IFileUtil extends ICommon{
     + "file -fds[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录；若匹配到目录，则其中所有文件只需匹配sizeExpr；也适用于-fdsa和-fdsd。" + gl(2)
     + "file -fdsa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递增排序。" + gl(2)
     + "file -fdsd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。" + gl(2)
-    + "file -fdosa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。" + gl(2)
-    + "file -fdosd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。" + gl(2)
-    + "file -fddsa[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。" + gl(2)
-    + "file -fddsd[+*@?] regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。" + gl(2)
+    + "file -fdosa[+*@?] regex src [sizeExpr] [limit]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。" + gl(2)
+    + "file -fdosd[+*@?] regex src [sizeExpr] [limit]" + gl(1) + "根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。" + gl(2)
+    + "file -fddsa[+*@?] regex src [sizeExpr] [limit]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。" + gl(2)
+    + "file -fddsd[+*@?] regex src [sizeExpr] [limit]" + gl(1) + "根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。" + gl(2)
     + "file -d[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配文件。" + gl(2)
     + "file -dd[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配文件和子目录及其中所有文件。" + gl(2)
     + "file -ddn[+*@?] regex src [level]" + gl(1) + "根据regex删除src中所有匹配的空文件和空目录。" + gl(2)

@@ -182,7 +182,7 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setCmd(CMD_PAK_DEF);
         srcParam.setSrcPath(mergePath.resolve(MOD_DATA));
         srcParam.setDestPath(gameMergePath.resolve(MOD_DATA).resolve(PAK_MERGE));
-        srcParam.setDeflaterLevel(0);
+        srcParam.setZipLevel(0);
         dealZipFile(srcParam);
         progress.update(40);
         srcParam.setSrcPath(mergePath.resolve(MOD_LOCAL).resolve(MOD_CHS));
@@ -219,7 +219,7 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setSrcPath(modPath);
         srcParam.setLevel(1);
         dealFiles(srcParam);
-        srcParam.setLevel(RECURSION_LEVEL);
+        srcParam.setLevel(Integer.MAX_VALUE);
         progress.update(10);
         Collection<Path> paths = srcParam.getPathMap().values();
         paths.remove(modPath);

@@ -17,6 +17,7 @@ public interface ICommon{
     String EXT_ZIP = ".zip";
     String EXT_PAK = ".pak";
     String S_SPACE = " ";
+    String S_QUOTATION = "\"";
     String S_COMMA = "，";
     String S_SEMICOLON = "；";
     String S_PERIOD = "。";
@@ -74,7 +75,7 @@ public interface ICommon{
     String V_CLS = "关闭";
     String V_TO = " 到 ";
     String V_BY = " 为 ";
-    String CMD_OPT_NONE = "";
+    String OPT_NONE = "";
     String OPT_INSIDE = "`";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";

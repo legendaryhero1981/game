@@ -1,6 +1,5 @@
 package legend.util.param;
 
-import static legend.intf.ICommon.gs;
 import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.nonEmpty;
@@ -30,15 +29,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Pattern pattern;
     private Pattern replacePattern;
     private Pattern askPattern;
+    private String sizeExpr;
     private String replacement;
-    private String cmds;
+    private String zipName;
     private String cmd;
     private String opt;
     private long minSize;
     private long maxSize;
     private int limit;
     private int level;
-    private int deflaterLevel;
+    private int zipLevel;
     private ZipOutputStream zipOutputStream;
     private ConcurrentMap<BasicFileAttributes,Path> pathMap;
     private ConcurrentMap<Path,Path> rePathMap;
@@ -58,10 +58,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Optional<Boolean> progressOptional;
 
     public FileParam(){
-        cmds = cmd = opt = CMD_OPT_NONE;
+        zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
         maxSize = Long.MAX_VALUE;
-        level = RECURSION_LEVEL;
-        deflaterLevel = Deflater.DEFAULT_COMPRESSION;
+        limit = level = Integer.MAX_VALUE;
+        zipLevel = Deflater.DEFAULT_COMPRESSION;
         pathMap = new ConcurrentHashMap<>();
         rePathMap = new ConcurrentHashMap<>();
         pathsMap = new ConcurrentHashMap<>();
@@ -71,7 +71,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();
-        limit = Integer.MAX_VALUE;
     }
 
     @Override
@@ -84,13 +83,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.replacePattern = replacePattern;
         fileParam.askPattern = askPattern;
         fileParam.replacement = replacement;
-        fileParam.cmds = cmds;
         fileParam.cmd = cmd;
         fileParam.opt = opt;
         fileParam.minSize = minSize;
         fileParam.maxSize = maxSize;
         fileParam.level = level;
-        fileParam.deflaterLevel = deflaterLevel;
+        fileParam.zipLevel = zipLevel;
         fileParam.limit = limit;
         return fileParam;
     }
@@ -150,7 +148,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public boolean useCache(FileParam cache){
-        String[] s = cmds.split(SPRT_ARG);
         if(canUseCache(cache)){
             clearCache();
             pathMap = cache.getPathMap();
@@ -161,14 +158,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             pathList = cache.getPathList();
             pattern = cache.pattern;
             srcPath = cache.srcPath;
-            if(s.length > 2){
-                s[1] = pattern.toString();
-                s[2] = srcPath.toString();
-            }
-            cmds = gs(s);
             usingCaching = true;
         }else usingCaching = false;
-        cmds = gs(s);
         return usingCaching;
     }
 
@@ -225,6 +216,88 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         sizeMap.clear();
         pathDeque.clear();
         pathList.clear();
+    }
+
+    public String getWholeCommand(){
+        String regex = nonEmpty(pattern) ? S_SPACE + pattern : OPT_NONE;
+        String sp = nonEmpty(srcPath) ? S_SPACE + S_QUOTATION + srcPath + S_QUOTATION : OPT_NONE;
+        String dp = nonEmpty(destPath) ? S_SPACE + S_QUOTATION + destPath + S_QUOTATION : OPT_NONE;
+        String bp = nonEmpty(backupPath) ? S_SPACE + S_QUOTATION + backupPath + S_QUOTATION : OPT_NONE;
+        String s = "file" + S_SPACE + cmd + opt + regex + sp;
+        switch(cmd){
+            case CMD_FND_SIZ:
+            case CMD_FND_DIR_SIZ:
+            case CMD_FND_SIZ_ASC:
+            case CMD_FND_SIZ_DSC:
+            case CMD_FND_DIR_SIZ_ASC:
+            case CMD_FND_DIR_SIZ_DSC:
+            if(nonEmpty(sizeExpr)) s += S_SPACE + sizeExpr;
+            case CMD_FIND:
+            case CMD_FND_DIR:
+            case CMD_FND_DIR_OLY:
+            case CMD_FND_PTH_ABS:
+            case CMD_FND_PTH_RLT:
+            case CMD_FND_PTH_SRC:
+            case CMD_FND_PTH_DIR_ABS:
+            case CMD_FND_PTH_DIR_RLT:
+            case CMD_FND_PTH_DIR_SRC:
+            case CMD_FND_PTH_DIR_OLY_ABS:
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            case CMD_FND_PTH_DIR_OLY_SRC:
+            if(limit < Integer.MAX_VALUE) s += S_SPACE + limit;
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            break;
+            case CMD_FND_DIR_DIR_SIZ_ASC:
+            case CMD_FND_DIR_DIR_SIZ_DSC:
+            case CMD_FND_DIR_OLY_SIZ_ASC:
+            case CMD_FND_DIR_OLY_SIZ_DSC:
+            if(nonEmpty(sizeExpr)) s += S_SPACE + sizeExpr;
+            if(limit < Integer.MAX_VALUE) s += S_SPACE + limit;
+            break;
+            case CMD_RENAME:
+            case CMD_REN_DIR:
+            s += S_SPACE + replacement;
+            case CMD_DELETE:
+            case CMD_DEL_DIR:
+            case CMD_DEL_DIR_NUL:
+            case CMD_REN_LOW:
+            case CMD_REN_DIR_LOW:
+            case CMD_REN_UP:
+            case CMD_REN_DIR_UP:
+            case CMD_REN_UP_FST:
+            case CMD_REN_DIR_UP_FST:
+            case CMD_PAK_INF:
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            break;
+            case CMD_COPY:
+            case CMD_CPY_DIR:
+            case CMD_MOVE:
+            case CMD_MOV_DIR:
+            case CMD_ZIP_INF:
+            s += dp;
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            break;
+            case CMD_BACKUP:
+            case CMD_BAK_DIR:
+            case CMD_BAK_UGD:
+            case CMD_BAK_RST:
+            case CMD_UPGRADE:
+            case CMD_UGD_DIR:
+            s += dp + bp;
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            break;
+            case CMD_ZIP_DEF:
+            case CMD_ZIP_DIR_DEF:
+            s += dp + S_SPACE + zipName;
+            if(0 <= zipLevel && 9 >= zipLevel) s += S_SPACE + zipLevel;
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            break;
+            case CMD_PAK_DEF:
+            case CMD_PAK_DIR_DEF:
+            s += dp + S_SPACE + zipName;
+            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+        }
+        return s;
     }
 
     public float getFilesAndDirsCount(){
@@ -302,6 +375,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.askPattern = askPattern;
     }
 
+    public String getSizeExpr(){
+        return sizeExpr;
+    }
+
+    public void setSizeExpr(String sizeExpr){
+        this.sizeExpr = sizeExpr;
+    }
+
     public String getReplacement(){
         return replacement;
     }
@@ -310,12 +391,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.replacement = replacement;
     }
 
-    public String getCmds(){
-        return cmds;
+    public String getZipName(){
+        return zipName;
     }
 
-    public void setCmds(String cmds){
-        this.cmds = cmds;
+    public void setZipName(String zipName){
+        this.zipName = zipName;
     }
 
     public String getCmd(){
@@ -366,12 +447,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.level = level;
     }
 
-    public int getDeflaterLevel(){
-        return deflaterLevel;
+    public int getZipLevel(){
+        return zipLevel;
     }
 
-    public void setDeflaterLevel(int deflaterLevel){
-        this.deflaterLevel = deflaterLevel;
+    public void setZipLevel(int zipLevel){
+        this.zipLevel = zipLevel;
     }
 
     public ZipOutputStream getZipOutputStream(){
