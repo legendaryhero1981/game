@@ -20,6 +20,10 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK1.8.0_181开发�
 
 目前包含5条命令，输入 game 可以看到命令帮助信息如下：
 
+作者：李允
+版本：V2.0
+
+
 参数说明：
 
 game file|run|eoc|kcd|poe
@@ -39,10 +43,6 @@ poe     永恒之柱2：死火 汉化文件和Mod文件处理。
 
 输入 game file
 
-作者：李允
-版本：V2.0
-
-
 参数说明：
 
 file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
@@ -51,23 +51,23 @@ file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|
 
 regex		文件名查询正则表达式，.匹配任意文件名和目录名。
 
-sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。
-
-replacement	文件名替换正则表达式。
-
 src		输入文件目录。
 
 dest		输出文件目录。
 
 backup		备份文件目录。
 
-limit		查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：0~2147483647，指定0或不指定则取默认值2147483647。
+sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。
+
+replacement	文件名替换正则表达式。
 
 zipName		压缩文件名（程序会根据命令选项自动添加文件扩展名.zip或.pak）。
 
-zipLevel		文件压缩级别，取值-1：程序智能选择最佳压缩率；0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则取默认值-1。
+zipLevel		文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。
 
-level		文件目录最大查询层数，不指定则取默认值100层。
+limit		查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。
+
+level		文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。
 
 命令选项：
 
@@ -147,16 +147,16 @@ file -fdsa[+*@?] regex src [sizeExpr] [limit] [level]
 file -fdsd[+*@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。
 
-file -fdosa[+*@?] regex src [sizeExpr] [limit] [level]
+file -fdosa[+*@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。
 
-file -fdosd[+*@?] regex src [sizeExpr] [limit] [level]
+file -fdosd[+*@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。
 
-file -fddsa[+*@?] regex src [sizeExpr] [limit] [level]
+file -fddsa[+*@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。
 
-file -fddsd[+*@?] regex src [sizeExpr] [limit] [level]
+file -fddsd[+*@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。
 
 file -d[+*@?] regex src [level]
@@ -388,6 +388,7 @@ file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/Kingdo
 
 file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
+
 
 
 输入 game run
