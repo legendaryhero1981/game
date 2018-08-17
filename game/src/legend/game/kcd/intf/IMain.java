@@ -53,6 +53,7 @@ public interface IMain extends ICommon{
     String KCD_MOD_MRG_O = "-mmo";
     String KCD_MOD_MRG_U = "-mmu";
     String ERR_NOT_FIND = "没找到任何匹配的文件！";
+    String ERR_EXISTS_MERGE = "Mod目录 " + PH_ARG0 + " 中存在名称为 " + MOD_MERGE + " 的子目录！";
     String ERR_KCD_NON = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + V_NON_EXISTS;
     String ERR_KCD_NUL_CFG = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_CFG + V_BY_NUL;
     String ERR_KCD_MOD_PATH = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD_PATH + V_NON_EXISTS;

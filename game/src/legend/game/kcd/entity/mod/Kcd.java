@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import legend.util.param.SingleValue;
-
 @XmlRootElement(name = "Kcd")
 @XmlType(propOrder = {"config","mods","merges","conflicts","uniques"})
 public class Kcd{
@@ -174,13 +172,7 @@ public class Kcd{
         }
 
         public boolean contains(Merge merge){
-            if(modSet.isEmpty() || pathSet.isEmpty() || md5Set.isEmpty()) return false;
-            SingleValue<Boolean> value = new SingleValue<>(pathSet.contains(merge.getPath()));
-            merge.getMappings().parallelStream().forEach(mapping->{
-                value.set(value.get() && modSet.contains(mapping.getMod()));
-                value.set(value.get() && md5Set.contains(mapping.getMd5()));
-            });
-            return value.get();
+            return !modSet.isEmpty() && !pathSet.isEmpty() && !md5Set.isEmpty() && pathSet.contains(merge.getPath()) && !merge.getMappings().parallelStream().anyMatch(mapping->!modSet.contains(mapping.getMod()) || !md5Set.contains(mapping.getMd5()));
         }
     }
 }

@@ -19,7 +19,6 @@ import static legend.util.MD5Util.getMD5L16;
 import static legend.util.TimeUtil.getDateTime;
 import static legend.util.TimeUtil.runWithConsole;
 import static legend.util.ValueUtil.isEmpty;
-import static legend.util.ValueUtil.nonEmpty;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -144,13 +143,9 @@ public final class Main implements IMain,IFileUtil{
             uniqueMap = kcd.getUniqueMap();
             mergeMap = kcd.getMergeMap();
             conflictMap = kcd.getConflictMap();
-            CS.showError(ERR_KCD_NUL_CFG,null,()->nonEmpty(config) && config.trim().validate());
+            CS.showError(ERR_KCD_NUL_CFG,null,()->config.trim().validate());
             CS.showError(ERR_KCD_MOD_PATH,null,()->!nonEmptyDir(modPath));
-            if(nonEmpty(mods)) CS.showError(ERR_KCD_NUL_MOD,null,()->{
-                SingleValue<Boolean> value = new SingleValue<>(true);
-                mods.parallelStream().forEach(mod->value.set(value.get() && mod.trim().validate()));
-                return !value.get();
-            });
+            CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
         }
     }
 
@@ -222,7 +217,6 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setSrcPath(modPath);
         srcParam.setLevel(1);
         dealFiles(srcParam);
-        srcParam.setLevel(Integer.MAX_VALUE);
         progress.update(10);
         Collection<Path> paths = srcParam.getPathMap().values();
         paths.remove(modPath);
@@ -230,13 +224,12 @@ public final class Main implements IMain,IFileUtil{
             kcd.clearCache();
             return;
         }
+        CS.showError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
         srcParam.setCmd(CMD_FIND);
         srcParam.setPattern(compile(REG_MOD_PAK));
+        srcParam.setLevel(Integer.MAX_VALUE);
         paths.parallelStream().forEach(p->{
             // 自动将.PAK文件移动到规定的MOD目录中
-            Mod mod = new Mod();
-            mod.setMod(p.getFileName().toString());
-            modMap.put(mod.getMod(),mod);
             FileParam param = srcParam.cloneValue();
             param.setSrcPath(p);
             dealFiles(param);
@@ -252,30 +245,29 @@ public final class Main implements IMain,IFileUtil{
             param.clearCache();
             param.setCmd(CMD_DELETE);
             param.setPattern(compile(REG_MOD_NOT_PAK));
-            dealFiles(param);
-            param.clearCache();
+            dealFile(param);
             // 删除MOD目录中所有空目录
             param.setCmd(CMD_DEL_DIR_NUL);
             param.setPattern(compile(REG_ANY));
             dealFiles(param);
-            param.clearCache();
+            if(existsPath(p)){
+                Mod mod = new Mod();
+                mod.setMod(p.getFileName().toString());
+                modMap.put(mod.getMod(),mod);
+            }
         });
         progress.update(30);
         // 解包MOD目录中所有.PAK文件
         srcParam.clearCache();
         srcParam.setCmd(CMD_PAK_INF);
-        dealFiles(srcParam);
-        srcParam.clearCache();
+        dealFile(srcParam);
         progress.update(60);
     }
 
     private static void mergeAddition(IProgress progress){
         loadKcd();
         unpakMod(progress);
-        mods.parallelStream().forEach(m->{
-            Mod mod = modMap.get(m.getMod());
-            if(nonEmpty(mod)) mod.setOrder(m.getOrder());
-        });
+        mods.parallelStream().forEach(m->modMap.replace(m.getMod(),m));
         dealMerge(progress);
         pakMod(progress);
     }
@@ -621,12 +613,10 @@ public final class Main implements IMain,IFileUtil{
         mergeMap.values().stream().forEach(merge->{
             if(mergeSet.contains(merge)) return;
             List<Mapping> m = merge.getMappings();
-            Path path = getRepairPath(merge);
-            makeDirs(path);
-            SingleValue<Boolean> result = new SingleValue<>(true);
-            SingleValue<String> value = new SingleValue<>(m.get(0).getMd5());
-            m.parallelStream().forEach(mapping->result.set(result.get() && value.get().equals(mapping.getMd5())));
-            if(!result.get()){
+            Path path = makeDirs(getRepairPath(merge));
+            String firstMd5 = m.get(0).getMd5();
+            boolean needMerge = !m.parallelStream().allMatch(mapping->firstMd5.equals(mapping.getMd5()));
+            if(needMerge){
                 String[] md5 = new String[]{"",""};
                 for(int i = 0,j = 0,l = m.size();i < l;j = i){
                     if(existsPath(path)){
@@ -665,8 +655,10 @@ public final class Main implements IMain,IFileUtil{
             String key = entry.getKey();
             Mod mod = entry.getValue();
             if(conflictMap.containsKey(key)){
-                if(MOD_ORDER_INGNORE.equals(mod.getOrder())) mod.setOrder(MOD_ORDER_CONFLICT);
-                mod.setDesc("");
+                if(MOD_ORDER_INGNORE.equals(mod.getOrder())){
+                    mod.setOrder(MOD_ORDER_CONFLICT);
+                    mod.setDesc("");
+                }
             }else if(!MOD_MERGE.equalsIgnoreCase(key)){
                 mod.setOrder(MOD_ORDER_INGNORE);
                 mod.setDesc(MOD_INGNORE_DESC);
