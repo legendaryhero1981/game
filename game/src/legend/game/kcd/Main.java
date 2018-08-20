@@ -225,27 +225,27 @@ public final class Main implements IMain,IFileUtil{
             return;
         }
         CS.showError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
-        srcParam.setCmd(CMD_FIND);
-        srcParam.setPattern(compile(REG_MOD_PAK));
+        srcParam.setCmd(CMD_DELETE);
+        srcParam.setPattern(compile(REG_MOD_NOT_PAK));
         srcParam.setLevel(Integer.MAX_VALUE);
         paths.parallelStream().forEach(p->{
-            // 自动将.PAK文件移动到规定的MOD目录中
+            // 删除MOD目录中所有非.PAK文件
             FileParam param = srcParam.cloneValue();
             param.setSrcPath(p);
+            dealFile(param);
+            // 自动将.PAK文件移动到规定的MOD目录中
+            param.setCmd(CMD_FIND);
+            param.setPattern(compile(REG_MOD_PAK));
             dealFiles(param);
-            param.getPathMap().values().parallelStream().forEach(p1->{
+            param.getPathMap().values().stream().forEach(p1->{
                 final String name = p1.getFileName().toString();
                 if(name.matches(REG_MOD_LOCAL)){
                     if(PAK_CHINESES.equalsIgnoreCase(name)) moveFile(p1,p.resolve(MOD_LOCAL_CHS).resolve(name));
                     else if(PAK_ENGLISH.equalsIgnoreCase(name)) moveFile(p1,p.resolve(MOD_LOCAL_ENG).resolve(name));
                     else deleteFile(p1);
-                }else moveFile(p1,p.resolve(MOD_DATA).resolve(name));
+                }else if(!MOD_DATA.equalsIgnoreCase(p1.getParent().getFileName().toString())) moveFile(p1,p.resolve(MOD_DATA).resolve(name));
             });
-            // 删除MOD目录中所有非.PAK文件
             param.clearCache();
-            param.setCmd(CMD_DELETE);
-            param.setPattern(compile(REG_MOD_NOT_PAK));
-            dealFile(param);
             // 删除MOD目录中所有空目录
             param.setCmd(CMD_DEL_DIR_NUL);
             param.setPattern(compile(REG_ANY));
@@ -260,6 +260,7 @@ public final class Main implements IMain,IFileUtil{
         // 解包MOD目录中所有.PAK文件
         srcParam.clearCache();
         srcParam.setCmd(CMD_PAK_INF);
+        srcParam.setPattern(compile(REG_MOD_PAK));
         dealFile(srcParam);
         progress.update(60);
     }
@@ -556,7 +557,7 @@ public final class Main implements IMain,IFileUtil{
         progress.update(10,scale);
         srcParam.setCmd(CMD_FIND);
         srcParam.setPattern(compile(REG_MOD_NOT_PAK));
-        modMap.keySet().parallelStream().forEach(mod->{
+        modMap.keySet().stream().forEach(mod->{
             FileParam param = srcParam.cloneValue();
             param.setSrcPath(modPath.resolve(mod));
             dealFiles(param);
@@ -640,7 +641,7 @@ public final class Main implements IMain,IFileUtil{
                 }
             }else copyFile(getModPath(m.get(0)),path);
             if(existsPath(path)) merges.add(merge);
-            else merge.getMappings().parallelStream().forEach(mapping->{
+            else merge.getMappings().stream().forEach(mapping->{
                 String mod = mapping.getMod();
                 Conflict conflict = conflictMap.get(mod);
                 if(isEmpty(conflict)){
