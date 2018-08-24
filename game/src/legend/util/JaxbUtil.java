@@ -1,6 +1,7 @@
 package legend.util;
 
 import static java.lang.String.valueOf;
+import static java.util.regex.Pattern.compile;
 import static legend.intf.ICommon.gl;
 import static legend.intf.ICommon.gs;
 import static legend.intf.ICommon.gsph;
@@ -14,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +35,7 @@ import com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler;
 
 import legend.util.intf.IJaxbUtil;
 
+@SuppressWarnings("restriction")
 public class JaxbUtil implements IJaxbUtil{
     private JaxbUtil(){}
 
@@ -110,9 +113,16 @@ public class JaxbUtil implements IJaxbUtil{
     }
 
     private static class CharacterEscapeHandlerImpl implements CharacterEscapeHandler{
+        private Matcher matcher;
+
+        private CharacterEscapeHandlerImpl(){
+            matcher = compile(REG_XML_NOTE).matcher("");
+        }
+
         public void escape(char[] ch, int start, int length, boolean isAttribute, Writer out) throws IOException{
             String s = valueOf(ch,start,length);
-            if(s.contains(XML_NOTE_START)) s = gl(1) + gs(4) + s.trim() + gl(1);
+            matcher.reset(s);
+            if(matcher.find()) s = gl(1) + gs(4) + s.trim() + gl(1);
             else if(isAttribute) s = esc(s,XML_QUOTE_S,XML_AND,XML_QUOTE_D,XML_CUSP_L,XML_CUSP_R);
             else s = esc(s,XML_AND,XML_CUSP_L,XML_CUSP_R);
             out.write(s);

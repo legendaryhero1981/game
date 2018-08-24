@@ -52,9 +52,9 @@ public interface ICommon{
     String N_IN = "中";
     String N_FMT = "格式";
     String V_INPUT = "输入";
-    String V_OUTPUT = "输出"; 
+    String V_OUTPUT = "输出";
     String V_IMPORT = "导入";
-    String V_EXPORT = "导出"; 
+    String V_EXPORT = "导出";
     String V_NON_EXISTS = "不存在！";
     String V_ARD_EXISTS = "已存在！";
     String V_BY_NUL = "为空！";
@@ -114,7 +114,7 @@ public interface ICommon{
     String PH_ARG9 = PLACE_HOLDER + "9" + PLACE_HOLDER;
     String XML_NOTE_START = "<!--";
     String XML_NOTE_END = "-->";
-    String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END + SPRT_LINE;
+    String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;
     String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + S_ELLIPSIS;
     String ST_ARG_DONE = N_CMD + N_ARG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + V_ANLS + V_DONE + S_PERIOD;
     String ST_CMD_START = V_START + V_EXEC + N_CMD + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + S_ELLIPSIS;
@@ -129,6 +129,7 @@ public interface ICommon{
     String FLAG_DEBUG = "#";
     String FLAG_MOD = "*";
     String FLAG_ADD = "+";
+    String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
     String REG_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
     String REG_DEBUG = FLAG_DEBUG + "\\d+" + FLAG_DEBUG;
     String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
