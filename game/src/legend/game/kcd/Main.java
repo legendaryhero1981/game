@@ -19,6 +19,7 @@ import static legend.util.MD5Util.getMD5L16;
 import static legend.util.TimeUtil.getDateTime;
 import static legend.util.TimeUtil.runWithConsole;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.nonEmpty;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -126,27 +127,26 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void loadKcd(){
-        if(isEmpty(kcd)){
-            CS.showError(ERR_KCD_NON,null,()->!kcdPath.toFile().isFile());
-            kcd = convertToJavaBean(kcdPath,Kcd.class);
-            config = kcd.getConfig();
-            gamePath = get(config.getGamePath());
-            modPath = get(config.getModPath());
-            mergePath = get(config.getMergePath());
-            mods = kcd.getMods();
-            uniques = kcd.getUniques();
-            merges = kcd.getMerges();
-            conflicts = kcd.getConflicts();
-            mergeSet = kcd.getMergeSet();
-            pathsMap = kcd.getPathsMap();
-            modMap = kcd.getModMap();
-            uniqueMap = kcd.getUniqueMap();
-            mergeMap = kcd.getMergeMap();
-            conflictMap = kcd.getConflictMap();
-            CS.showError(ERR_KCD_NUL_CFG,null,()->config.trim().validate());
-            CS.showError(ERR_KCD_MOD_PATH,null,()->!nonEmptyDir(modPath));
-            CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
-        }
+        if(nonEmpty(kcd)) return;
+        CS.showError(ERR_KCD_NON,null,()->!kcdPath.toFile().isFile());
+        kcd = convertToJavaBean(kcdPath,Kcd.class);
+        config = kcd.getConfig();
+        gamePath = get(config.getGamePath());
+        modPath = get(config.getModPath());
+        mergePath = get(config.getMergePath());
+        mods = kcd.getMods();
+        uniques = kcd.getUniques();
+        merges = kcd.getMerges();
+        conflicts = kcd.getConflicts();
+        mergeSet = kcd.getMergeSet();
+        pathsMap = kcd.getPathsMap();
+        modMap = kcd.getModMap();
+        uniqueMap = kcd.getUniqueMap();
+        mergeMap = kcd.getMergeMap();
+        conflictMap = kcd.getConflictMap();
+        CS.showError(ERR_KCD_NUL_CFG,null,()->config.trim().validate());
+        CS.showError(ERR_KCD_MOD_PATH,null,()->!nonEmptyDir(modPath));
+        CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
     }
 
     private static void saveKcd(){
@@ -237,7 +237,7 @@ public final class Main implements IMain,IFileUtil{
             param.setCmd(CMD_FIND);
             param.setPattern(compile(REG_MOD_PAK));
             dealFiles(param);
-            param.getPathMap().values().stream().forEach(p1->{
+            param.getPathMap().values().parallelStream().forEach(p1->{
                 final String name = p1.getFileName().toString();
                 if(name.matches(REG_MOD_LOCAL)){
                     if(PAK_CHINESES.equalsIgnoreCase(name)) moveFile(p1,p.resolve(MOD_LOCAL_CHS).resolve(name));
@@ -285,8 +285,7 @@ public final class Main implements IMain,IFileUtil{
         loadKcd();
         if(mods.isEmpty()) return;
         List<String> lines = new CopyOnWriteArrayList<>();
-        mods.sort(new ModComparator());
-        mods.stream().forEach(mod->{
+        mods.stream().sorted(new ModComparator()).forEach(mod->{
             if(!MOD_ORDER_INGNORE.equals(mod.getOrder())) lines.add(mod.getMod());
         });
         writeFile(get(config.getGamePath()).resolve(MOD_MODS).resolve(KCD_FILE_ORDER),lines);
@@ -298,16 +297,13 @@ public final class Main implements IMain,IFileUtil{
     private static void mergeConflict(IProgress progress){
         loadKcd();
         Path conflictPath = mergePath.resolve(MOD_CONFLICT);
-        if(nonEmptyDir(conflictPath)){
-            srcParam.setCmd(CMD_DEL_DIR);
-            srcParam.setPattern(compile(REG_ANY));
-            srcParam.setSrcPath(conflictPath);
-            dealFiles(srcParam);
-            srcParam.clearCache();
-        }
+        srcParam.setCmd(CMD_DEL_DIR);
+        srcParam.setPattern(compile(REG_ANY));
+        srcParam.setSrcPath(conflictPath);
+        dealFile(srcParam);
         progress.update(10);
         conflicts.stream().forEach(conflict->{
-            conflict.getMappings().stream().forEach(mapping->{
+            conflict.getMappings().parallelStream().forEach(mapping->{
                 Merge merge = mergeMap.get(mapping.getPath());
                 if(isEmpty(merge)){
                     merge = new Merge();
@@ -616,8 +612,8 @@ public final class Main implements IMain,IFileUtil{
             List<Mapping> m = merge.getMappings();
             Path path = makeDirs(getRepairPath(merge));
             String firstMd5 = m.get(0).getMd5();
-            boolean needMerge = !m.parallelStream().allMatch(mapping->firstMd5.equals(mapping.getMd5()));
-            if(needMerge){
+            if(m.parallelStream().allMatch(mapping->firstMd5.equals(mapping.getMd5()))) copyFile(getModPath(m.get(0)),path);
+            else{
                 String[] md5 = new String[]{"",""};
                 for(int i = 0,j = 0,l = m.size();i < l;j = i){
                     if(existsPath(path)){
@@ -639,9 +635,9 @@ public final class Main implements IMain,IFileUtil{
                     }
                     progress.update(progress.countUpdate(size * l,++i - j,0.8f),scale);
                 }
-            }else copyFile(getModPath(m.get(0)),path);
+            }
             if(existsPath(path)) merges.add(merge);
-            else merge.getMappings().stream().forEach(mapping->{
+            else merge.getMappings().parallelStream().forEach(mapping->{
                 String mod = mapping.getMod();
                 Conflict conflict = conflictMap.get(mod);
                 if(isEmpty(conflict)){

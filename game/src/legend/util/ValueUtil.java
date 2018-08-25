@@ -14,12 +14,12 @@ public final class ValueUtil{
         if(isNull(o)){
             return true;
         }else if(o instanceof String){
-            return isNull(o) || ((String)o).isEmpty();
+            return ((String)o).isEmpty();
         }else if(o instanceof Object[]){
-            return isNull(o) || 0 == ((Object[])o).length || isNull((((Object[])o)[0]));
+            return 0 == ((Object[])o).length || isNull((((Object[])o)[0]));
         }else if(o instanceof Collection){
-            return isNull(o) || ((Collection<?>)o).isEmpty() || isNull((((Collection<?>)o).toArray()[0]));
-        }else if(o instanceof Map){ return isNull(o) || ((Map<?,?>)o).isEmpty(); }
+            return ((Collection<?>)o).isEmpty() || isNull((((Collection<?>)o).toArray()[0]));
+        }else if(o instanceof Map) return ((Map<?,?>)o).isEmpty();
         return false;
     }
 
