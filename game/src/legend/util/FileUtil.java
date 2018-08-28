@@ -411,8 +411,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_PAK_DIR_DEF:
                     param.setDestPath(get(as[3]));
                     param.setZipName(as[4] + EXT_PAK);
-                    param.setZipLevel(0);
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
+                    optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     default:
                     CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
@@ -1126,8 +1126,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 if(n1 == n2){
                     String s1 = p1.toString(), s2 = p2.toString();
                     int l1 = s1.length(), l2 = s2.length();
-                    if(l1 == l2) return s1.compareTo(s2);
-                    return l1 < l2 ? 1 : -1;
+                    return l1 == l2 ? s1.compareTo(s2) : l1 < l2 ? 1 : -1;
                 }
                 return n1 < n2 ? 1 : -1;
             }
@@ -1149,8 +1148,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             if(n1 == n2){
                 String s1 = p1.toString(), s2 = p2.toString();
                 int l1 = s1.length(), l2 = s2.length();
-                if(l1 == l2) return s1.compareTo(s2);
-                return l1 < l2 ? 1 : -1;
+                return l1 == l2 ? s1.compareTo(s2) : l1 < l2 ? 1 : -1;
             }
             return n1 < n2 ? 1 : -1;
         }
@@ -1165,10 +1163,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
 
         @Override
         public int compare(Entry<Path,Long> e1, Entry<Path,Long> e2){
-            long l1 = e1.getValue();
-            long l2 = e2.getValue();
-            if(l1 == l2) return e1.getKey().compareTo(e2.getKey());
-            return sort(l1,l2);
+            long l1 = e1.getValue(), l2 = e2.getValue();
+            return l1 == l2 ? e1.getKey().compareTo(e2.getKey()) : sort(l1,l2);
         }
 
         private int sort(long l1, long l2){
@@ -1191,18 +1187,11 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
 
         @Override
         public int compare(Path path1, Path path2){
-            Path p = param.getSrcPath();
-            int n1 = 0, n2 = 0;
-            for(Path p1 = path1.getParent(),p2 = path2.getParent();nonEmpty(p1) && nonEmpty(p2);p1 = p1.getParent(),p2 = p2.getParent()){
-                if(p1.startsWith(p)) n1++;
-                if(p2.startsWith(p)) n2++;
-                if(!p1.startsWith(p) || !p2.startsWith(p)) break;
-            }
+            int n1 = path1.getNameCount(), n2 = path2.getNameCount();
             if(n1 == n2){
                 String s1 = path1.toString(), s2 = path2.toString();
                 int l1 = s1.length(), l2 = s2.length();
-                if(l1 == l2) return s1.compareTo(s2);
-                return sort(l1,l2);
+                return l1 == l2 ? s1.compareTo(s2) : sort(l1,l2);
             }
             return sort(n1,n2);
         }

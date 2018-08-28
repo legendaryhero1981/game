@@ -7,7 +7,6 @@ import legend.intf.ICommon;
 public interface IFileUtil extends ICommon{
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
-    String RES_LEVEL = "100";
     String CMD_FIND = "-f";
     String CMD_FND_DIR = "-fd";
     String CMD_FND_DIR_OLY = "-fdo";
@@ -145,8 +144,8 @@ public interface IFileUtil extends ICommon{
     + "file -zd[+*@?] regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
     + "file -zdd[+*@?] regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和子目录及其中所有文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
     + "file -zi[+*@?] regex src dest [level]" + gl(1) + "根据regex将src中所有匹配文件解压缩到dest中。" + gl(2)
-    + "file -pd[+*@?] regex src dest zipName [level]" + gl(1) + "根据regex将src中所有匹配文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
-    + "file -pdd[+*@?] regex src dest zipName [level]" + gl(1) + "根据regex将src中所有匹配文件和子目录及其中所有文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
+    + "file -pd[+*@?] regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
+    + "file -pdd[+*@?] regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和子目录及其中所有文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
     + "file -pi[+*@?] regex src [level]" + gl(1) + "根据regex将src中所有匹配文件解包到该文件所在目录中。" + gl(2)
     + "单条命令示例：" + gl(2)
     + "file -f+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
@@ -195,7 +194,7 @@ public interface IFileUtil extends ICommon{
     + "file -zd (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询（作用同-f）再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
     + "file -zdd (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和子目录及其中所有文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
     + "file -zi (?i)\\.zip$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询（作用同-f）再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。" + gl(2)
-    + "file -pd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge" + gl(1) + "先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
-    + "file -pdd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge" + gl(1) + "先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和子目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
+    + "file -pd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
+    + "file -pdd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和子目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + "file -pi (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。";    
 }

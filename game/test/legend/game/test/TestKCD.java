@@ -1,6 +1,6 @@
 package legend.game.test;
 
-import legend.game.kcd.Main;
+import static legend.game.kcd.Main.main;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +8,9 @@ import org.junit.Test;
 import legend.test.TestBase;
 
 public class TestKCD extends TestBase{
-    public static void main(String[] args){
-        Main.main(args);
-    }
-
     @Test
     public void testMain(){
-        Main.main(args);
+        main(args);
     }
 
     @Before

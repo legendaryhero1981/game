@@ -177,7 +177,7 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setSrcPath(mergePath.resolve(MOD_DATA));
         srcParam.setDestPath(gameMergePath.resolve(MOD_DATA));
         srcParam.setZipName(PAK_MERGE);
-        srcParam.setZipLevel(0);
+        srcParam.setZipLevel(1);
         dealFile(srcParam);
         progress.update(40);
         srcParam.setSrcPath(mergePath.resolve(MOD_LOCAL).resolve(MOD_CHS));
@@ -222,6 +222,7 @@ public final class Main implements IMain,IFileUtil{
         paths.remove(modPath);
         if(paths.isEmpty()){
             kcd.clearCache();
+            srcParam.setLevel(Integer.MAX_VALUE);
             return;
         }
         CS.showError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
@@ -609,25 +610,30 @@ public final class Main implements IMain,IFileUtil{
         int size = mergeMap.values().size();
         mergeMap.values().stream().forEach(merge->{
             if(mergeSet.contains(merge)) return;
-            List<Mapping> m = merge.getMappings();
             Path path = makeDirs(getRepairPath(merge));
-            String firstMd5 = m.get(0).getMd5();
-            if(m.parallelStream().allMatch(mapping->firstMd5.equals(mapping.getMd5()))) copyFile(getModPath(m.get(0)),path);
+            List<Mapping> mappings = merge.getMappings();
+            ConcurrentMap<String,Mapping> mappingMap = new ConcurrentHashMap<>();
+            merge.getMappings().stream().forEach(mapping->mappingMap.putIfAbsent(mapping.getMd5(),mapping));
+            if(1 == mappingMap.size()) copyFile(getModPath(mappings.get(0)),path);
             else{
+                if(mappings.size() != mappingMap.size()){
+                    mappings.clear();
+                    mappings.addAll(mappingMap.values());
+                }
                 String[] md5 = new String[]{"",""};
-                for(int i = 0,j = 0,l = m.size();i < l;j = i){
+                for(int i = 0,j = 0,l = mappings.size();i < l;j = i){
                     if(existsPath(path)){
                         md5[0] = getMD5L16(path);
-                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),path.toString(),path.toString()));
-                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString(),path.toString()));
+                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()));
+                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()));
                         md5[1] = getMD5L16(path);
                         if(md5[0].equals(md5[1])){
                             i = j;
                             continue;
                         }
                     }else{
-                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
-                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(m.get(i)).toString(),getModPath(m.get(++i)).toString(),getModPath(m.get(++i)).toString(),path.toString()));
+                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
+                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
                         if(!existsPath(path)){
                             progress.update(progress.countUpdate(size,1,0.8f),scale);
                             break;
@@ -667,11 +673,7 @@ public final class Main implements IMain,IFileUtil{
         dealFile(srcParam);
         conflicts.clear();
         conflicts.addAll(conflictMap.values());
-        conflicts.parallelStream().forEach(conflict->{
-            conflict.getMappings().parallelStream().forEach(mapping->{
-                copyFile(getModPath(mapping),getConflictPath(mapping));
-            });
-        });
+        conflicts.parallelStream().forEach(conflict->conflict.getMappings().parallelStream().forEach(mapping->copyFile(getModPath(mapping),getConflictPath(mapping))));
         progress.update(20,scale);
     }
 
@@ -691,8 +693,8 @@ public final class Main implements IMain,IFileUtil{
         return mapping;
     }
 
-    private static Path getRepairPath(Merge merge){
-        return mergePath.resolve(MOD_REPAIR).resolve(merge.getPath());
+    private static Path getConflictPath(Mapping mapping){
+        return mergePath.resolve(MOD_CONFLICT).resolve(mapping.getMod()).resolve(mapping.getPath());
     }
 
     private static Path getMergePath(Merge merge){
@@ -703,21 +705,19 @@ public final class Main implements IMain,IFileUtil{
         return mergePath.resolve(mapping.getPath());
     }
 
-    private static Path getModPath(Mapping mapping){
-        return modPath.resolve(mapping.getMod()).resolve(mapping.getPath());
+    private static Path getRepairPath(Merge merge){
+        return mergePath.resolve(MOD_REPAIR).resolve(merge.getPath());
     }
 
-    private static Path getConflictPath(Mapping mapping){
-        return mergePath.resolve(MOD_CONFLICT).resolve(mapping.getMod()).resolve(mapping.getPath());
+    private static Path getModPath(Mapping mapping){
+        return modPath.resolve(mapping.getMod()).resolve(mapping.getPath());
     }
 
     private static class ModComparator implements Comparator<Mod>{
         @Override
         public int compare(Mod mod1, Mod mod2){
-            int o1 = Integer.parseInt(mod1.getOrder());
-            int o2 = Integer.parseInt(mod2.getOrder());
-            if(o1 == o2) return mod1.getMod().compareTo(mod2.getMod());
-            return o1 > o2 ? 1 : -1;
+            int o1 = Integer.parseInt(mod1.getOrder()), o2 = Integer.parseInt(mod2.getOrder());
+            return o1 == o2 ? mod1.getMod().compareTo(mod2.getMod()) : o1 > o2 ? 1 : -1;
         }
     }
 }

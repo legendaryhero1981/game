@@ -75,32 +75,6 @@ public class ConsoleUtil implements IConsoleUtil{
         return format(true,format + "%n",args);
     }
 
-    public ConsoleUtil formatSize(long size, UNIT_TYPE type){
-        long b = size;
-        long kb = FS.divideSize(size,1);
-        long mb = FS.divideSize(size,2);
-        long gb = FS.divideSize(size,3);
-        long tb = FS.divideSize(size,4);
-        switch(type){
-            case B:
-            format(true,"%5d%s",b,SIZE_B);
-            break;
-            case KB:
-            format(true,"%5d%s%5d%s",kb,SIZE_KB,FS.modSize(b),SIZE_B);
-            break;
-            case MB:
-            format(true,"%5d%s%5d%s%5d%s",mb,SIZE_MB,FS.modSize(kb),SIZE_KB,FS.modSize(b),SIZE_B);
-            break;
-            case GB:
-            format(true,"%5d%s%5d%s%5d%s%5d%s",gb,SIZE_GB,FS.modSize(mb),SIZE_MB,FS.modSize(kb),SIZE_KB,FS.modSize(b),SIZE_B);
-            break;
-            case TB:
-            default:
-            format(true,"%d%s%5d%s%5d%s%5d%s%5d%s",tb,SIZE_TB,FS.modSize(gb),SIZE_GB,FS.modSize(mb),SIZE_MB,FS.modSize(kb),SIZE_KB,FS.modSize(b),SIZE_B);
-        }
-        return this;
-    }
-
     public ConsoleUtil s(boolean flag, int n){
         return print(flag,gs(n));
     }
@@ -157,6 +131,10 @@ public class ConsoleUtil implements IConsoleUtil{
             format(flag,"%d%s%5d%s%5d%s%5d%s%5d%s",tb,SIZE_TB,FS.modSize(gb),SIZE_GB,FS.modSize(mb),SIZE_MB,FS.modSize(kb),SIZE_KB,FS.modSize(b),SIZE_B);
         }
         return this;
+    }
+
+    public ConsoleUtil formatSize(long size, UNIT_TYPE type){
+        return formatSize(true,size,type);
     }
 
     public void cacheStream(PrintStream stream){

@@ -1,19 +1,16 @@
 package legend.game.test;
 
+import static legend.game.poe2.Main.main;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import legend.game.poe2.Main;
 import legend.test.TestBase;
 
 public class TestPoe2 extends TestBase{
-    public static void main(String[] args){
-        Main.main(args);
-    }
-
     @Test
     public void testMain(){
-        Main.main(args);
+        main(args);
     }
 
     @Before
