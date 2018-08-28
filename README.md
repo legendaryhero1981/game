@@ -231,10 +231,10 @@ file -zdd[+*@?] regex src dest zipName [zipLevel] [level]
 file -zi[+*@?] regex src dest [level]
 根据regex将src中所有匹配文件解压缩到dest中。
 
-file -pd[+*@?] regex src dest zipName [level]
+file -pd[+*@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件打包到dest/zipName.pak文件中。
 
-file -pdd[+*@?] regex src dest zipName [level]
+file -pdd[+*@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件和子目录及其中所有文件打包到dest/zipName.pak文件中。
 
 file -pi[+*@?] regex src [level]
@@ -380,15 +380,14 @@ file -zdd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备�
 file -zi (?i)\.zip$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
 先查询（作用同-f）再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
 
-file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge
+file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
 先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
-file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge
+file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
 先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和子目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
 file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
-
 
 
 输入 game run
