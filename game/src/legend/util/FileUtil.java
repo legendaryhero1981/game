@@ -850,9 +850,9 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         }
         minSize = FS.matchSize(minSize,UNIT_TYPE.NON == minType ? maxType : minType);
         if(minSize > maxSize){
-            minSize |= maxSize;
-            maxSize |= minSize;
-            minSize |= maxSize;
+            minSize ^= maxSize;
+            maxSize ^= minSize;
+            minSize ^= maxSize;
         }
         param.setMinSize(minSize);
         param.setMaxSize(maxSize);
