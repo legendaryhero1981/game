@@ -79,7 +79,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         for(FileParam param : fileParams){
             FP = param;
             String opt = FP.getOpt();
-            param.useCache(CACHE);
             boolean progress = !opt.matches(REG_NON_PROG);
             String command = FP.getWholeCommand();
             if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_START,command)).l(2);
@@ -101,8 +100,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static void dealFiles(FileParam fileParam){
         try(FileParam param = fileParam){
-            param.createOptional();
-            if(!param.usingCaching()){
+            param.generatingConditions(CACHE);
+            if(!param.useCache(CACHE)){
                 param.getProgressOptional().ifPresent(t->PG.reset(1,PROGRESS_POSITION,100));
                 cacheFiles(param);
                 param.getProgressOptional().ifPresent(t->PG.reset(param.getFilesAndDirsCount(),PROGRESS_POSITION));
@@ -515,7 +514,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void renameFiles(FileParam param){
-        boolean refresh = param.needRefreshCache(CACHE);
+        boolean refresh = param.needRefreshCache();
         param.getPathMap().entrySet().stream().forEach(e->{
             Path src = e.getValue();
             BasicFileAttributes a = e.getKey();
@@ -532,7 +531,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void renLowFiles(FileParam param){
-        boolean refresh = param.needRefreshCache(CACHE);
+        boolean refresh = param.needRefreshCache();
         param.getPathMap().entrySet().stream().forEach(e->{
             Path src = e.getValue();
             BasicFileAttributes a = e.getKey();
@@ -550,7 +549,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void renUpFiles(FileParam param){
-        boolean refresh = param.needRefreshCache(CACHE);
+        boolean refresh = param.needRefreshCache();
         param.getPathMap().entrySet().stream().forEach(e->{
             Path src = e.getValue();
             BasicFileAttributes a = e.getKey();
@@ -568,7 +567,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void renUpFstFiles(FileParam param){
-        boolean refresh = param.needRefreshCache(CACHE);
+        boolean refresh = param.needRefreshCache();
         param.getPathMap().entrySet().stream().forEach(e->{
             Path src = e.getValue();
             BasicFileAttributes a = e.getKey();
@@ -851,9 +850,9 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         }
         minSize = FS.matchSize(minSize,UNIT_TYPE.NON == minType ? maxType : minType);
         if(minSize > maxSize){
-            minSize += maxSize;
-            maxSize = minSize - maxSize;
-            minSize -= maxSize;
+            minSize |= maxSize;
+            maxSize |= minSize;
+            minSize |= maxSize;
         }
         param.setMinSize(minSize);
         param.setMaxSize(maxSize);
@@ -973,7 +972,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         public boolean test(Path p, BasicFileAttributes a){
             boolean find = false;
             if(a.isRegularFile()){
-                if(matchDirOnly()) return false;
+                if(param.matchDirOnly()) return false;
                 find = param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_DEL_DIR_NUL:
@@ -984,7 +983,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find || (find = matchPath(p) && param.matchFilesSize(a.size()))) param.getPathMap().put(a,p);
                 }
             }else if(a.isDirectory()){
-                if(matchFileOnly()) return false;
+                if(param.matchFileOnly()) return false;
                 find = param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_FND_DIR_SIZ:
@@ -1047,46 +1046,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     deque.push(p);
                     return true;
                 }
-            return false;
-        }
-
-        private boolean matchFileOnly(){
-            switch(param.getCmd()){
-                case CMD_FIND:
-                case CMD_FND_SIZ:
-                case CMD_FND_PTH_ABS:
-                case CMD_FND_PTH_RLT:
-                case CMD_FND_PTH_SRC:
-                case CMD_COPY:
-                case CMD_DELETE:
-                case CMD_MOVE:
-                case CMD_BACKUP:
-                case CMD_BAK_UGD:
-                case CMD_BAK_RST:
-                case CMD_UPGRADE:
-                case CMD_RENAME:
-                case CMD_REN_LOW:
-                case CMD_REN_UP:
-                case CMD_REN_UP_FST:
-                case CMD_ZIP_DEF:
-                case CMD_ZIP_INF:
-                case CMD_PAK_DEF:
-                case CMD_PAK_INF:
-                return true;
-            }
-            return false;
-        }
-
-        private boolean matchDirOnly(){
-            switch(param.getCmd()){
-                case CMD_FND_DIR_OLY:
-                case CMD_FND_DIR_OLY_SIZ_ASC:
-                case CMD_FND_DIR_OLY_SIZ_DSC:
-                case CMD_FND_PTH_DIR_OLY_ABS:
-                case CMD_FND_PTH_DIR_OLY_RLT:
-                case CMD_FND_PTH_DIR_OLY_SRC:
-                return true;
-            }
             return false;
         }
     }
@@ -1197,23 +1156,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         }
 
         private int sort(int n1, int n2){
-            switch(param.getCmd()){
-                case CMD_FIND:
-                case CMD_FND_DIR:
-                case CMD_FND_DIR_OLY:
-                case CMD_FND_PTH_ABS:
-                case CMD_FND_PTH_RLT:
-                case CMD_FND_PTH_SRC:
-                case CMD_FND_PTH_DIR_ABS:
-                case CMD_FND_PTH_DIR_RLT:
-                case CMD_FND_PTH_DIR_SRC:
-                case CMD_FND_PTH_DIR_OLY_ABS:
-                case CMD_FND_PTH_DIR_OLY_RLT:
-                case CMD_FND_PTH_DIR_OLY_SRC:
-                return n1 > n2 ? 1 : -1;
-                default:
-                return n1 < n2 ? 1 : -1;
-            }
+            return param.isQueryCommand() ? (n1 > n2 ? 1 : -1) : (n1 < n2 ? 1 : -1);
         }
     }
 }

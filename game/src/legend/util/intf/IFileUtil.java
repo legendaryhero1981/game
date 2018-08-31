@@ -5,6 +5,15 @@ import static legend.intf.ICommon.gl;
 import legend.intf.ICommon;
 
 public interface IFileUtil extends ICommon{
+    long MATCH_FILE_ONLY = 1l;
+    long MATCH_DIR_ONLY = 1l << 1;
+    long EXEC_CMD = 1l << 2;
+    long SHOW_PROGRESS = 1l << 3;
+    long SHOW_DETAIL = 1l << 4;
+    long ENABLE_CACHE = 1l << 50;
+    long CAN_USE_CACHE = 1l << 51;
+    long CAN_SAVE_CACHE = 1l << 52;
+    long NEED_CLEAR_CACHE = 1l << 53;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String CMD_FIND = "-f";

@@ -34,6 +34,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private String zipName;
     private String cmd;
     private String opt;
+    private long condition;
     private long minSize;
     private long maxSize;
     private int limit;
@@ -49,13 +50,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private AtomicLong filesSize;
     private AtomicInteger filesCount;
     private AtomicInteger dirsCount;
-    private boolean usingCaching;
     private long cacheFileSize;
     private int cacheFilesCount;
     private int cacheDirsCount;
-    private Optional<String> detailOptional;
-    private Optional<String> cmdOptional;
-    private Optional<Boolean> progressOptional;
+    private Optional<Long> detailOptional;
+    private Optional<Long> cmdOptional;
+    private Optional<Long> progressOptional;
 
     public FileParam(){
         zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
@@ -85,6 +85,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.replacement = replacement;
         fileParam.cmd = cmd;
         fileParam.opt = opt;
+        fileParam.condition = condition;
         fileParam.minSize = minSize;
         fileParam.maxSize = maxSize;
         fileParam.level = level;
@@ -107,10 +108,62 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.zipOutputStream = zipOutputStream;
     }
 
-    public void createOptional(){
-        detailOptional = Optional.of(opt).filter(s->s.contains(OPT_DETAIL) || s.contains(OPT_SIMULATE));
-        cmdOptional = Optional.of(opt).filter(s->!s.contains(OPT_SIMULATE));
-        progressOptional = Optional.of(!opt.matches(REG_NON_PROG));
+    public void generatingConditions(FileParam cache){
+        switch(cmd){
+            case CMD_DELETE:
+            case CMD_MOVE:
+            case CMD_BAK_UGD:
+            case CMD_BAK_RST:
+            condition |= NEED_CLEAR_CACHE;
+            case CMD_FIND:
+            case CMD_FND_SIZ:
+            case CMD_FND_PTH_ABS:
+            case CMD_FND_PTH_RLT:
+            case CMD_FND_PTH_SRC:
+            case CMD_COPY:
+            case CMD_BACKUP:
+            case CMD_UPGRADE:
+            case CMD_RENAME:
+            case CMD_REN_LOW:
+            case CMD_REN_UP:
+            case CMD_REN_UP_FST:
+            case CMD_ZIP_DEF:
+            case CMD_ZIP_INF:
+            case CMD_PAK_DEF:
+            case CMD_PAK_INF:
+            condition |= MATCH_FILE_ONLY;
+            break;
+            case CMD_FND_DIR_OLY:
+            case CMD_FND_DIR_OLY_SIZ_ASC:
+            case CMD_FND_DIR_OLY_SIZ_DSC:
+            case CMD_FND_PTH_DIR_OLY_ABS:
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            case CMD_FND_PTH_DIR_OLY_SRC:
+            condition |= MATCH_DIR_ONLY;
+            break;
+            case CMD_DEL_DIR:
+            case CMD_DEL_DIR_NUL:
+            case CMD_MOV_DIR:
+            condition |= NEED_CLEAR_CACHE;
+        }
+        if(opt.contains(OPT_CACHE)){
+            condition |= ENABLE_CACHE;
+            if(NEED_CLEAR_CACHE != (NEED_CLEAR_CACHE & condition)) condition |= CAN_SAVE_CACHE;
+        }else if(!cache.getPathMap().isEmpty() && !isQueryCommand()) condition |= CAN_USE_CACHE;
+        if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
+        if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
+        if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
+        cmdOptional = Optional.of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
+        progressOptional = Optional.of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
+        detailOptional = Optional.of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
+    }
+
+    public boolean matchFileOnly(){
+        return MATCH_FILE_ONLY == (MATCH_FILE_ONLY & condition);
+    }
+
+    public boolean matchDirOnly(){
+        return MATCH_DIR_ONLY == (MATCH_DIR_ONLY & condition);
     }
 
     public boolean matchFilesSize(long size){
@@ -122,7 +175,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void saveCache(FileParam cache){
-        if(usingCaching){
+        if(CAN_USE_CACHE == (CAN_USE_CACHE & condition)){
             cache.getFilesSize().addAndGet(filesSize.addAndGet(cache.getCacheFileSize()));
             cache.getFilesCount().addAndGet(filesCount.addAndGet(cache.getCacheFilesCount()));
             cache.getDirsCount().addAndGet(dirsCount.addAndGet(cache.getCacheDirsCount()));
@@ -131,7 +184,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.getFilesCount().addAndGet(filesCount.get());
             cache.getDirsCount().addAndGet(dirsCount.get());
         }
-        if(canSaveCache(cache)){
+        if(CAN_SAVE_CACHE == (CAN_SAVE_CACHE & condition)){
             cache.clearCache();
             cache.setPathMap(pathMap);
             cache.setRePathMap(rePathMap);
@@ -144,11 +197,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.setCacheFileSize(filesSize.get());
             cache.setCacheFilesCount(filesCount.get());
             cache.setCacheDirsCount(dirsCount.get());
-        }
+        }else if(NEED_CLEAR_CACHE == (NEED_CLEAR_CACHE & condition)) cache.clearCache();
     }
 
     public boolean useCache(FileParam cache){
-        if(canUseCache(cache)){
+        if(CAN_USE_CACHE == (CAN_USE_CACHE & condition)){
             clearCache();
             pathMap = cache.getPathMap();
             rePathMap = cache.getRePathMap();
@@ -158,17 +211,32 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             pathList = cache.getPathList();
             pattern = cache.pattern;
             srcPath = cache.srcPath;
-            usingCaching = true;
-        }else usingCaching = false;
-        return usingCaching;
+            return true;
+        }else return false;
     }
 
-    public boolean canUseCache(FileParam cache){
-        if(cache.getPathMap().isEmpty() || opt.contains(OPT_CACHE) || isQueryCmds()) return false;
-        return true;
+    public boolean needCaching(){
+        return CAN_SAVE_CACHE == (CAN_SAVE_CACHE & condition);
     }
 
-    public boolean isQueryCmds(){
+    public boolean usingCaching(){
+        return CAN_USE_CACHE == (CAN_USE_CACHE & condition);
+    }
+
+    public boolean needRefreshCache(){
+        return needCaching() || usingCaching();
+    }
+
+    public void clearCache(){
+        pathMap.clear();
+        rePathMap.clear();
+        pathsMap.clear();
+        sizeMap.clear();
+        pathDeque.clear();
+        pathList.clear();
+    }
+
+    public boolean isQueryCommand(){
         switch(cmd){
             case CMD_FIND:
             case CMD_FND_DIR:
@@ -195,27 +263,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             return true;
         }
         return false;
-    }
-
-    public boolean needCaching(){
-        return opt.contains(OPT_CACHE);
-    }
-
-    public boolean usingCaching(){
-        return usingCaching;
-    }
-
-    public boolean needRefreshCache(FileParam cache){
-        return needCaching() || canUseCache(cache);
-    }
-
-    public void clearCache(){
-        pathMap.clear();
-        rePathMap.clear();
-        pathsMap.clear();
-        sizeMap.clear();
-        pathDeque.clear();
-        pathList.clear();
     }
 
     public String getWholeCommand(){
@@ -310,23 +357,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             if(nonEmpty(type)) type.close();
     }
 
-    private boolean canSaveCache(FileParam cache){
-        switch(cmd){
-            case CMD_DELETE:
-            case CMD_DEL_DIR:
-            case CMD_DEL_DIR_NUL:
-            case CMD_MOVE:
-            case CMD_MOV_DIR:
-            case CMD_BAK_UGD:
-            case CMD_BAK_RST:
-            cache.clearCache();
-            return false;
-            default:
-            if(opt.contains(OPT_CACHE)) return true;
-            return false;
-        }
-    }
-
     public Path getSrcPath(){
         return srcPath;
     }
@@ -413,6 +443,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public void setOpt(String opt){
         this.opt = opt;
+    }
+
+    public long getCondition(){
+        return condition;
     }
 
     public long getMinSize(){
@@ -547,27 +581,15 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.cacheDirsCount = cacheDirsCount;
     }
 
-    public Optional<String> getDetailOptional(){
+    public Optional<Long> getDetailOptional(){
         return detailOptional;
     }
 
-    public void setDetailOptional(Optional<String> detailOptional){
-        this.detailOptional = detailOptional;
-    }
-
-    public Optional<String> getCmdOptional(){
+    public Optional<Long> getCmdOptional(){
         return cmdOptional;
     }
 
-    public void setCmdOptional(Optional<String> cmdOptional){
-        this.cmdOptional = cmdOptional;
-    }
-
-    public Optional<Boolean> getProgressOptional(){
+    public Optional<Long> getProgressOptional(){
         return progressOptional;
-    }
-
-    public void setProgressOptional(Optional<Boolean> progressOptional){
-        this.progressOptional = progressOptional;
     }
 }
