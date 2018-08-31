@@ -85,7 +85,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.replacement = replacement;
         fileParam.cmd = cmd;
         fileParam.opt = opt;
-        fileParam.condition = condition;
         fileParam.minSize = minSize;
         fileParam.maxSize = maxSize;
         fileParam.level = level;
@@ -108,7 +107,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.zipOutputStream = zipOutputStream;
     }
 
-    public void generatingConditions(FileParam cache){
+    public void refreshConditions(FileParam cache){
+        condition = 0;
         switch(cmd){
             case CMD_DELETE:
             case CMD_MOVE:

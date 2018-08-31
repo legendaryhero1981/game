@@ -529,7 +529,7 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void dealMerge(IProgress progress){
-        progress.reset(100,6,100);
+        progress.reset(100,10,100);
         dealUnique(progress,0.6f);
         dealConflict(progress,0.4f);
         mods.clear();
@@ -614,14 +614,15 @@ public final class Main implements IMain,IFileUtil{
             List<Mapping> mappings = merge.getMappings();
             ConcurrentMap<String,Mapping> mappingMap = new ConcurrentHashMap<>();
             merge.getMappings().stream().forEach(mapping->mappingMap.putIfAbsent(mapping.getMd5(),mapping));
-            if(1 == mappingMap.size()) copyFile(getModPath(mappings.get(0)),path);
-            else{
+            if(1 == mappingMap.size()){
+                copyFile(getModPath(mappings.get(0)),path);
+            }else{
                 if(mappings.size() != mappingMap.size()){
                     mappings.clear();
                     mappings.addAll(mappingMap.values());
                 }
                 String[] md5 = new String[]{"",""};
-                for(int i = 0,j = 0,l = mappings.size();i < l;j = i){
+                for(int i = 0,j = 0,l = mappings.size();i < l;j = i++){
                     if(existsPath(path)){
                         md5[0] = getMD5L16(path);
                         if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()));
@@ -634,12 +635,8 @@ public final class Main implements IMain,IFileUtil{
                     }else{
                         if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
                         else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
-                        if(!existsPath(path)){
-                            progress.update(progress.countUpdate(size,1,0.8f),scale);
-                            break;
-                        }
+                        if(!existsPath(path)) break;
                     }
-                    progress.update(progress.countUpdate(size * l,++i - j,0.8f),scale);
                 }
             }
             if(existsPath(path)) merges.add(merge);
@@ -653,6 +650,7 @@ public final class Main implements IMain,IFileUtil{
                 }
                 conflict.getMappings().add(mapping);
             });
+            progress.update(progress.countUpdate(size,1,80),scale);
         });
         modMap.entrySet().parallelStream().forEach(entry->{
             String key = entry.getKey();
