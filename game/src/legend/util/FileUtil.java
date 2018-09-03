@@ -103,8 +103,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             param.refreshConditions(CACHE);
             if(!param.useCache(CACHE)){
                 param.getProgressOptional().ifPresent(c->PG.reset(1,PROGRESS_POSITION,100));
-                cacheFiles(param);
-                param.getProgressOptional().ifPresent(c->PG.reset(param.getFilesAndDirsCount(),PROGRESS_POSITION));
+                long count = cacheFiles(param);
+                param.getProgressOptional().ifPresent(c->PG.reset(count,PROGRESS_POSITION));
             }
             switch(param.getCmd()){
                 case CMD_FIND:
@@ -954,13 +954,15 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static void cacheFiles(FileParam param){
+    private static long cacheFiles(FileParam param){
+        long count = 0;
         try{
-            find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel().count();
+            count = find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel().count();
             param.getPathDeque().clear();
         }catch(Exception e){
             CS.sl(gsph(ERR_DIR_VST,param.getSrcPath().toString(),e.toString()));
         }
+        return count;
     }
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{

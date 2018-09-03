@@ -175,7 +175,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void saveCache(FileParam cache){
-        if(CAN_USE_CACHE == (CAN_USE_CACHE & condition)){
+        if(usingCaching()){
             cache.getFilesSize().addAndGet(filesSize.addAndGet(cache.getCacheFileSize()));
             cache.getFilesCount().addAndGet(filesCount.addAndGet(cache.getCacheFilesCount()));
             cache.getDirsCount().addAndGet(dirsCount.addAndGet(cache.getCacheDirsCount()));
@@ -184,7 +184,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.getFilesCount().addAndGet(filesCount.get());
             cache.getDirsCount().addAndGet(dirsCount.get());
         }
-        if(CAN_SAVE_CACHE == (CAN_SAVE_CACHE & condition)){
+        if(needCaching()){
             cache.clearCache();
             cache.setPathMap(pathMap);
             cache.setRePathMap(rePathMap);
@@ -201,7 +201,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public boolean useCache(FileParam cache){
-        if(CAN_USE_CACHE == (CAN_USE_CACHE & condition)){
+        if(usingCaching()){
             clearCache();
             pathMap = cache.getPathMap();
             rePathMap = cache.getRePathMap();
@@ -345,10 +345,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
         }
         return s;
-    }
-
-    public float getFilesAndDirsCount(){
-        return filesCount.get() + dirsCount.get();
     }
 
     @SuppressWarnings("unchecked")

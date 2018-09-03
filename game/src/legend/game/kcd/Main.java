@@ -614,9 +614,7 @@ public final class Main implements IMain,IFileUtil{
             List<Mapping> mappings = merge.getMappings();
             ConcurrentMap<String,Mapping> mappingMap = new ConcurrentHashMap<>();
             merge.getMappings().stream().forEach(mapping->mappingMap.putIfAbsent(mapping.getMd5(),mapping));
-            if(1 == mappingMap.size()){
-                copyFile(getModPath(mappings.get(0)),path);
-            }else{
+            if(1 < mappingMap.size()){
                 if(mappings.size() != mappingMap.size()){
                     mappings.clear();
                     mappings.addAll(mappingMap.values());
@@ -638,7 +636,7 @@ public final class Main implements IMain,IFileUtil{
                         if(!existsPath(path)) break;
                     }
                 }
-            }
+            }else copyFile(getModPath(mappings.get(0)),path);
             if(existsPath(path)) merges.add(merge);
             else merge.getMappings().parallelStream().forEach(mapping->{
                 String mod = mapping.getMod();
