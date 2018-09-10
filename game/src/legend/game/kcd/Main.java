@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
-import legend.game.kcd.entity.Cell;
+import legend.game.kcd.entity.Value;
 import legend.game.kcd.entity.local.Row;
 import legend.game.kcd.entity.local.Table;
 import legend.game.kcd.entity.mod.Config;
@@ -339,6 +339,7 @@ public final class Main implements IMain,IFileUtil{
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
         CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs) || isEmpty(dests));
+        progress.finish();
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         SingleValue<Boolean> find = new SingleValue<>(false);
@@ -355,10 +356,14 @@ public final class Main implements IMain,IFileUtil{
                     ConcurrentMap<String,Row> rowMap = destTable.getRowMap();
                     List<Object> mods = new CopyOnWriteArrayList<>();
                     List<Object> adds = new CopyOnWriteArrayList<>();
-                    final String modNote = gsph(XML_NOTE,V_UPD + gs(2) + getDateTime());
-                    final String addNote = gsph(XML_NOTE,V_ADD + gs(2) + getDateTime());
-                    mods.add(modNote);
-                    adds.add(addNote);
+                    final String modNote = V_UPD + gs(2) + getDateTime();
+                    final String addNote = V_ADD + gs(2) + getDateTime();
+                    Value mod = new Value();
+                    Value add = new Value();
+                    mod.setText(modNote);
+                    add.setText(addNote);
+                    mods.add(mod);
+                    adds.add(add);
                     srcTable.getRowMap().entrySet().stream().forEach(entry->{
                         String key = entry.getKey();
                         Row value = entry.getValue();
@@ -367,12 +372,16 @@ public final class Main implements IMain,IFileUtil{
                             destRows.remove(rowMap.get(key));
                         }else adds.add(value);
                     });
-                    if(mods.size() > 1){
-                        mods.add(modNote);
+                    if(1 < mods.size()){
+                        mod = new Value();
+                        mod.setText(modNote);
+                        mods.add(mod);
                         optional.filter(s->!KCD_LOC_MRG_A.equals(s)).ifPresent(s->destRows.addAll(mods));
                     }
-                    if(adds.size() > 1){
-                        adds.add(addNote);
+                    if(1 < adds.size()){
+                        add = new Value();
+                        add.setText(addNote);
+                        adds.add(add);
                         optional.filter(s->!KCD_LOC_MRG_U.equals(s)).ifPresent(s->destRows.addAll(adds));
                     }
                     convertToXml(makeDirs(srcParam.getDestPath().resolve(dest.getFileName())),destTable,true);
@@ -405,10 +414,14 @@ public final class Main implements IMain,IFileUtil{
                     ConcurrentMap<String,Row> rowMap = destTable.getRowMap();
                     List<Object> mods = new CopyOnWriteArrayList<>();
                     List<Object> adds = new CopyOnWriteArrayList<>();
-                    final String modNote = gsph(XML_NOTE,V_UPD + gs(2) + getDateTime());
-                    final String addNote = gsph(XML_NOTE,V_ADD + gs(2) + getDateTime());
-                    mods.add(modNote);
-                    adds.add(addNote);
+                    final String modNote = V_UPD + gs(2) + getDateTime();
+                    final String addNote = V_ADD + gs(2) + getDateTime();
+                    Value mod = new Value();
+                    Value add = new Value();
+                    mod.setText(modNote);
+                    add.setText(addNote);
+                    mods.add(mod);
+                    adds.add(add);
                     srcTable.getRowMap().entrySet().stream().forEach(entry->{
                         String key = entry.getKey();
                         Row value = entry.getValue();
@@ -419,12 +432,16 @@ public final class Main implements IMain,IFileUtil{
                         }else adds.add(value);
                     });
                     destRows.clear();
-                    if(mods.size() > 1){
-                        mods.add(modNote);
+                    if(1 < mods.size()){
+                        mod = new Value();
+                        mod.setText(modNote);
+                        mods.add(mod);
                         optional.filter(s->!KCD_LOC_CMP_A.equals(s)).ifPresent(s->destRows.addAll(mods));
                     }
-                    if(adds.size() > 1){
-                        adds.add(addNote);
+                    if(1 < adds.size()){
+                        add = new Value();
+                        add.setText(addNote);
+                        adds.add(add);
                         optional.filter(s->!KCD_LOC_CMP_U.equals(s)).ifPresent(s->destRows.addAll(adds));
                     }
                     convertToXml(makeDirs(srcParam.getDestPath().resolve(dest.getFileName())),destTable,true);
@@ -445,7 +462,7 @@ public final class Main implements IMain,IFileUtil{
             srcParam.getFilesCount().set(0);
             Table srcTable = convertToJavaBean(src,Table.class,true);
             srcTable.getRowMap().values().parallelStream().forEach(row->{
-                Cell cell = row.getCells().get(2);
+                Value cell = row.getCells().get(2);
                 String value = FLAG_DEBUG + srcParam.getFilesCount().incrementAndGet() + FLAG_DEBUG + cell.getText();
                 cell.setText(value);
             });
@@ -464,7 +481,7 @@ public final class Main implements IMain,IFileUtil{
             Path src = srcEntry.getValue();
             Table srcTable = convertToJavaBean(src,Table.class,true);
             srcTable.getRowMap().values().parallelStream().forEach(row->{
-                Cell cell = row.getCells().get(2);
+                Value cell = row.getCells().get(2);
                 String value = cell.getText();
                 cell.setText(pattern.matcher(value).replaceFirst(""));
             });

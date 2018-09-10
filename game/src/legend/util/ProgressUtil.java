@@ -15,7 +15,7 @@ import legend.util.intf.IProgress;
 import legend.util.intf.IProgressUtil;
 
 public class ProgressUtil implements IProgressUtil{
-    public static ConsoleProgress ConsoleProgress(){
+    public static IProgress ConsoleProgress(){
         return new ConsoleProgress();
     }
 
@@ -100,8 +100,6 @@ public class ProgressUtil implements IProgressUtil{
                 if(this.begin.get() >= this.end.get()) this.begin.set(MAX);
                 await(reset,ERR_RESET);
             });
-            stop();
-            resume();
         }
 
         @Override

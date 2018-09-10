@@ -44,8 +44,4 @@ public class Games{
     public List<Game> getGames(){
         return games;
     }
-
-    public void setGames(CopyOnWriteArrayList<Game> games){
-        this.games = games;
-    }
 }

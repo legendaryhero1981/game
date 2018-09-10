@@ -2,11 +2,14 @@ package legend.util.test;
 
 import static legend.util.ConsoleUtil.CS;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import legend.intf.ICommon;
 import legend.util.test.model.GCDModel;
@@ -18,7 +21,7 @@ public class TestArithmetic implements ICommon{
 
     @Test
     public void test(){
-        CS.sl("\r\n".equals(SPRT_LINE)+"");
+        ClassVersionChecker.checkClassVersion("E:\\Java\\myeclise-2018破解文件\\patch\\plugins\\jar\\com.genuitec.eclipse.core_16.0.0.201808301917\\com\\genuitec\\eclipse\\core\\RSAUtil.class");
     }
 
     // @Test
@@ -69,5 +72,23 @@ public class TestArithmetic implements ICommon{
         model.gcd();
         // 打印计算结果
         CS.sl("最大公约数为：" + model.getMax() + "\n最小公倍数为：" + model.getMin());
+    }
+
+    private static class ClassVersionChecker{
+        private static void checkClassVersion(String filename){
+            try{
+                DataInputStream in = new DataInputStream(new FileInputStream(filename));
+                int magic = in.readInt();
+                if(magic != 0xcafebabe){
+                    CS.sl(filename + " is not a valid class!");
+                }
+                int minor = in.readUnsignedShort();
+                int major = in.readUnsignedShort();
+                CS.sl(filename + ": " + major + " . " + minor);
+                in.close();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -5,7 +5,6 @@ import static legend.util.ValueUtil.nonEmpty;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,9 +29,5 @@ public class ContentList{
 
     public List<Content> getContents(){
         return contents;
-    }
-
-    public void setContents(CopyOnWriteArrayList<Content> contents){
-        this.contents = contents;
     }
 }

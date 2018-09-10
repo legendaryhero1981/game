@@ -27,8 +27,6 @@ public class ConsoleUtil implements IConsoleUtil{
         OUT = System.out;
     }
 
-    ConsoleUtil(){}
-
     public void showHelp(String help, BooleanSupplier... suppliers){
         if(nonEmpty(suppliers)) for(BooleanSupplier supplier : suppliers)
             if(!supplier.getAsBoolean()) return;
@@ -163,7 +161,7 @@ public class ConsoleUtil implements IConsoleUtil{
         return this;
     }
 
-    static class FileSizeUtil{
+    public static class FileSizeUtil{
         private FileSizeUtil(){}
 
         public UNIT_TYPE matchType(String type){

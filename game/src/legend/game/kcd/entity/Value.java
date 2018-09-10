@@ -1,10 +1,10 @@
 package legend.game.kcd.entity;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlType
-public class Cell{
+@XmlRootElement(name = "Value")
+public class Value{
     @XmlValue
     private String text;
 

@@ -2,8 +2,8 @@ package legend.util.test;
 
 import static legend.util.FileUtil.main;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import legend.test.TestBase;
 
@@ -13,7 +13,7 @@ public class TestFileUtil extends TestBase{
         main(args);
     }
 
-    @Before
+    @BeforeAll
     @Override
     public void monkParam(){
         String s = "";

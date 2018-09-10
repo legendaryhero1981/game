@@ -8,7 +8,7 @@ public interface IValue<T>extends Cloneable{
         Object object = null;
         Class<?> c = o.getClass();
         try{
-            object = c.newInstance();
+            object = c.getDeclaredConstructor().newInstance((Object[])null);
         }catch(Exception e){
             e.printStackTrace();
         }

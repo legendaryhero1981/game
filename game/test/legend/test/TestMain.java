@@ -2,8 +2,8 @@ package legend.test;
 
 import static legend.Main.main;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestMain extends TestBase{
     @Test
@@ -11,7 +11,7 @@ public class TestMain extends TestBase{
         main(args);
     }
 
-    @Before
+    @BeforeAll
     @Override
     public void monkParam(){
         String cmd = "";
