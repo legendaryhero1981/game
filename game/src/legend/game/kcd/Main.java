@@ -339,7 +339,6 @@ public final class Main implements IMain,IFileUtil{
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
         CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs) || isEmpty(dests));
-        progress.finish();
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         SingleValue<Boolean> find = new SingleValue<>(false);
