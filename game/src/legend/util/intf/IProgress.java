@@ -13,7 +13,7 @@ public interface IProgress{
     String STYLE = "%";
 
     enum State{
-        RUN,STOP,FINISH
+        RUN,STOP,RESET,FINISH
     }
 
     State state();

@@ -19,6 +19,8 @@ public class ProgressUtil implements IProgressUtil{
         return new ConsoleProgress();
     }
 
+    private ProgressUtil(){}
+
     private static class ConsoleProgress implements IProgress{
         private AtomicInteger position;
         private AtomicInteger begin;
@@ -153,6 +155,11 @@ public class ProgressUtil implements IProgressUtil{
         private void reset0(){
             size.set(position.get() * amount.get() / 100f);
             progress.set(position.get());
+            if(State.RUN == state.get()){
+                state.set(State.RESET);
+                sleep(SLEEP * 2,ERR_RUN);
+                state.set(State.RUN);
+            }
         }
 
         private void stop0(){
