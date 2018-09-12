@@ -179,21 +179,23 @@ public class ProgressUtil implements IProgressUtil{
 
         private void show(){
             while(State.FINISH != state.get()){
-                int n = progress.get();
-                int b = begin.get() > n ? begin.get() : n;
-                int e = end.get();
-                if(b > n) for(int i = MIN;i < b && State.RUN == state.get();i++){
-                    CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > i ? 2 : 1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                    sleep(SLEEP,ERR_RUN);
-                }
-                else if(e > n) for(int i = b;i < e && State.RUN == state.get();i++,n = progress.get()){
-                    CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > n ? 2 : 1).s(n + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                    sleep(SLEEP,ERR_RUN);
-                }
-                else for(int i = e;i < MAX && State.RUN == state.get();i++){
-                    CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                    sleep(SLEEP,ERR_RUN);
-                }
+                if(State.RUN == state.get()){
+                    int n = progress.get();
+                    int b = begin.get() > n ? begin.get() : n;
+                    int e = end.get();
+                    if(b > n) for(int i = MIN;i < b && State.RUN == state.get();i++){
+                        CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > i ? 2 : 1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
+                        sleep(SLEEP,ERR_RUN);
+                    }
+                    else if(e > n) for(int i = b;i < e && State.RUN == state.get();i++,n = progress.get()){
+                        CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > n ? 2 : 1).s(n + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
+                        sleep(SLEEP,ERR_RUN);
+                    }
+                    else for(int i = e;i < MAX && State.RUN == state.get();i++){
+                        CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
+                        sleep(SLEEP,ERR_RUN);
+                    }
+                }else sleep(1,ERR_RUN);
             }
             CS.s(COMPLETE,MID).s(MAX + STYLE).s(COMPLETE,MID).l(2);
         }
