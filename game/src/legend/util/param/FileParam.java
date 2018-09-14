@@ -119,15 +119,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         switch(cmd){
             case CMD_FND_DIR:
             case CMD_FND_SIZ_ASC:
-            case CMD_FND_SIZ_DSC:
             case CMD_FND_DIR_SIZ_ASC:
-            case CMD_FND_DIR_SIZ_DSC:
             case CMD_FND_DIR_DIR_SIZ_ASC:
-            case CMD_FND_DIR_DIR_SIZ_DSC:
             case CMD_FND_PTH_DIR_ABS:
             case CMD_FND_PTH_DIR_RLT:
             case CMD_FND_PTH_DIR_SRC:
-            condition |= IS_QUERY_COMMAND | ORDER_ASC;
+            condition |= ORDER_ASC;
+            case CMD_FND_SIZ_DSC:
+            case CMD_FND_DIR_SIZ_DSC:
+            case CMD_FND_DIR_DIR_SIZ_DSC:
+            condition |= IS_QUERY_COMMAND;
             break;
             case CMD_FIND:
             case CMD_FND_PTH_ABS:
@@ -135,13 +136,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_PTH_SRC:
             condition |= IS_QUERY_COMMAND | ORDER_ASC | MATCH_FILE_ONLY;
             break;
-            case CMD_FND_DIR_OLY:
-            case CMD_FND_DIR_OLY_SIZ_ASC:
-            case CMD_FND_DIR_OLY_SIZ_DSC:
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
             case CMD_FND_PTH_DIR_OLY_SRC:
-            condition |= IS_QUERY_COMMAND | ORDER_ASC | MATCH_DIR_ONLY;
+            case CMD_FND_DIR_OLY:
+            case CMD_FND_DIR_OLY_SIZ_ASC:
+            condition |= ORDER_ASC;
+            case CMD_FND_DIR_OLY_SIZ_DSC:
+            condition |= IS_QUERY_COMMAND | MATCH_DIR_ONLY;
             break;
             case CMD_ZIP_DEF:
             case CMD_PAK_DEF:
