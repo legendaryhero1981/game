@@ -791,10 +791,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 if(param.matchConditions(MATCH_FILE_ONLY) || param.matchConditions(EXCLUDE_ROOT) && p.equals(param.getSrcPath())) return false;
                 find = param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
-                    case CMD_FND_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_SIZ_DSC:
-                    find = find || matchPath(p);
-                    break;
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_DIR_DIR_SIZ_ASC:
                     case CMD_FND_DIR_DIR_SIZ_DSC:
@@ -826,6 +822,17 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                         param.getPathMap().put(a,p);
                     }
                     break;
+                    case CMD_FND_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_SIZ_DSC:
+                    if(find = find || matchPath(p)) param.getPathDeque().push(p);
+                    break;
+                    case CMD_DEL_DIR_NUL:
+                    case CMD_DEL_DIR_OLY_NUL:
+                    if(find = find || matchPath(p)){
+                        param.getPathDeque().push(p);
+                        param.getPathList().add(p);
+                    }
+                    break;
                     case CMD_CPY_DIR:
                     case CMD_CPY_DIR_OLY:
                     case CMD_BAK_DIR:
@@ -836,13 +843,6 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                         param.getPathDeque().push(p);
                         param.getPathMap().put(a,p);
                         if(param.needCaching()) param.getPathList().add(p);
-                    }
-                    break;
-                    case CMD_DEL_DIR_NUL:
-                    case CMD_DEL_DIR_OLY_NUL:
-                    if(find = find || matchPath(p)){
-                        param.getPathDeque().push(p);
-                        param.getPathList().add(p);
                     }
                 }
             }
