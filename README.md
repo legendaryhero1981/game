@@ -2,7 +2,7 @@
 
 # 项目介绍
 
-PC游戏Mod修改工具集命令行程序，目前基于64位JDK1.8.0_181开发，建议在64位windows10操作系统上运行。
+PC游戏Mod修改工具集命令行程序，目前基于64位JDK10.0.2开发，建议在64位windows10操作系统上运行。
 
 # 部署说明
 
@@ -10,7 +10,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK1.8.0_181开发�
 
 2、将game项目的src文件夹下所有.java文件打包成game.jar；
 
-3、用exe4j将game.jar打包成game.exe，在Java invocation选项窗口中的主类选择legend.Main，在下一个选项窗口JRE中指定最低的JRE版本为1.8；
+3、用exe4j将game.jar打包成game.exe，在Java invocation选项窗口中的主类选择legend.Main，在下一个选项窗口JRE中指定最低的JRE版本为9；
 
 4、将game.exe放置在任意目录，如：D:\tools，再将D:\tools\game.exe的文件路径名添加到系统环境变量中；
 
@@ -21,59 +21,44 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK1.8.0_181开发�
 目前包含5条命令，输入 game 可以看到命令帮助信息如下：
 
 作者：李允
-版本：V2.0
+版本：V3.0
 
 
+
+```
 参数说明：
 
-game file|run|eoc|kcd|poe
-
-命令列表：
-
-file    游戏文件处理命令，通过正则匹配批量查询和处理目录和文件。
-
-run     参数化运行游戏，通过配置文件对所有游戏可执行文件进行统一管理。
-
-eoc     神界：原罪2 汉化文件处理。
-
-kcd     天国：拯救 汉化文件和Mod整合处理。
-
-poe     永恒之柱2：死火 汉化文件和Mod文件处理。
-
-
-输入 game file
-
-参数说明：
-
-file -f[+*@?]|-fd[+*@?]|-fdo[+*@?]|-fpa[+*@?]|-fpr[+*@?]|-fps[+*@?]|-fpda[+*@?]|-fpdr[+*@?]|-fpds[+*@?]|-fpdoa[+*@?]|-fpdor[+*@?]|-fpdos[+*@?]|-fs[+*@?]|-fsa[+*@?]|-fsd[+*@?]|-fds[+*@?]|-fdsa[+*@?]|-fdsd[+*@?]|-fdosa[+*@?]|-fdosd[+*@?]|-fddsa[+*@?]|-fddsd[+*@?]|-r[+*@?]|-rl[+*@?]|-ru[+*@?]|-ruf[+*@?]|-rd[+*@?]|-rdl[+*@?]|-rdu[+*@?]|-rduf[+*@?]|-c[+*@?]|-cd[+*@?]|-d[+*@?]|-dd[+*@?]|-ddn[+*@?]|-m[+*@?]|-md[+*@?]|-b[+*@?]|-bd[+*@?]|-bu[+*@?]|-br[+*@?]|-u[+*@?]|-ud[+*@?]|-zd[+*@?]|-zdd[+*@?]|-zi[+*@?]|-pd[+*@?]|-pdd[+*@?]|-pi[+*@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
+file -f[+*!@?]|-fd[+*!@?]|-fdo[+*!@?]|-fpa[+*!@?]|-fpr[+*!@?]|-fps[+*!@?]|-fpda[+*!@?]|-fpdr[+*!@?]|-fpds[+*!@?]|-fpdoa[+*!@?]|-fpdor[+*!@?]|-fpdos[+*!@?]|-fsa[+*!@?]|-fsd[+*!@?]|-fdsa[+*!@?]|-fdsd[+*!@?]|-fdosa[+*!@?]|-fdosd[+*!@?]|-fddsa[+*!@?]|-fddsd[+*!@?]|-r[+*!@?]|-rl[+*!@?]|-ru[+*!@?]|-ruf[+*!@?]|-rd[+*!@?]|-rdl[+*!@?]|-rdu[+*!@?]|-rduf[+*!@?]|-rdo[+*!@?]|-rdol[+*!@?]|-rdou[+*!@?]|-rdouf[+*!@?]|-c[+*!@?]|-cd[+*!@?]|-cdo[+*!@?]|-d[+*!@?]|-dd[+*!@?]|-ddo[+*!@?]|-dn[+*!@?]|-ddn[+*!@?]|-ddon[+*!@?]|-m[+*!@?]|-md[+*!@?]|-mdo[+*!@?]|-b[+*!@?]|-bd[+*!@?]|-bu[+*!@?]|-br[+*!@?]|-u[+*!@?]|-ud[+*!@?]|-zd[+*!@?]|-zdd[+*!@?]|-zi[+*!@?]|-pd[+*!@?]|-pdd[+*!@?]|-pi[+*!@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
 
 命令参数：
 
-regex		文件名查询正则表达式，.匹配任意文件名和目录名。
+regex			文件名查询正则表达式，.匹配任意文件名和目录名。
 
-src		输入文件目录。
+src			输入文件目录。
 
-dest		输出文件目录。
+dest			输出文件目录。
 
-backup		备份文件目录。
+backup			备份文件目录。
 
-sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），1024,1024（等于1024字节）。
+sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。
 
 replacement	文件名替换正则表达式。
 
-zipName		压缩文件名（程序会根据命令选项自动添加文件扩展名.zip或.pak）。
+zipName			压缩文件名（程序会根据命令选项自动添加文件扩展名.zip或.pak）。
 
 zipLevel		文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。
 
-limit		查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。
+limit			查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。
 
-level		文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。
+level			文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。
 
 命令选项：
 
 + 可添加在命令选项末尾，表示输出详细信息；可与@或?连用；例如：-f+@?。
 
 * 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与@或?连用；例如：-f*?@。
+
+! 可添加在命令选项末尾，表示不匹配查询的根目录，如：file -f! . d:/games 不匹配games目录，只匹配该目录中的任意文件和子目录名称。
 
 @ 可添加在命令选项末尾，表示缓存该命令的查询结果，供后面的命令复用；某些命令不能缓存或复用查询结果，程序将智能忽略掉；复用查询结果的命令将忽略与查询相关的命令参数regex和src；当后面某个命令使用了@时，则重新缓存查询结果；可与+或*或?连用；例如：-f@*?或-f@+?。
 
@@ -93,151 +78,172 @@ file -zi*::-cd@*::* \.zip$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?
 
 单条命令：
 
-file -f[+*@?] regex src [limit] [level]
+file -f[+*!@?] regex src [limit] [level]
 根据regex查找src中的文件。
 
-file -fd[+*@?] regex src [limit] [level]
-根据regex查找src中的文件和子目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和子目录都自动被匹配。
+file -fd[+*!@?] regex src [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配。
 
-file -fdo[+*@?] regex src [limit] [level]
+file -fdo[+*!@?] regex src [limit] [level]
 根据regex查找src中的目录。
 
-file -fpa[+*@?] regex src [limit] [level]
+file -fpa[+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的绝对路径名。
 
-file -fpr[+*@?] regex src [limit] [level]
+file -fpr[+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的相对路径名（不包含src目录名称）。
 
-file -fps[+*@?] regex src [limit] [level]
+file -fps[+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的相对路径名（包含src目录名称）。
 
-file -fpda[+*@?] regex src [limit] [level]
-根据regex查找src中的文件和子目录及其中所有文件（同-fd），显示文件或子目录的绝对路径名。
+file -fpda[+*!@?] regex src [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。
 
-file -fpdr[+*@?] regex src [limit] [level]
-根据regex查找src中的文件和子目录及其中所有文件（同-fd），显示文件或子目录的相对路径名（不包含src目录名称）。
+file -fpdr[+*!@?] regex src [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名（不包含src目录名称）。
 
-file -fpds[+*@?] regex src [limit] [level]
-根据regex查找src中的文件和子目录及其中所有文件（同-fd），显示文件或子目录的相对路径名（包含src目录名称）。
+file -fpds[+*!@?] regex src [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名（包含src目录名称）。
 
-file -fpdoa[+*@?] regex src [limit] [level]
-根据regex查找src中的子目录（同-fdo），显示子目录的绝对路径名。
+file -fpdoa[+*!@?] regex src [limit] [level]
+根据regex查找src中的目录（同-fdo），显示目录的绝对路径名。
 
-file -fpdor[+*@?] regex src [limit] [level]
-根据regex查找src中的子目录（同-fdo），显示子目录的相对路径名（不包含src目录名称）。
+file -fpdor[+*!@?] regex src [limit] [level]
+根据regex查找src中的目录（同-fdo），显示目录的相对路径名（不包含src目录名称）。
 
-file -fpdos[+*@?] regex src [limit] [level]
-根据regex查找src中的子目录（同-fdo），显示子目录的相对路径名（包含src目录名称）。
+file -fpdos[+*!@?] regex src [limit] [level]
+根据regex查找src中的目录（同-fdo），显示目录的相对路径名（包含src目录名称）。
 
-file -fs[+*@?] regex src [sizeExpr] [limit] [level]
-根据regex和sizeExpr查找src中的文件。
-
-file -fsa[+*@?] regex src [sizeExpr] [limit] [level]
+file -fsa[+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递增排序。
 
-file -fsd[+*@?] regex src [sizeExpr] [limit] [level]
+file -fsd[+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递减排序。
 
-file -fds[+*@?] regex src [sizeExpr] [limit] [level]
-根据regex和sizeExpr查找src中的文件和子目录；若匹配到目录，则其中所有文件只需匹配sizeExpr；也适用于-fdsa和-fdsd。
+file -fdsa[+*!@?] regex src [sizeExpr] [limit] [level]
+根据regex和sizeExpr查找src中的文件和目录，按文件大小递增排序。
 
-file -fdsa[+*@?] regex src [sizeExpr] [limit] [level]
-根据regex和sizeExpr查找src中的文件和子目录，按文件大小递增排序。
+file -fdsd[+*!@?] regex src [sizeExpr] [limit] [level]
+根据regex和sizeExpr查找src中的文件和目录，按文件大小递减排序。
 
-file -fdsd[+*@?] regex src [sizeExpr] [limit] [level]
-根据regex和sizeExpr查找src中的文件和子目录，按文件大小递减排序。
+file -fddsa[+*!@?] regex src [sizeExpr] [limit]
+根据regex和sizeExpr查找src中的文件和第一级子目录，按文件和子目录大小递增排序。
 
-file -fdosa[+*@?] regex src [sizeExpr] [limit]
+file -fddsd[+*!@?] regex src [sizeExpr] [limit]
+根据regex和sizeExpr查找src中的文件和第一级子目录，按文件和子目录大小递减排序。
+
+file -fdosa[+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。
 
-file -fdosd[+*@?] regex src [sizeExpr] [limit]
+file -fdosd[+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。
 
-file -fddsa[+*@?] regex src [sizeExpr] [limit]
-根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递增排序。
-
-file -fddsd[+*@?] regex src [sizeExpr] [limit]
-根据regex和sizeExpr查找src中的文件和第一级子目录，按子文件或目录大小递减排序。
-
-file -d[+*@?] regex src [level]
-根据regex删除src中所有匹配文件。
-
-file -dd[+*@?] regex src [level]
-根据regex删除src中所有匹配文件和子目录及其中所有文件。
-
-file -ddn[+*@?] regex src [level]
-根据regex删除src中所有匹配的空文件和空目录。
-
-file -r[+*@?] regex src replacement [level]
+file -r[+*!@?] regex src replacement [level]
 根据regex和replacement重命名src中的文件。
 
-file -rl[+*@?] regex src [level]
+file -rl[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\.txt$则文件名和扩展名都会被替换；也适用于-ru和-ruf。
 
-file -ru[+*@?] regex src [level]
+file -ru[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文字母替换为大写。
 
-file -ruf[+*@?] regex src [level]
+file -ruf[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文单词首字母替换为大写。
 
-file -rd[+*@?] regex src replacement [level]
-根据regex和replacement重命名src中的文件和子目录。
+file -rd[+*!@?] regex src replacement [level]
+根据regex和replacement重命名src中的文件和目录。
 
-file -rdl[+*@?] regex src [level]
+file -rdl[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\.txt$则文件名和扩展名都会被替换；也适用于-rdu和-rduf。
 
-file -rdu[+*@?] regex src [level]
+file -rdu[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文字母替换为大写。
 
-file -rduf[+*@?] regex src [level]
+file -rduf[+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文单词首字母替换为大写。
 
-file -c[+*@?] regex src dest [level]
+file -rdo[+*!@?] regex src replacement [level]
+根据regex和replacement重命名src中的目录。
+
+file -rdol[+*!@?] regex src [level]
+根据regex将src中所有匹配的目录名中英文字母替换为小写。
+
+file -rdou[+*!@?] regex src [level]
+根据regex将src中所有匹配的目录名中英文字母替换为大写。
+
+file -rdouf[+*!@?] regex src [level]
+根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。
+
+file -c[+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
 
-file -cd[+*@?] regex src dest [level]
-根据regex复制src中所有匹配文件和子目录及其中所有文件到dest中。
+file -cd[+*!@?] regex src dest [level]
+根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。
 
-file -m[+*@?] regex src dest [level]
+file -cdo[+*!@?] regex src dest [level]
+根据regex复制src中所有匹配的目录及其中所有文件到dest中。
+
+file -d[+*!@?] regex src [level]
+根据regex删除src中所有匹配文件。
+
+file -dd[+*!@?] regex src [level]
+根据regex删除src中所有匹配文件和目录及其中所有文件。
+
+file -ddo[+*!@?] regex src [level]
+根据regex删除src中所有匹配的目录及其中所有文件。
+
+file -dn[+*!@?] regex src [level]
+根据regex删除src中所有匹配的空文件。
+
+file -ddn[+*!@?] regex src [level]
+根据regex删除src中所有匹配的空文件和空目录。
+
+file -ddon[+*!@?] regex src [level]
+根据regex删除src中所有匹配的空目录。
+
+file -m[+*!@?] regex src dest [level]
 根据regex移动src中文件到dest中。
 
-file -md[+*@?] regex src dest [level]
-根据regex移动src中所有匹配文件和子目录及其中所有文件到dest中。
+file -md[+*!@?] regex src dest [level]
+根据regex移动src中所有匹配文件和目录及其中所有文件到dest中。
 
-file -b[+*@?] regex src dest backup [level]
+file -mdo[+*!@?] regex src dest [level]
+根据regex移动src中所有匹配的目录及其中所有文件到dest中。
+
+file -b[+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否存在，将不存在的文件备份到backup中。
 
-file -bd[+*@?] regex src dest backup [level]
-根据regex获得src中所有匹配文件和子目录及其中所有文件，检查这些文件和子目录在dest中是否存在，将不存在的文件和子目录备份到backup中。
+file -bd[+*!@?] regex src dest backup [level]
+根据regex获得src中所有匹配文件和目录及其中所有文件，检查这些文件和目录在dest中是否存在，将不存在的文件和目录备份到backup中。
 
-file -bu[+*@?] regex src dest backup [level]
+file -bu[+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。
 
-file -br[+*@?] regex src dest backup [level]
+file -br[+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。
 
-file -u[+*@?] regex src dest backup [level]
+file -u[+*!@?] regex src dest backup [level]
 根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
 
-file -ud[+*@?] regex src dest backup [level]
-根据regex将src中所有匹配文件和子目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
+file -ud[+*!@?] regex src dest backup [level]
+根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
 
-file -zd[+*@?] regex src dest zipName [zipLevel] [level]
+file -zd[+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件压缩到dest/zipName.zip文件中。
 
-file -zdd[+*@?] regex src dest zipName [zipLevel] [level]
-根据regex将src中所有匹配文件和子目录及其中所有文件压缩到dest/zipName.zip文件中。
+file -zdd[+*!@?] regex src dest zipName [zipLevel] [level]
+根据regex将src中所有匹配文件和目录及其中所有文件压缩到dest/zipName.zip文件中。
 
-file -zi[+*@?] regex src dest [level]
+file -zi[+*!@?] regex src dest [level]
 根据regex将src中所有匹配文件解压缩到dest中。
 
-file -pd[+*@?] regex src dest zipName [zipLevel] [level]
+file -pd[+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件打包到dest/zipName.pak文件中。
 
-file -pdd[+*@?] regex src dest zipName [zipLevel] [level]
-根据regex将src中所有匹配文件和子目录及其中所有文件打包到dest/zipName.pak文件中。
+file -pdd[+*!@?] regex src dest zipName [zipLevel] [level]
+根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName.pak文件中。
 
-file -pi[+*@?] regex src [level]
+file -pi[+*!@?] regex src [level]
 根据regex将src中所有匹配文件解包到该文件所在目录中。
 
 单条命令示例：
@@ -246,10 +252,10 @@ file -f+ (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。
 
 file -fd+ (?i)strings$ "F:/games/Fallout 4"
-查询该目录中名称以strings（忽略大小写）结尾的所有文件和子目录及其中所有文件。
+查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。
 
 file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
-查询该目录中的第一级子目录。
+查询该目录中的第一级目录。
 
 file -fpa+ . "F:/games/DARK SOULS REMASTERED" 20
 查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。
@@ -261,61 +267,46 @@ file -fps+ . "F:/games/DARK SOULS REMASTERED"
 查询该目录中的所有文件，显示文件的相对路径名（包含该目录名称）。
 
 file -fpda+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的文件和子目录及其中所有文件，显示文件或子目录的绝对路径名。
+查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名。
 
 file -fpdr+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的文件和子目录及其中所有文件，显示文件或子目录的相对路径名（不包含该目录名称）。
+查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名（不包含该目录名称）。
 
 file -fpds+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的文件和子目录及其中所有文件，显示文件或子目录的相对路径名（包含该目录名称）。
+查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名（包含该目录名称）。
 
 file -fpdoa+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有子目录，显示子目录的绝对路径名。
+查询该目录中的所有目录，显示目录的绝对路径名。
 
 file -fpdor+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有子目录，显示子目录的相对路径名（不包含该目录名称）。
+查询该目录中的所有目录，显示目录的相对路径名（不包含该目录名称）。
 
 file -fpdos+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有子目录，显示子目录的相对路径名（包含该目录名称）。
-
-file -fs+ . "F:/games/FINAL FANTASY XV" 1MB-1GB
-查询该目录中大小介于1兆字节到1千兆字节之间的所有文件。
+查询该目录中的所有目录，显示目录的相对路径名（包含该目录名称）。
 
 file -fsa+ . "F:/games/FINAL FANTASY XV" 1MB,1GB
-先查询（作用同-fs），再按文件大小递增排序。
+查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。
 
 file -fsd+ . "F:/games/FINAL FANTASY XV" 1MB;1GB
-先查询（作用同-fs），再按文件大小递减排序。
-
-file -fds+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB-1GB
-查询该目录中所有子目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件。
+查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递减排序。
 
 file -fdsa+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB,1GB
-先查询（作用同-fds），再按文件大小递增排序。
+查询该目录中所有目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。
 
 file -fdsd+ \Ajp$ "F:/games/FINAL FANTASY XV" 1MB;1GB
-先查询（作用同-fds），再按文件大小递减排序。
-
-file -fdosa+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
-先查询该目录中的第一级子目录，再按子目录大小递增排序。
-
-file -fdosd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
-先查询该目录中的第一级子目录，再按子目录大小递减排序。
+查询该目录中所有目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递减排序。
 
 file -fddsa+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
-先查询该目录中的文件和第一级子目录，再按子目录大小递增排序。
+先查询该目录中的文件和第一级目录，再按文件或目录大小递增排序。
 
 file -fddsd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
-先查询该目录中的文件和第一级子目录，再按子目录大小递减排序。
+先查询该目录中的文件和第一级目录，再按文件或目录大小递减排序。
 
-file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
-先查询（作用同-f）再删除该目录中所有匹配文件。
+file -fdosa+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
+先查询该目录中的第一级目录，再按目录大小递增排序。
 
-file -dd "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配文件和子目录及其中所有文件。
-
-file -ddn . "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。
+file -fdosd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
+先查询该目录中的第一级目录，再按目录大小递减排序。
 
 file -r (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" $1en$2
 先查询（作用同-f）再以en替换掉所有匹配文件名中的cn（其余字符不变）。
@@ -341,23 +332,59 @@ file -rdu (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 file -rduf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英单词首字母替换为大写。
 
+file -rdo (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4" $1en$2
+先查询（作用同-fd）再以en替换掉所有匹配的目录名中的cn（其余字符不变）。
+
+file -rdol (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
+先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为小写。
+
+file -rdou (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
+先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为大写。
+
+file -rdouf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
+先查询（作用同-fd）再将该目录中所有匹配的目录名中英单词首字母替换为大写。
+
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。
 
 file -cd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配文件和子目录及其中所有文件复制到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
+
+file -cdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
+先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
+
+file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
+先查询（作用同-f）再删除该目录中所有匹配文件。
+
+file -dd "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
+先查询（作用同-fd）再删除该目录中所有匹配文件和目录及其中所有文件。
+
+file -ddo "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
+先查询（作用同-fd）再删除该目录中所有匹配的目录及其中所有文件。
+
+file -dn . "F:/games/FINAL FANTASY XV"
+先查询（作用同-fd）再删除该目录中所有匹配的空文件。
+
+file -ddn . "F:/games/FINAL FANTASY XV"
+先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。
+
+file -ddon . "F:/games/FINAL FANTASY XV"
+先查询（作用同-fd）再删除该目录中所有匹配的空目录。
 
 file -m (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询（作用同-f）再将 .../Strings中所有匹配文件移动到 .../备份 目录中。
 
 file -md (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配文件和子目录及其中所有文件移动到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
+
+file -mdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
+先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
 
 file -b . "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
 先查询（作用同-f）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件，检查这些文件在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件备份到 F:/备份 目录中。
 
 file -bd \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和子目录及其中所有文件，检查这些文件和子目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件和子目录备份到 F:/备份 目录中。
+先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件，检查这些文件和目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件和目录备份到 F:/备份 目录中。
 
 file -bu . "F:/games/Resident Evil 4/修改/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/备份/BIO4"
 先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
@@ -369,13 +396,13 @@ file -u "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备�
 先查询（作用同-f）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
 
 file -ud \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-fd）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和子目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
+先查询（作用同-fd）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
 
 file -zd (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份" strings 1
 先查询（作用同-f）再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
 
 file -zdd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份" strings 1
-先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和子目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
+先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
 
 file -zi (?i)\.zip$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
 先查询（作用同-f）再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
@@ -384,7 +411,7 @@ file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/Kingdom
 先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
 file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
-先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和子目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
+先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
 file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
@@ -637,5 +664,7 @@ poe -e (?i)\..*bundle$ "F:/games/Pillars of Eternity II/PillarsOfEternityII_Data
 
 poe -g Great_Sword_WarGod
 获得自定义MOD对象名称Great_Sword_WarGod的GUID字符串。
+```
+
 
 
