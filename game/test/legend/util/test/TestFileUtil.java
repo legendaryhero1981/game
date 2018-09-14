@@ -18,6 +18,8 @@ public class TestFileUtil extends TestBase{
     public void monkParam(){
         String s = "";
 //        s = "-zdd!*  .  G:\\cache\\temp\\src  G:\\cache\\temp\\dest  src";
+//        s = "-c!*  \\.bat$  d:\\games\\jlink  d:\\games\\jlink\\game\\bin  1";
+        s = "-dd`  .  d:\\games\\jlink\\game";
         super.monkParam(s);
     }
 }

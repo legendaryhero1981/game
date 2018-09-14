@@ -1,11 +1,15 @@
 package legend.util.param;
 
+import static java.nio.file.Paths.get;
+import static java.util.regex.Pattern.compile;
 import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.ConsoleUtil.FS;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
@@ -15,17 +19,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 
 import legend.intf.IValue;
+import legend.util.intf.IConsoleUtil.UNIT_TYPE;
 import legend.util.intf.IFileUtil;
 
 public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Path srcPath;
     private Path destPath;
     private Path backupPath;
+    private Path rootPath;
     private Pattern pattern;
     private Pattern replacePattern;
     private Pattern askPattern;
@@ -182,7 +189,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
         if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
-        if(opt.contains(OPT_EXCLUDE_ROOT)) condition |= EXCLUDE_ROOT;
+        if(opt.contains(OPT_EXCLUDE_ROOT)){
+            condition |= EXCLUDE_ROOT;
+            rootPath = srcPath;
+        }else rootPath = nonEmpty(srcPath.getParent()) ? srcPath.getParent() : srcPath;
         cmdOptional = Optional.of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
         progressOptional = Optional.of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
         detailOptional = Optional.of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
@@ -260,6 +270,201 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         sizeMap.clear();
         pathDeque.clear();
         pathList.clear();
+    }
+
+    public static List<FileParam> analyzeParam(String[] args){
+        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
+        String[][] aa = new String[args.length][];
+        aa[0] = args[0].split(REG_SPRT_ARG);
+        Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
+        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
+        Matcher mph = compile(REG_PH_ARG).matcher("");
+        for(int i = 0;i < aa[0].length;i++){
+            mph.reset(aa[0][i]);
+            CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
+        }
+        for(int i = 1;i < args.length;i++){
+            aa[i] = args[i].split(REG_SPRT_ARG);
+            mrpt.reset(aa[i][0]);
+            if(aa[0].length != aa[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+        }
+        for(int i = 0;i < aa.length;i++){
+            String s = aa[i][0];
+            for(int j = 1;j < aa[0].length;j++){
+                mrpt.reset(aa[i][j]);
+                if(mrpt.find()) aa[i][j] = s.replaceAll(OPT_CACHE,"") + mrpt.group(1);
+                else s = aa[i][j];
+            }
+        }
+        String[][] ss = new String[aa[0].length][];
+        for(int i = 0,j,k;i < aa[0].length;i++){
+            int[] n = new int[aa.length];
+            for(j = k = 0;k < aa.length;k++){
+                mph.reset(aa[k][i]);
+                if(!mph.matches()) n[j++] = k;
+            }
+            for(ss[i] = new String[j],k = 0;k < j;k++)
+                ss[i][k] = aa[n[k]][i];
+        }
+        List<FileParam> fileParams = new ArrayList<>(ss.length);
+        for(String[] as : ss){
+            FileParam param = new FileParam();
+            try{
+                Optional<String[]> optional = Optional.of(as);
+                param.setCmd(as[0]);
+                if(as[0].length() > 2) matchOpt(param,as[0]);
+                param.setPattern(compile(as[1]));
+                param.setReplacePattern(compile(REG_REN_UP_FST));
+                param.setSrcPath(get(as[2]));
+                switch(param.getCmd()){
+                    case CMD_FND_SIZ_ASC:
+                    case CMD_FND_SIZ_DSC:
+                    case CMD_FND_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_SIZ_DSC:
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        param.setSizeExpr(s[3]);
+                        matchSizes(param,as[3].toUpperCase());
+                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[4]);
+                        param.setLimit(0 < filesCountLimit && Integer.MAX_VALUE > filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
+                    });
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    break;
+                    case CMD_FIND:
+                    case CMD_FND_DIR:
+                    case CMD_FND_DIR_OLY:
+                    case CMD_FND_PTH_ABS:
+                    case CMD_FND_PTH_RLT:
+                    case CMD_FND_PTH_SRC:
+                    case CMD_FND_PTH_DIR_ABS:
+                    case CMD_FND_PTH_DIR_RLT:
+                    case CMD_FND_PTH_DIR_SRC:
+                    case CMD_FND_PTH_DIR_OLY_ABS:
+                    case CMD_FND_PTH_DIR_OLY_RLT:
+                    case CMD_FND_PTH_DIR_OLY_SRC:
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[3]);
+                        if(0 != filesCountLimit) param.setLimit(filesCountLimit > 0 ? filesCountLimit : 1);
+                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
+                    case CMD_FND_DIR_OLY_SIZ_ASC:
+                    case CMD_FND_DIR_OLY_SIZ_DSC:
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        param.setSizeExpr(s[3]);
+                        matchSizes(param,as[3].toUpperCase());
+                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->{
+                        int filesCountLimit = Integer.parseInt(s[4]);
+                        param.setLimit(0 < filesCountLimit && Integer.MAX_VALUE > filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
+                    });
+                    param.setLevel(1);
+                    break;
+                    case CMD_RENAME:
+                    case CMD_REN_DIR:
+                    case CMD_REN_DIR_OLY:
+                    param.setReplacement(as[3]);
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
+                    case CMD_REN_LOW:
+                    case CMD_REN_UP:
+                    case CMD_REN_UP_FST:
+                    case CMD_REN_DIR_LOW:
+                    case CMD_REN_DIR_UP:
+                    case CMD_REN_DIR_UP_FST:
+                    case CMD_REN_DIR_OLY_LOW:
+                    case CMD_REN_DIR_OLY_UP:
+                    case CMD_REN_DIR_OLY_UP_FST:
+                    case CMD_DELETE:
+                    case CMD_DEL_DIR:
+                    case CMD_DEL_DIR_OLY:
+                    case CMD_DEL_NUL:
+                    case CMD_DEL_DIR_NUL:
+                    case CMD_DEL_DIR_OLY_NUL:
+                    case CMD_PAK_INF:
+                    optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
+                    break;
+                    case CMD_COPY:
+                    case CMD_CPY_DIR:
+                    case CMD_CPY_DIR_OLY:
+                    case CMD_MOVE:
+                    case CMD_MOV_DIR:
+                    case CMD_MOV_DIR_OLY:
+                    case CMD_ZIP_INF:
+                    param.setDestPath(get(as[3]));
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
+                    case CMD_BACKUP:
+                    case CMD_BAK_DIR:
+                    case CMD_BAK_UGD:
+                    case CMD_BAK_RST:
+                    case CMD_UPGRADE:
+                    case CMD_UGD_DIR:
+                    param.setDestPath(get(as[3]));
+                    param.setBackupPath(get(as[4]));
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    break;
+                    case CMD_ZIP_DEF:
+                    case CMD_ZIP_DIR_DEF:
+                    param.setDestPath(get(as[3]));
+                    param.setZipName(as[4] + EXT_ZIP);
+                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
+                    optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
+                    break;
+                    case CMD_PAK_DEF:
+                    case CMD_PAK_DIR_DEF:
+                    param.setDestPath(get(as[3]));
+                    param.setZipName(as[4] + EXT_PAK);
+                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
+                    optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
+                    break;
+                    default:
+                    CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+                }
+            }catch(Exception e){
+                CS.showError(ERR_ARG_ANLS,new String[]{e.toString()});
+            }
+            fileParams.add(param);
+        }
+        return fileParams;
+    }
+
+    private static void matchOpt(FileParam param, String s){
+        Matcher matcher = compile(REG_OPT).matcher(s);
+        if(matcher.find()){
+            param.setCmd(matcher.group(1));
+            param.setOpt(matcher.group(2));
+            while(matcher.find())
+                param.setOpt(param.getOpt() + matcher.group(2));
+        }
+        if(param.getOpt().contains(OPT_ASK)) param.setAskPattern(compile(REG_ASK_NO));
+    }
+
+    private static void matchSizes(FileParam param, String size){
+        long minSize = param.getMinSize();
+        long maxSize = param.getMaxSize();
+        UNIT_TYPE minType = UNIT_TYPE.NON;
+        UNIT_TYPE maxType = UNIT_TYPE.NON;
+        Matcher matcher = compile(REG_FLE_SIZ).matcher(size);
+        if(matcher.find()){
+            minType = FS.matchType(matcher.group(2));
+            minSize = Long.parseLong(matcher.group(1));
+        }
+        if(matcher.find()){
+            maxType = FS.matchType(matcher.group(2));
+            maxSize = FS.matchSize(Long.parseLong(matcher.group(1)),maxType);
+        }
+        minSize = FS.matchSize(minSize,UNIT_TYPE.NON == minType ? maxType : minType);
+        if(minSize <= maxSize){
+            param.setMinSize(minSize);
+            param.setMaxSize(maxSize);
+        }else{
+            param.setMinSize(maxSize);
+            param.setMaxSize(minSize);
+        }
     }
 
     public String getWholeCommand(){
@@ -373,6 +578,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public void setBackupPath(Path backupPath){
         this.backupPath = backupPath;
+    }
+
+    public Path getRootPath(){
+        return rootPath;
     }
 
     public Pattern getPattern(){
@@ -491,7 +700,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return pathMap;
     }
 
-    public void setPathMap(ConcurrentMap<BasicFileAttributes,Path> pathMap){
+    private void setPathMap(ConcurrentMap<BasicFileAttributes,Path> pathMap){
         this.pathMap = pathMap;
     }
 
@@ -499,7 +708,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return rePathMap;
     }
 
-    public void setRePathMap(ConcurrentMap<Path,Path> rePathMap){
+    private void setRePathMap(ConcurrentMap<Path,Path> rePathMap){
         this.rePathMap = rePathMap;
     }
 
@@ -507,7 +716,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return pathsMap;
     }
 
-    public void setPathsMap(ConcurrentMap<Path,List<Path>> pathsMap){
+    private void setPathsMap(ConcurrentMap<Path,List<Path>> pathsMap){
         this.pathsMap = pathsMap;
     }
 
@@ -515,7 +724,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return sizeMap;
     }
 
-    public void setSizeMap(ConcurrentMap<Path,Long> sizeMap){
+    private void setSizeMap(ConcurrentMap<Path,Long> sizeMap){
         this.sizeMap = sizeMap;
     }
 
@@ -523,7 +732,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return pathDeque;
     }
 
-    public void setPathDeque(BlockingDeque<Path> pathDeque){
+    private void setPathDeque(BlockingDeque<Path> pathDeque){
         this.pathDeque = pathDeque;
     }
 
@@ -531,7 +740,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return pathList;
     }
 
-    public void setPathList(List<Path> pathList){
+    private void setPathList(List<Path> pathList){
         this.pathList = pathList;
     }
 
@@ -543,10 +752,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return filesCount;
     }
 
-    public void setFilesCount(AtomicInteger filesCount){
-        this.filesCount = filesCount;
-    }
-
     public AtomicInteger getDirsCount(){
         return dirsCount;
     }
@@ -555,7 +760,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return cacheFileSize;
     }
 
-    public void setCacheFileSize(long cacheFileSize){
+    private void setCacheFileSize(long cacheFileSize){
         this.cacheFileSize = cacheFileSize;
     }
 
@@ -563,7 +768,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return cacheFilesCount;
     }
 
-    public void setCacheFilesCount(int cacheFilesCount){
+    private void setCacheFilesCount(int cacheFilesCount){
         this.cacheFilesCount = cacheFilesCount;
     }
 
@@ -571,7 +776,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return cacheDirsCount;
     }
 
-    public void setCacheDirsCount(int cacheDirsCount){
+    private void setCacheDirsCount(int cacheDirsCount){
         this.cacheDirsCount = cacheDirsCount;
     }
 

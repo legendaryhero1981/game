@@ -79,7 +79,7 @@ public class ProgressUtil implements IProgressUtil{
 
         @Override
         public void reset(){
-            reset(MAX,MIN,MAX);
+            reset(MAX);
         }
 
         @Override
