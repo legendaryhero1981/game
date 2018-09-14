@@ -91,8 +91,9 @@ public interface ICommon{
     String OPT_INSIDE = "`";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";
-    String OPT_ASK = "?";
+    String OPT_EXCLUDE_ROOT = "!";
     String OPT_CACHE = "@";
+    String OPT_ASK = "?";
     String SPRT_ARG = "::";
     String REG_ANY = ".";
     String REG_ASK_NO = "\\A[nN]$";
@@ -100,7 +101,7 @@ public interface ICommon{
     String REG_PH_ARG = "\\A[" + OPT_ASK + "]+$";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
-    String REG_OPT = "(.*?)([" + OPT_DETAIL + OPT_SIMULATE + OPT_ASK + OPT_CACHE + OPT_INSIDE + "]+)$";
+    String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
     String PLACE_HOLDER = "#";
     String PH_ARG0 = PLACE_HOLDER + "0" + PLACE_HOLDER;
     String PH_ARG1 = PLACE_HOLDER + "1" + PLACE_HOLDER;

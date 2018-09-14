@@ -17,9 +17,7 @@ public class TestFileUtil extends TestBase{
     @Override
     public void monkParam(){
         String s = "";
-//        s = "-fddsa*  .  G:/games/Severance  1mb  10";
-//        s = "-fddsa*  .  F:/games";
-        s = "-cd*  .  G:/games/Severance  G:/games/1";
+//        s = "-zdd!*  .  G:\\cache\\temp\\src  G:\\cache\\temp\\dest  src";
         super.monkParam(s);
     }
 }

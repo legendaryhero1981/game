@@ -24,6 +24,8 @@ public interface IProgress{
 
     void finish();
 
+    void reset();
+    
     void reset(float amount);
 
     void reset(float amount, int position);

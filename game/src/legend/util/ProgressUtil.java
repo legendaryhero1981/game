@@ -42,7 +42,7 @@ public class ProgressUtil implements IProgressUtil{
             begin = new AtomicInteger(MIN);
             end = new AtomicInteger(MAX);
             progress = new AtomicInteger(MIN);
-            amount = new AtomicReference<>(100f);
+            amount = new AtomicReference<>((float)MAX);
             size = new AtomicReference<>(0f);
             state = new AtomicReference<>(State.FINISH);
             finish = new CyclicBarrier(1,()->finish0());
@@ -75,6 +75,11 @@ public class ProgressUtil implements IProgressUtil{
         public void finish(){
             service.execute(()->await(finish,ERR_RUN));
             sleep(SLEEP * 2,ERR_RUN);
+        }
+
+        @Override
+        public void reset(){
+            reset(MAX,MIN,MAX);
         }
 
         @Override

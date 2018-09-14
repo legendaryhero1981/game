@@ -74,7 +74,7 @@ public final class Main implements IMain,IFileUtil{
         progress = ProgressUtil.ConsoleProgress();
         kcdPath = get(KCD_FILE_CONFIG);
         srcParam = new FileParam();
-        srcParam.setOpt(OPT_INSIDE);
+        srcParam.setOpt(OPT_INSIDE + OPT_EXCLUDE_ROOT);
     }
 
     public static void main(String[] args){
@@ -159,7 +159,7 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void pakMod(IProgress progress){
-        progress.reset(100,40,100);
+        progress.reset();
         loadKcd();
         Path gameModPath = gamePath.resolve(MOD_MODS);
         Path gameMergePath = gameModPath.resolve(MOD_MERGE);
@@ -204,12 +204,11 @@ public final class Main implements IMain,IFileUtil{
             param.setZipName(PAK_ENGLISH);
             dealFile(param);
         });
-        progress.update(20);
         mergeOrder(progress);
     }
 
     private static void unpakMod(IProgress progress){
-        progress.reset(100,10,100);
+        progress.reset();
         loadKcd();
         // 获得MOD目录列表
         srcParam.setCmd(CMD_FND_DIR_OLY);
@@ -219,7 +218,6 @@ public final class Main implements IMain,IFileUtil{
         dealFiles(srcParam);
         progress.update(10);
         Collection<Path> paths = srcParam.getPathMap().values();
-        paths.remove(modPath);
         if(paths.isEmpty()){
             kcd.clearCache();
             srcParam.setLevel(Integer.MAX_VALUE);
@@ -290,9 +288,7 @@ public final class Main implements IMain,IFileUtil{
             if(!MOD_ORDER_INGNORE.equals(mod.getOrder())) lines.add(mod.getMod());
         });
         writeFile(get(config.getGamePath()).resolve(MOD_MODS).resolve(KCD_FILE_ORDER),lines);
-        progress.update(20);
         saveKcd();
-        progress.update(80);
     }
 
     private static void mergeConflict(IProgress progress){
@@ -302,7 +298,7 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setPattern(compile(REG_ANY));
         srcParam.setSrcPath(conflictPath);
         dealFile(srcParam);
-        progress.update(10);
+        progress.update(5);
         conflicts.stream().forEach(conflict->{
             conflict.getMappings().parallelStream().forEach(mapping->{
                 Merge merge = mergeMap.get(mapping.getPath());
@@ -315,9 +311,9 @@ public final class Main implements IMain,IFileUtil{
             });
         });
         modMap = kcd.refreshModMap();
-        dealConflict(progress,0.8f);
+        dealConflict(progress,0.9f);
         saveKcd();
-        progress.update(10);
+        progress.update(5);
     }
 
     private static void mergeUnique(IProgress progress){
@@ -327,10 +323,10 @@ public final class Main implements IMain,IFileUtil{
             Path path = getModPath(mapping);
             mapping.setMd5(getMD5L16(path));
             copyFile(path,getMergePath(mapping));
-            progress.update(progress.countUpdate(size,1),0.9f);
+            progress.update(progress.countUpdate(size,1),0.95f);
         });
         saveKcd();
-        progress.update(10);
+        progress.update(5);
     }
 
     private static void mergeLocalization(IProgress progress){
@@ -502,14 +498,15 @@ public final class Main implements IMain,IFileUtil{
                 srcParam.setCmd(CMD_FIND);
                 srcParam.setOpt(args[0]);
                 srcParam.setPattern(compile(args[1]));
-                srcParam.setDestPath(get(args[4]));
                 destParam = srcParam.cloneValue();
-                srcParam.setSrcPath(get(args[2]));
                 destParam.setSrcPath(get(args[3]));
+                srcParam.setSrcPath(get(args[2]));
+                srcParam.setDestPath(get(args[4]));
                 break;
                 case KCD_LOC_DBG:
                 case KCD_LOC_RLS:
                 srcParam.setLevel(1);
+                srcParam.setCmd(CMD_FIND);
                 srcParam.setPattern(compile(args[1]));
                 srcParam.setSrcPath(get(args[2]));
                 srcParam.setDestPath(get(args[3]));
@@ -545,7 +542,7 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void dealMerge(IProgress progress){
-        progress.reset(100,10,100);
+        progress.reset();
         dealUnique(progress,0.6f);
         dealConflict(progress,0.4f);
         mods.clear();
@@ -625,6 +622,7 @@ public final class Main implements IMain,IFileUtil{
         if(!merges.isEmpty()) mergeSet = kcd.refreshMergeSet(merges);
         int size = mergeMap.values().size();
         mergeMap.values().stream().forEach(merge->{
+            progress.update(progress.countUpdate(size,1,95),scale);
             if(mergeSet.contains(merge)) return;
             Path path = makeDirs(getRepairPath(merge));
             List<Mapping> mappings = merge.getMappings();
@@ -664,7 +662,6 @@ public final class Main implements IMain,IFileUtil{
                 }
                 conflict.getMappings().add(mapping);
             });
-            progress.update(progress.countUpdate(size,1,80),scale);
         });
         modMap.entrySet().parallelStream().forEach(entry->{
             String key = entry.getKey();
@@ -686,7 +683,7 @@ public final class Main implements IMain,IFileUtil{
         conflicts.clear();
         conflicts.addAll(conflictMap.values());
         conflicts.parallelStream().forEach(conflict->conflict.getMappings().parallelStream().forEach(mapping->copyFile(getModPath(mapping),getConflictPath(mapping))));
-        progress.update(20,scale);
+        progress.update(5,scale);
     }
 
     private static void exec(String cmd){

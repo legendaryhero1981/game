@@ -15,6 +15,8 @@ public final class ValueUtil{
             return true;
         }else if(o instanceof String){
             return ((String)o).isEmpty();
+        }else if(o instanceof String[]){
+            return 0 == ((String[])o).length || isEmpty((((String[])o)[0]));
         }else if(o instanceof Object[]){
             return 0 == ((Object[])o).length || isNull((((Object[])o)[0]));
         }else if(o instanceof Collection){

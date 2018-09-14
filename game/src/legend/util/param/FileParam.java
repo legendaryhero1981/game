@@ -95,12 +95,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     @Override
     public void close() throws Exception{
-        close(zipOutputStream);
+        if(nonEmpty(zipOutputStream)) zipOutputStream.close();
     }
 
     public void cacheZipOutputStream(ZipOutputStream zipOutputStream){
         try{
-            close(this.zipOutputStream);
+            close();
         }catch(Exception e){
             CS.sl(gsph(ERR_RES_CLS,e.toString()));
         }
@@ -110,28 +110,23 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     public void refreshConditions(FileParam cache){
         condition = 0;
         switch(cmd){
-            case CMD_DELETE:
-            case CMD_MOVE:
-            case CMD_BAK_UGD:
-            case CMD_BAK_RST:
-            condition |= NEED_CLEAR_CACHE;
+            case CMD_FND_DIR:
+            case CMD_FND_SIZ_ASC:
+            case CMD_FND_SIZ_DSC:
+            case CMD_FND_DIR_SIZ_ASC:
+            case CMD_FND_DIR_SIZ_DSC:
+            case CMD_FND_DIR_DIR_SIZ_ASC:
+            case CMD_FND_DIR_DIR_SIZ_DSC:
+            case CMD_FND_PTH_DIR_ABS:
+            case CMD_FND_PTH_DIR_RLT:
+            case CMD_FND_PTH_DIR_SRC:
+            condition |= IS_QUERY_COMMAND | ORDER_ASC;
+            break;
             case CMD_FIND:
-            case CMD_FND_SIZ:
             case CMD_FND_PTH_ABS:
             case CMD_FND_PTH_RLT:
             case CMD_FND_PTH_SRC:
-            case CMD_COPY:
-            case CMD_BACKUP:
-            case CMD_UPGRADE:
-            case CMD_RENAME:
-            case CMD_REN_LOW:
-            case CMD_REN_UP:
-            case CMD_REN_UP_FST:
-            case CMD_ZIP_DEF:
-            case CMD_ZIP_INF:
-            case CMD_PAK_DEF:
-            case CMD_PAK_INF:
-            condition |= MATCH_FILE_ONLY;
+            condition |= IS_QUERY_COMMAND | ORDER_ASC | MATCH_FILE_ONLY;
             break;
             case CMD_FND_DIR_OLY:
             case CMD_FND_DIR_OLY_SIZ_ASC:
@@ -139,31 +134,62 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
             case CMD_FND_PTH_DIR_OLY_SRC:
-            condition |= MATCH_DIR_ONLY;
+            condition |= IS_QUERY_COMMAND | ORDER_ASC | MATCH_DIR_ONLY;
             break;
+            case CMD_ZIP_DEF:
+            case CMD_PAK_DEF:
+            condition |= MATCH_FILE_ONLY;
+            case CMD_ZIP_DIR_DEF:
+            case CMD_PAK_DIR_DEF:
+            condition |= ORDER_ASC;
+            break;
+            case CMD_DELETE:
+            case CMD_MOVE:
+            case CMD_BAK_UGD:
+            case CMD_BAK_RST:
+            condition |= NEED_CLEAR_CACHE;
+            case CMD_RENAME:
+            case CMD_REN_LOW:
+            case CMD_REN_UP:
+            case CMD_REN_UP_FST:
+            case CMD_COPY:
+            case CMD_BACKUP:
+            case CMD_UPGRADE:
+            case CMD_ZIP_INF:
+            case CMD_PAK_INF:
+            condition |= MATCH_FILE_ONLY;
+            break;
+            case CMD_DEL_DIR_OLY:
+            case CMD_DEL_DIR_OLY_NUL:
+            case CMD_MOV_DIR_OLY:
+            condition |= MATCH_DIR_ONLY;
             case CMD_DEL_DIR:
             case CMD_DEL_DIR_NUL:
             case CMD_MOV_DIR:
             condition |= NEED_CLEAR_CACHE;
+            break;
+            case CMD_REN_DIR_OLY:
+            case CMD_REN_DIR_OLY_LOW:
+            case CMD_REN_DIR_OLY_UP:
+            case CMD_REN_DIR_OLY_UP_FST:
+            case CMD_CPY_DIR_OLY:
+            condition |= MATCH_DIR_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
             condition |= ENABLE_CACHE;
             if(NEED_CLEAR_CACHE != (NEED_CLEAR_CACHE & condition)) condition |= CAN_SAVE_CACHE;
-        }else if(!cache.getPathMap().isEmpty() && !isQueryCommand()) condition |= CAN_USE_CACHE;
+        }else if(!cache.getPathMap().isEmpty() && !matchConditions(IS_QUERY_COMMAND)) condition |= CAN_USE_CACHE;
         if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
         if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
+        if(opt.contains(OPT_EXCLUDE_ROOT)) condition |= EXCLUDE_ROOT;
         cmdOptional = Optional.of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
         progressOptional = Optional.of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
         detailOptional = Optional.of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
     }
 
-    public boolean matchFileOnly(){
-        return MATCH_FILE_ONLY == (MATCH_FILE_ONLY & condition);
-    }
-
-    public boolean matchDirOnly(){
-        return MATCH_DIR_ONLY == (MATCH_DIR_ONLY & condition);
+    public boolean matchConditions(long condition){
+        return condition == (condition & this.condition);
     }
 
     public boolean matchFilesSize(long size){
@@ -236,44 +262,13 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         pathList.clear();
     }
 
-    public boolean isQueryCommand(){
-        switch(cmd){
-            case CMD_FIND:
-            case CMD_FND_DIR:
-            case CMD_FND_DIR_OLY:
-            case CMD_FND_SIZ:
-            case CMD_FND_SIZ_ASC:
-            case CMD_FND_SIZ_DSC:
-            case CMD_FND_DIR_SIZ:
-            case CMD_FND_DIR_SIZ_ASC:
-            case CMD_FND_DIR_SIZ_DSC:
-            case CMD_FND_DIR_DIR_SIZ_ASC:
-            case CMD_FND_DIR_DIR_SIZ_DSC:
-            case CMD_FND_DIR_OLY_SIZ_ASC:
-            case CMD_FND_DIR_OLY_SIZ_DSC:
-            case CMD_FND_PTH_ABS:
-            case CMD_FND_PTH_RLT:
-            case CMD_FND_PTH_SRC:
-            case CMD_FND_PTH_DIR_ABS:
-            case CMD_FND_PTH_DIR_RLT:
-            case CMD_FND_PTH_DIR_SRC:
-            case CMD_FND_PTH_DIR_OLY_ABS:
-            case CMD_FND_PTH_DIR_OLY_RLT:
-            case CMD_FND_PTH_DIR_OLY_SRC:
-            return true;
-        }
-        return false;
-    }
-
     public String getWholeCommand(){
         String regex = nonEmpty(pattern) ? S_SPACE + pattern : OPT_NONE;
         String sp = nonEmpty(srcPath) ? S_SPACE + S_QUOTATION + srcPath + S_QUOTATION : OPT_NONE;
         String dp = nonEmpty(destPath) ? S_SPACE + S_QUOTATION + destPath + S_QUOTATION : OPT_NONE;
         String bp = nonEmpty(backupPath) ? S_SPACE + S_QUOTATION + backupPath + S_QUOTATION : OPT_NONE;
-        String s = "file" + S_SPACE + cmd + opt + regex + sp;
+        String s = CMD + S_SPACE + cmd + opt + regex + sp;
         switch(cmd){
-            case CMD_FND_SIZ:
-            case CMD_FND_DIR_SIZ:
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:
             case CMD_FND_DIR_SIZ_ASC:
@@ -303,23 +298,32 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             break;
             case CMD_RENAME:
             case CMD_REN_DIR:
+            case CMD_REN_DIR_OLY:
             s += S_SPACE + replacement;
-            case CMD_DELETE:
-            case CMD_DEL_DIR:
-            case CMD_DEL_DIR_NUL:
             case CMD_REN_LOW:
             case CMD_REN_DIR_LOW:
             case CMD_REN_UP:
             case CMD_REN_DIR_UP:
             case CMD_REN_UP_FST:
             case CMD_REN_DIR_UP_FST:
+            case CMD_REN_DIR_OLY_LOW:
+            case CMD_REN_DIR_OLY_UP:
+            case CMD_REN_DIR_OLY_UP_FST:
+            case CMD_DELETE:
+            case CMD_DEL_DIR:
+            case CMD_DEL_DIR_OLY:
+            case CMD_DEL_NUL:
+            case CMD_DEL_DIR_NUL:
+            case CMD_DEL_DIR_OLY_NUL:
             case CMD_PAK_INF:
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
             break;
             case CMD_COPY:
             case CMD_CPY_DIR:
+            case CMD_CPY_DIR_OLY:
             case CMD_MOVE:
             case CMD_MOV_DIR:
+            case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
             s += dp;
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
@@ -345,12 +349,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
         }
         return s;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends AutoCloseable> void close(T... types) throws Exception{
-        if(nonEmpty(types)) for(T type : types)
-            if(nonEmpty(type)) type.close();
     }
 
     public Path getSrcPath(){
