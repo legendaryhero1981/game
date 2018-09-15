@@ -470,7 +470,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public String getWholeCommand(){
-        String regex = nonEmpty(pattern) ? S_SPACE + pattern : OPT_NONE;
+        String regex = nonEmpty(pattern) ? S_SPACE + S_QUOTATION + pattern + S_QUOTATION : OPT_NONE;
         String sp = nonEmpty(srcPath) ? S_SPACE + S_QUOTATION + srcPath + S_QUOTATION : OPT_NONE;
         String dp = nonEmpty(destPath) ? S_SPACE + S_QUOTATION + destPath + S_QUOTATION : OPT_NONE;
         String bp = nonEmpty(backupPath) ? S_SPACE + S_QUOTATION + backupPath + S_QUOTATION : OPT_NONE;
@@ -506,7 +506,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_RENAME:
             case CMD_REN_DIR:
             case CMD_REN_DIR_OLY:
-            s += S_SPACE + replacement;
+            s += S_SPACE + S_QUOTATION + replacement + S_QUOTATION;
             case CMD_REN_LOW:
             case CMD_REN_DIR_LOW:
             case CMD_REN_UP:
