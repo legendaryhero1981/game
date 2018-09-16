@@ -43,6 +43,7 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -314,73 +315,46 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void renameFiles(FileParam param){
-        boolean refresh = param.needRefreshCache();
-        param.getPathMap().entrySet().stream().forEach(e->{
-            Path src = e.getValue();
-            BasicFileAttributes a = e.getKey();
-            String rename = param.getPattern().matcher(src.getFileName().toString()).replaceAll(param.getReplacement());
-            Path dest = src.getParent().resolve(rename);
-            if(refresh) param.getPathMap().replace(a,dest);
-            if(a.isRegularFile()){
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REN,V_BY},new FileSizeMatcher(a),src,dest));
-                param.getCmdOptional().ifPresent(c->src.toFile().renameTo(dest.toFile()));
-                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-            }else if(!param.usingCaching()) param.getRePathMap().put(src,dest);
-        });
-        renameDirs(param);
+        renameFile(param,name->param.getPattern().matcher(name).replaceAll(param.getReplacement()));
     }
 
     private static void renLowFiles(FileParam param){
-        boolean refresh = param.needRefreshCache();
-        param.getPathMap().entrySet().stream().forEach(e->{
-            Path src = e.getValue();
-            BasicFileAttributes a = e.getKey();
-            StringBuffer stringBuffer = new StringBuffer(src.getFileName().toString().toLowerCase());
-            dealMismatch(param,stringBuffer,src.getFileName().toString());
-            Path dest = src.resolveSibling(stringBuffer.toString());
-            if(refresh) param.getPathMap().replace(a,dest);
-            if(a.isRegularFile()){
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REN,V_BY},new FileSizeMatcher(a),src,dest));
-                param.getCmdOptional().ifPresent(c->src.toFile().renameTo(dest.toFile()));
-                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-            }else if(!param.usingCaching()) param.getRePathMap().put(src,dest);
+        renameFile(param,name->{
+            StringBuffer stringBuffer = new StringBuffer(name.toLowerCase());
+            dealMismatch(param,stringBuffer,name);
+            return stringBuffer.toString();
         });
-        renameDirs(param);
     }
 
     private static void renUpFiles(FileParam param){
-        boolean refresh = param.needRefreshCache();
-        param.getPathMap().entrySet().stream().forEach(e->{
-            Path src = e.getValue();
-            BasicFileAttributes a = e.getKey();
-            StringBuffer stringBuffer = new StringBuffer(src.getFileName().toString().toUpperCase());
-            dealMismatch(param,stringBuffer,src.getFileName().toString());
-            Path dest = src.resolveSibling(stringBuffer.toString());
-            if(refresh) param.getPathMap().replace(a,dest);
-            if(a.isRegularFile()){
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REN,V_BY},new FileSizeMatcher(a),src,dest));
-                param.getCmdOptional().ifPresent(c->src.toFile().renameTo(dest.toFile()));
-                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-            }else if(!param.usingCaching()) param.getRePathMap().put(src,dest);
+        renameFile(param,name->{
+            StringBuffer stringBuffer = new StringBuffer(name.toUpperCase());
+            dealMismatch(param,stringBuffer,name);
+            return stringBuffer.toString();
         });
-        renameDirs(param);
     }
 
     private static void renUpFstFiles(FileParam param){
-        boolean refresh = param.needRefreshCache();
-        param.getPathMap().entrySet().stream().forEach(e->{
-            Path src = e.getValue();
-            BasicFileAttributes a = e.getKey();
+        renameFile(param,name->{
             StringBuffer stringBuffer = new StringBuffer();
-            Matcher matcher = param.getReplacePattern().matcher(src.getFileName().toString());
+            Matcher matcher = param.getReplacePattern().matcher(name);
             while(matcher.find()){
                 char[] s = matcher.group().toCharArray();
                 s[0] -= (s[0] >= 97 && s[0] <= 122 ? 32 : 0);
                 matcher.appendReplacement(stringBuffer,String.valueOf(s));
             }
             matcher.appendTail(stringBuffer);
-            dealMismatch(param,stringBuffer,src.getFileName().toString());
-            Path dest = src.resolveSibling(stringBuffer.toString());
+            dealMismatch(param,stringBuffer,name);
+            return stringBuffer.toString();
+        });
+    }
+
+    private static void renameFile(FileParam param, UnaryOperator<String> operator){
+        boolean refresh = param.needRefreshCache();
+        param.getPathMap().entrySet().stream().forEach(e->{
+            Path src = e.getValue();
+            BasicFileAttributes a = e.getKey();
+            Path dest = src.resolveSibling(operator.apply(src.getFileName().toString()));
             if(refresh) param.getPathMap().replace(a,dest);
             if(a.isRegularFile()){
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REN,V_BY},new FileSizeMatcher(a),src,dest));
@@ -388,10 +362,10 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
             }else if(!param.usingCaching()) param.getRePathMap().put(src,dest);
         });
-        renameDirs(param);
+        renameDir(param);
     }
 
-    private static void renameDirs(FileParam param){
+    private static void renameDir(FileParam param){
         param.getRePathMap().entrySet().stream().sorted(new PathPathComparator()).forEach(e->{
             Path src = e.getKey(), dest = e.getValue();
             File file = src.toFile();
@@ -470,13 +444,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
             }else if(!param.usingCaching()) param.getRePathMap().put(src,dest);
         });
-        if(param.usingCaching()){
-            param.getRePathMap().clear();
-            param.getPathList().parallelStream().forEach(src->{
-                Path dest = param.getDestPath().resolve(param.getRootPath().relativize(src));
-                param.getRePathMap().put(src,dest);
-            });
-        }
+        if(param.usingCaching()) param.getPathList().parallelStream().forEach(src->param.getRePathMap().put(src,param.getDestPath().resolve(param.getRootPath().relativize(src))));
         param.getRePathMap().entrySet().stream().sorted(new PathPathComparator()).forEach(e->{
             Path src = e.getKey(), dest = e.getValue();
             if(0 == src.toFile().list().length){
