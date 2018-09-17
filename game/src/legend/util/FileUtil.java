@@ -45,6 +45,7 @@ import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -60,12 +61,16 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     private static final FileParam CACHE;
     private static final ConsoleUtil CS;
     private static final IProgress PG;
+    private static final Pattern RPTN;
+    private static final Pattern APTN;
     private static FileParam FP;
     private static PrintStream PS;
     static{
         CACHE = new FileParam();
         CS = new ConsoleUtil();
         PG = ProgressUtil.ConsoleProgress();
+        RPTN = compile(REG_REN_UP_FST);
+        APTN = compile(REG_ASK_NO);
     }
 
     private FileUtil(){}
@@ -86,7 +91,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 CS.s(ST_ASK_CONT);
                 String line = decTotalDuration(()->IN.nextLine());
                 CS.sl(false,line).l(1);
-                if(!FP.getAskPattern().matcher(line).find()){
+                if(!APTN.matcher(line).find()){
                     if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
                     else countDuration(t->dealFiles(FP));
                 }else resetTime();
@@ -337,7 +342,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     private static void renUpFstFiles(FileParam param){
         renameFile(param,name->{
             StringBuffer stringBuffer = new StringBuffer();
-            Matcher matcher = param.getReplacePattern().matcher(name);
+            Matcher matcher = RPTN.matcher(name);
             while(matcher.find()){
                 char[] s = matcher.group().toCharArray();
                 s[0] -= (s[0] >= 97 && s[0] <= 122 ? 32 : 0);

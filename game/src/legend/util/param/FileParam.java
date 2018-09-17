@@ -34,8 +34,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Path backupPath;
     private Path rootPath;
     private Pattern pattern;
-    private Pattern replacePattern;
-    private Pattern askPattern;
     private String sizeExpr;
     private String replacement;
     private String zipName;
@@ -87,8 +85,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.destPath = destPath;
         fileParam.backupPath = backupPath;
         fileParam.pattern = pattern;
-        fileParam.replacePattern = replacePattern;
-        fileParam.askPattern = askPattern;
         fileParam.replacement = replacement;
         fileParam.cmd = cmd;
         fileParam.opt = opt;
@@ -314,9 +310,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             try{
                 Optional<String[]> optional = Optional.of(as);
                 param.setCmd(as[0]);
-                if(as[0].length() > 2) matchOpt(param,as[0]);
+                if(as[0].length() > 2){
+                    Matcher matcher = compile(REG_OPT).matcher(as[0]);
+                    if(matcher.find()){
+                        param.setCmd(matcher.group(1));
+                        param.setOpt(matcher.group(2));
+                        while(matcher.find())
+                            param.setOpt(param.getOpt() + matcher.group(2));
+                    }
+                }
                 param.setPattern(compile(as[1]));
-                param.setReplacePattern(compile(REG_REN_UP_FST));
                 param.setSrcPath(get(as[2]));
                 switch(param.getCmd()){
                     case CMD_FND_SIZ_ASC:
@@ -432,17 +435,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             fileParams.add(param);
         }
         return fileParams;
-    }
-
-    private static void matchOpt(FileParam param, String s){
-        Matcher matcher = compile(REG_OPT).matcher(s);
-        if(matcher.find()){
-            param.setCmd(matcher.group(1));
-            param.setOpt(matcher.group(2));
-            while(matcher.find())
-                param.setOpt(param.getOpt() + matcher.group(2));
-        }
-        if(param.getOpt().contains(OPT_ASK)) param.setAskPattern(compile(REG_ASK_NO));
     }
 
     private static void matchSizes(FileParam param, String size){
@@ -592,22 +584,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public void setPattern(Pattern pattern){
         this.pattern = pattern;
-    }
-
-    public Pattern getReplacePattern(){
-        return replacePattern;
-    }
-
-    public void setReplacePattern(Pattern replacePattern){
-        this.replacePattern = replacePattern;
-    }
-
-    public Pattern getAskPattern(){
-        return askPattern;
-    }
-
-    public void setAskPattern(Pattern askPattern){
-        this.askPattern = askPattern;
     }
 
     public String getSizeExpr(){
