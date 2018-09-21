@@ -132,32 +132,16 @@ public class Kcd{
         return mods;
     }
 
-    public void setMods(CopyOnWriteArrayList<Mod> mods){
-        this.mods = mods;
-    }
-
     public List<Merge> getMerges(){
         return merges;
-    }
-
-    public void setMerges(CopyOnWriteArrayList<Merge> merges){
-        this.merges = merges;
     }
 
     public List<Conflict> getConflicts(){
         return conflicts;
     }
 
-    public void setConflicts(CopyOnWriteArrayList<Conflict> conflicts){
-        this.conflicts = conflicts;
-    }
-
     public List<Mapping> getUniques(){
         return uniques;
-    }
-
-    public void setUniques(CopyOnWriteArrayList<Mapping> uniques){
-        this.uniques = uniques;
     }
 
     public static class MergeSet{

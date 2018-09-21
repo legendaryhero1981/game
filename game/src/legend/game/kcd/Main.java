@@ -145,7 +145,7 @@ public final class Main implements IMain,IFileUtil{
         mergeMap = kcd.getMergeMap();
         conflictMap = kcd.getConflictMap();
         CS.showError(ERR_KCD_NUL_CFG,null,()->config.trim().validate());
-        CS.showError(ERR_KCD_MOD_PATH,null,()->!nonEmptyDir(modPath));
+        CS.showError(ERR_KCD_MOD_PATH,null,()->!existsPath(modPath));
         CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
     }
 
@@ -159,7 +159,6 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void pakMod(IProgress progress){
-        progress.reset();
         loadKcd();
         Path gameModPath = gamePath.resolve(MOD_MODS);
         Path gameMergePath = gameModPath.resolve(MOD_MERGE);
@@ -208,7 +207,6 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void unpakMod(IProgress progress){
-        progress.reset();
         loadKcd();
         // 获得MOD目录列表
         srcParam.setCmd(CMD_FND_DIR_OLY);
@@ -554,6 +552,7 @@ public final class Main implements IMain,IFileUtil{
             mods.add(mod);
             mods.addAll(modMap.values());
         }
+        progress.reset();
     }
 
     private static void dealUnique(IProgress progress, float scale){

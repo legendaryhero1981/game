@@ -27,8 +27,4 @@ public class Merge{
     public List<Mapping> getMappings(){
         return mappings;
     }
-
-    public void setMappings(CopyOnWriteArrayList<Mapping> mappings){
-        this.mappings = mappings;
-    }
 }

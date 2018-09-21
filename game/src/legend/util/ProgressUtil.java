@@ -129,7 +129,7 @@ public class ProgressUtil implements IProgressUtil{
         public void update(float size, float scale){
             service.execute(()->{
                 if(State.FINISH == state.get()) return;
-                this.size.set(this.size.get() + scale * (MIN > size ? MIN : size));
+                this.size.updateAndGet(v->this.size.get() + scale * (MIN > size ? MIN : size));
                 await(update,ERR_UPDATE);
                 resume0();
             });
@@ -147,7 +147,6 @@ public class ProgressUtil implements IProgressUtil{
 
         private void run0(){
             if(State.FINISH != state.get()) return;
-            reset0();
             state.set(State.RUN);
             show();
         }
@@ -158,13 +157,9 @@ public class ProgressUtil implements IProgressUtil{
         }
 
         private void reset0(){
-            size.set(position.get() * amount.get() / 100f);
+            size.updateAndGet(v->position.get() * amount.get() / 100f);
             progress.set(position.get());
-            if(State.RUN == state.get()){
-                state.set(State.RESET);
-                sleep(SLEEP * 2,ERR_RUN);
-                state.set(State.RUN);
-            }
+            state.set(State.RESET);
         }
 
         private void stop0(){
@@ -173,7 +168,7 @@ public class ProgressUtil implements IProgressUtil{
         }
 
         private void resume0(){
-            if(State.STOP != state.get()) return;
+            if(State.FINISH == state.get()) return;
             state.set(State.RUN);
         }
 
