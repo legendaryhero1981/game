@@ -502,9 +502,10 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     param.getPathsMap().put(dest.getParent(),paths);
                     find(dest.getParent(),1,(p, b)->b.isRegularFile()).parallel().forEach(p->paths.add(p));
                 }
+                param.getPathList().clear();
                 List<Path> paths = param.getPathsMap().get(dest.getParent());
                 paths.parallelStream().forEach(p->{
-                    if(CMD_BAK_UGD.equals(param.getCmd()) && p.getFileName().toString().startsWith(src.getFileName().toString()) || CMD_BAK_RST.equals(param.getCmd()) && src.getFileName().toString().startsWith(p.getFileName().toString())){
+                    if(CMD_BAK_UGD.equals(param.getCmd()) && p.getFileName().toString().toLowerCase().startsWith(src.getFileName().toString().toLowerCase()) || CMD_BAK_RST.equals(param.getCmd()) && src.getFileName().toString().toLowerCase().startsWith(p.getFileName().toString().toLowerCase())){
                         param.getFilesSize().addAndGet(p.toFile().length());
                         param.getPathList().add(p);
                     }
@@ -516,11 +517,11 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     param.getCmdOptional().ifPresent(c->moveFile(p,backup));
                 });
                 paths.removeAll(param.getPathList());
-                param.getPathList().clear();
             }catch(IOException ioe){
                 CS.sl(gsph(ERR_DIR_VST,dest.getParent().toString(),ioe.toString()));
             }
-            param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
+            if(param.getPathList().isEmpty()) param.getDetailOptional().ifPresent(t->showFile(new String[]{V_ADD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
+            else param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
             param.getCmdOptional().ifPresent(c->moveFile(src,dest));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
