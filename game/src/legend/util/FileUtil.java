@@ -493,9 +493,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
-        param.getPathMap().entrySet().parallelStream().forEach(e->{
-            BasicFileAttributes a = e.getKey();
-            Path src = e.getValue();
+        param.getPathMap().values().stream().sorted(new PathListComparator(param)).forEach(src->{
+            File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
             if(dest.getParent().toFile().isDirectory()) try{
                 if(isEmpty(param.getPathsMap().get(dest.getParent()))){
@@ -505,18 +504,15 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 }
                 List<Path> paths = param.getPathsMap().get(dest.getParent());
                 paths.parallelStream().forEach(p->{
-                    switch(param.getCmd()){
-                        case CMD_BAK_UGD:
-                        if(p.getFileName().toString().startsWith(src.getFileName().toString())) param.getPathList().add(p);
-                        break;
-                        case CMD_BAK_RST:
-                        if(src.getFileName().toString().startsWith(p.getFileName().toString())) param.getPathList().add(p);
+                    if(CMD_BAK_UGD.equals(param.getCmd()) && p.getFileName().toString().startsWith(src.getFileName().toString()) || CMD_BAK_RST.equals(param.getCmd()) && src.getFileName().toString().startsWith(p.getFileName().toString())){
+                        param.getFilesSize().addAndGet(p.toFile().length());
+                        param.getPathList().add(p);
                     }
                 });
                 param.getFilesCount().addAndGet(param.getPathList().size());
                 param.getPathList().parallelStream().forEach(p->{
                     Path backup = param.getBackupPath().resolve(param.getDestPath().relativize(p));
-                    param.getDetailOptional().ifPresent(t->showFile(new String[]{V_BAK + V_MOV,V_TO},new FileSizeMatcher(a),p,backup));
+                    param.getDetailOptional().ifPresent(t->showFile(new String[]{V_BAK + V_MOV,V_TO},new FileSizeMatcher(file),p,backup));
                     param.getCmdOptional().ifPresent(c->moveFile(p,backup));
                 });
                 paths.removeAll(param.getPathList());
@@ -524,7 +520,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             }catch(IOException ioe){
                 CS.sl(gsph(ERR_DIR_VST,dest.getParent().toString(),ioe.toString()));
             }
-            param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD + V_MOV,V_TO},new FileSizeMatcher(a),src,dest));
+            param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
             param.getCmdOptional().ifPresent(c->moveFile(src,dest));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
@@ -587,24 +583,15 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
                 CS.showError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) return false;
-                    switch(param.getCmd()){
-                        case CMD_ZIP_INF:
-                        return p.equals(param.getDestPath().resolve(entry.getName()));
-                        default:
-                        return p.equals(p.getParent().resolve(entry.getName()));
-                    }
+                    if(CMD_ZIP_INF.equals(param.getCmd())) return p.equals(param.getDestPath().resolve(entry.getName()));
+                    else return p.equals(p.getParent().resolve(entry.getName()));
                 }));
                 int size = zipFile.size();
                 for(value.set(zipInputStream.getNextEntry());nonEmpty(value.get());value.set(zipInputStream.getNextEntry())){
                     ZipEntry entry = value.get();
                     SingleValue<Path> dest = new SingleValue<>(null);
-                    switch(param.getCmd()){
-                        case CMD_ZIP_INF:
-                        dest.set(param.getDestPath().resolve(entry.getName()));
-                        break;
-                        default:
-                        dest.set(p.getParent().resolve(entry.getName()));
-                    }
+                    if(CMD_ZIP_INF.equals(param.getCmd())) dest.set(param.getDestPath().resolve(entry.getName()));
+                    else dest.set(p.getParent().resolve(entry.getName()));
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
                         param.getDirsCount().incrementAndGet();
                         param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_DIR_NUL + gs(1) + dest));
