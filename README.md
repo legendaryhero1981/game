@@ -10,7 +10,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK10.0.2开发，�
 
 2、将game项目的src文件夹下所有.java文件打包成game.jar；
 
-3、用exe4j将game.jar打包成game.exe，在Java invocation选项窗口中的主类选择legend.Main，在下一个选项窗口JRE中指定最低的JRE版本为9；
+3、用exe4j将game.jar打包成game.exe，在Java invocation选项窗口中的主类选择Module path为legend/legend.Main，在下一个选项窗口JRE中指定最低的JRE版本为9；
 
 4、将game.exe放置在任意目录，如：D:\tools，再将D:\tools\game.exe的文件路径名添加到系统环境变量中；
 
@@ -18,14 +18,13 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK10.0.2开发，�
 
 # 功能描述
 
+```
 目前包含5条命令，输入 game 可以看到命令帮助信息如下：
 
 作者：李允
 版本：V3.0
 
 
-
-```
 参数说明：
 
 file -f[+*!@?]|-fd[+*!@?]|-fdo[+*!@?]|-fpa[+*!@?]|-fpr[+*!@?]|-fps[+*!@?]|-fpda[+*!@?]|-fpdr[+*!@?]|-fpds[+*!@?]|-fpdoa[+*!@?]|-fpdor[+*!@?]|-fpdos[+*!@?]|-fsa[+*!@?]|-fsd[+*!@?]|-fdsa[+*!@?]|-fdsd[+*!@?]|-fdosa[+*!@?]|-fdosd[+*!@?]|-fddsa[+*!@?]|-fddsd[+*!@?]|-r[+*!@?]|-rl[+*!@?]|-ru[+*!@?]|-ruf[+*!@?]|-rd[+*!@?]|-rdl[+*!@?]|-rdu[+*!@?]|-rduf[+*!@?]|-rdo[+*!@?]|-rdol[+*!@?]|-rdou[+*!@?]|-rdouf[+*!@?]|-c[+*!@?]|-cd[+*!@?]|-cdo[+*!@?]|-d[+*!@?]|-dd[+*!@?]|-ddo[+*!@?]|-dn[+*!@?]|-ddn[+*!@?]|-ddon[+*!@?]|-m[+*!@?]|-md[+*!@?]|-mdo[+*!@?]|-b[+*!@?]|-bd[+*!@?]|-bu[+*!@?]|-br[+*!@?]|-u[+*!@?]|-ud[+*!@?]|-zd[+*!@?]|-zdd[+*!@?]|-zi[+*!@?]|-pd[+*!@?]|-pdd[+*!@?]|-pi[+*!@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
@@ -42,7 +41,7 @@ backup			备份文件目录。
 
 sizeExpr		文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，指定0或不指定则取默认值9223372036854775807B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。
 
-replacement	文件名替换正则表达式。
+replacement		文件名替换正则表达式。
 
 zipName			压缩文件名（程序会根据命令选项自动添加文件扩展名.zip或.pak）。
 
