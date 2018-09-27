@@ -19,7 +19,7 @@ public class TestFileUtil extends TestBase{
         String s = "";
 //        s = "-zdd!*  .  G:\\cache\\temp\\src  G:\\cache\\temp\\dest  src";
 //        s = "-c!*  \\.bat$  d:\\games\\jlink  d:\\games\\jlink\\game\\bin  1";
-        s = "-dd`  .  d:\\games\\jlink\\game";
+        s = "-b*  .  F:\\games\\Dark Souls III  D:\\Dark Souls III  F:\\备份";
         super.monkParam(s);
     }
 }

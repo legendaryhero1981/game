@@ -12,7 +12,8 @@ public interface IFileUtil extends ICommon{
     long MATCH_FILE_ONLY = 1l << 4;
     long MATCH_DIR_ONLY = 1l << 5;
     long IS_QUERY_COMMAND = 1l << 6;
-    long ORDER_ASC = 1l << 7;
+    long NEED_REPATH = 1l << 7;
+    long ORDER_ASC = 1l << 8;
     long ENABLE_CACHE = 1l << 50;
     long CAN_USE_CACHE = 1l << 51;
     long CAN_SAVE_CACHE = 1l << 52;
