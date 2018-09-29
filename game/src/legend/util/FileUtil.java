@@ -283,12 +283,14 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void findSortedFiles(FileParam param){
         param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit() - param.getPathList().size()).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        int limit = param.getLimit() - param.getPathList().size();
+        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
     }
 
     private static void findSortedFilePaths(FileParam param){
         param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showFilePath(param,p)));
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit() - param.getPathList().size()).forEach(p->showFilePath(param,p)));
+        int limit = param.getLimit() - param.getPathList().size();
+        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->showFilePath(param,p)));
     }
 
     private static void findSortedFileSizes(FileParam param){
