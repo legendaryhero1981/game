@@ -9,8 +9,8 @@ import legend.intf.IMain;
 public final class Main implements IMain{
     public static void main(String[] args){
         CS.showHelp(HELP_MAIN,()->isEmpty(args));
+        final String cmd = args[0].toLowerCase();
         String[] s = copyOfRange(args,1,args.length);
-        final String cmd = s[0].toLowerCase();
         switch(cmd){
             case MAIN_FILE:
             legend.util.FileUtil.main(s);
