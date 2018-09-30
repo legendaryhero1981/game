@@ -154,7 +154,7 @@ public final class Main implements IMain,IFileUtil{
     }
 
     private static void createMod(IProgress progress){
-        progress.reset(1,1,1);
+        progress.update(50);
         saveKcd();
     }
 
@@ -214,17 +214,16 @@ public final class Main implements IMain,IFileUtil{
         srcParam.setSrcPath(modPath);
         srcParam.setLevel(1);
         dealFiles(srcParam);
+        srcParam.setLevel(Integer.MAX_VALUE);
         progress.update(10);
         Collection<Path> paths = srcParam.getPathMap().values();
         if(paths.isEmpty()){
             kcd.clearCache();
-            srcParam.setLevel(Integer.MAX_VALUE);
             return;
         }
         CS.showError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
         srcParam.setCmd(CMD_DELETE);
         srcParam.setPattern(compile(REG_MOD_NOT_PAK));
-        srcParam.setLevel(Integer.MAX_VALUE);
         paths.parallelStream().forEach(p->{
             // 删除MOD目录中所有非.PAK文件
             FileParam param = srcParam.cloneValue();
@@ -282,9 +281,7 @@ public final class Main implements IMain,IFileUtil{
         loadKcd();
         if(mods.isEmpty()) return;
         List<String> lines = new CopyOnWriteArrayList<>();
-        mods.stream().sorted(new ModComparator()).forEach(mod->{
-            if(!MOD_ORDER_INGNORE.equals(mod.getOrder())) lines.add(mod.getMod());
-        });
+        mods.stream().sorted(new ModComparator()).filter(mod->!MOD_ORDER_INGNORE.equals(mod.getOrder())).forEach(mod->lines.add(mod.getMod()));
         writeFile(get(config.getGamePath()).resolve(MOD_MODS).resolve(KCD_FILE_ORDER),lines);
         saveKcd();
     }
@@ -298,15 +295,11 @@ public final class Main implements IMain,IFileUtil{
         dealFile(srcParam);
         progress.update(5);
         conflicts.stream().forEach(conflict->{
-            conflict.getMappings().parallelStream().forEach(mapping->{
-                Merge merge = mergeMap.get(mapping.getPath());
-                if(isEmpty(merge)){
-                    merge = new Merge();
-                    merge.setPath(mapping.getPath());
-                    mergeMap.put(mapping.getPath(),merge);
-                }
-                merge.getMappings().add(mapping);
-            });
+            conflict.getMappings().parallelStream().forEach(m->mergeMap.computeIfAbsent(m.getPath(),path->{
+                Merge merge = new Merge();
+                merge.setPath(m.getPath());
+                return merge;
+            }).getMappings().add(m));
         });
         modMap = kcd.refreshModMap();
         dealConflict(progress,0.9f);
@@ -570,15 +563,7 @@ public final class Main implements IMain,IFileUtil{
             FileParam param = srcParam.cloneValue();
             param.setSrcPath(modPath.resolve(mod));
             dealFiles(param);
-            param.getPathMap().values().parallelStream().forEach(p->{
-                String key = param.getSrcPath().relativize(p).toString().toLowerCase();
-                List<Path> value = pathsMap.get(key);
-                if(isEmpty(value)){
-                    value = new CopyOnWriteArrayList<>();
-                    pathsMap.put(key,value);
-                }
-                value.add(modPath.relativize(p));
-            });
+            param.getPathMap().values().parallelStream().forEach(p->pathsMap.computeIfAbsent(param.getSrcPath().relativize(p).toString().toLowerCase(),s->new CopyOnWriteArrayList<>()).add(modPath.relativize(p)));
             param.clearCache();
         });
         progress.update(20,scale);
@@ -651,16 +636,11 @@ public final class Main implements IMain,IFileUtil{
                 }
             }else copyFile(getModPath(mappings.get(0)),path);
             if(existsPath(path)) merges.add(merge);
-            else merge.getMappings().parallelStream().forEach(mapping->{
-                String mod = mapping.getMod();
-                Conflict conflict = conflictMap.get(mod);
-                if(isEmpty(conflict)){
-                    conflict = new Conflict();
-                    conflict.setMod(mod);
-                    conflictMap.put(mod,conflict);
-                }
-                conflict.getMappings().add(mapping);
-            });
+            else merge.getMappings().parallelStream().forEach(m->conflictMap.computeIfAbsent(m.getMod(),mod->{
+                Conflict conflict = new Conflict();
+                conflict.setMod(mod);
+                return conflict;
+            }).getMappings().add(m));
         });
         modMap.entrySet().parallelStream().forEach(entry->{
             String key = entry.getKey();
