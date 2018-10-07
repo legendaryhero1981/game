@@ -2,6 +2,7 @@ package legend.game.run;
 
 import static java.io.File.createTempFile;
 import static java.nio.file.Paths.get;
+import static java.util.regex.Pattern.compile;
 import static legend.intf.ICommon.gl;
 import static legend.intf.ICommon.glph;
 import static legend.intf.ICommon.gs;
@@ -168,8 +169,7 @@ public final class Main implements IMain{
         CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
         CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->game.trim().validate());
         // 处理等待时间
-        Pattern pattern = Pattern.compile(REG_TIME);
-        Matcher matcher = pattern.matcher(game.getBeforeWait());
+        Matcher matcher = compile(REG_TIME).matcher(game.getBeforeWait());
         if(!matcher.matches()) game.setBeforeWait(WAIT_TIME);
         if(!matcher.reset(game.getAfterWait()).matches()) game.setAfterWait(WAIT_TIME);
         if(!matcher.reset(game.getWatchWait()).matches()) game.setWatchWait(WAIT_TIME);
@@ -243,8 +243,9 @@ public final class Main implements IMain{
         File vbsFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_VBS);
         script.append(gl(CMD_VBS_SH_INIT,1));
         if(nonEmpty(names[1])) script.append(glph(CMD_VBS_RUN,1,names[1])).append(glph(CMD_VBS_RUN_DEL,1,names[1])).append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getBeforeWait())));
-        if(isEmpty(game.getAgentExecutablePath())) script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getExe(),game.getArgs()));
-        else script.append(glph(CMD_VBS_RUN_GAME_AGENT,1,game.getAgentExecutablePath(),game.getAgentArgs()));
+        Matcher matcher = compile(REG_PATH_NAME).matcher(game.getAgentExecutablePath());
+        if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,1,matcher.group(1),matcher.group(2),game.getAgentArgs()));
+        else script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getExe(),game.getArgs()));
         if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN_PROC,1,game.getExe(),game.getPriority()));
         if(nonEmpty(names[2])) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,1,names[2])).append(glph(CMD_VBS_RUN_DEL,1,names[2]));
         if(nonEmpty(names[3])) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN,1,names[3])).append(glph(CMD_VBS_RUN_DEL,1,names[3]));
@@ -258,7 +259,7 @@ public final class Main implements IMain{
     }
 
     private static void writeOtherScript() throws IOException{
-        Pattern pattern = Pattern.compile(REG_SPRT_CMD);
+        Pattern pattern = compile(REG_SPRT_CMD);
         writeScript(pattern.split(game.getBefore()),1);
         writeScript(pattern.split(game.getAfter()),2);
         if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){

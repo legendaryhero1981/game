@@ -15,6 +15,7 @@ public interface IMain extends ICommon{
     String REG_TIME = "60|[1-9]|[1-5]\\d";
     String REG_SPRT_CMD = "(?m)\n";
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
+    String REG_PATH_NAME = "(.*" + REG_SPRT_PATH + ")(.*)";
     String N_GAME_CONFIG = "游戏配置文件";
     String N_FILE_SCRIPT = "脚本文件";
     String N_EXE = "对应的name或path或exe节点";
@@ -33,20 +34,15 @@ public interface IMain extends ICommon{
     String CMD_LINK = "-l";
     String CMD_LINK_ALL = "-la";
     String CMD_CS_RUN = "cscript \"" + PH_ARG0 + "\"";
-    String CMD_VBS_SH_INIT = "dim sh" + gl(1)
-    + "set sh=WScript.CreateObject(\"WScript.Shell\")";
+    String CMD_VBS_SH_INIT = "dim sh" + gl(1) + "set sh=WScript.CreateObject(\"WScript.Shell\")";
     String CMD_VBS_SLEEP = "WScript.Sleep " + PH_ARG0;
     String CMD_VBS_RUN = "sh.Run \"" + PH_ARG0 + "\",0,true";
     String CMD_VBS_RUN_DEL = "sh.Run \"cmd /c del /q \"\"" + PH_ARG0 + "\"\">nul 2>nul\",0,true";
-    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" \"\"\"\" \"\"" + PH_ARG1 + FILE_SUFFIX_EXE + "\"\" " + PH_ARG2 + "\",0,true";
-    String CMD_VBS_RUN_GAME_AGENT = "sh.Run \"cmd /c start /high \"\"\"\" \"\"" + PH_ARG0 + "\"\" " + PH_ARG1 + "\",0,true";
+    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + FILE_SUFFIX_EXE + "\"\" " + PH_ARG2 + "\",0,true";
+    String CMD_VBS_RUN_AGENT = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + "\"\" " + PH_ARG2 + "\",0,true";
     String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
-    String CMD_VBS_WMI_INIT = "dim wmi,run" + gl(1)
-    + "set wmi=GetObject(\"WinMgmts:\\\\.\\root\\CIMV2\")" + gl(1)
-    + "set run=wmi.Execquery(\"Select * From Win32_Process Where Name='run.exe'\").ItemIndex(0)";
-    String CMD_VBS_SC = "dim shortcut,path" + gl(1)
-    + "path=sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\"" + gl(1)
-    + "set shortcut=sh.Createshortcut(path)";
+    String CMD_VBS_WMI_INIT = "dim wmi,run" + gl(1) + "set wmi=GetObject(\"WinMgmts:\\\\.\\root\\CIMV2\")" + gl(1) + "set run=wmi.Execquery(\"Select * From Win32_Process Where Name='run.exe'\").ItemIndex(0)";
+    String CMD_VBS_SC = "dim shortcut,path" + gl(1) + "path=sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\"" + gl(1) + "set shortcut=sh.Createshortcut(path)";
     String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
@@ -85,7 +81,7 @@ public interface IMain extends ICommon{
     + gs(4) + "Game::name\t\t\t游戏快捷方式名称，一般使用游戏中文名称。\n"
     + gs(4) + "Game::id\t\t\t游戏唯一标识。\n"
     + gs(4) + "Game::path\t\t\t游戏可执行文件路径，也是Game::icon的路径。\n"
-    + gs(4) + "Game::exe\t\t\t游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExecutablePath非空，则优先使用代理启动游戏。\n"
+    + gs(4) + "Game::exe\t\t\t游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExecutablePath非空且有效，则优先使用代理启动游戏。\n"
     + gs(4) + "Game::args\t\t\tGame::exe的命令行参数。\n"
     + gs(4) + "Game::priority\t\t游戏进程的优先级，可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）；若Game::agentExe非空且Game::agentArgs已指定优先级，则应把该节点值置空，否则优先使用该节点值。\n"
     + gs(4) + "Game::icon\t\t\t游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。\n"
