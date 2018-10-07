@@ -243,9 +243,8 @@ public final class Main implements IMain{
         File vbsFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_VBS);
         script.append(gl(CMD_VBS_SH_INIT,1));
         if(nonEmpty(names[1])) script.append(glph(CMD_VBS_RUN,1,names[1])).append(glph(CMD_VBS_RUN_DEL,1,names[1])).append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getBeforeWait())));
-        if(isEmpty(game.getAgentExe())) script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getExe(),game.getArgs()));
-        else if(isEmpty(game.getAgentPath())) script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getAgentExe(),game.getAgentArgs()));
-        else script.append(glph(CMD_VBS_RUN_GAME,1,game.getAgentPath(),game.getAgentExe(),game.getAgentArgs()));
+        if(isEmpty(game.getAgentExecutablePath())) script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getExe(),game.getArgs()));
+        else script.append(glph(CMD_VBS_RUN_GAME_AGENT,1,game.getAgentExecutablePath(),game.getAgentArgs()));
         if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN_PROC,1,game.getExe(),game.getPriority()));
         if(nonEmpty(names[2])) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,1,names[2])).append(glph(CMD_VBS_RUN_DEL,1,names[2]));
         if(nonEmpty(names[3])) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN,1,names[3])).append(glph(CMD_VBS_RUN_DEL,1,names[3]));

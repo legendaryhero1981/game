@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import legend.game.run.intf.IMain;
 
 @XmlRootElement(name = "Game")
-@XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentPath","agentExe","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
+@XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentExecutablePath","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
 public class Game implements IMain{
     @XmlElement
     private String comment = "";
@@ -32,9 +32,7 @@ public class Game implements IMain{
     @XmlElement
     private String icon = "";
     @XmlElement
-    private String agentPath = "";
-    @XmlElement
-    private String agentExe = "";
+    private String agentExecutablePath = "";
     @XmlElement
     private String agentArgs = "";
     @XmlElement
@@ -68,8 +66,7 @@ public class Game implements IMain{
         args = args.trim();
         priority = priority.trim();
         icon = icon.trim();
-        agentPath = agentPath.trim();
-        agentExe = agentExe.trim();
+        agentExecutablePath = agentExecutablePath.trim();
         agentArgs = agentArgs.trim();
         before = before.trim();
         after = after.trim();
@@ -151,20 +148,12 @@ public class Game implements IMain{
         this.icon = icon;
     }
 
-    public String getAgentPath(){
-        return agentPath;
+    public String getAgentExecutablePath(){
+        return agentExecutablePath;
     }
 
-    public void setAgentPath(String agentPath){
-        this.agentPath = agentPath;
-    }
-
-    public String getAgentExe(){
-        return agentExe;
-    }
-
-    public void setAgentExe(String agentExe){
-        this.agentExe = agentExe;
+    public void setAgentExecutablePath(String agentExecutablePath){
+        this.agentExecutablePath = agentExecutablePath;
     }
 
     public String getAgentArgs(){

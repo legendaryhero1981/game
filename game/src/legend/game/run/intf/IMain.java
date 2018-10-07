@@ -39,6 +39,7 @@ public interface IMain extends ICommon{
     String CMD_VBS_RUN = "sh.Run \"" + PH_ARG0 + "\",0,true";
     String CMD_VBS_RUN_DEL = "sh.Run \"cmd /c del /q \"\"" + PH_ARG0 + "\"\">nul 2>nul\",0,true";
     String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" \"\"\"\" \"\"" + PH_ARG1 + FILE_SUFFIX_EXE + "\"\" " + PH_ARG2 + "\",0,true";
+    String CMD_VBS_RUN_GAME_AGENT = "sh.Run \"cmd /c start /high \"\"\"\" \"\"" + PH_ARG0 + "\"\" " + PH_ARG1 + "\",0,true";
     String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
     String CMD_VBS_WMI_INIT = "dim wmi,run" + gl(1)
     + "set wmi=GetObject(\"WinMgmts:\\\\.\\root\\CIMV2\")" + gl(1)
@@ -75,28 +76,27 @@ public interface IMain extends ICommon{
     String ERR_EXE_NUL = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + N_EXE + V_BY_NUL;
     String ERR_CREATE_FAIL = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_RUN_FAIL = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String GAMES_COMMENT = gl(1) + gs(4) + "游戏配置集节点结构说明：" + gl(1)
-    + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。" + gl(1)
-    + gs(4) + "Games::comment\t游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。" + gl(1)
-    + gs(4) + "Games::Game\t\t游戏配置节点，包括执行游戏的命令行参数配置及执行游戏前和执行游戏后的BAT脚本命令配置。" + gl(1)
-    + gs(4) + "Game节点由comment、name、id、path、exe、args、priority、icon、agentPath、agentExe、agentArgs、before、after、beforeWait、afterWait、watchWait、watch节点按顺序组成；comment节点必须在最前面，watch节点可以有多个。" + gl(1)
-    + gs(4) + "Game::comment\t\t游戏快捷方式说明，默认值同Game::name。" + gl(1)
-    + gs(4) + "Game::name\t\t游戏快捷方式名称，一般使用游戏中文名称。" + gl(1)
-    + gs(4) + "Game::id\t\t游戏唯一标识。" + gl(1)
-    + gs(4) + "Game::path\t\t游戏可执行文件路径，也是Game::icon的路径。" + gl(1)
-    + gs(4) + "Game::exe\t\t游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExe非空，则优先使用Game::agentExe启动游戏。" + gl(1)
-    + gs(4) + "Game::args\t\tGame::exe的命令行参数。" + gl(1)
-    + gs(4) + "Game::priority\t\t游戏进程的优先级，可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）；若Game::agentExe非空且Game::agentArgs已指定优先级，则应把该节点值置空，否则优先使用该节点值。" + gl(1)
-    + gs(4) + "Game::icon\t\t游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。" + gl(1)
-    + gs(4) + "Game::agentPath\tGame::exe的代理可执行文件路径；若为空则取值为Game::path。" + gl(1)
-    + gs(4) + "Game::agentExe\t\tGame::exe的代理可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；适用于使用游戏插件启动游戏的情况，例如：上古卷轴5的skse。" + gl(1)
-    + gs(4) + "Game::agentArgs\tGame::agentExe的命令行参数。" + gl(1)
-    + gs(4) + "Game::before\t\t在游戏执行前需要执行的BAT脚本命令。" + gl(1)
-    + gs(4) + "Game::after\t\t在游戏执行后需要执行的BAT脚本命令。" + gl(1)
-    + gs(4) + "Game::beforeWait\tGame::before命令执行完后等待beforeWait秒，再执行游戏；仅当Game::before不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。" + gl(1)
-    + gs(4) + "Game::afterWait\t\t执行游戏后等待afterWait秒，再执行Game::after命令；仅当Game::after不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。"  + gl(1)
-    + gs(4) + "Game::watchWait\t游戏监控进程的等待时间，每隔watchWait秒后检测一次游戏进程是否存在；仅当Game::watch不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。"  + gl(1)
-    + gs(4) + "Game::watch\t\t由Game::before或Game::after脚本启动的进程的名称（例如：editplus.exe）或进程的可执行文件路径名（例如：F:/tools/EditPlus/editplus.exe），在游戏进程结束后监控程序会自动关闭之。" + gl(1) + gs(4);
+    String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"
+    + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。\n"
+    + gs(4) + "Games::comment\t\t游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。\n"
+    + gs(4) + "Games::Game\t\t\t游戏配置节点，包括执行游戏的命令行参数配置及执行游戏前和执行游戏后的BAT脚本命令配置。\n"
+    + gs(4) + "Game节点由comment、name、id、path、exe、args、priority、icon、agentPath、agentExe、agentArgs、before、after、beforeWait、afterWait、watchWait、watch节点按顺序组成；comment节点必须在最前面，watch节点可以有多个。\n"
+    + gs(4) + "Game::comment\t\t游戏快捷方式说明，默认值同Game::name。\n"
+    + gs(4) + "Game::name\t\t\t游戏快捷方式名称，一般使用游戏中文名称。\n"
+    + gs(4) + "Game::id\t\t\t游戏唯一标识。\n"
+    + gs(4) + "Game::path\t\t\t游戏可执行文件路径，也是Game::icon的路径。\n"
+    + gs(4) + "Game::exe\t\t\t游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExecutablePath非空，则优先使用代理启动游戏。\n"
+    + gs(4) + "Game::args\t\t\tGame::exe的命令行参数。\n"
+    + gs(4) + "Game::priority\t\t游戏进程的优先级，可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）；若Game::agentExe非空且Game::agentArgs已指定优先级，则应把该节点值置空，否则优先使用该节点值。\n"
+    + gs(4) + "Game::icon\t\t\t游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。\n"
+    + gs(4) + "Game::agentExecutablePath\tGame::exe的代理可执行文件绝对路径名；适用于使用游戏插件启动游戏的情况，例如：上古卷轴5的skse。\n"
+    + gs(4) + "Game::agentArgs\t\tGame::agentExe的命令行参数。\n"
+    + gs(4) + "Game::before\t\t在游戏执行前需要执行的BAT脚本命令。\n"
+    + gs(4) + "Game::after\t\t\t在游戏执行后需要执行的BAT脚本命令。\n"
+    + gs(4) + "Game::beforeWait\t\tGame::before命令执行完后等待beforeWait秒，再执行游戏；仅当Game::before不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。\n"
+    + gs(4) + "Game::afterWait\t\t执行游戏后等待afterWait秒，再执行Game::after命令；仅当Game::after不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。\n"
+    + gs(4) + "Game::watchWait\t\t游戏监控进程的等待时间，每隔watchWait秒后检测一次游戏进程是否存在；仅当Game::watch不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。\n"
+    + gs(4) + "Game::watch\t\t\t由Game::before或Game::after脚本启动的进程的名称（例如：editplus.exe）或进程的可执行文件路径名（例如：F:/tools/EditPlus/editplus.exe），在游戏进程结束后监控程序会自动关闭之。\n" + gs(4);
     String HELP_RUN = APP_INFO + "参数说明：" + gl(2)
     + "run -c|-a|-d|-v|-x|-l|-la id path exe name [comment]" + gl(2)
     + "id\t\t游戏标识，在" + RUN_FILE_CONFIG + "文件中唯一标识一个游戏配置节点。" + gl(2)
