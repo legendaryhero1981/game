@@ -8,6 +8,10 @@ import legend.intf.ICommon;
 public interface IMain extends ICommon{
     String RUN_FILE_LOG = "./run.log";
     String RUN_FILE_CONFIG = "./run.xml";
+    String EXE_JAVA = "java.exe";
+    String EXE_RUN = "run.exe";
+    String BAT_RUN = "run.bat";
+    String MODULE_RUN = "legend/legend.game.run.Main";
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
     String WAIT_TIME = "10";
@@ -41,19 +45,51 @@ public interface IMain extends ICommon{
     String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + FILE_SUFFIX_EXE + "\"\" " + PH_ARG2 + "\",0,true";
     String CMD_VBS_RUN_AGENT = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + "\"\" " + PH_ARG2 + "\",0,true";
     String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
-    String CMD_VBS_WMI_INIT = "dim wmi,run" + gl(1) + "set wmi=GetObject(\"WinMgmts:\\\\.\\root\\CIMV2\")" + gl(1) + "set run=wmi.Execquery(\"Select * From Win32_Process Where Name='run.exe'\").ItemIndex(0)";
+    String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
+    String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
+    + "dim processes,target" + gl(1)
+    + "set processes=wmi.Execquery(\"select * from win32_process where name='" + EXE_RUN + "'\")" + gl(1)
+    + "if processes.count=0 then" + gl(1)
+    + "set processes=wmi.Execquery(\"select * from win32_process where name='" + EXE_JAVA + "' and commandline like '%" + MODULE_RUN + "%'\")" + gl(1)
+    + "if processes.count=0 then" + gl(1) + "WScript.Quit" + gl(1) + "end if" + gl(1)
+    + "dim regex,matches" + gl(1)
+    + "set regex=New RegExp" + gl(1)
+    + "regex.pattern=\".+" + gs(SPRT_FILE,2) + "\"" + gl(1)
+    + "set matches=regex.Execute(processes.ItemIndex(0).CommandLine)" + gl(1)
+    + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
+    + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
+    + "end if";
+    String CMD_VBS_PROC_GAME = "set games=wmi.Execquery(\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\")";
+    String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
+    + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARG1;
+    String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.Execquery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
+    String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARG0 + gl(1)
+    + "set games=wmi.Execquery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
+    + "Wend" + gl(1)
+    + "dim names,paths,wql" + gl(1)
+    + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_ARG + "\")" + gl(1)
+    + "paths=Split(\"" + PH_ARG3 + "\",\"" + SPRT_ARG + "\")" + gl(1)
+    + "if ubound(names)>0 then" + gl(1)
+    + "wql=\"select * from win32_process where name='\"&names(0)&\"'\"" + gl(1)
+    + "for i=1 to ubound(names)" + gl(1) + "wql=wql&\" or name='\"&names(i)&\"'\"" + gl(1) + "next" + gl(1)
+    + CMD_VBS_WATCH_TERMINATE + gl(1)
+    + "end if" + gl(1)
+    + "if ubound(paths)>0 then" + gl(1)
+    + "wql=\"select * from win32_process where executablepath='\"&paths(0)&\"'\"" + gl(1)
+    + "for i=1 to ubound(paths)" + gl(1) + "wql=wql&\" or executablepath='\"&paths(i)&\"'\"" + gl(1) + "next" + gl(1)
+    + CMD_VBS_WATCH_TERMINATE + gl(1)
+    + "end if";
     String CMD_VBS_SC = "dim shortcut,path" + gl(1) + "path=sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\"" + gl(1) + "set shortcut=sh.Createshortcut(path)";
     String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
     String CMD_VBS_SC_WD = "shortcut.WorkingDirectory=\"" + PH_ARG0 + "\"";
-    String CMD_VBS_SC_TP = "shortcut.TargetPath=run.ExecutablePath";
+    String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
     String CMD_VBS_SC_WS = "shortcut.WindowStyle=1";
     String CMD_VBS_SC_SAVE = "shortcut.Save";
     String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARG0 + "'\" delete";
     String CMD_BAT_PROC_DEL_BY_PATH = "wmic process where \"executablepath='" + PH_ARG0 + "'\" delete";
-    String CMD_BAT_WATCH = "setlocal enableextensions" + gl(1)
-    + "setlocal enabledelayedexpansion" + gl(1)
+    String CMD_BAT_GAME_WATCH = "setlocal enableextensions" + gl(1) + "setlocal enabledelayedexpansion" + gl(1)
     + ":watch" + gl(1)
     + "set pid=" + gl(1)
     + "for /f \"usebackq skip=1\" %%i in (`wmic process where \"name='" + PH_ARG0 + "'\" get processid`) do if \"!pid!\"==\"\" set pid=%%i" + gl(1)
