@@ -2,7 +2,7 @@
 
 # 项目介绍
 
-PC游戏Mod修改工具集命令行程序，目前基于64位JDK10.0.2开发，建议在64位windows10操作系统上运行。
+PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建议在64位windows10操作系统上运行。
 
 # 部署说明
 
@@ -440,6 +440,8 @@ comment		游戏快捷方式说明。
 
 -v 显示游戏配置文件./run.xml中所有的游戏配置节点的id列表，显示格式为：id		comment。
 
+-k [id] 根据id终止游戏配置文件./run.xml中对应的的游戏进程；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id终止对应的游戏进程。
+
 -x [id] 根据id执行游戏配置文件./run.xml中对应的游戏；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id执行对应的游戏。
 
 -l [id] 根据id获得./run.xml中对应的游戏，并创建游戏快捷方式到桌面；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id创建游戏快捷方式。
@@ -465,6 +467,10 @@ run -a poe2-d "F:/games/Pillars of Eternity II" PillarsOfEternityII 永恒之柱
 run -d ew2
 
 run -v
+
+run -k
+
+run -k ew
 
 run -x
 
