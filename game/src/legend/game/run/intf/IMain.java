@@ -15,7 +15,7 @@ public interface IMain extends ICommon{
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
     String WAIT_TIME = "10";
-    String SLEEP_TIME = "1000";
+    String SLEEP_TIME = "500";
     String REG_TIME = "60|[1-9]|[1-5]\\d";
     String REG_SPRT_CMD = "(?m)\n";
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
@@ -23,7 +23,9 @@ public interface IMain extends ICommon{
     String N_GAME_CONFIG = "游戏配置文件";
     String N_FILE_SCRIPT = "脚本文件";
     String N_EXE = "对应的name或path或exe节点";
-    String N_VALIDATE = "存在id或name或path或exe为空的game节点！";
+    String N_GAME_REPEAT = "id相同的game节点！";
+    String N_GAME_INVALIDATE = "id或name或path或exe为空的game节点！";
+    String ST_REPEAT_ID = "找到重复的游戏ID：" + PH_ARG0;
     String ST_CHOICE_ID = "请输入一个游戏ID（按回车键确认）：";
     String FILE_PREFIX = "run";
     String FILE_SUFFIX_BAT = ".bat";
@@ -35,9 +37,10 @@ public interface IMain extends ICommon{
     String CMD_DEL = "-d";
     String CMD_VIEW = "-v";
     String CMD_EXEC = "-x";
+    String CMD_KILL = "-k";
     String CMD_LINK = "-l";
     String CMD_LINK_ALL = "-la";
-    String CMD_CS_RUN = "cscript \"" + PH_ARG0 + "\"";
+    String CMD_CS_RUN = "wscript \"" + PH_ARG0 + "\"";
     String CMD_VBS_SH_INIT = "dim sh" + gl(1) + "set sh=WScript.CreateObject(\"WScript.Shell\")";
     String CMD_VBS_SLEEP = "WScript.Sleep " + PH_ARG0;
     String CMD_VBS_RUN = "sh.Run \"" + PH_ARG0 + "\",0,true";
@@ -63,6 +66,9 @@ public interface IMain extends ICommon{
     String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
     + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARG1;
     String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.Execquery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
+    String CMD_VBS_GAME_KILL = CMD_VBS_WMI_INIT + gl(1)
+    + "wql=\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"" + gl(1)
+    + CMD_VBS_WATCH_TERMINATE;
     String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARG0 + gl(1)
     + "set games=wmi.Execquery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
     + "Wend" + gl(1)
@@ -100,12 +106,13 @@ public interface IMain extends ICommon{
     + "goto quit )" + gl(1)
     + ":quit" + gl(1)
     + "exit /b 0";
-    String ERR_CONFIG_NON = N_GAME_CONFIG + "\"" + RUN_FILE_CONFIG + "\"" + V_NON_EXISTS;
-    String ERR_CONFIG_NUL = N_GAME_CONFIG + "\"" + RUN_FILE_CONFIG + "\"" + V_BY_NUL;
-    String ERR_ID_NON = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + V_NON_EXISTS;
-    String ERR_ID_EXISTS = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + V_ARD_EXISTS;
-    String ERR_VALIDATE = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_VALIDATE;
-    String ERR_EXE_NUL = N_GAME_CONFIG + "\"" + PH_ARG0 + "\"" + N_IN + N_SPEC_ID + "\"" + PH_ARG1 + "\"" + N_EXE + V_BY_NUL;
+    String ERR_CONFIG_NON = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_NON_EXISTS;
+    String ERR_CONFIG_NUL = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_BY_NUL;
+    String ERR_CONFIG_REPEAT = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_EXISTS + N_GAME_REPEAT;
+    String ERR_ID_NON = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + V_NON_EXISTS;
+    String ERR_ID_EXISTS = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + V_ARD_EXISTS;
+    String ERR_INVALIDATE = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
+    String ERR_EXE_NUL = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + N_EXE + V_BY_NUL;
     String ERR_CREATE_FAIL = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_RUN_FAIL = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"
@@ -140,6 +147,7 @@ public interface IMain extends ICommon{
     + "-a id path exe name [comment] 添加一个游戏配置节点到游戏配置文件" + RUN_FILE_CONFIG + "中。" + gl(2)
     + "-d id 根据id删除游戏配置文件" + RUN_FILE_CONFIG + "中对应的一个游戏配置节点。" + gl(2)
     + "-v 显示游戏配置文件" + RUN_FILE_CONFIG + "中所有的游戏配置节点的id列表，显示格式为：id\t\tcomment。" + gl(2)
+    + "-k [id] 根据id终止游戏配置文件" + RUN_FILE_CONFIG + "中对应的的游戏进程；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id终止对应的游戏进程。" + gl(2)
     + "-x [id] 根据id执行游戏配置文件" + RUN_FILE_CONFIG + "中对应的游戏；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id执行对应的游戏。" + gl(2)
     + "-l [id] 根据id获得" + RUN_FILE_CONFIG + "中对应的游戏，并创建游戏快捷方式到桌面；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id创建游戏快捷方式。" + gl(2)
     + "-la 批量创建游戏配置文件" + RUN_FILE_CONFIG + "中所有游戏的快捷方式到桌面。" + gl(2)
@@ -153,6 +161,8 @@ public interface IMain extends ICommon{
     + "run -a poe2-d \"F:/games/Pillars of Eternity II\" PillarsOfEternityII 永恒之柱2：开发者模式" + gl(2)
     + "run -d ew2" + gl(2)
     + "run -v" + gl(2)
+    + "run -k" + gl(2)
+    + "run -k ew" + gl(2)
     + "run -x" + gl(2)
     + "run -x ew" + gl(2)
     + "run -l" + gl(2)

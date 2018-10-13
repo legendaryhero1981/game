@@ -18,7 +18,7 @@ public class TestRun extends TestBase{
     public void monkParam(){
         String s = "";
         // s = "-c ew F:/games/The Evil Within EvilWithin 恶灵附身";
-        // s = "-v";
+         s = "-v";
         // s = "-x sg";
         // s = "-la";
         // s = "-l ew";
