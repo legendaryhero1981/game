@@ -6,6 +6,7 @@ import static legend.intf.ICommon.gs;
 import legend.intf.ICommon;
 
 public interface IMain extends ICommon{
+    long SLEEP_TIME = 500;
     String RUN_FILE_LOG = "./run.log";
     String RUN_FILE_CONFIG = "./run.xml";
     String EXE_JAVA = "java.exe";
@@ -15,7 +16,6 @@ public interface IMain extends ICommon{
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
     String WAIT_TIME = "10";
-    String SLEEP_TIME = "500";
     String REG_TIME = "60|[1-9]|[1-5]\\d";
     String REG_SPRT_CMD = "(?m)\n";
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
@@ -85,7 +85,8 @@ public interface IMain extends ICommon{
     + "for i=1 to ubound(paths)" + gl(1) + "wql=wql&\" or executablepath='\"&paths(i)&\"'\"" + gl(1) + "next" + gl(1)
     + CMD_VBS_WATCH_TERMINATE + gl(1)
     + "end if";
-    String CMD_VBS_SC = "dim shortcut,path" + gl(1) + "path=sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\"" + gl(1) + "set shortcut=sh.Createshortcut(path)";
+    String CMD_VBS_SC_INIT = CMD_VBS_PROC_RUN + gl(1) + "dim shortcut";
+    String CMD_VBS_SC_CRT = "set shortcut=sh.Createshortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\")";
     String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";

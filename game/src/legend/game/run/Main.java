@@ -1,6 +1,7 @@
 package legend.game.run;
 
 import static java.io.File.createTempFile;
+import static java.lang.Thread.sleep;
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.intf.ICommon.gl;
@@ -123,21 +124,27 @@ public final class Main implements IMain{
         List<Game> games = loadModel().getGames();
         games.parallelStream().forEach(g->CS.showError(ERR_INVALIDATE,new String[]{RUN_FILE_CONFIG},()->g.trim().validate()));
         // 执行脚本批量生成游戏快捷方式
-        games.stream().forEach(g->{
-            try{
-                runLinkScript(g);
-            }catch(IOException e){
-                CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
-            }catch(Exception e){
-                CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
-            }
-        });
+        try{
+            runVbsScript(true,t->{
+                script.append(gl(CMD_VBS_SC_INIT,1));
+                games.stream().forEach(g->cacheLinkScript(g));
+            });
+            sleep(SLEEP_TIME);
+        }catch(IOException e){
+            CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
+        }catch(Exception e){
+            CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
+        }
     }
 
     private static void link(){
         try{
             loadData();
-            runLinkScript(game);
+            runVbsScript(true,t->{
+                script.append(gl(CMD_VBS_SC_INIT,1));
+                cacheLinkScript(game);
+            });
+            sleep(SLEEP_TIME);
         }catch(IOException e){
             CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
         }catch(Exception e){
@@ -234,19 +241,15 @@ public final class Main implements IMain{
         return games;
     }
 
-    private static void runLinkScript(Game game) throws Exception{
-        runVbsScript(true,t->{
-            script.append(gl(CMD_VBS_SH_INIT,1) + gl(CMD_VBS_PROC_RUN,1));
-            script.append(glph(CMD_VBS_SC,1,game.getName()));
-            script.append(glph(CMD_VBS_SC_ARG,1,game.getId()));
-            script.append(glph(CMD_VBS_SC_IL,1,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + FILE_SUFFIX_EXE));
-            script.append(glph(CMD_VBS_SC_DESC,1,game.getComment()));
-            script.append(glph(CMD_VBS_SC_WD,1,game.getPath()));
-            script.append(gl(CMD_VBS_SC_TP,1));
-            script.append(gl(CMD_VBS_SC_WS,1));
-            script.append(gl(CMD_VBS_SC_SAVE,1));
-            script.append(glph(CMD_VBS_SLEEP,1,SLEEP_TIME));
-        });
+    private static void cacheLinkScript(Game game){
+        script.append(glph(CMD_VBS_SC_CRT,1,game.getName()));
+        script.append(glph(CMD_VBS_SC_ARG,1,game.getId()));
+        script.append(glph(CMD_VBS_SC_IL,1,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + FILE_SUFFIX_EXE));
+        script.append(glph(CMD_VBS_SC_DESC,1,game.getComment()));
+        script.append(glph(CMD_VBS_SC_WD,1,game.getPath()));
+        script.append(gl(CMD_VBS_SC_TP,1));
+        script.append(gl(CMD_VBS_SC_WS,1));
+        script.append(gl(CMD_VBS_SC_SAVE,1));
     }
 
     private static void runVbsScript(boolean waitFor, Consumer<Object> consumer) throws Exception{
