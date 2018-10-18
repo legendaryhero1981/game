@@ -236,7 +236,7 @@ public final class Main implements IMain{
         CS.showError(ERR_CONFIG_NUL,null,()->isEmpty(games.getGames()));
         ConcurrentMap<String,AtomicInteger> gameMap = new ConcurrentHashMap<>();
         games.getGames().parallelStream().forEach(g->gameMap.computeIfAbsent(g.getId(),k->new AtomicInteger()).addAndGet(1));
-        gameMap.entrySet().parallelStream().filter(entry->entry.getValue().get() > 1).forEach(entry->glph(ST_REPEAT_ID,1,entry.getKey()));
+        gameMap.entrySet().parallelStream().filter(entry->entry.getValue().get() > 1).forEach(entry->CS.s(glph(ST_REPEAT_ID,2,entry.getKey())));
         CS.showError(ERR_CONFIG_REPEAT,null,()->gameMap.values().parallelStream().anyMatch(v->v.get() > 1));
         return games;
     }
