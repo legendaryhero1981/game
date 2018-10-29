@@ -27,7 +27,26 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 
 参数说明：
 
-file -f[+*!@?]|-fd[+*!@?]|-fdo[+*!@?]|-fpa[+*!@?]|-fpr[+*!@?]|-fps[+*!@?]|-fpda[+*!@?]|-fpdr[+*!@?]|-fpds[+*!@?]|-fpdoa[+*!@?]|-fpdor[+*!@?]|-fpdos[+*!@?]|-fsa[+*!@?]|-fsd[+*!@?]|-fdsa[+*!@?]|-fdsd[+*!@?]|-fdosa[+*!@?]|-fdosd[+*!@?]|-fddsa[+*!@?]|-fddsd[+*!@?]|-r[+*!@?]|-rl[+*!@?]|-ru[+*!@?]|-ruf[+*!@?]|-rd[+*!@?]|-rdl[+*!@?]|-rdu[+*!@?]|-rduf[+*!@?]|-rdo[+*!@?]|-rdol[+*!@?]|-rdou[+*!@?]|-rdouf[+*!@?]|-c[+*!@?]|-cd[+*!@?]|-cdo[+*!@?]|-d[+*!@?]|-dd[+*!@?]|-ddo[+*!@?]|-dn[+*!@?]|-ddn[+*!@?]|-ddon[+*!@?]|-m[+*!@?]|-md[+*!@?]|-mdo[+*!@?]|-b[+*!@?]|-bd[+*!@?]|-bu[+*!@?]|-br[+*!@?]|-u[+*!@?]|-ud[+*!@?]|-zd[+*!@?]|-zdd[+*!@?]|-zi[+*!@?]|-pd[+*!@?]|-pdd[+*!@?]|-pi[+*!@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
+game file|run|eoc|kcd|poe
+
+命令列表：
+
+file    游戏文件处理命令，通过正则匹配批量查询和处理目录和文件。
+
+run     参数化运行游戏，通过配置文件对所有游戏可执行文件进行统一管理。
+
+eoc     神界：原罪2 汉化文件处理。
+
+kcd     天国：拯救 汉化文件和Mod整合处理。
+
+poe     永恒之柱2：死火 汉化文件和Mod文件处理。
+
+
+输入 game file
+
+参数说明：
+
+file -f[+*!@?]|-fd[+*!@?]|-fdo[+*!@?]|-fpa[+*!@?]|-fpr[+*!@?]|-fps[+*!@?]|-fpda[+*!@?]|-fpdr[+*!@?]|-fpds[+*!@?]|-fpdoa[+*!@?]|-fpdor[+*!@?]|-fpdos[+*!@?]|-fsa[+*!@?]|-fsd[+*!@?]|-fdsa[+*!@?]|-fdsd[+*!@?]|-fdosa[+*!@?]|-fdosd[+*!@?]|-fddsa[+*!@?]|-fddsd[+*!@?]|-r[+*!@?]|-rl[+*!@?]|-ru[+*!@?]|-ruf[+*!@?]|-rd[+*!@?]|-rdl[+*!@?]|-rdu[+*!@?]|-rduf[+*!@?]|-rdo[+*!@?]|-rdol[+*!@?]|-rdou[+*!@?]|-rdouf[+*!@?]|-c[+*!@?]|-cd[+*!@?]|-cdo[+*!@?]|-d[+*!@?]|-dd[+*!@?]|-ddo[+*!@?]|-dn[+*!@?]|-ddn[+*!@?]|-ddon[+*!@?]|-m[+*!@?]|-md[+*!@?]|-mdo[+*!@?]|-b[+*!@?]|-bd[+*!@?]|-bu[+*!@?]|-br[+*!@?]|-u[+*!@?]|-ud[+*!@?]|-zd[+*!@?]|-zdd[+*!@?]|-zi[+*!@?]|-pd[+*!@?]|-pdd[+*!@?]|-pi[+*!@?]|-gl32[+*!@?]|-gu32[+*!@?]|-ml16[+*!@?]|-mu16[+*!@?]|-ml32[+*!@?]|-mu32[+*!@?]|-je[+*!@?]|-jd[+*!@?] regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]
 
 命令参数：
 
@@ -245,6 +264,30 @@ file -pdd[+*!@?] regex src dest zipName [zipLevel] [level]
 file -pi[+*!@?] regex src [level]
 根据regex将src中所有匹配文件解包到该文件所在目录中。
 
+file -gl32[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全小写）。
+
+file -gu32[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全大写）。
+
+file -ml16[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全小写）。
+
+file -mu16[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全大写）。
+
+file -ml32[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全小写）。
+
+file -mu32[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全大写）。
+
+file -je[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），编码（即压缩为一行）JSON格式文件。
+
+file -jd[+*!@?] regex src [level]
+根据regex查找src中的文件（同-f），解码（即格式化）JSON格式文件。
+
 单条命令示例：
 
 file -f+ (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
@@ -414,6 +457,30 @@ file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/Kingdo
 
 file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
+
+file -gl32+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。
+
+file -gu32+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。
+
+file -ml16+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。
+
+file -mu16+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。
+
+file -ml32+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。
+
+file -mu32+ Assembly-CSharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
+显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。
+
+file -je (?i)\..*bundle$ "g:/games/Pillars of Eternity II"
+查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，编码（即压缩为一行）JSON格式文件。
+
+file -jd (?i)\..*bundle$ "g:/games/Pillars of Eternity II"
+查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，解码（即格式化）JSON格式文件。
 
 
 输入 game run
