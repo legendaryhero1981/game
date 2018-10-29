@@ -83,6 +83,8 @@ public interface ICommon{
     String V_CRT = "创建";
     String V_CPRS = "压缩";
     String V_DCPRS = "解压缩";
+    String V_ENC = "编码";
+    String V_DEC = "解码";
     String V_CLS = "关闭";
     String V_IS = "是";
     String V_TO = " 到 ";

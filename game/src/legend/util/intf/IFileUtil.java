@@ -77,6 +77,14 @@ public interface IFileUtil extends ICommon{
     String CMD_PAK_DEF = "-pd";
     String CMD_PAK_DIR_DEF = "-pdd";
     String CMD_PAK_INF = "-pi";
+    String CMD_GUID_L32 = "-gl32";
+    String CMD_GUID_U32 = "-gu32";
+    String CMD_MD5_L16 = "-ml16";
+    String CMD_MD5_U16 = "-mu16";
+    String CMD_MD5_L32 = "-ml32";
+    String CMD_MD5_U32 = "-mu32";
+    String CMD_JSON_ENC = "-je";
+    String CMD_JSON_DEC = "-jd";
     String OPTIONS = "[" + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]";
     String FILE_LOG = "./file.log";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
@@ -101,6 +109,8 @@ public interface IFileUtil extends ICommon{
     + "|-r" + OPTIONS + "|-rl" + OPTIONS + "|-ru" + OPTIONS + "|-ruf" + OPTIONS + "|-rd" + OPTIONS + "|-rdl" + OPTIONS + "|-rdu" + OPTIONS + "|-rduf" + OPTIONS + "|-rdo" + OPTIONS + "|-rdol" + OPTIONS + "|-rdou" + OPTIONS + "|-rdouf" + OPTIONS
     + "|-c" + OPTIONS + "|-cd" + OPTIONS + "|-cdo" + OPTIONS + "|-d" + OPTIONS + "|-dd" + OPTIONS + "|-ddo" + OPTIONS + "|-dn" + OPTIONS + "|-ddn" + OPTIONS + "|-ddon" + OPTIONS + "|-m" + OPTIONS + "|-md" + OPTIONS + "|-mdo" + OPTIONS
     + "|-b" + OPTIONS + "|-bd" + OPTIONS + "|-bu" + OPTIONS + "|-br" + OPTIONS + "|-u" + OPTIONS + "|-ud" + OPTIONS + "|-zd" + OPTIONS + "|-zdd" + OPTIONS + "|-zi" + OPTIONS + "|-pd" + OPTIONS + "|-pdd" + OPTIONS + "|-pi" + OPTIONS
+    + "|-gl32" + OPTIONS+ "|-gu32" + OPTIONS + "|-ml16" + OPTIONS + "|-mu16" + OPTIONS + "|-ml32" + OPTIONS + "|-mu32" + OPTIONS
+    + "|-je" + OPTIONS + "|-jd" + OPTIONS
     + " regex src [dest] [backup] [sizeExpr] [replacement] [limit] [zipName] [zipLevel] [level]" + gl(2)    + "命令参数：" + gl(2)
     + "regex\t\t\t文件名查询正则表达式，.匹配任意文件名和目录名。" + gl(2)
     + "src\t\t\t输入文件目录。" + gl(2)
@@ -181,6 +191,14 @@ public interface IFileUtil extends ICommon{
     + CMD + " -pd" + OPTIONS + " regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
     + CMD + " -pdd" + OPTIONS + " regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
     + CMD + " -pi" + OPTIONS + " regex src [level]" + gl(1) + "根据regex将src中所有匹配文件解包到该文件所在目录中。" + gl(2)
+    + CMD + " -gl32" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
+    + CMD + " -gu32" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
+    + CMD + " -ml16" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu16" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -ml32" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu32" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -je" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），编码（即压缩为一行）JSON格式文件。" + gl(2)
+    + CMD + " -jd" + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件（同-f），解码（即格式化）JSON格式文件。" + gl(2)
     + "单条命令示例：" + gl(2)
     + CMD + " -f+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
     + CMD + " -fd+ (?i)strings$ \"F:/games/Fallout 4\"" + gl(1) + "查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。" + gl(2)
@@ -237,5 +255,13 @@ public interface IFileUtil extends ICommon{
     + CMD + " -zi (?i)\\.zip$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询（作用同-f）再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。" + gl(2)
     + CMD + " -pd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + " -pdd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
-    + CMD + " -pi (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。";    
+    + CMD + " -pi (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
+    + CMD + " -gl32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
+    + CMD + " -gu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
+    + CMD + " -ml16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -ml32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -je (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，编码（即压缩为一行）JSON格式文件。" + gl(2)
+    + CMD + " -jd (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，解码（即格式化）JSON格式文件。";
 }

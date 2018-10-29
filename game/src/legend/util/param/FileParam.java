@@ -177,6 +177,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOVE:
             case CMD_BAK_UGD:
             case CMD_BAK_RST:
+            case CMD_JSON_ENC:
+            case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
             case CMD_BACKUP:
@@ -185,6 +187,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_ZIP_INF:
             case CMD_PAK_DEF:
             case CMD_PAK_INF:
+            case CMD_GUID_L32:
+            case CMD_GUID_U32:
+            case CMD_MD5_L16:
+            case CMD_MD5_U16:
+            case CMD_MD5_L32:
+            case CMD_MD5_U32:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -390,6 +398,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_DEL_DIR_NUL:
                     case CMD_DEL_DIR_OLY_NUL:
                     case CMD_PAK_INF:
+                    case CMD_GUID_L32:
+                    case CMD_GUID_U32:
+                    case CMD_MD5_L16:
+                    case CMD_MD5_U16:
+                    case CMD_MD5_L32:
+                    case CMD_MD5_U32:
+                    case CMD_JSON_ENC:
+                    case CMD_JSON_DEC:
                     optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
                     break;
                     case CMD_COPY:
@@ -518,6 +534,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_DEL_DIR_NUL:
             case CMD_DEL_DIR_OLY_NUL:
             case CMD_PAK_INF:
+            case CMD_GUID_L32:
+            case CMD_GUID_U32:
+            case CMD_MD5_L16:
+            case CMD_MD5_U16:
+            case CMD_MD5_L32:
+            case CMD_MD5_U32:
+            case CMD_JSON_ENC:
+            case CMD_JSON_DEC:
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
             break;
             case CMD_COPY:

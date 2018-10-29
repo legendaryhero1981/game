@@ -45,25 +45,26 @@ public class JsonUtil implements IJsonUtil{
         char[] c = s.toCharArray();
         StringBuilder builder = new StringBuilder();
         int n = 0, m = 4;
+        boolean format = true;
         try{
-            for(int i = 0,j = 0;i < c.length;i++)
+            for(int i = 0;i < c.length;i++)
                 switch(c[i]){
                     case C_COMMA:
                     builder.append(c[i]);
-                    if(0 == j) builder.append(gl(1) + gs(m * n));
+                    if(format) builder.append(gl(1) + gs(m * n));
                     break;
                     case C_BRACE_L:
                     case C_SQUARE_L:
                     builder.append(c[i]);
-                    if(0 == j) builder.append(gl(1) + gs(m * ++n));
+                    if(format) builder.append(gl(1) + gs(m * ++n));
                     break;
                     case C_BRACE_R:
                     case C_SQUARE_R:
-                    if(0 == j) builder.append(gl(1) + gs(m * --n));
+                    if(format) builder.append(gl(1) + gs(m * --n));
                     builder.append(c[i]);
                     break;
                     case C_QUOT_D:
-                    if(C_ESCAPE != c[i - 1]) j = ++j % 2;
+                    if(C_ESCAPE != c[i - 1]) format = !format;
                     default:
                     builder.append(c[i]);
                 }
@@ -71,7 +72,7 @@ public class JsonUtil implements IJsonUtil{
             CS.sl(gsph(ERR_JSON_PARSE,e.toString()));
             return s;
         }
-        if(0 != n){
+        if(!format || 0 != n){
             CS.sl(ERR_JSON_FMT);
             return s;
         }

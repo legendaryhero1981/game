@@ -11,6 +11,14 @@ import static java.util.stream.Stream.of;
 import static legend.intf.ICommon.gs;
 import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.IN;
+import static legend.util.JsonUtil.formatJson;
+import static legend.util.JsonUtil.trimJson;
+import static legend.util.MD5Util.getGuidL32;
+import static legend.util.MD5Util.getGuidU32;
+import static legend.util.MD5Util.getMD5L16;
+import static legend.util.MD5Util.getMD5L32;
+import static legend.util.MD5Util.getMD5U16;
+import static legend.util.MD5Util.getMD5U32;
 import static legend.util.TimeUtil.countDuration;
 import static legend.util.TimeUtil.decTotalDuration;
 import static legend.util.TimeUtil.getDurationString;
@@ -42,6 +50,7 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,6 +209,30 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_ZIP_INF:
                 case CMD_PAK_INF:
                 unzipFiles(param);
+                break;
+                case CMD_GUID_L32:
+                showMd5(param,p->getGuidL32(p));
+                break;
+                case CMD_GUID_U32:
+                showMd5(param,p->getGuidU32(p));
+                break;
+                case CMD_MD5_L16:
+                showMd5(param,p->getMD5L16(p));
+                break;
+                case CMD_MD5_U16:
+                showMd5(param,p->getMD5U16(p));
+                break;
+                case CMD_MD5_L32:
+                showMd5(param,p->getMD5L32(p));
+                break;
+                case CMD_MD5_U32:
+                showMd5(param,p->getMD5U32(p));
+                break;
+                case CMD_JSON_ENC:
+                encodeJson(param);
+                break;
+                case CMD_JSON_DEC:
+                decodeJson(param);
             }
             param.saveCache(CACHE);
         }catch(Exception e){
@@ -455,6 +488,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
+        boolean upgrade = CMD_BAK_UGD.equals(param.getCmd());
         param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
@@ -466,7 +500,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 }
                 param.getPathList().clear();
                 List<Path> paths = param.getPathsMap().get(dest.getParent());
-                paths.parallelStream().filter(p->CMD_BAK_UGD.equals(param.getCmd()) && p.getFileName().toString().toLowerCase().startsWith(src.getFileName().toString().toLowerCase()) || CMD_BAK_RST.equals(param.getCmd()) && src.getFileName().toString().toLowerCase().startsWith(p.getFileName().toString().toLowerCase())).forEach(p->{
+                paths.parallelStream().filter(p->upgrade && p.getFileName().toString().toLowerCase().startsWith(src.getFileName().toString().toLowerCase()) || !upgrade && src.getFileName().toString().toLowerCase().startsWith(p.getFileName().toString().toLowerCase())).forEach(p->{
                     param.getFilesSize().addAndGet(p.toFile().length());
                     param.getPathList().add(p);
                 });
@@ -568,6 +602,29 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 CS.sl(gsph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString()));
             }
             param.getDetailOptional().ifPresent(c->CS.l(1).s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_DONE + S_PERIOD).l(2));
+        });
+    }
+
+    private static void showMd5(FileParam param, Function<Path,String> function){
+        param.getPathMap().values().parallelStream().forEach(p->{
+            param.getDetailOptional().ifPresent(c->CS.sl(p.toString() + gs(4) + function.apply(p)));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+    }
+
+    private static void encodeJson(FileParam param){
+        param.getPathMap().values().parallelStream().forEach(p->{
+            param.getDetailOptional().ifPresent(c->CS.sl(V_ENC + N_FLE + gs(2) + p.toString()));
+            param.getCmdOptional().ifPresent(c->trimJson(p));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+    }
+
+    private static void decodeJson(FileParam param){
+        param.getPathMap().values().parallelStream().forEach(p->{
+            param.getDetailOptional().ifPresent(c->CS.sl(V_DEC + N_FLE + gs(2) + p.toString()));
+            param.getCmdOptional().ifPresent(c->formatJson(p));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
     }
 
