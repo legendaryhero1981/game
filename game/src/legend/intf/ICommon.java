@@ -9,9 +9,9 @@ public interface ICommon{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String AUTHOR = "作者：李允" + gl(1);
-    String VERSION = "版本：V3.0" + gl(3);
-    String APP_INFO = AUTHOR + VERSION;
+    String AUTHOR = "作者：李允";
+    String VERSION = "版本：V3.0";
+    String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String ENCODING_UTF8 = "UTF-8";
     String ENCODING_GBK = "GBK";
     String EXT_ZIP = ".zip";
