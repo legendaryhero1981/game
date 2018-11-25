@@ -7,28 +7,28 @@ import legend.intf.ICommon;
 
 public interface IILHelper extends ICommon{
     String CMD = "il";
-    String OPT_INST = "-i";
-    String OPT_STAT = "-s";
+    String CMD_INST = "-i";
+    String CMD_STAT = "-s";
     String IL_FILE_CONFIG = "./il.xml";
-    String DESC_OPT_INST = "IL指令帮助信息：" + gl(2);
-    String DESC_OPT_STAT = "IL语句帮助信息：" + gl(2);
+    String DESC_CMD_INST = "IL指令帮助信息：" + gl(2);
+    String DESC_CMD_STAT = "IL语句帮助信息：" + gl(2);
     String HELP_IL = APP_INFO + "参数说明：" + gl(2)
-    + CMD + " [" + OPT_INST + "|" + OPT_STAT + "] [name]" + gl(2)
-    + OPT_INST + "\t只显示IL指令的帮助信息。" + gl(2)
-    + OPT_STAT + "\t只显示IL语句的帮助信息。" + gl(2)
+    + CMD + " [" + CMD_INST + "|" + CMD_STAT + "] [name]" + gl(2)
+    + CMD_INST + "\t只显示IL指令的帮助信息。" + gl(2)
+    + CMD_STAT + "\t只显示IL语句的帮助信息。" + gl(2)
     + "name\tIL指令或语句的名称。" + gl(2)
     + "单条命令：" + gl(2)
     + CMD + gl(2)
-    + CMD + gs(1) + OPT_INST + gl(2)
-    + CMD + gs(1) + OPT_STAT + gl(2)
-    + CMD + gs(1) + OPT_INST + " name" + gl(2)
-    + CMD + gs(1) + OPT_STAT + " name" + gl(2)
+    + CMD + gs(1) + CMD_INST + gl(2)
+    + CMD + gs(1) + CMD_STAT + gl(2)
+    + CMD + gs(1) + CMD_INST + " name" + gl(2)
+    + CMD + gs(1) + CMD_STAT + " name" + gl(2)
     + "示例：" + gl(2)
     + CMD + gl(1) + "显示所有IL指令和IL语句的帮助信息。" + gl(2)
-    + CMD + gs(1) + OPT_INST + gl(1) + "显示所有IL指令的帮助信息。" + gl(2)
-    + CMD + gs(1) + OPT_STAT + gl(1) + "显示所有IL语句的帮助信息。" + gl(2)
-    + CMD + gs(1) + OPT_INST + " ldc.i4" + gl(1) + "显示IL指令名称为ldc.i4的帮助信息。" + gl(2)
-    + CMD + gs(1) + OPT_STAT + " instance" + gl(1) + "显示IL语句名称为instance的帮助信息。" + gl(2);
+    + CMD + gs(1) + CMD_INST + gl(1) + "显示所有IL指令的帮助信息。" + gl(2)
+    + CMD + gs(1) + CMD_STAT + gl(1) + "显示所有IL语句的帮助信息。" + gl(2)
+    + CMD + gs(1) + CMD_INST + " ldc.i4" + gl(1) + "显示IL指令名称为ldc.i4的帮助信息。" + gl(2)
+    + CMD + gs(1) + CMD_STAT + " instance" + gl(1) + "显示IL语句名称为instance的帮助信息。" + gl(2);
     String INST_ADD = "add";
     String INST_ADD_OVF = "add.ovf";
     String INST_ADD_OVF_UN = "add.ovf.un";

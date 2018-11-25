@@ -12,6 +12,9 @@ public final class Main implements IMain{
         final String cmd = args[0].toLowerCase();
         String[] s = copyOfRange(args,1,args.length);
         switch(cmd){
+            case MAIN_IL:
+            legend.helper.ILHelper.main(s);
+            break;
             case MAIN_FILE:
             legend.util.FileUtil.main(s);
             break;

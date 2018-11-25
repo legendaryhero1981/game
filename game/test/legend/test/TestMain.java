@@ -15,12 +15,15 @@ public class TestMain extends TestBase{
     @Override
     public void monkParam(){
         String cmd = "";
+        cmd = "il";
 //        cmd += "file";
-        cmd += "run";
+//        cmd += "run";
 //        cmd += "eoc";
 //        cmd += "kcd";
 //        cmd += "poe";
-        String arg = "  ";
+        String arg = "";
+        arg = "  -i";
+        arg = "  -s";
         cmd += arg;
         super.monkParam(cmd);
     }

@@ -20,11 +20,13 @@ public class ILHelper implements IILHelper{
     private static final Path ilPath;
     private static final IL il;
     private static final StringBuilder cache;
+    private static final HelperComparator helperComparator;
     static{
         ilPath = get(IL_FILE_CONFIG);
         if(existsPath(ilPath)) il = convertToJavaBean(ilPath,IL.class);
         else il = new IL();
         cache = new StringBuilder();
+        helperComparator = new HelperComparator();
     }
 
     public static void main(String[] args){
@@ -36,16 +38,16 @@ public class ILHelper implements IILHelper{
         Optional<String[]> optional = Optional.of(args);
         optional.filter(s->isEmpty(s)).ifPresent(s->{
             cache.append(HELP_IL);
-            cache.append(DESC_OPT_INST);
-            il.getInstructions().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
-            cache.append(DESC_OPT_STAT);
-            il.getStatements().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
+            cache.append(DESC_CMD_INST);
+            il.getInstructions().stream().sorted(helperComparator).forEach(helper->cache.append(helper));
+            cache.append(DESC_CMD_STAT);
+            il.getStatements().stream().sorted(helperComparator).forEach(helper->cache.append(helper));
             CS.showHelp(cache.toString());
         });
         switch(args[0]){
-            case OPT_INST:
+            case CMD_INST:
             optional.filter(s->s.length == 1).ifPresent(s->{
-                cache.append(DESC_OPT_INST);
+                cache.append(DESC_CMD_INST);
                 il.getInstructions().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
                 CS.sl(cache.toString());
             });
@@ -54,9 +56,9 @@ public class ILHelper implements IILHelper{
                 if(nonEmpty(helper)) CS.showHelp(helper.toString());
             });
             break;
-            case OPT_STAT:
+            case CMD_STAT:
             optional.filter(s->s.length == 1).ifPresent(s->{
-                cache.append(DESC_OPT_STAT);
+                cache.append(DESC_CMD_STAT);
                 il.getStatements().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
                 CS.sl(cache.toString());
             });

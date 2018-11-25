@@ -8,6 +8,10 @@ open module legend{
     exports legend.util;
     exports legend.util.intf;
     exports legend.util.param;
+    exports legend.helper;
+    exports legend.helper.entity;
+    exports legend.helper.intf;
+    exports legend.helper.il;
     exports legend.game.dos2;
     exports legend.game.dos2.entity;
     exports legend.game.dos2.intf;
