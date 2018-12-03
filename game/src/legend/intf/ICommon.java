@@ -16,6 +16,7 @@ public interface ICommon{
     String ENCODING_GBK = "GBK";
     String EXT_ZIP = ".zip";
     String EXT_PAK = ".pak";
+    String S_EMPTY = "";
     String S_SPACE = " ";
     String S_QUOTATION = "\"";
     String S_COMMA = "，";
@@ -140,18 +141,18 @@ public interface ICommon{
     String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
 
     static String gl(String s, int n){
-        String r = nonEmpty(s) ? s : "";
+        String r = nonEmpty(s) ? s : S_EMPTY;
         for(int i = 0;i < n;i++)
             r += SPRT_LINE;
         return r;
     }
 
     static String gl(int n){
-        return gl("",n);
+        return gl(S_EMPTY,n);
     }
 
     static String gs(String s, int n){
-        String r = "";
+        String r = S_EMPTY;
         if(nonEmpty(s)) for(int i = 0;i < n;i++)
             r += s;
         return r;
@@ -162,7 +163,7 @@ public interface ICommon{
     }
 
     static String gs(String[] ss, String sprt){
-        String r = "";
+        String r = S_EMPTY;
         for(String s : ss)
             r += s + sprt;
         return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());

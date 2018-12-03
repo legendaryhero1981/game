@@ -51,9 +51,9 @@ public interface IMain extends ICommon{
     String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
     String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
     + "dim processes,target" + gl(1)
-    + "set processes=wmi.Execquery(\"select * from win32_process where name='" + EXE_RUN + "'\")" + gl(1)
+    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_RUN + "'\")" + gl(1)
     + "if processes.count=0 then" + gl(1)
-    + "set processes=wmi.Execquery(\"select * from win32_process where name='" + EXE_JAVA + "' and commandline like '%" + MODULE_RUN + "%'\")" + gl(1)
+    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_JAVA + "' and commandline like '%" + MODULE_RUN + "%'\")" + gl(1)
     + "if processes.count=0 then" + gl(1) + "WScript.Quit" + gl(1) + "end if" + gl(1)
     + "dim regex,matches" + gl(1)
     + "set regex=New RegExp" + gl(1)
@@ -62,31 +62,31 @@ public interface IMain extends ICommon{
     + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
     + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
     + "end if";
-    String CMD_VBS_PROC_GAME = "set games=wmi.Execquery(\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\")";
+    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\")";
     String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
     + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARG1;
-    String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.Execquery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
+    String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.ExecQuery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
     String CMD_VBS_GAME_KILL = CMD_VBS_WMI_INIT + gl(1)
     + "wql=\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"" + gl(1)
     + CMD_VBS_WATCH_TERMINATE;
     String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARG0 + gl(1)
-    + "set games=wmi.Execquery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
+    + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
     + "Wend" + gl(1)
     + "dim names,paths,wql" + gl(1)
     + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_ARG + "\")" + gl(1)
     + "paths=Split(\"" + PH_ARG3 + "\",\"" + SPRT_ARG + "\")" + gl(1)
-    + "if ubound(names)>0 then" + gl(1)
+    + "if Ubound(names)>0 then" + gl(1)
     + "wql=\"select * from win32_process where name='\"&names(0)&\"'\"" + gl(1)
-    + "for i=1 to ubound(names)" + gl(1) + "wql=wql&\" or name='\"&names(i)&\"'\"" + gl(1) + "next" + gl(1)
+    + "for i=1 to Ubound(names)" + gl(1) + "wql=wql&\" or name='\"&names(i)&\"'\"" + gl(1) + "next" + gl(1)
     + CMD_VBS_WATCH_TERMINATE + gl(1)
     + "end if" + gl(1)
-    + "if ubound(paths)>0 then" + gl(1)
+    + "if Ubound(paths)>0 then" + gl(1)
     + "wql=\"select * from win32_process where executablepath='\"&paths(0)&\"'\"" + gl(1)
-    + "for i=1 to ubound(paths)" + gl(1) + "wql=wql&\" or executablepath='\"&paths(i)&\"'\"" + gl(1) + "next" + gl(1)
+    + "for i=1 to Ubound(paths)" + gl(1) + "wql=wql&\" or executablepath='\"&paths(i)&\"'\"" + gl(1) + "next" + gl(1)
     + CMD_VBS_WATCH_TERMINATE + gl(1)
     + "end if";
     String CMD_VBS_SC_INIT = CMD_VBS_PROC_RUN + gl(1) + "dim shortcut";
-    String CMD_VBS_SC_CRT = "set shortcut=sh.Createshortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\")";
+    String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\")";
     String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
@@ -120,7 +120,7 @@ public interface IMain extends ICommon{
     + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "Games::comment\t\t游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。\n"
     + gs(4) + "Games::Game\t\t\t游戏配置节点，包括执行游戏的命令行参数配置及执行游戏前和执行游戏后的BAT脚本命令配置。\n"
-    + gs(4) + "Game节点由comment、name、id、path、exe、args、priority、icon、agentPath、agentExe、agentArgs、before、after、beforeWait、afterWait、watchWait、watch节点按顺序组成；comment节点必须在最前面，watch节点可以有多个。\n"
+    + gs(4) + "Game节点由comment、name、id、path、exe、args、priority、icon、agentExecutablePath、agentArgs、before、after、beforeWait、afterWait、watchWait、watch节点按顺序组成；comment节点必须在最前面，watch节点可以有多个。\n"
     + gs(4) + "Game::comment\t\t游戏快捷方式说明，默认值同Game::name。\n"
     + gs(4) + "Game::name\t\t\t游戏快捷方式名称，一般使用游戏中文名称。\n"
     + gs(4) + "Game::id\t\t\t游戏唯一标识。\n"
