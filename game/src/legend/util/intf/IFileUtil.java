@@ -256,12 +256,12 @@ public interface IFileUtil extends ICommon{
     + CMD + " -pd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + " -pdd . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + " -pi (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
-    + CMD + " -gl32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
-    + CMD + " -gu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
-    + CMD + " -ml16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。" + gl(2)
-    + CMD + " -mu16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。" + gl(2)
-    + CMD + " -ml32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。" + gl(2)
-    + CMD + " -mu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为的Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -gl32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
+    + CMD + " -gu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
+    + CMD + " -ml16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu16+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。" + gl(2)
+    + CMD + " -ml32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。" + gl(2)
+    + CMD + " -mu32+ Assembly-CSharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
     + CMD + " -je (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，编码（即压缩为一行）JSON格式文件。" + gl(2)
     + CMD + " -jd (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，解码（即格式化）JSON格式文件。";
 }
