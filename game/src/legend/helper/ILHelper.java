@@ -48,7 +48,7 @@ public class ILHelper implements IILHelper{
             case CMD_INST:
             optional.filter(s->s.length == 1).ifPresent(s->{
                 cache.append(DESC_CMD_INST);
-                il.getInstructions().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
+                il.getInstructions().stream().sorted(helperComparator).forEach(helper->cache.append(helper));
                 CS.sl(cache.toString());
             });
             optional.filter(s->s.length > 1).ifPresent(s->{
@@ -59,7 +59,7 @@ public class ILHelper implements IILHelper{
             case CMD_STAT:
             optional.filter(s->s.length == 1).ifPresent(s->{
                 cache.append(DESC_CMD_STAT);
-                il.getStatements().stream().sorted(new HelperComparator()).forEach(helper->cache.append(helper));
+                il.getStatements().stream().sorted(helperComparator).forEach(helper->cache.append(helper));
                 CS.sl(cache.toString());
             });
             optional.filter(s->s.length > 1).ifPresent(s->{
