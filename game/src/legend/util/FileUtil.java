@@ -188,8 +188,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_MOV_DIR_OLY:
                 moveFiles(param);
                 break;
-                case CMD_BACKUP:
-                case CMD_BAK_DIR:
+                case CMD_BAK_DIF:
+                case CMD_BAK_DIF_DIR:
                 backupFiles(param);
                 break;
                 case CMD_BAK_UGD:
@@ -802,7 +802,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_DEL_DIR_OLY_NUL:
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
-                    case CMD_BAK_DIR:
+                    case CMD_BAK_DIF_DIR:
                     case CMD_UGD_DIR:
                     case CMD_ZIP_DIR_DEF:
                     case CMD_PAK_DIR_DEF:

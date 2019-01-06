@@ -97,9 +97,15 @@ public interface ICommon{
     String OPT_EXCLUDE_ROOT = "!";
     String OPT_CACHE = "@";
     String OPT_ASK = "?";
-    String SPRT_ARG = "::";
+    String SPRT_CMD = "::";
+    String SPRT_FID = "##";
+    String SPRT_OBJ = ";;";
+    String SPRT_ARG = ",,";
     String REG_ANY = ".";
     String REG_ASK_NO = "\\A[nN]$";
+    String REG_SPRT_CMD = SPRT_CMD + "+";
+    String REG_SPRT_FID = SPRT_FID + "+";
+    String REG_SPRT_OBJ = SPRT_OBJ + "+";
     String REG_SPRT_ARG = SPRT_ARG + "+";
     String REG_PH_ARG = "\\A[" + OPT_ASK + "]+$";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";

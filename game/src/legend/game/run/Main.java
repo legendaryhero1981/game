@@ -274,8 +274,8 @@ public final class Main implements IMain{
             StringBuilder names = new StringBuilder(), paths = new StringBuilder();
             game.getWatches().stream().forEach(watch->{
                 watch = watch.replaceAll(REG_SPRT_PATH,gs(SPRT_FILE,4));
-                if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_ARG);
-                else names.append(watch + SPRT_ARG);
+                if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_CMD);
+                else names.append(watch + SPRT_CMD);
             });
             script.append(glph(CMD_VBS_GAME_WATCH,1,game.getWatchWait(),game.getExe(),names.toString(),paths.toString()));
         }

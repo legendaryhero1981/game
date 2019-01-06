@@ -73,8 +73,8 @@ public interface IMain extends ICommon{
     + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
     + "Wend" + gl(1)
     + "dim names,paths,wql" + gl(1)
-    + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_ARG + "\")" + gl(1)
-    + "paths=Split(\"" + PH_ARG3 + "\",\"" + SPRT_ARG + "\")" + gl(1)
+    + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_CMD + "\")" + gl(1)
+    + "paths=Split(\"" + PH_ARG3 + "\",\"" + SPRT_CMD + "\")" + gl(1)
     + "if Ubound(names)>0 then" + gl(1)
     + "wql=\"select * from win32_process where name='\"&names(0)&\"'\"" + gl(1)
     + "for i=1 to Ubound(names)" + gl(1) + "wql=wql&\" or name='\"&names(i)&\"'\"" + gl(1) + "next" + gl(1)
@@ -130,7 +130,7 @@ public interface IMain extends ICommon{
     + gs(4) + "Game::priority\t\t游戏进程的优先级，可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）。\n"
     + gs(4) + "Game::icon\t\t\t游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。\n"
     + gs(4) + "Game::agentExecutablePath\tGame::exe的代理可执行文件绝对路径名；适用于使用游戏插件启动游戏的情况，例如：上古卷轴5的skse。\n"
-    + gs(4) + "Game::agentArgs\t\tGame::agentExe的命令行参数；若想使用代理参数指定游戏进程优先级，则Game::priority应该置空，否则优先使用Game::priority。\n"
+    + gs(4) + "Game::agentArgs\t\tGame::agentExecutablePath的命令行参数；若想使用代理参数指定游戏进程优先级，则Game::priority应该置空，否则优先使用Game::priority。\n"
     + gs(4) + "Game::before\t\t在游戏执行前需要执行的BAT脚本命令。\n"
     + gs(4) + "Game::after\t\t\t在游戏执行后需要执行的BAT脚本命令。\n"
     + gs(4) + "Game::beforeWait\t\tGame::before命令执行完后等待beforeWait秒，再执行游戏；仅当Game::before不为空时生效，默认值为10；基于性能考虑，取值范围为：1~60，若超过取值范围程序会取默认值。\n"

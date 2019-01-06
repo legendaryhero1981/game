@@ -165,7 +165,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_CPY_DIR_OLY:
             condition |= MATCH_DIR_ONLY;
             case CMD_CPY_DIR:
-            case CMD_BAK_DIR:
+            case CMD_BAK_DIF_DIR:
             case CMD_UGD_DIR:
             condition |= NEED_REPATH;
             break;
@@ -181,7 +181,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
-            case CMD_BACKUP:
+            case CMD_BAK_DIF:
             case CMD_UPGRADE:
             case CMD_ZIP_DEF:
             case CMD_ZIP_INF:
@@ -281,7 +281,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     public static List<FileParam> analyzeParam(String[] args){
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa = new String[args.length][];
-        aa[0] = args[0].split(REG_SPRT_ARG);
+        aa[0] = args[0].split(REG_SPRT_CMD);
         Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
         Matcher mph = compile(REG_PH_ARG).matcher("");
@@ -290,7 +290,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
         for(int i = 1;i < args.length;i++){
-            aa[i] = args[i].split(REG_SPRT_ARG);
+            aa[i] = args[i].split(REG_SPRT_CMD);
             mrpt.reset(aa[i][0]);
             if(aa[0].length != aa[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
@@ -418,8 +418,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     param.setDestPath(get(as[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
-                    case CMD_BACKUP:
-                    case CMD_BAK_DIR:
+                    case CMD_BAK_DIF:
+                    case CMD_BAK_DIF_DIR:
                     case CMD_BAK_UGD:
                     case CMD_BAK_RST:
                     case CMD_UPGRADE:
@@ -554,8 +554,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             s += dp;
             if(level < Integer.MAX_VALUE) s += S_SPACE + level;
             break;
-            case CMD_BACKUP:
-            case CMD_BAK_DIR:
+            case CMD_BAK_DIF:
+            case CMD_BAK_DIF_DIR:
             case CMD_BAK_UGD:
             case CMD_BAK_RST:
             case CMD_UPGRADE:
