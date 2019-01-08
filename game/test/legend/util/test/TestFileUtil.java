@@ -17,9 +17,10 @@ public class TestFileUtil extends TestBase{
     @Override
     public void monkParam(){
         String s = "";
-//        s = "-zdd!*  .  G:\\cache\\temp\\src  G:\\cache\\temp\\dest  src";
-//        s = "-c!*  \\.bat$  d:\\games\\jlink  d:\\games\\jlink\\game\\bin  1";
-        s = "-b*  .  F:\\games\\Dark Souls III  D:\\Dark Souls III  F:\\备份";
+//        s = "-f*  #SQM#  d:/games  0  1";
+//        s = "-bs*  .  E:/Java/MyEclipse 2018/plugins  E:/Java/myeclise-2018破解文件/patch/plugins  E:/Java/myeclise-2018破解文件/备份  ";
+//        s = "-rf*  \\Atemp1\\.txt$  E:/Decompile/DLL-ildasm  1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)  [ \\t]+  1";
+        
         super.monkParam(s);
     }
 }

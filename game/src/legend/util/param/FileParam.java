@@ -36,6 +36,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Path outPath;
     private Pattern pattern;
     private String sizeExpr;
+    private String split;
     private String replacement;
     private String zipName;
     private String cmd;
@@ -86,6 +87,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.destPath = destPath;
         fileParam.backupPath = backupPath;
         fileParam.pattern = pattern;
+        fileParam.split = split;
         fileParam.replacement = replacement;
         fileParam.cmd = cmd;
         fileParam.opt = opt;
@@ -166,6 +168,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             condition |= MATCH_DIR_ONLY;
             case CMD_CPY_DIR:
             case CMD_BAK_DIF_DIR:
+            case CMD_BAK_SAM_DIR:
             case CMD_UGD_DIR:
             condition |= NEED_REPATH;
             break;
@@ -181,7 +184,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
+            case CMD_REP_FILE:
             case CMD_BAK_DIF:
+            case CMD_BAK_SAM:
             case CMD_UPGRADE:
             case CMD_ZIP_DEF:
             case CMD_ZIP_INF:
@@ -284,7 +289,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         aa[0] = args[0].split(REG_SPRT_CMD);
         Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
-        Matcher mph = compile(REG_PH_ARG).matcher("");
+        Matcher mph = compile(REG_OPT_ASK).matcher("");
         for(int i = 0;i < aa[0].length;i++){
             mph.reset(aa[0][i]);
             CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
@@ -376,6 +381,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     });
                     param.setLevel(1);
                     break;
+                    case CMD_REP_FILE:
+                    param.setReplacement(as[3]);
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    break;
                     case CMD_RENAME:
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_OLY:
@@ -420,6 +430,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     break;
                     case CMD_BAK_DIF:
                     case CMD_BAK_DIF_DIR:
+                    case CMD_BAK_SAM:
+                    case CMD_BAK_SAM_DIR:
                     case CMD_BAK_UGD:
                     case CMD_BAK_RST:
                     case CMD_UPGRADE:
@@ -483,9 +495,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         String dp = getWrapedParam(destPath);
         String bp = getWrapedParam(backupPath);
         String se = getWrapedParam(sizeExpr);
+        String spt = getWrapedParam(split);
         String rm = getWrapedParam(replacement);
         String zn = getWrapedParam(zipName);
-        String s = CMD + S_SPACE + cmd + opt + regex + sp;
+        String s = CMD + cmd + opt + regex + sp;
         switch(cmd){
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:
@@ -504,15 +517,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
             case CMD_FND_PTH_DIR_OLY_SRC:
-            if(limit < Integer.MAX_VALUE) s += S_SPACE + limit;
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
-            break;
             case CMD_FND_DIR_DIR_SIZ_ASC:
             case CMD_FND_DIR_DIR_SIZ_DSC:
             case CMD_FND_DIR_OLY_SIZ_ASC:
             case CMD_FND_DIR_OLY_SIZ_DSC:
-            s += se;
-            if(limit < Integer.MAX_VALUE) s += S_SPACE + limit;
+            s += S_SPACE + limit + S_SPACE + level;
+            break;
+            case CMD_REP_FILE:
+            s += rm + S_SPACE + spt + S_SPACE + level;
             break;
             case CMD_RENAME:
             case CMD_REN_DIR:
@@ -542,7 +554,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MD5_U32:
             case CMD_JSON_ENC:
             case CMD_JSON_DEC:
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            s += S_SPACE + level;
             break;
             case CMD_COPY:
             case CMD_CPY_DIR:
@@ -551,28 +563,25 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR:
             case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
-            s += dp;
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            s += dp + S_SPACE + level;
             break;
             case CMD_BAK_DIF:
             case CMD_BAK_DIF_DIR:
+            case CMD_BAK_SAM:
+            case CMD_BAK_SAM_DIR:
             case CMD_BAK_UGD:
             case CMD_BAK_RST:
             case CMD_UPGRADE:
             case CMD_UGD_DIR:
-            s += dp + bp;
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            s += dp + bp + S_SPACE + level;
             break;
             case CMD_ZIP_DEF:
             case CMD_ZIP_DIR_DEF:
-            s += dp + zn;
-            if(0 <= zipLevel && 9 >= zipLevel) s += S_SPACE + zipLevel;
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            s += dp + zn + S_SPACE + zipLevel + S_SPACE + level;
             break;
             case CMD_PAK_DEF:
             case CMD_PAK_DIR_DEF:
-            s += dp + zn;
-            if(level < Integer.MAX_VALUE) s += S_SPACE + level;
+            s += dp + zn + S_SPACE + level;
         }
         return s;
     }
@@ -627,6 +636,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public void setSizeExpr(String sizeExpr){
         this.sizeExpr = sizeExpr;
+    }
+
+    public String getSplit(){
+        return split;
+    }
+
+    public void setSplit(String split){
+        this.split = split;
     }
 
     public String getReplacement(){

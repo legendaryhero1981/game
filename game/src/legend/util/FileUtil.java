@@ -148,6 +148,9 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_FND_DIR_OLY_SIZ_DSC:
                 findSortedDirSizes(param);
                 break;
+                case CMD_REP_FILE:
+                replaceFiles(param);
+                break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
                 case CMD_REN_DIR_OLY:
@@ -190,6 +193,8 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                 break;
                 case CMD_BAK_DIF:
                 case CMD_BAK_DIF_DIR:
+                case CMD_BAK_SAM:
+                case CMD_BAK_SAM_DIR:
                 backupFiles(param);
                 break;
                 case CMD_BAK_UGD:
@@ -348,6 +353,10 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
         }));
     }
 
+    private static void replaceFiles(FileParam param){
+        
+    }
+
     private static void renameFiles(FileParam param){
         renameFile(param,name->param.getPattern().matcher(name).replaceAll(param.getReplacement()));
     }
@@ -472,16 +481,27 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
             param.getCmdOptional().ifPresent(c->e.getValue().toFile().mkdirs());
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
+        boolean same = CMD_BAK_SAM.equals(param.getCmd());
         param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->{
             BasicFileAttributes a = e.getKey();
             Path src = e.getValue();
             Path backup = param.getBackupPath().resolve(param.getRootPath().relativize(src));
-            if(param.getDestPath().resolve(param.getSrcPath().relativize(src)).toFile().isFile()){
-                param.getFilesCount().decrementAndGet();
-                param.getFilesSize().addAndGet(a.size() * -1);
+            if(same){
+                if(param.getDestPath().resolve(param.getSrcPath().relativize(src)).toFile().isFile()){
+                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_BAK,V_TO},new FileSizeMatcher(a),src,backup));
+                    param.getCmdOptional().ifPresent(c->copyFile(src,backup));
+                }else{
+                    param.getFilesCount().decrementAndGet();
+                    param.getFilesSize().addAndGet(a.size() * -1);
+                }
             }else{
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_BAK,V_TO},new FileSizeMatcher(a),src,backup));
-                param.getCmdOptional().ifPresent(c->copyFile(src,backup));
+                if(param.getDestPath().resolve(param.getSrcPath().relativize(src)).toFile().isFile()){
+                    param.getFilesCount().decrementAndGet();
+                    param.getFilesSize().addAndGet(a.size() * -1);
+                }else{
+                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_BAK,V_TO},new FileSizeMatcher(a),src,backup));
+                    param.getCmdOptional().ifPresent(c->copyFile(src,backup));
+                }
             }
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
@@ -803,6 +823,7 @@ public class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
                     case CMD_BAK_DIF_DIR:
+                    case CMD_BAK_SAM_DIR:
                     case CMD_UGD_DIR:
                     case CMD_ZIP_DIR_DEF:
                     case CMD_PAK_DIR_DEF:
