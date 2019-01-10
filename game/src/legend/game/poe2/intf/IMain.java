@@ -1,6 +1,6 @@
 package legend.game.poe2.intf;
 
-import static legend.intf.ICommon.gl;
+import static legend.util.StringUtil.gl;
 
 import legend.intf.ICommon;
 

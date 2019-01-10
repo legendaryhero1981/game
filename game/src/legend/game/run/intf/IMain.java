@@ -1,7 +1,7 @@
 package legend.game.run.intf;
 
-import static legend.intf.ICommon.gl;
-import static legend.intf.ICommon.gs;
+import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.gs;
 
 import legend.intf.ICommon;
 
@@ -107,13 +107,13 @@ public interface IMain extends ICommon{
     + "goto quit )" + gl(1)
     + ":quit" + gl(1)
     + "exit /b 0";
-    String ERR_CONFIG_NON = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_NON_EXISTS;
-    String ERR_CONFIG_NUL = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_BY_NUL;
-    String ERR_CONFIG_REPEAT = N_GAME_CONFIG + S_QUOTATION_L + RUN_FILE_CONFIG + S_QUOTATION_R + V_EXISTS + N_GAME_REPEAT;
-    String ERR_ID_NON = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + V_NON_EXISTS;
-    String ERR_ID_EXISTS = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + V_ARD_EXISTS;
-    String ERR_INVALIDATE = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
-    String ERR_EXE_NUL = N_GAME_CONFIG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + N_IN + N_SPEC_ID + S_QUOTATION_L + PH_ARG1 + S_QUOTATION_R + N_EXE + V_BY_NUL;
+    String ERR_CONFIG_NON = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_NON_EXISTS;
+    String ERR_CONFIG_NUL = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_BY_NUL;
+    String ERR_CONFIG_REPEAT = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_EXISTS + N_GAME_REPEAT;
+    String ERR_ID_NON = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + V_NON_EXISTS;
+    String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + V_ARD_EXISTS;
+    String ERR_INVALIDATE = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
+    String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + N_EXE + V_BY_NUL;
     String ERR_CREATE_FAIL = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_RUN_FAIL = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"

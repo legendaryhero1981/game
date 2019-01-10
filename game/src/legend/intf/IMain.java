@@ -1,6 +1,6 @@
 package legend.intf;
 
-import static legend.intf.ICommon.gl;
+import static legend.util.StringUtil.gl;
 
 public interface IMain extends ICommon{
     String MAIN_IL = "il";

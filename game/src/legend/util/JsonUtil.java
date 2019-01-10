@@ -2,10 +2,10 @@ package legend.util;
 
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
-import static legend.intf.ICommon.gl;
-import static legend.intf.ICommon.gs;
-import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.gs;
+import static legend.util.StringUtil.gsph;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,7 +14,7 @@ import java.util.List;
 
 import legend.util.intf.IJsonUtil;
 
-public class JsonUtil implements IJsonUtil{
+public final class JsonUtil implements IJsonUtil{
     private JsonUtil(){}
 
     public static void trimJson(Path path){

@@ -2,8 +2,6 @@ package legend.game.kcd;
 
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
-import static legend.intf.ICommon.gs;
-import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.copyFile;
 import static legend.util.FileUtil.dealFiles;
@@ -16,6 +14,8 @@ import static legend.util.FileUtil.writeFile;
 import static legend.util.JaxbUtil.convertToJavaBean;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.MD5Util.getMD5L16;
+import static legend.util.StringUtil.gs;
+import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.getDateTime;
 import static legend.util.TimeUtil.runWithConsole;
 import static legend.util.ValueUtil.isEmpty;

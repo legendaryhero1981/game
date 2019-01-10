@@ -1,7 +1,7 @@
 package legend.util;
 
-import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.gsph;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;

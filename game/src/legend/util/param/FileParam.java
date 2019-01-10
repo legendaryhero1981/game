@@ -2,9 +2,10 @@ package legend.util.param;
 
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
-import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
+import static legend.util.StringUtil.SU;
+import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.nio.file.Path;
@@ -332,8 +333,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                             param.setOpt(param.getOpt() + matcher.group(2));
                     }
                 }
-                param.setPattern(compile(as[1]));
-                param.setSrcPath(get(as[2]));
+                param.setPattern(compile(replacePlaceHolders(as[1])));
+                param.setSrcPath(get(replacePlaceHolders(as[2])));
                 switch(param.getCmd()){
                     case CMD_FND_SIZ_ASC:
                     case CMD_FND_SIZ_DSC:
@@ -382,14 +383,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     param.setLevel(1);
                     break;
                     case CMD_REP_FILE:
-                    param.setReplacement(as[3]);
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
+                    param.setReplacement(replacePlaceHolders(as[3]));
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(replacePlaceHolders(s[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_RENAME:
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_OLY:
-                    param.setReplacement(as[3]);
+                    param.setReplacement(replacePlaceHolders(as[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_REN_LOW:
@@ -425,7 +426,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
                     case CMD_ZIP_INF:
-                    param.setDestPath(get(as[3]));
+                    param.setDestPath(get(replacePlaceHolders(as[3])));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_BAK_DIF:
@@ -436,21 +437,21 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_BAK_RST:
                     case CMD_UPGRADE:
                     case CMD_UGD_DIR:
-                    param.setDestPath(get(as[3]));
-                    param.setBackupPath(get(as[4]));
+                    param.setDestPath(get(replacePlaceHolders(as[3])));
+                    param.setBackupPath(get(replacePlaceHolders(as[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_ZIP_DEF:
                     case CMD_ZIP_DIR_DEF:
-                    param.setDestPath(get(as[3]));
-                    param.setZipName(as[4] + EXT_ZIP);
+                    param.setDestPath(get(replacePlaceHolders(as[3])));
+                    param.setZipName(replacePlaceHolders(as[4]) + EXT_ZIP);
                     optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     case CMD_PAK_DEF:
                     case CMD_PAK_DIR_DEF:
-                    param.setDestPath(get(as[3]));
-                    param.setZipName(as[4] + EXT_PAK);
+                    param.setDestPath(get(replacePlaceHolders(as[3])));
+                    param.setZipName(replacePlaceHolders(as[4]) + EXT_PAK);
                     optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
@@ -463,6 +464,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             fileParams.add(param);
         }
         return fileParams;
+    }
+
+    public static String replacePlaceHolders(String s){
+        SingleValue<String> value = new SingleValue<>(s);
+        SU.rph(value,REG_SPC_SQM,S_SQM).rph(value,REG_SPC_DQM,S_DQM);
+        return value.get();
     }
 
     private static void matchSizes(FileParam param, String size){
@@ -587,7 +594,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     private String getWrapedParam(Object param){
-        return nonEmpty(param) ? S_SPACE + S_QUOTATION + param + S_QUOTATION : OPT_NONE;
+        return nonEmpty(param) ? S_SPACE + S_DQM + param + S_DQM : OPT_NONE;
     }
 
     public Path getSrcPath(){

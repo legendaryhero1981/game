@@ -1,7 +1,7 @@
 package legend.util.intf;
 
-import static legend.intf.ICommon.gl;
-import static legend.intf.ICommon.gs;
+import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.gs;
 
 import legend.intf.ICommon;
 
@@ -97,8 +97,8 @@ public interface IFileUtil extends ICommon{
     String RULE_REGENROW = "REGENROW";
     String REG_RULE_LOWER = "(?i)" + RULE_LOWER + "(\\((.*)\\))?";
     String REG_RULE_UPPER = "(?i)" + RULE_UPPER + "(\\((.*)\\))?";
-    String REG_RULE_REPLACE = "(?i)" + RULE_REPLACE + "(\\((.+)" + REG_SPRT_ARG + "(.*)\\))?";
-    String REG_RULE_REGENROW = "(?i)" + RULE_REGENROW + "(\\((.+)\\))";
+    String REG_RULE_REPLACE = "(?i)" + RULE_REPLACE + "\\((.+)" + REG_SPRT_ARG + "(.*)\\)";
+    String REG_RULE_REGENROW = "(?i)" + RULE_REGENROW + "\\((.+)\\)";
     String REG_COL_NUM = "([1-9]\\d*)(-?([1-9]\\d*))?,?+";
     String REG_COL_NUM_SR = PLACE_HOLDER + "([1-9]\\d*)\\.(0|[1-9]\\d*)" + PLACE_HOLDER;
     String REG_COL_NUM_CR = PLACE_HOLDER + "([1-9]\\d*)-([1-9]\\d*)" + PLACE_HOLDER;
@@ -120,29 +120,28 @@ public interface IFileUtil extends ICommon{
     String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FLE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FLE + N_PATH_NAME + S_SPACE + PH_ARG0 + S_SPACE + V_SAME + N_A + N_FLE + S_BANG;
     String HELP_FILE = APP_INFO
     + "命令参数：" + gl(2)
-    + "regex" + gs(7) + "文件名查询正则表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；" + gl(2)
+    + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
     + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，超过取值范围或没指定n值均取默认值1，表示替换为1个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
     + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，超过取值范围或没指定n值均取默认值1，表示替换为1个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
-    + "src" + gs(9) + "输入文件目录。" + gl(2)
-    + "dest" + gs(8) + "输出文件目录。" + gl(2)
-    + "backup" + gs(6) + "备份文件目录。" + gl(2)
-    + "zipName" + gs(5) + "压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）。" + gl(2)
+    + "src" + gs(9) + "输入文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "dest" + gs(8) + "输出文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "backup" + gs(6) + "备份文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "zipName" + gs(5) + "压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipLevel" + gs(4) + "文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。" + gl(2)
     + "limit" + gs(7) + "查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。" + gl(2)
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
-    + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符。" + gl(2)
-    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名替换正则表达式；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FID + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单事务性规则仅由1个原子规则组成，复杂事务性规则由多个原子规则组成；各事务性规则通过" + SPRT_RULE + "分隔，复杂事务性规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；" + gl(2)
-    + "列号表达式格式，匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
+    + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FID + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单事务性规则仅由1个原子规则组成，复杂事务性规则由多个原子规则组成；各事务性规则通过" + SPRT_RULE + "分隔，复杂事务性规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
     + "目前支持的所有原子规则（英文字母不区分大小写）如下：" + gl(2)
-    + RULE_LOWER + "(mstring)" + gs(12) + "将匹配mstring的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数mstring，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；mstring为正则匹配表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
-    + RULE_UPPER + "(mstring)" + gs(12) + "将匹配mstring的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数mstring，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；mstring为正则匹配表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
-    + RULE_REPLACE + "(mstring" + SPRT_ARG + "rstring)" + gs(1) + "将匹配mstring的列字符串的子串替换为rstring，匹配的正则表达式为：" + REG_RULE_REPLACE + "；mstring为正则匹配表达式，rstring为正则替换表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
+    + RULE_LOWER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数qstring，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
+    + RULE_UPPER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数qstring，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
+    + RULE_REPLACE + "(qstring" + SPRT_ARG + "rstring)" + gs(1) + "将匹配qstring的列字符串的子串替换为rstring，匹配的正则表达式为：" + REG_RULE_REPLACE + "；qstring为正则查询表达式，rstring为正则替换表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_REGENROW + "(rstring)" + gs(10) + "根据string重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条简单事务性规则使用，即只能放在规则列表的最后面；rstring为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；" + gl(2)
     + "目前支持的所有列数据占位符表达式如下：" + gl(2)
     + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_SR + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据，当在列字符串替换表达式中指定了列号表达式且m取值大于0时，n的取值应在列号表达式中存在；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
-    + "#n-m#" + gs(1) + "提取通过执行复杂事务性规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_CR + "；n为列号，m为复杂事务性规则执行顺序号；m的最小值为1，最大值为复杂规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取第1列执行了第1条复杂规则后得到的数据）。" + gl(3)
+    + "#n-m#" + gs(1) + "提取通过执行复杂事务性规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_CR + "；n为列号，m为复杂事务性规则执行顺序号；m的最小值为1，最大值为复杂规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取对第1列执行了第1条复杂规则后得到的数据）。" + gl(3)
     + "命令选项：" + gl(2)
     + "+ 可添加在命令选项末尾，表示输出详细信息；可与!或@或?连用；例如：-fd!+@?。" + gl(2)
     + "* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与!或@或?连用；例如：-fd*?@!。" + gl(2)

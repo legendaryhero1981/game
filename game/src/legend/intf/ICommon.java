@@ -1,7 +1,6 @@
 package legend.intf;
 
-import static java.util.regex.Matcher.quoteReplacement;
-import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.StringUtil.gl;
 
 import java.io.File;
 
@@ -18,7 +17,8 @@ public interface ICommon{
     String EXT_PAK = ".pak";
     String S_EMPTY = "";
     String S_SPACE = " ";
-    String S_QUOTATION = "\"";
+    String S_SQM = "'";
+    String S_DQM = "\"";
     String S_COMMA = "，";
     String S_SEMICOLON = "；";
     String S_PERIOD = "。";
@@ -27,8 +27,8 @@ public interface ICommon{
     String S_COLON = "：";
     String S_BRACKET_L = "（";
     String S_BRACKET_R = "）";
-    String S_QUOTATION_L = "“";
-    String S_QUOTATION_R = "”";
+    String S_DQM_L = "“";
+    String S_DQM_R = "”";
     String N_ARG = "参数";
     String N_LOG = "日志";
     String N_ERR_INFO = "错误信息：";
@@ -130,10 +130,10 @@ public interface ICommon{
     String XML_NOTE_START = "<!--";
     String XML_NOTE_END = "-->";
     String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;
-    String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + S_ELLIPSIS;
-    String ST_ARG_DONE = N_CMD + N_ARG + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + V_ANLS + V_DONE + S_PERIOD;
-    String ST_CMD_START = V_START + V_EXEC + N_CMD + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + S_ELLIPSIS;
-    String ST_CMD_DONE = N_CMD + S_QUOTATION_L + PH_ARG0 + S_QUOTATION_R + V_EXEC + V_DONE + S_PERIOD;
+    String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
+    String ST_ARG_DONE = N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + V_ANLS + V_DONE + S_PERIOD;
+    String ST_CMD_START = V_START + V_EXEC + N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
+    String ST_CMD_DONE = N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ST_PRG_START = V_START + V_EXEC + N_PRG + S_ELLIPSIS;
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
     String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -150,52 +150,52 @@ public interface ICommon{
     String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
     String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(\\d+)" + FLAG_DEBUG + ".*";
     String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
-
-    static String gl(String s, int n){
-        String r = nonEmpty(s) ? s : S_EMPTY;
-        for(int i = 0;i < n;i++)
-            r += SPRT_LINE;
-        return r;
-    }
-
-    static String gl(int n){
-        return gl(S_EMPTY,n);
-    }
-
-    static String gs(String s, int n){
-        String r = S_EMPTY;
-        if(nonEmpty(s)) for(int i = 0;i < n;i++)
-            r += s;
-        return r;
-    }
-
-    static String gs(int n){
-        return gs(S_SPACE,n);
-    }
-
-    static String gs(String[] ss, String sprt){
-        String r = S_EMPTY;
-        for(String s : ss)
-            r += s + sprt;
-        return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());
-    }
-
-    static String gs(String[] ss){
-        return gs(ss,S_SPACE);
-    }
-
-    static String glph(String s, int n, String... ph){
-        String r = gl(s,n);
-        if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++)
-            r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
-        return r;
-    }
-
-    static String gsph(String s, String... ph){
-        return glph(s,0,ph);
-    }
-
-    static String gph(int n){
-        return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
-    }
+//
+//    static String gl(String s, int n){
+//        String r = nonEmpty(s) ? s : S_EMPTY;
+//        for(int i = 0;i < n;i++)
+//            r += SPRT_LINE;
+//        return r;
+//    }
+//
+//    static String gl(int n){
+//        return gl(S_EMPTY,n);
+//    }
+//
+//    static String gs(String s, int n){
+//        String r = S_EMPTY;
+//        if(nonEmpty(s)) for(int i = 0;i < n;i++)
+//            r += s;
+//        return r;
+//    }
+//
+//    static String gs(int n){
+//        return gs(S_SPACE,n);
+//    }
+//
+//    static String gs(String[] ss, String sprt){
+//        String r = S_EMPTY;
+//        for(String s : ss)
+//            r += s + sprt;
+//        return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());
+//    }
+//
+//    static String gs(String[] ss){
+//        return gs(ss,S_SPACE);
+//    }
+//
+//    static String glph(String s, int n, String... ph){
+//        String r = gl(s,n);
+//        if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++)
+//            r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
+//        return r;
+//    }
+//
+//    static String gsph(String s, String... ph){
+//        return glph(s,0,ph);
+//    }
+//
+//    static String gph(int n){
+//        return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
+//    }
 }

@@ -1,7 +1,7 @@
 package legend.helper.entity;
 
-import static legend.intf.ICommon.gl;
-import static legend.intf.ICommon.gs;
+import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.gs;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;

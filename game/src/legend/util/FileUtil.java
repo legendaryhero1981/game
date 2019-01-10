@@ -8,8 +8,8 @@ import static java.nio.file.Files.move;
 import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Stream.of;
-import static legend.intf.ICommon.gs;
-import static legend.intf.ICommon.gsph;
+import static legend.util.StringUtil.gs;
+import static legend.util.StringUtil.gsph;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
@@ -65,7 +65,7 @@ import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
 
-public class FileUtil implements IFileUtil,IConsoleUtil{
+public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static final FileParam CACHE;
     private static final ConsoleUtil CS;
     private static final IProgress PG;

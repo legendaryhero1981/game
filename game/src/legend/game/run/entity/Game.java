@@ -1,6 +1,6 @@
 package legend.game.run.entity;
 
-import static legend.intf.ICommon.gs;
+import static legend.util.StringUtil.gs;
 import static legend.util.ValueUtil.isEmpty;
 
 import java.util.List;

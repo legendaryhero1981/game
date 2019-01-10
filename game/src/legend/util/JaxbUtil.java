@@ -1,8 +1,8 @@
 package legend.util;
 
 import static java.lang.String.valueOf;
-import static legend.intf.ICommon.gsph;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.gsph;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,7 +23,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 import legend.util.intf.IJaxbUtil;
 
-public class JaxbUtil implements IJaxbUtil{
+public final class JaxbUtil implements IJaxbUtil{
     private JaxbUtil(){}
 
     public static void convertToXml(Path path, Object object){

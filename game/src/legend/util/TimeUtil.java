@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 import legend.util.intf.ITimeUtil;
 
-public class TimeUtil implements ITimeUtil{
+public final class TimeUtil implements ITimeUtil{
     private static AtomicLong time;
     private static AtomicLong totalTime;
     static{
