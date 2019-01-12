@@ -34,6 +34,17 @@ public final class StringUtil implements ICommon{
         return SU;
     }
 
+    public static String rph(String s, String ph, String repl, int n){
+        String r = repl;
+        for(int i = 1;i < n;i++)
+            r += repl;
+        return s.replaceAll(ph,quoteReplacement(r));
+    }
+
+    public static String rph(String s, String ph, String repl){
+        return rph(s,ph,repl,1);
+    }
+
     public static String gl(String s, int n){
         String r = nonEmpty(s) ? s : S_EMPTY;
         for(int i = 0;i < n;i++)
@@ -80,16 +91,5 @@ public final class StringUtil implements ICommon{
 
     public static String gph(int n){
         return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
-    }
-
-    public static String rph(String s, String ph, String repl, int n){
-        String r = repl;
-        for(int i = 1;i < n;i++)
-            r += repl;
-        return s.replaceAll(ph,quoteReplacement(r));
-    }
-
-    public static String rph(String s, String ph, String repl){
-        return rph(s,ph,repl,1);
     }
 }

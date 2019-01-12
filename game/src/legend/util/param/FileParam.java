@@ -67,6 +67,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public FileParam(){
         zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
+        split = REG_SPRT_COL;
         maxSize = Long.MAX_VALUE;
         limit = level = Integer.MAX_VALUE;
         zipLevel = Deflater.DEFAULT_COMPRESSION;

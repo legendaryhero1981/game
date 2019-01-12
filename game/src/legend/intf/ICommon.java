@@ -109,7 +109,7 @@ public interface ICommon{
     String PH_ARG8 = PLACE_HOLDER + "8" + PLACE_HOLDER;
     String PH_ARG9 = PLACE_HOLDER + "9" + PLACE_HOLDER;
     String SPRT_CMD = "::";
-    String SPRT_FID = "##";
+    String SPRT_FIELD = "##";
     String SPRT_RULE = ";;";
     String SPRT_ATOM = "=>";
     String SPRT_ARG = ",,";
@@ -118,9 +118,11 @@ public interface ICommon{
     String REG_SPC_SQM = "(?i)" + PLACE_HOLDER + SPC_SQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPC_DQM = "(?i)" + PLACE_HOLDER + SPC_DQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPRT_CMD = SPRT_CMD + "+";
-    String REG_SPRT_FID = SPRT_FID + "+";
+    String REG_SPRT_FIELD = SPRT_FIELD + "+";
     String REG_SPRT_RULE = SPRT_RULE + "+";
     String REG_SPRT_ARG = SPRT_ARG + "+";
+    String REG_SPRT_COL = "[ \\t]+";
+    String REG_RULE_ATOM = "(?i)(.+)(\\(.*\\))?";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
@@ -150,52 +152,4 @@ public interface ICommon{
     String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
     String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(\\d+)" + FLAG_DEBUG + ".*";
     String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
-//
-//    static String gl(String s, int n){
-//        String r = nonEmpty(s) ? s : S_EMPTY;
-//        for(int i = 0;i < n;i++)
-//            r += SPRT_LINE;
-//        return r;
-//    }
-//
-//    static String gl(int n){
-//        return gl(S_EMPTY,n);
-//    }
-//
-//    static String gs(String s, int n){
-//        String r = S_EMPTY;
-//        if(nonEmpty(s)) for(int i = 0;i < n;i++)
-//            r += s;
-//        return r;
-//    }
-//
-//    static String gs(int n){
-//        return gs(S_SPACE,n);
-//    }
-//
-//    static String gs(String[] ss, String sprt){
-//        String r = S_EMPTY;
-//        for(String s : ss)
-//            r += s + sprt;
-//        return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());
-//    }
-//
-//    static String gs(String[] ss){
-//        return gs(ss,S_SPACE);
-//    }
-//
-//    static String glph(String s, int n, String... ph){
-//        String r = gl(s,n);
-//        if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++)
-//            r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
-//        return r;
-//    }
-//
-//    static String gsph(String s, String... ph){
-//        return glph(s,0,ph);
-//    }
-//
-//    static String gph(int n){
-//        return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
-//    }
 }
