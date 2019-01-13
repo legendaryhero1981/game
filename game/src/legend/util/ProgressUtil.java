@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import legend.util.intf.IProgress;
 import legend.util.intf.IProgressUtil;
 
-public class ProgressUtil implements IProgressUtil{
+public final class ProgressUtil implements IProgressUtil{
     public static IProgress ConsoleProgress(){
         return new ConsoleProgress();
     }
