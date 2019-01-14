@@ -2,24 +2,19 @@ package legend.util.rule;
 
 import java.util.function.BiFunction;
 
-import legend.intf.ICommon;
+import legend.util.rule.intf.IReplaceRule;
 
-public abstract class ReplaceRule<T1,T2,R> implements ICommon{
+public abstract class ReplaceRule<T1,T2,R> implements IReplaceRule{
+    protected ReplaceRuleEngine engine;
     protected int index;
     protected String rule;
+    protected String name;
 
-    protected ReplaceRule(int index, String rule){
+    protected ReplaceRule(ReplaceRuleEngine engine, int index, String rule){
+        this.engine = engine;
         this.index = index;
         this.rule = rule;
     }
 
-    public abstract R execute(BiFunction<T1,T2,R> strategy, T2 data);
-
-    public int getIndex(){
-        return index;
-    }
-
-    public String getRule(){
-        return rule;
-    }
+    abstract R execute(BiFunction<T1,T2,R> strategy, T2 data);
 }

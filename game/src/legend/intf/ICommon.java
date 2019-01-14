@@ -122,7 +122,6 @@ public interface ICommon{
     String REG_SPRT_RULE = SPRT_RULE + "+";
     String REG_SPRT_ARG = SPRT_ARG + "+";
     String REG_SPRT_COL = "[ \\t]+";
-    String REG_RULE_ATOM = "(?i)(.+)(\\(.*\\))?";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";

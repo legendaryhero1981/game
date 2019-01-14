@@ -2,6 +2,17 @@ package legend.util.intf;
 
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM_CR;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM_SR;
+import static legend.util.rule.intf.IReplaceRule.REG_RULE_LOWER;
+import static legend.util.rule.intf.IReplaceRule.REG_RULE_REGENROW;
+import static legend.util.rule.intf.IReplaceRule.REG_RULE_REPLACE;
+import static legend.util.rule.intf.IReplaceRule.REG_RULE_UPPER;
+import static legend.util.rule.intf.IReplaceRule.RULE_LOWER;
+import static legend.util.rule.intf.IReplaceRule.RULE_REGENROW;
+import static legend.util.rule.intf.IReplaceRule.RULE_REPLACE;
+import static legend.util.rule.intf.IReplaceRule.RULE_UPPER;
 
 import legend.intf.ICommon;
 
@@ -91,17 +102,6 @@ public interface IFileUtil extends ICommon{
     String CMD_JSON_DEC = "-jd";
     String OPTIONS = "[" + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
     String FILE_LOG = "./file.log";
-    String RULE_LOWER = "LOWER";
-    String RULE_UPPER = "UPPER";
-    String RULE_REPLACE = "REPLACE";
-    String RULE_REGENROW = "REGENROW";
-    String REG_RULE_LOWER = "(?i)" + RULE_LOWER + "(\\((.*)\\))?";
-    String REG_RULE_UPPER = "(?i)" + RULE_UPPER + "(\\((.*)\\))?";
-    String REG_RULE_REPLACE = "(?i)" + RULE_REPLACE + "\\((.+)" + REG_SPRT_ARG + "(.*)\\)";
-    String REG_RULE_REGENROW = "(?i)" + RULE_REGENROW + "\\((.+)\\)";
-    String REG_COL_NUM = "([1-9]\\d*)(-?([1-9]\\d*))?,?+";
-    String REG_COL_NUM_SR = PLACE_HOLDER + "([1-9]\\d*)\\.(0|[1-9]\\d*)" + PLACE_HOLDER;
-    String REG_COL_NUM_CR = PLACE_HOLDER + "([1-9]\\d*)-([1-9]\\d*)" + PLACE_HOLDER;
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
