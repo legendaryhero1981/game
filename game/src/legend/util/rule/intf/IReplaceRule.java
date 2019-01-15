@@ -3,7 +3,6 @@ package legend.util.rule.intf;
 import legend.intf.ICommon;
 
 public interface IReplaceRule extends ICommon{
-    String RULE_COMPLEX = "COMPLEX";
     String RULE_LOWER = "LOWER";
     String RULE_UPPER = "UPPER";
     String RULE_REPLACE = "REPLACE";

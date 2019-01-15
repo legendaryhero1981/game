@@ -4,17 +4,21 @@ import java.util.function.BiFunction;
 
 import legend.util.rule.intf.IReplaceRule;
 
-public abstract class ReplaceRule<T1,T2,R> implements IReplaceRule{
+public abstract class ReplaceRule implements IReplaceRule{
+    protected BiFunction<ReplaceRule,String,String[]> strategy;
     protected ReplaceRuleEngine engine;
-    protected int index;
+    protected String[] args;
     protected String rule;
     protected String name;
+    protected int index;
 
     protected ReplaceRule(ReplaceRuleEngine engine, int index, String rule){
         this.engine = engine;
         this.index = index;
-        this.rule = rule;
+        refreshRule(rule);
     }
 
-    abstract R execute(BiFunction<T1,T2,R> strategy, T2 data);
+    protected abstract String[] execute(String data);
+
+    protected abstract void refreshRule(String rule);
 }

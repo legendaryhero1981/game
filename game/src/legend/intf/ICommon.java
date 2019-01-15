@@ -64,6 +64,7 @@ public interface ICommon{
     String V_SAME = "相同";
     String V_EXISTS = "存在";
     String V_CAN_NOT = "不能";
+    String V_READ = "读取";
     String V_WRITE = "写入";
     String V_SMLT = "模拟";
     String V_EXEC = "执行";
@@ -78,6 +79,7 @@ public interface ICommon{
     String V_MOV = "移动";
     String V_BAK = "备份";
     String V_UPD = "更新";
+    String V_REPL = "替换";
     String V_ADD = "新增";
     String V_REN = "重命名";
     String V_EXTR = "提取";

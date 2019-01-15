@@ -110,10 +110,11 @@ public interface IFileUtil extends ICommon{
     String ERR_FLE_DEL = V_DEL + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_CPY = V_CPY + N_FLE + S_SPACE + PH_ARG0 + V_TO + PH_ARG1 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG2;
     String ERR_FLE_MOV = V_MOV + N_FLE + S_SPACE + PH_ARG0 + V_TO + PH_ARG1 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG2;
+    String ERR_FLE_WRT = V_WRITE + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_READ = V_READ + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_EXTR = V_EXTR + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_WRT = V_WRITE + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_CPY = V_CPRS + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FLE_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -133,7 +134,7 @@ public interface IFileUtil extends ICommon{
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单事务性规则仅由1个原子规则组成，复杂事务性规则由多个原子规则组成；各事务性规则通过" + SPRT_RULE + "分隔，复杂事务性规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
+    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成；各事务性规则通过" + SPRT_RULE + "分隔，复合规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
     + "目前支持的所有原子规则（英文字母不区分大小写）如下：" + gl(2)
     + RULE_LOWER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数qstring，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_UPPER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数qstring，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
@@ -141,7 +142,7 @@ public interface IFileUtil extends ICommon{
     + RULE_REGENROW + "(rstring)" + gs(10) + "根据string重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条简单事务性规则使用，即只能放在规则列表的最后面；rstring为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；" + gl(2)
     + "目前支持的所有列数据占位符表达式如下：" + gl(2)
     + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_SR + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据，当在列字符串替换表达式中指定了列号表达式且m取值大于0时，n的取值应在列号表达式中存在；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
-    + "#n-m#" + gs(1) + "提取通过执行复杂事务性规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_CR + "；n为列号，m为复杂事务性规则执行顺序号；m的最小值为1，最大值为复杂规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取对第1列执行了第1条复杂规则后得到的数据）。" + gl(3)
+    + "#n-m#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_CR + "；n为列号，m为复合规则执行顺序号；m的最小值为1，最大值为复合规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）。" + gl(3)
     + "命令选项：" + gl(2)
     + "+ 可添加在命令选项末尾，表示输出详细信息；可与!或@或?连用；例如：-fd!+@?。" + gl(2)
     + "* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与!或@或?连用；例如：-fd*?@!。" + gl(2)
@@ -258,12 +259,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"[ \\t]+\" 1" + gl(1)
     + "先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行简单规则：将英文字母全部替换为小写；" + gl(1)
-    + "2、对每行的第1列数据执行复杂规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
+    + "2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行简单规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
     + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"[ \\t]+\" 1" + gl(1)
     + "先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
-    + "1、对每行的第1列数据执行复杂规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
+    + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行简单规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
     + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。" + gl(2)

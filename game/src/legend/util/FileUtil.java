@@ -5,11 +5,10 @@ import static java.nio.file.Files.deleteIfExists;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.find;
 import static java.nio.file.Files.move;
+import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Stream.of;
-import static legend.util.StringUtil.gs;
-import static legend.util.StringUtil.gsph;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
@@ -19,6 +18,8 @@ import static legend.util.MD5Util.getMD5L16;
 import static legend.util.MD5Util.getMD5L32;
 import static legend.util.MD5Util.getMD5U16;
 import static legend.util.MD5Util.getMD5U32;
+import static legend.util.StringUtil.gs;
+import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.countDuration;
 import static legend.util.TimeUtil.decTotalDuration;
 import static legend.util.TimeUtil.getDurationString;
@@ -28,6 +29,7 @@ import static legend.util.TimeUtil.resetTime;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.analyzeParam;
+import static legend.util.rule.ReplaceRuleEngine.ProvideRuleEngine;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -42,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -64,6 +67,7 @@ import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
+import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static final FileParam CACHE;
@@ -262,11 +266,20 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         return exists(path);
     }
 
+    public static List<String> readFile(Path path){
+        try{
+            return readAllLines(path);
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
+        }
+        return new ArrayList<String>();
+    }
+
     public static void writeFile(Path path, Collection<String> lines){
         try{
             write(makeDirs(path),lines);
         }catch(IOException e){
-            CS.sl(gsph(ERR_ZIP_FLE_WRT,path.toString(),e.toString()));
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
     }
 
@@ -354,7 +367,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void replaceFiles(FileParam param){
-        
+        param.getPathMap().entrySet().parallelStream().forEach(e->{
+            Path path = e.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
+            IReplaceRuleEngine ruleEngine = ProvideRuleEngine(param.getReplacement());
+            List<String> results = ruleEngine.execute(readFile(path),param.getSplit());
+            param.getDetailOptional().ifPresent(c->CS.sl(results,1));
+            param.getCmdOptional().ifPresent(c->writeFile(path,results));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
     }
 
     private static void renameFiles(FileParam param){

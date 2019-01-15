@@ -9,6 +9,7 @@ import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.ValueUtil.nonNull;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Scanner;
 import java.util.function.BooleanSupplier;
 
@@ -59,6 +60,15 @@ public final class ConsoleUtil implements IConsoleUtil{
 
     public ConsoleUtil sl(String s){
         return sl(true,s);
+    }
+
+    public ConsoleUtil sl(Collection<String> c, int n){
+        c.stream().forEach(s->sl(s));
+        return l(n);
+    }
+
+    public ConsoleUtil sl(Collection<String> c){
+        return sl(c,1);
     }
 
     public ConsoleUtil l(int n){
