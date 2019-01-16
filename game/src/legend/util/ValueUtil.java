@@ -32,4 +32,8 @@ public final class ValueUtil{
     public static boolean isNull(Object o){
         return null == o;
     }
+
+    public static int limitValue(int n, int min, int max){
+        return n < min ? min : n > max ? max : n;
+    }
 }

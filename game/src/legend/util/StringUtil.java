@@ -4,6 +4,7 @@ import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.Collection;
 import java.util.regex.Matcher;
 
 import legend.intf.ICommon;
@@ -16,6 +17,26 @@ public final class StringUtil implements ICommon{
     }
 
     private StringUtil(){}
+
+    public String concat(Collection<String> c, String join){
+        return concat(c.toArray(new String[0]),join);
+    }
+
+    public String concat(Collection<String> c){
+        return concat(c,"");
+    }
+
+    public String concat(String[] s, String join){
+        if(0 == s.length) return "";
+        String r = "";
+        for(int i = 0;i < s.length - 1;i++)
+            r = r.concat(s[i]).concat(join);
+        return r.concat(s[s.length - 1]);
+    }
+
+    public String concat(String[] s){
+        return concat(s,"");
+    }
 
     public StringUtil rph(SingleValue<String> value, String regex, String repl){
         Matcher matcher = compile(regex).matcher(value.get());

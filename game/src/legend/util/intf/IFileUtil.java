@@ -3,8 +3,8 @@ package legend.util.intf;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM_CR;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM_SR;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_COMP;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_ATOM;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_LOWER;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_REGENROW;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_REPLACE;
@@ -141,8 +141,8 @@ public interface IFileUtil extends ICommon{
     + RULE_REPLACE + "(qstring" + SPRT_ARG + "rstring)" + gs(1) + "将匹配qstring的列字符串的子串替换为rstring，匹配的正则表达式为：" + REG_RULE_REPLACE + "；qstring为正则查询表达式，rstring为正则替换表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_REGENROW + "(rstring)" + gs(10) + "根据string重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条简单事务性规则使用，即只能放在规则列表的最后面；rstring为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；" + gl(2)
     + "目前支持的所有列数据占位符表达式如下：" + gl(2)
-    + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_SR + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据，当在列字符串替换表达式中指定了列号表达式且m取值大于0时，n的取值应在列号表达式中存在；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
-    + "#n-m#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_NUM_CR + "；n为列号，m为复合规则执行顺序号；m的最小值为1，最大值为复合规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）。" + gl(3)
+    + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_ATOM + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据，当在列字符串替换表达式中指定了列号表达式且m取值大于0时，n的取值应在列号表达式中存在；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
+    + "#n-m#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_COMP + "；n为列号，m为复合规则执行顺序号；m的最小值为1，最大值为复合规则执行总数；当在列字符串替换表达式中指定了列号表达式时，n的取值应在列号表达式中存在；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）。" + gl(3)
     + "命令选项：" + gl(2)
     + "+ 可添加在命令选项末尾，表示输出详细信息；可与!或@或?连用；例如：-fd!+@?。" + gl(2)
     + "* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与!或@或?连用；例如：-fd*?@!。" + gl(2)

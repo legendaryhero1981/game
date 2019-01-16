@@ -3,8 +3,11 @@ package legend.util.rule;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -27,8 +30,57 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             return new String[]{data};
         });
         strategiesCache.put(RULE_REGENROW,(rule, data)->{
-            ReplaceRuleEngine engine = rule.engine;
-            return new String[]{data};
+            Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
+            Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
+            final int size = atomsCache.size(), colSize = atomsCache.get(0).length;
+            String[] results = new String[size];
+            Matcher matcher = compile(REG_COL_REPL).matcher(data);
+            if(!matcher.find()) for(int i = 0;i < results.length;results[i++] = data);
+            else{
+                List<String> matchList = new ArrayList<>();
+                List<Integer[]> indexList = new ArrayList<>();
+                int start = 0, end = 0, index = 0;
+                do{
+                    end = matcher.start();
+                    if(1 < end - start){
+                        matchList.add(data.substring(start,end));
+                        indexList.add(new Integer[]{index});
+                    }
+                    start = matcher.end() + 1;
+                    matchList.add("");
+                    String match = matcher.group();
+                    int x = limitValue(Integer.parseInt(matcher.group(1)),1,colSize);
+                    int y = Integer.parseInt(matcher.group(2));
+                    if(match.contains(FLAG_COL_REPL_COMP)) indexList.add(new Integer[]{x,y,nonEmpty(matcher.group(3)) ? Integer.parseInt(matcher.group(3)) : Integer.MAX_VALUE});
+                    else indexList.add(new Integer[]{x,y});
+                    index++;
+                }while(matcher.find());
+                String[] matches = matchList.toArray(new String[matchList.size()]);
+                Integer[][] indexes = indexList.toArray(new Integer[indexList.size()][]);
+                atomsCache.entrySet().parallelStream().forEach(entry->{
+                    int i = entry.getKey();
+                    String[][] atoms = entry.getValue();
+                    String[][][] complexes = complexesCache.get(i);
+                    results[i] = "";
+                    for(int j = 0;j < indexes.length;j++){
+                        int x = indexes[j][0];
+                        switch(indexes[j].length){
+                            case 3:
+                            int y = limitValue(indexes[j][1] - 1,0,complexes[x].length - 1);
+                            int z = limitValue(indexes[j][2] - 1,0,complexes[x][y].length - 1);
+                            results[i] += complexes[x][y][z];
+                            break;
+                            case 2:
+                            y = limitValue(indexes[j][1],1,atoms[x].length - 1);
+                            results[i] += atoms[x][y];
+                            break;
+                            default:
+                            results[i] += matches[x];
+                        }
+                    }
+                });
+            }
+            return results;
         });
         strategiesCache.put(RULE_LOWER,(rule, data)->{
             String[] args = rule.args;

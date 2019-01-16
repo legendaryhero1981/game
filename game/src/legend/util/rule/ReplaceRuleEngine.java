@@ -20,7 +20,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     protected Map<Integer,String[][]> atomsCache = new ConcurrentHashMap<>();
     protected Map<Integer,String[][][]> complexesCache = new ConcurrentHashMap<>();
     private Set<Integer> colIndexesCache = new HashSet<>();
-    protected ReplaceRule[] rules;
+    private ReplaceRule[] rules;
     private String colSplit;
     private String colNumber;
     private String rule;
