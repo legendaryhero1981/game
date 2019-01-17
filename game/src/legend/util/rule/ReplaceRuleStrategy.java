@@ -23,8 +23,10 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             if(rule instanceof ComplexRule){
                 AtomRule[] atomRules = ((ComplexRule)rule).atomRules;
                 String[] results = new String[atomRules.length];
-                for(int i = 0;i < atomRules.length;i++)
+                for(int i = 0;i < atomRules.length;i++){
                     results[i] = atomRules[i].execute(data)[0];
+                    data = results[i];
+                }
                 return results;
             }
             return new String[]{data};
@@ -32,7 +34,8 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
         strategiesCache.put(RULE_REGENROW,(rule, data)->{
             Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
             Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
-            final int size = atomsCache.size(), colSize = atomsCache.get(0).length;
+            final int size = atomsCache.size(), colSize = atomsCache.get(0).length,
+                            dataSize = data.length();
             String[] results = new String[size];
             Matcher matcher = compile(REG_COL_REPL).matcher(data);
             if(!matcher.find()) for(int i = 0;i < results.length;results[i++] = data);
@@ -42,19 +45,29 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 int start = 0, end = 0, index = 0;
                 do{
                     end = matcher.start();
-                    if(1 < end - start){
+                    if(start < end){
                         matchList.add(data.substring(start,end));
-                        indexList.add(new Integer[]{index});
+                        indexList.add(new Integer[]{index++});
                     }
-                    start = matcher.end() + 1;
+                    start = matcher.end();
                     matchList.add("");
                     String match = matcher.group();
-                    int x = limitValue(Integer.parseInt(matcher.group(1)),1,colSize);
-                    int y = Integer.parseInt(matcher.group(2));
-                    if(match.contains(FLAG_COL_REPL_COMP)) indexList.add(new Integer[]{x,y,nonEmpty(matcher.group(3)) ? Integer.parseInt(matcher.group(3)) : Integer.MAX_VALUE});
-                    else indexList.add(new Integer[]{x,y});
+                    if(match.contains(FLAG_COL_REPL_COMP)){
+                        int x = limitValue(Integer.parseInt(matcher.group(3)),1,colSize) - 1;
+                        int y = Integer.parseInt(matcher.group(4));
+                        int z = nonEmpty(matcher.group(5)) ? Integer.parseInt(matcher.group(5)) : Integer.MAX_VALUE;
+                        indexList.add(new Integer[]{x,y,z});
+                    }else{
+                        int x = limitValue(Integer.parseInt(matcher.group(1)),1,colSize) - 1;
+                        int y = Integer.parseInt(matcher.group(2));
+                        indexList.add(new Integer[]{x,y});
+                    }
                     index++;
                 }while(matcher.find());
+                if(start < dataSize){
+                    matchList.add(data.substring(start,dataSize));
+                    indexList.add(new Integer[]{index});
+                }
                 String[] matches = matchList.toArray(new String[matchList.size()]);
                 Integer[][] indexes = indexList.toArray(new Integer[indexList.size()][]);
                 atomsCache.entrySet().parallelStream().forEach(entry->{
@@ -66,12 +79,12 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                         int x = indexes[j][0];
                         switch(indexes[j].length){
                             case 3:
-                            int y = limitValue(indexes[j][1] - 1,0,complexes[x].length - 1);
-                            int z = limitValue(indexes[j][2] - 1,0,complexes[x][y].length - 1);
+                            int y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
+                            int z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
                             results[i] += complexes[x][y][z];
                             break;
                             case 2:
-                            y = limitValue(indexes[j][1],1,atoms[x].length - 1);
+                            y = limitValue(indexes[j][1],0,atoms[x].length - 1);
                             results[i] += atoms[x][y];
                             break;
                             default:

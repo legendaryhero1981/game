@@ -29,17 +29,21 @@ public final class ConsoleUtil implements IConsoleUtil{
     }
 
     public void showHelp(String help, BooleanSupplier... suppliers){
-        if(nonEmpty(suppliers)) for(BooleanSupplier supplier : suppliers)
-            if(!supplier.getAsBoolean()) return;
-        sl(help);
-        exit(0);
+        if(meetCondition(suppliers)){
+            sl(help);
+            exit(0);
+        }
     }
 
     public void showError(String error, String[] args, BooleanSupplier... suppliers){
-        if(nonEmpty(suppliers)) for(BooleanSupplier supplier : suppliers)
-            if(!supplier.getAsBoolean()) return;
-        sl(gsph(error,args));
-        exit(0);
+        if(showException(error,args,suppliers)) exit(0);
+    }
+
+    public boolean showException(String error, String[] args, BooleanSupplier... suppliers){
+        if(meetCondition(suppliers)){
+            sl(gsph(error,args));
+            return true;
+        }else return false;
     }
 
     public ConsoleUtil s(int n){
@@ -151,6 +155,12 @@ public final class ConsoleUtil implements IConsoleUtil{
 
     public void clearStream(){
         this.stream = null;
+    }
+
+    private boolean meetCondition(BooleanSupplier... suppliers){
+        if(nonEmpty(suppliers)) for(BooleanSupplier supplier : suppliers)
+            if(!supplier.getAsBoolean()) return false;
+        return true;
     }
 
     private ConsoleUtil print(boolean flag, String s){

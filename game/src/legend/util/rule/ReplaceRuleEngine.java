@@ -2,6 +2,7 @@ package legend.util.rule;
 
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -43,7 +44,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
 
     @Override
     public List<String> execute(List<String> datas, String colSplitRegex){
-        refreshData(datas,colSplitRegex);
+        if(!refreshData(datas,colSplitRegex)) return datas;
         excuteRules();
         return dealResults();
     }
@@ -51,9 +52,11 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     @Override
     public void refreshRule(String replaceRule){
         String[] s = replaceRule.split(REG_SPRT_FIELD);
-        CS.showError(ERR_RULE_FMT,null,()->s.length > 2 || isEmpty(s[s.length - 1]));
+        CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
             colNumber = s[0];
+            Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
+            CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_COL_NUM},()->!matcher.find());
             rule = s[1];
         }else{
             colNumber = "";
@@ -78,49 +81,48 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         hasTerminationRule = RULE_REGENROW.equals(rules[rules.length - 1].name) ? true : false;
     }
 
-    private void refreshData(List<String> datas, String colSplitRegex){
+    private boolean refreshData(List<String> datas, String colSplitRegex){
         clearCache();
-        if(nonEmpty(datas)){
-            final int datasSize = datas.size();
-            String[] data = datas.toArray(new String[datasSize]);
-            for(int i = 0,j,k,l;i < datasSize;i++){
-                String[] s = data[i].split(colSplitRegex);
-                String[][] atoms = new String[s.length][atomsSize + 1];
-                atoms[0][0] = String.valueOf(i);
-                for(j = 0;j < s.length;j++)
-                    atoms[j][0] = s[j];
-                atomsCache.put(i,atoms);
-                String[][][] complexes = new String[s.length][complexesSize][];
+        if(isEmpty(datas)) return false;
+        final int datasSize = datas.size();
+        String[] data = datas.toArray(new String[datasSize]);
+        for(int i = 0,j,k,l;i < datasSize;i++){
+            String[] s = data[i].split(colSplitRegex);
+            String[][] atoms = new String[s.length][atomsSize + 1];
+            String[][][] complexes = new String[s.length][complexesSize][];
+            for(j = 0;j < s.length;j++){
+                atoms[j][0] = s[j];
                 for(k = l = 0;l < rules.length;){
                     ReplaceRule rule = rules[l++];
                     if(rule instanceof ComplexRule) complexes[j][k++] = new String[((ComplexRule)rule).atomRules.length];
                 }
-                complexesCache.put(i,complexes);
             }
-            final int size = atomsCache.get(0).length;
-            CS.showError(ERR_RULE_FMT,null,()->atomsCache.values().parallelStream().anyMatch(v->size != v.length));
-            if(nonEmpty(colNumber)){
-                Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
-                while(matcher.find()){
-                    int start = Integer.parseInt(matcher.group(1));
-                    String s = matcher.group(3);
-                    int end = nonEmpty(s) ? Integer.parseInt(s) : start;
-                    if(start > end){
-                        start += end;
-                        end = start - end;
-                        start -= end;
-                    }
-                    if(end > size) end = size;
-                    for(int i = start;i < end;i++)
-                        colIndexesCache.add(i);
-                }
-                CS.showError(ERR_RULE_FMT,null,()->colIndexesCache.isEmpty());
-            }else for(int i = 0;i < size;i++)
-                colIndexesCache.add(i);
-            Matcher matcher = compile(colSplitRegex).matcher(data[0]);
-            if(compile(colSplitRegex).matcher(data[0]).find()) colSplit = matcher.group();
-            else colSplit = "";
+            atomsCache.put(i,atoms);
+            complexesCache.put(i,complexes);
         }
+        final int size = atomsCache.get(0).length;
+        if(CS.showException(ERR_DATA_ANLS,new String[]{ERR_DATA_COL_NUM},()->atomsCache.values().parallelStream().anyMatch(v->size != v.length))) return false;
+        if(nonEmpty(colNumber)){
+            Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
+            while(matcher.find()){
+                int start = Integer.parseInt(matcher.group(1));
+                String s = matcher.group(3);
+                int end = nonEmpty(s) ? Integer.parseInt(s) : start;
+                if(start > end){
+                    start += end;
+                    end = start - end;
+                    start -= end;
+                }
+                if(end > size) end = size;
+                for(int i = start - 1;i < end;i++)
+                    colIndexesCache.add(i);
+            }
+        }else for(int i = 0;i < size;i++)
+            colIndexesCache.add(i);
+        Matcher matcher = compile(colSplitRegex).matcher(data[0]);
+        if(matcher.find()) colSplit = matcher.group();
+        else colSplit = "";
+        return true;
     }
 
     private void excuteRules(){
@@ -131,14 +133,14 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             String[][][] complexes = complexesCache.get(entry.getKey());
             colIndexesCache.parallelStream().forEach(index->{
                 String data = atoms[index][0];
-                for(int i = 0,j = 0,k = 0;i < length;i++,k++){
-                    ReplaceRule replaceRule = rules[i];
+                for(int i = 0,j = 0,k = 0;i < length;){
+                    ReplaceRule replaceRule = rules[i++];
                     if(replaceRule instanceof AtomRule){
                         atoms[index][++j] = replaceRule.execute(data)[0];
                         data = atoms[index][j];
                     }else{
                         complexes[index][k] = replaceRule.execute(data);
-                        data = complexes[index][k][complexes[index][k].length - 1];
+                        data = complexes[index][k][complexes[index][k++].length - 1];
                     }
                 }
             });
@@ -174,8 +176,8 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     }
 
     private void validateRule(ReplaceRule replaceRule, int index, int length){
-        if(isEmpty(replaceRule.strategy)) CS.showError(ERR_RULE_FMT,new String[]{replaceRule.name});
-        if(RULE_REGENROW.equals(replaceRule.name) && index < length) CS.showError(ERR_RULE_FMT,null);
+        CS.showError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
+        CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_TMNT},()->RULE_REGENROW.equals(replaceRule.name) && index < length);
     }
 
     private void clearCache(){

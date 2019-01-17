@@ -245,7 +245,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             }
             param.saveCache(CACHE);
         }catch(Exception e){
-            CS.sl(gsph(ERR_DIR_VST,fileParam.getSrcPath().toString(),e.toString()));
+            CS.sl(gsph(ERR_CMD_EXEC,e.toString()));
         }finally{
             fileParam.getDetailOptional().ifPresent(s->CS.l(1));
         }

@@ -532,7 +532,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             s += S_SPACE + limit + S_SPACE + level;
             break;
             case CMD_REP_FILE:
-            s += rm + S_SPACE + spt + S_SPACE + level;
+            s += rm + spt + S_SPACE + level;
             break;
             case CMD_RENAME:
             case CMD_REN_DIR:
