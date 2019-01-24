@@ -115,8 +115,9 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
         });
         strategiesCache.put(RULE_REPLACE,(rule, data)->{
             String[] args = rule.args;
-            if(nonEmpty(args) && 1 < args.length) return new String[]{data.replaceAll(args[0],quoteReplacement(args[1]))};
-            return new String[]{data};
+            if(isEmpty(args)) return new String[]{data};
+            else if(1 == args.length) return new String[]{data.replaceAll(args[0],"")};
+            else return new String[]{data.replaceAll(args[0],quoteReplacement(args[1]))};
         });
     }
 
