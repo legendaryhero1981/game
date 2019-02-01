@@ -28,7 +28,7 @@ public class Game implements IMain{
     @XmlElement
     private String args = "";
     @XmlElement
-    private String priority = "";
+    private String priority = PRIORITY_HIGH;
     @XmlElement
     private String icon = "";
     @XmlElement

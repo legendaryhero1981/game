@@ -16,6 +16,7 @@ public interface IMain extends ICommon{
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
     String WAIT_TIME = "10";
+    String PRIORITY_HIGH = "128";
     String REG_TIME = "60|[1-9]|[1-5]\\d";
     String REG_SPRT_CMD = "(?m)\n";
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
@@ -127,7 +128,7 @@ public interface IMain extends ICommon{
     + gs(4) + "Game::path\t\t\t游戏可执行文件路径，也是Game::icon的路径。\n"
     + gs(4) + "Game::exe\t\t\t游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExecutablePath非空且有效，则优先使用代理启动游戏。\n"
     + gs(4) + "Game::args\t\t\tGame::exe的命令行参数。\n"
-    + gs(4) + "Game::priority\t\t游戏进程的优先级，可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）。\n"
+    + gs(4) + "Game::priority\t\t游戏进程的优先级，默认值为128；可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）。\n"
     + gs(4) + "Game::icon\t\t\t游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。\n"
     + gs(4) + "Game::agentExecutablePath\tGame::exe的代理可执行文件绝对路径名；适用于使用游戏插件启动游戏的情况，例如：上古卷轴5的skse。\n"
     + gs(4) + "Game::agentArgs\t\tGame::agentExecutablePath的命令行参数；若想使用代理参数指定游戏进程优先级，则Game::priority应该置空，否则优先使用Game::priority。\n"
