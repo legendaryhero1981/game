@@ -277,7 +277,7 @@ public final class Main implements IMain{
                 if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_CMD);
                 else names.append(watch + SPRT_CMD);
             });
-            script.append(glph(CMD_VBS_GAME_WATCH,1,game.getWatchWait(),game.getExe(),names.toString(),paths.toString()));
+            script.append(glph(CMD_VBS_GAME_WATCH,1,countWaitTime(game.getWatchWait()),game.getExe(),names.toString(),paths.toString()));
         }
     }
 
