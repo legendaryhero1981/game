@@ -583,17 +583,17 @@ file -jd (?i)\..*bundle$ "g:/games/Pillars of Eternity II"
 
 参数说明：
 
-run -c|-a|-d|-v|-x|-l|-la id path exe name [comment]
+run -c|-a|-d|-v|-k|-x|-l|-la id path exe name [comment]
 
-id		游戏标识，在./run.xml文件中唯一标识一个游戏配置节点。
+id      游戏标识，在./run.xml文件中唯一标识一个游戏配置节点。
 
-path		游戏可执行文件路径。
+path    游戏可执行文件路径。
 
-exe		游戏可执行文件名称（不包含扩展名.exe）。
+exe     游戏可执行文件名称（不包含扩展名.exe）。
 
-name		游戏中文名称。
+name    游戏中文名称。
 
-comment		游戏快捷方式说明。
+comment 游戏快捷方式说明。
 
 -c id path exe name [comment] 新建游戏配置文件./run.xml，并生成一个游戏配置节点。
 
