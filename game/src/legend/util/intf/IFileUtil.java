@@ -262,7 +262,7 @@ public interface IFileUtil extends ICommon{
     + "2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
-    + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t]+\" 1" + gl(1)
+    + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
     + "先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
