@@ -26,6 +26,7 @@ public interface IFileUtil extends ICommon{
     long IS_QUERY_COMMAND = 1l << 6;
     long NEED_REPATH = 1l << 7;
     long ORDER_ASC = 1l << 8;
+    long COMPARE_SAME = 1l << 9;
     long ENABLE_CACHE = 1l << 50;
     long CAN_USE_CACHE = 1l << 51;
     long CAN_SAVE_CACHE = 1l << 52;
@@ -36,6 +37,12 @@ public interface IFileUtil extends ICommon{
     String CMD_FIND = "-f";
     String CMD_FND_DIR = "-fd";
     String CMD_FND_DIR_OLY = "-fdo";
+    String CMD_FND_SAM = "-fs";
+    String CMD_FND_DIR_SAM = "-fds";
+    String CMD_FND_DIR_OLY_SAM = "-fdos";
+    String CMD_FND_DIF = "-fdf";
+    String CMD_FND_DIR_DIF = "-fddf";
+    String CMD_FND_DIR_OLY_DIF = "-fdodf";
     String CMD_FND_PTH_ABS = "-fpa";
     String CMD_FND_PTH_RLT = "-fpr";
     String CMD_FND_PTH_SRC = "-fps";
@@ -78,10 +85,6 @@ public interface IFileUtil extends ICommon{
     String CMD_MOVE = "-m";
     String CMD_MOV_DIR = "-md";
     String CMD_MOV_DIR_OLY = "-mdo";
-    String CMD_BAK_DIF = "-bf";
-    String CMD_BAK_DIF_DIR = "-bfd";
-    String CMD_BAK_SAM = "-bs";
-    String CMD_BAK_SAM_DIR = "-bsd";
     String CMD_BAK_UGD = "-bu";
     String CMD_BAK_RST = "-br";
     String CMD_UPGRADE = "-u";
@@ -123,14 +126,14 @@ public interface IFileUtil extends ICommon{
     + "命令参数：" + gl(2)
     + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
-    + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为1个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
-    + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为1个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
-    + "src" + gs(9) + "输入文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "dest" + gs(8) + "输出文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "backup" + gs(6) + "备份文件目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
+    + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
+    + "src" + gs(9) + "文件输入目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "dest" + gs(8) + "文件输入或输出目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "backup" + gs(6) + "文件备份目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipName" + gs(5) + "压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipLevel" + gs(4) + "文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。" + gl(2)
-    + "limit" + gs(7) + "查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。" + gl(2)
+    + "limit" + gs(7) + "查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定或指定一个非正整数则取默认值2147483647。" + gl(2)
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
@@ -159,6 +162,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FIND + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件。" + gl(2)
     + CMD + CMD_FND_DIR + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配。" + gl(2)
     + CMD + CMD_FND_DIR_OLY + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录。" + gl(2)
+    + CMD + CMD_FND_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中存在的同名目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中存在的同名目录。" + gl(2)
+    + CMD + CMD_FND_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中不存在的文件。" + gl(2)
+    + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的绝对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的相对路径名（不包含src目录名称）。" + gl(2)
     + CMD + CMD_FND_PTH_SRC + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的相对路径名（包含src目录名称）。" + gl(2)
@@ -201,10 +210,6 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_MOVE + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中文件到dest中。" + gl(2)
     + CMD + CMD_MOV_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_MOV_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
-    + CMD + CMD_BAK_DIF + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否存在，将不存在的文件备份到backup中。" + gl(2)
-    + CMD + CMD_BAK_DIF_DIR + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件和目录及其中所有文件，检查这些文件和目录在dest中是否存在，将不存在的文件和目录备份到backup中。" + gl(2)
-    + CMD + CMD_BAK_SAM + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否存在，将存在的文件备份到backup中。" + gl(2)
-    + CMD + CMD_BAK_SAM_DIR + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件和目录及其中所有文件，检查这些文件和目录在dest中是否存在，将存在的文件和目录备份到backup中。" + gl(2)
     + CMD + CMD_BAK_UGD + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
     + CMD + CMD_BAK_RST + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
     + CMD + CMD_UPGRADE + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
@@ -227,6 +232,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FIND + "+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
     + CMD + CMD_FND_DIR + "+ (?i)strings$ \"F:/games/Fallout 4\"" + gl(1) + "查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY + "+ . \"F:/games/KingdomComeDeliverance/修改/Mods\" 0 1" + gl(1) + "查询该目录中的第一级目录。" + gl(2)
+    + CMD + CMD_FND_SAM + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_SAM + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_SAM + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录。" + gl(2)
+    + CMD + CMD_FND_DIF + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的文件。" + gl(2)
+    + CMD + CMD_FND_DIR_DIF + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_DIF + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名（不包含该目录名称）。" + gl(2)
     + CMD + CMD_FND_PTH_SRC + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名（包含该目录名称）。" + gl(2)
@@ -279,10 +290,6 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings中所有匹配文件移动到 .../备份 目录中。" + gl(2)
     + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
     + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_BAK_DIF + " . \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-f）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件，检查这些文件在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件备份到 F:/备份 目录中。" + gl(2)
-    + CMD + CMD_BAK_DIF_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件，检查这些文件和目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件和目录备份到 F:/备份 目录中。" + gl(2)
-    + CMD + CMD_BAK_SAM + " . \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-f）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件，检查这些文件在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将存在的文件备份到 F:/备份 目录中。" + gl(2)
-    + CMD + CMD_BAK_SAM_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件，检查这些文件和目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将存在的文件和目录备份到 F:/备份 目录中。" + gl(2)
     + CMD + CMD_BAK_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
     + CMD + CMD_BAK_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
     + CMD + CMD_UPGRADE + " \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-f）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
