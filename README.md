@@ -94,21 +94,21 @@ regex       文件名正则查询表达式，.匹配任意文件名和目录名�
 
 目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：
 
-#SQM=n# 英文单引号（'）占位符表达式，匹配的正则表达式为：(?i)#SQM=?([1-9]?)#；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为1个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。
+#SQM=n# 英文单引号（'）占位符表达式，匹配的正则表达式为：(?i)#SQM=?([1-9]?)#；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。
 
-#DQM=n# 英文双引号（"）占位符表达式，匹配的正则表达式为：(?i)#DQM=?([1-9]?)#；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为1个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。
+#DQM=n# 英文双引号（"）占位符表达式，匹配的正则表达式为：(?i)#DQM=?([1-9]?)#；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。
 
-src         输入文件目录；可使用特殊字符占位符表达式（见regex参数）。
+src         文件输入目录；可使用特殊字符占位符表达式（见regex参数）。
 
-dest        输出文件目录；可使用特殊字符占位符表达式（见regex参数）。
+dest        文件输入或输出目录；可使用特殊字符占位符表达式（见regex参数）。
 
-backup      备份文件目录；可使用特殊字符占位符表达式（见regex参数）。
+backup      文件备份目录；可使用特殊字符占位符表达式（见regex参数）。
 
 zipName     压缩文件名（程序会根据命令选项自动添加文件扩展名.zip或.pak）；可使用特殊字符占位符表达式（见regex参数）。
 
 zipLevel    文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。
 
-limit       查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定则取默认值2147483647。
+limit       查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定或指定一个非正整数则取默认值2147483647。
 
 level       文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。
 
@@ -171,6 +171,24 @@ file -fd[+*!@?] regex src [limit] [level]
 
 file -fdo[+*!@?] regex src [limit] [level]
 根据regex查找src中的目录。
+
+file -fs[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在的同名文件。
+
+file -fds[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中存在的同名目录和文件。
+
+file -fdos[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的目录，且只选取在desc目录的同一相对路径中存在的同名目录。
+
+file -fdf[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件，且只选取在desc目录的同一相对路径中不存在的文件。
+
+file -fddf[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。
+
+file -fdodf[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。
 
 file -fpa[+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的绝对路径名。
@@ -298,18 +316,6 @@ file -md[+*!@?] regex src dest [level]
 file -mdo[+*!@?] regex src dest [level]
 根据regex移动src中所有匹配的目录及其中所有文件到dest中。
 
-file -bf[+*!@?] regex src dest backup [level]
-根据regex获得src中所有匹配文件，检查这些文件在dest中是否存在，将不存在的文件备份到backup中。
-
-file -bfd[+*!@?] regex src dest backup [level]
-根据regex获得src中所有匹配文件和目录及其中所有文件，检查这些文件和目录在dest中是否存在，将不存在的文件和目录备份到backup中。
-
-file -bs[+*!@?] regex src dest backup [level]
-根据regex获得src中所有匹配文件，检查这些文件在dest中是否存在，将存在的文件备份到backup中。
-
-file -bsd[+*!@?] regex src dest backup [level]
-根据regex获得src中所有匹配文件和目录及其中所有文件，检查这些文件和目录在dest中是否存在，将存在的文件和目录备份到backup中。
-
 file -bu[+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。
 
@@ -375,6 +381,24 @@ file -fd+ (?i)strings$ "F:/games/Fallout 4"
 
 file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
 查询该目录中的第一级目录。
+
+file -fs+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名文件。
+
+file -fds+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录和文件。
+
+file -fdos+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录。
+
+file -fdf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的文件。
+
+file -fddf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录和文件。
+
+file -fdodf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录。
 
 file -fpa+ . "F:/games/DARK SOULS REMASTERED" 20
 查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。
@@ -470,7 +494,7 @@ file -rf* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##LOWER;;UPPER=>REPLACE(\.
 3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = "beq.s"”。
 
-file -rf* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t]+" 1
+file -rf* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
 先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
 1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；
 2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；
@@ -511,18 +535,6 @@ file -md (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份
 
 file -mdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
 先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
-
-file -bf . "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-f）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件，检查这些文件在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件备份到 F:/备份 目录中。
-
-file -bfd \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件，检查这些文件和目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将不存在的文件和目录备份到 F:/备份 目录中。
-
-file -bs . "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-f）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件，检查这些文件在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将存在的文件备份到 F:/备份 目录中。
-
-file -bsd \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-fd）获得 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件，检查这些文件和目录在 F:/迅雷下载/FINAL FANTASY XV 目录中是否存在，将存在的文件和目录备份到 F:/备份 目录中。
 
 file -bu . "F:/games/Resident Evil 4/修改/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/备份/BIO4"
 先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
