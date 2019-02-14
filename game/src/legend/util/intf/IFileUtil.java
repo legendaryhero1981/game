@@ -27,6 +27,9 @@ public interface IFileUtil extends ICommon{
     long NEED_REPATH = 1l << 7;
     long ORDER_ASC = 1l << 8;
     long COMPARE_SAME = 1l << 9;
+    long PATH_RELATIVE = 1l << 10;
+    long INTERCHANGE_UPGRADE = 1l << 11;
+    long ZIP_UNZIP = 1l << 12;
     long ENABLE_CACHE = 1l << 50;
     long CAN_USE_CACHE = 1l << 51;
     long CAN_SAVE_CACHE = 1l << 52;
@@ -45,13 +48,10 @@ public interface IFileUtil extends ICommon{
     String CMD_FND_DIR_OLY_DIF = "-fdodf";
     String CMD_FND_PTH_ABS = "-fpa";
     String CMD_FND_PTH_RLT = "-fpr";
-    String CMD_FND_PTH_SRC = "-fps";
     String CMD_FND_PTH_DIR_ABS = "-fpda";
     String CMD_FND_PTH_DIR_RLT = "-fpdr";
-    String CMD_FND_PTH_DIR_SRC = "-fpds";
     String CMD_FND_PTH_DIR_OLY_ABS = "-fpdoa";
     String CMD_FND_PTH_DIR_OLY_RLT = "-fpdor";
-    String CMD_FND_PTH_DIR_OLY_SRC = "-fpdos";
     String CMD_FND_SIZ_ASC = "-fsa";
     String CMD_FND_SIZ_DSC = "-fsd";
     String CMD_FND_DIR_SIZ_ASC = "-fdsa";
@@ -85,8 +85,8 @@ public interface IFileUtil extends ICommon{
     String CMD_MOVE = "-m";
     String CMD_MOV_DIR = "-md";
     String CMD_MOV_DIR_OLY = "-mdo";
-    String CMD_BAK_UGD = "-bu";
-    String CMD_BAK_RST = "-br";
+    String CMD_ITCHG_UGD = "-iu";
+    String CMD_ITCHG_RST = "-ir";
     String CMD_UPGRADE = "-u";
     String CMD_UGD_DIR = "-ud";
     String CMD_ZIP_DEF = "-zd";
@@ -169,14 +169,11 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的相对路径名（不包含src目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_SRC + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的相对路径名（包含src目录名称）。" + gl(2)
+    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件（同-f），显示文件的相对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名（不包含src目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_SRC + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名（包含src目录名称）。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_OLY_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的绝对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_OLY_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名（不包含src目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_SRC + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名（包含src目录名称）。" + gl(2)
     + CMD + CMD_FND_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递增排序。" + gl(2)
     + CMD + CMD_FND_SIZ_DSC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递减排序。" + gl(2)
     + CMD + CMD_FND_DIR_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和目录，按文件大小递增排序。" + gl(2)
@@ -210,8 +207,8 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_MOVE + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中文件到dest中。" + gl(2)
     + CMD + CMD_MOV_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_MOV_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex移动src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
-    + CMD + CMD_BAK_UGD + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
-    + CMD + CMD_BAK_RST + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
+    + CMD + CMD_ITCHG_UGD + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
+    + CMD + CMD_ITCHG_RST + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
     + CMD + CMD_UPGRADE + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
     + CMD + CMD_UGD_DIR + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
     + CMD + CMD_ZIP_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
@@ -240,13 +237,10 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FND_DIR_OLY_DIF + "+ \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名（不包含该目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_SRC + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名（包含该目录名称）。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名（不包含该目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_SRC + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名（包含该目录名称）。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_OLY_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有目录，显示目录的绝对路径名。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_OLY_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有目录，显示目录的相对路径名（不包含该目录名称）。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_SRC + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有目录，显示目录的相对路径名（包含该目录名称）。" + gl(2)
     + CMD + CMD_FND_SIZ_ASC + "+ . \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。" + gl(2)
     + CMD + CMD_FND_SIZ_DSC + "+ . \"F:/games/FINAL FANTASY XV\" 1MB;1GB" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递减排序。" + gl(2)
     + CMD + CMD_FND_DIR_SIZ_ASC + "+ \\Ajp$ \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "查询该目录中所有目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。" + gl(2)
@@ -290,8 +284,8 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings中所有匹配文件移动到 .../备份 目录中。" + gl(2)
     + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
     + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_BAK_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
-    + CMD + CMD_BAK_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
+    + CMD + CMD_ITCHG_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
+    + CMD + CMD_ITCHG_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
     + CMD + CMD_UPGRADE + " \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-f）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
     + CMD + CMD_UGD_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-fd）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
     + CMD + CMD_ZIP_DEF + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询（作用同-f）再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)

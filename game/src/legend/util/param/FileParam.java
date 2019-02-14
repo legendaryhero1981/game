@@ -119,12 +119,26 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         condition = 0;
         switch(cmd){
             case CMD_FND_SAM:
-            condition |= COMPARE_SAME;
-            case CMD_FND_DIF:
-            case CMD_FIND:
-            case CMD_FND_PTH_ABS:
+            condition |= COMPARE_SAME | IS_QUERY_COMMAND | MATCH_FILE_ONLY;
+            break;
+            case CMD_FND_DIR_OLY_SAM:
+            condition |= COMPARE_SAME | IS_QUERY_COMMAND | MATCH_DIR_ONLY;
+            break;
+            case CMD_FND_DIR_SAM:
+            condition |= COMPARE_SAME | IS_QUERY_COMMAND;
+            break;
             case CMD_FND_PTH_RLT:
-            case CMD_FND_PTH_SRC:
+            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | MATCH_FILE_ONLY;
+            break;
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | MATCH_DIR_ONLY;
+            break;
+            case CMD_FND_PTH_DIR_RLT:
+            condition |= PATH_RELATIVE | IS_QUERY_COMMAND;
+            break;
+            case CMD_FIND:
+            case CMD_FND_DIF:
+            case CMD_FND_PTH_ABS:
             condition |= IS_QUERY_COMMAND | MATCH_FILE_ONLY;
             break;
             case CMD_FND_DIR_OLY_SIZ_ASC:
@@ -134,27 +148,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_DIR_SIZ_ASC:
             condition |= IS_QUERY_COMMAND | ORDER_ASC;
             break;
-            case CMD_FND_DIR_OLY_SAM:
-            condition |= COMPARE_SAME;
             case CMD_FND_DIR_OLY_DIF:
-            case CMD_FND_PTH_DIR_OLY_ABS:
-            case CMD_FND_PTH_DIR_OLY_RLT:
-            case CMD_FND_PTH_DIR_OLY_SRC:
             case CMD_FND_DIR_OLY:
             case CMD_FND_DIR_OLY_SIZ_DSC:
+            case CMD_FND_PTH_DIR_OLY_ABS:
             condition |= MATCH_DIR_ONLY;
-            case CMD_FND_DIR_DIF:
             case CMD_FND_DIR:
+            case CMD_FND_DIR_DIF:
             case CMD_FND_PTH_DIR_ABS:
-            case CMD_FND_PTH_DIR_RLT:
-            case CMD_FND_PTH_DIR_SRC:
             case CMD_FND_SIZ_DSC:
             case CMD_FND_DIR_SIZ_DSC:
             case CMD_FND_DIR_DIR_SIZ_DSC:
             condition |= IS_QUERY_COMMAND;
-            break;
-            case CMD_FND_DIR_SAM:
-            condition |= IS_QUERY_COMMAND | COMPARE_SAME;
             break;
             case CMD_REN_DIR_OLY:
             case CMD_REN_DIR_OLY_LOW:
@@ -182,14 +187,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_UGD_DIR:
             condition |= NEED_REPATH;
             break;
+            case CMD_ZIP_INF:
+            condition |= ZIP_UNZIP | MATCH_FILE_ONLY;
+            break;
+            case CMD_ITCHG_UGD:
+            condition |= INTERCHANGE_UPGRADE;
+            case CMD_ITCHG_RST:
             case CMD_RENAME:
             case CMD_REN_LOW:
             case CMD_REN_UP:
             case CMD_REN_UP_FST:
             case CMD_DELETE:
             case CMD_MOVE:
-            case CMD_BAK_UGD:
-            case CMD_BAK_RST:
             case CMD_JSON_ENC:
             case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
@@ -197,7 +206,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_REP_FILE:
             case CMD_UPGRADE:
             case CMD_ZIP_DEF:
-            case CMD_ZIP_INF:
             case CMD_PAK_DEF:
             case CMD_PAK_INF:
             case CMD_GUID_L32:
@@ -362,13 +370,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_PTH_ABS:
                     case CMD_FND_PTH_RLT:
-                    case CMD_FND_PTH_SRC:
                     case CMD_FND_PTH_DIR_ABS:
                     case CMD_FND_PTH_DIR_RLT:
-                    case CMD_FND_PTH_DIR_SRC:
                     case CMD_FND_PTH_DIR_OLY_ABS:
                     case CMD_FND_PTH_DIR_OLY_RLT:
-                    case CMD_FND_PTH_DIR_OLY_SRC:
                     optional.filter(s->s.length > 3).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[3]);
                         param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
@@ -449,8 +454,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     param.setDestPath(get(replacePlaceHolders(as[3])));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
-                    case CMD_BAK_UGD:
-                    case CMD_BAK_RST:
+                    case CMD_ITCHG_UGD:
+                    case CMD_ITCHG_RST:
                     case CMD_UPGRADE:
                     case CMD_UGD_DIR:
                     param.setDestPath(get(replacePlaceHolders(as[3])));
@@ -533,13 +538,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_OLY:
             case CMD_FND_PTH_ABS:
             case CMD_FND_PTH_RLT:
-            case CMD_FND_PTH_SRC:
             case CMD_FND_PTH_DIR_ABS:
             case CMD_FND_PTH_DIR_RLT:
-            case CMD_FND_PTH_DIR_SRC:
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
-            case CMD_FND_PTH_DIR_OLY_SRC:
             case CMD_FND_DIR_DIR_SIZ_ASC:
             case CMD_FND_DIR_DIR_SIZ_DSC:
             case CMD_FND_DIR_OLY_SIZ_ASC:
@@ -596,8 +598,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_ZIP_INF:
             s += dp + S_SPACE + level;
             break;
-            case CMD_BAK_UGD:
-            case CMD_BAK_RST:
+            case CMD_ITCHG_UGD:
+            case CMD_ITCHG_RST:
             case CMD_UPGRADE:
             case CMD_UGD_DIR:
             s += dp + bp + S_SPACE + level;

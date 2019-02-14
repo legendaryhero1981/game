@@ -133,13 +133,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 break;
                 case CMD_FND_PTH_ABS:
                 case CMD_FND_PTH_RLT:
-                case CMD_FND_PTH_SRC:
                 case CMD_FND_PTH_DIR_ABS:
                 case CMD_FND_PTH_DIR_RLT:
-                case CMD_FND_PTH_DIR_SRC:
                 case CMD_FND_PTH_DIR_OLY_ABS:
                 case CMD_FND_PTH_DIR_OLY_RLT:
-                case CMD_FND_PTH_DIR_OLY_SRC:
                 findSortedFilePaths(param);
                 break;
                 case CMD_FND_SIZ_ASC:
@@ -205,8 +202,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_MOV_DIR_OLY:
                 moveFiles(param);
                 break;
-                case CMD_BAK_UGD:
-                case CMD_BAK_RST:
+                case CMD_ITCHG_UGD:
+                case CMD_ITCHG_RST:
                 interchangeFiles(param);
                 break;
                 case CMD_UPGRADE:
@@ -342,9 +339,16 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFilePaths(FileParam param){
-        param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showFilePath(param,p)));
+        boolean relative = param.matchConditions(PATH_RELATIVE);
+        param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
+            if(relative) CS.sl(param.getRootPath().relativize(p).toString());
+            else CS.sl(p.toString());
+        }));
         int limit = param.getLimit() - param.getPathList().size();
-        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->showFilePath(param,p)));
+        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->{
+            if(relative) CS.sl(param.getRootPath().relativize(p).toString());
+            else CS.sl(p.toString());
+        }));
     }
 
     private static void findSortedFileSizes(FileParam param){
@@ -524,7 +528,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
-        boolean upgrade = CMD_BAK_UGD.equals(param.getCmd());
+        boolean upgrade = param.matchConditions(INTERCHANGE_UPGRADE);
         param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
@@ -598,7 +602,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void unzipFiles(FileParam param){
-        boolean unzip = CMD_ZIP_INF.equals(param.getCmd());
+        boolean unzip = param.matchConditions(ZIP_UNZIP);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             SingleValue<ZipEntry> value = new SingleValue<>(null);
@@ -743,23 +747,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static void showFilePath(FileParam param, Path path){
-        switch(param.getCmd()){
-            case CMD_FND_PTH_RLT:
-            case CMD_FND_PTH_DIR_RLT:
-            case CMD_FND_PTH_DIR_OLY_RLT:
-            CS.sl(param.getSrcPath().relativize(path).toString());
-            break;
-            case CMD_FND_PTH_SRC:
-            case CMD_FND_PTH_DIR_SRC:
-            case CMD_FND_PTH_DIR_OLY_SRC:
-            CS.sl(param.getSrcPath().getFileName().resolve(param.getSrcPath().relativize(path)).toString());
-            break;
-            default:
-            CS.sl(path.toString());
-        }
-    }
-
     private static long cachePaths(FileParam param){
         long count = 0;
         try{
@@ -819,7 +806,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_DIR_OLY_SIZ_DSC:
                     case CMD_FND_PTH_DIR_OLY_ABS:
                     case CMD_FND_PTH_DIR_OLY_RLT:
-                    case CMD_FND_PTH_DIR_OLY_SRC:
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_LOW:
                     case CMD_REN_DIR_UP:
@@ -838,7 +824,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_DIR_SIZ_DSC:
                     case CMD_FND_PTH_DIR_ABS:
                     case CMD_FND_PTH_DIR_RLT:
-                    case CMD_FND_PTH_DIR_SRC:
                     case CMD_FND_DIR_DIR_SIZ_ASC:
                     case CMD_FND_DIR_DIR_SIZ_DSC:
                     case CMD_CPY_DIR:
