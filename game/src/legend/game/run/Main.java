@@ -93,8 +93,8 @@ public final class Main implements IMain{
         try{
             // 根据ID获得需要被执行的游戏
             loadData();
-            // 处理游戏执行前、游戏执行后需要执行的BAT脚本以及游戏进程监控的等待时间
-            dealWaitTime();
+            // 处理游戏进程的优先级数值，游戏执行前、游戏执行后需要执行的BAT脚本以及游戏进程监控的等待时间
+            dealIntegerValues();
             // 生成游戏执行前、游戏执行后需要执行的BAT脚本文件
             writeOtherScript();
             // 执行启动游戏进程的VBS主脚本文件
@@ -173,7 +173,6 @@ public final class Main implements IMain{
 
     private static void create(){
         Games games = new Games();
-        games.setComment(GAMES_COMMENT);
         games.getGames().add(game);
         saveModel(games);
     }
@@ -345,8 +344,10 @@ public final class Main implements IMain{
         else Runtime.getRuntime().exec(caches[caches.length - 1]);
     }
 
-    private static void dealWaitTime(){
-        Matcher matcher = compile(REG_TIME).matcher(game.getBeforeWait());
+    private static void dealIntegerValues(){
+        Matcher matcher = compile(REG_PRIORITY).matcher(game.getPriority());
+        if(!matcher.matches()) game.setPriority(PRIORITY_HIGH);
+        matcher = compile(REG_TIME).matcher(game.getBeforeWait());
         if(!matcher.matches()) game.setBeforeWait(WAIT_TIME);
         if(!matcher.reset(game.getAfterWait()).matches()) game.setAfterWait(WAIT_TIME);
         if(!matcher.reset(game.getWatchWait()).matches()) game.setWatchWait(WAIT_TIME);

@@ -72,7 +72,8 @@ public interface IFileUtil extends ICommon{
     String CMD_REN_DIR_OLY_LOW = "-rdol";
     String CMD_REN_DIR_OLY_UP = "-rdou";
     String CMD_REN_DIR_OLY_UP_FST = "-rdouf";
-    String CMD_REP_FILE = "-rf";
+    String CMD_REP_FILE_BT = "-rfbt";
+    String CMD_REP_FILE_IL = "-rfil";
     String CMD_COPY = "-c";
     String CMD_CPY_DIR = "-cd";
     String CMD_CPY_DIR_OLY = "-cdo";
@@ -104,9 +105,13 @@ public interface IFileUtil extends ICommon{
     String CMD_JSON_ENC = "-je";
     String CMD_JSON_DEC = "-jd";
     String OPTIONS = "[" + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
+    String MODE_IL_NATIVE = "0";
+    String MODE_IL_MOD = "1";
     String FILE_LOG = "./file.log";
+    String CONFIG_FILE_IL = "./file-il.xml";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
+    String REG_LINE_NUMBER = "([1-9]\\d*)(-([1-9]\\d*))?";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
     String ERR_DIR_VST = V_VST + N_DIR + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_VST = V_VST + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -122,8 +127,18 @@ public interface IFileUtil extends ICommon{
     String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FLE_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FLE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FLE + N_PATH_NAME + S_SPACE + PH_ARG0 + S_SPACE + V_SAME + N_A + N_FLE + S_BANG;
-    String HELP_FILE = APP_INFO
-    + "命令参数：" + gl(2)
+    String ILCODES_COMMENT = "\n" + gs(4) + "ILCodes配置集节点结构说明：\n"
+    + gs(4) + "ILCodes节点由一个唯一节点comment、一个唯一节点mode和多个ILCode节点按顺序组成，comment节点必须在最前面。" + gl(1)
+    + gs(4) + "ILCodes::comment" + gs(8) + "ILCodes配置集节点结构说明，对IL文件的修改无影响，仅此说明而已。" + gl(1)
+    + gs(4) + "ILCodes::mode" + gs(11) + "对IL源文件内容的处理模式，取值范围为：0,1，默认值为0；取0表示先根据ILCodes::ILCode查询定位IL源文件中需要修改的内容，再自动生成已修改的IL源文件；取1表示根据ILCodes::ILCode直接自动生成已修改的IL源文件。" + gl(1)
+    + gs(4) + "ILCodes::ILCode" + gs(9) + "ILCode配置节点，包括对IL代码的处理模式和修改IL代码片段所需的相关参数等等。" + gl(1)
+    + gs(4) + "ILCode节点由processingMode、lineNumber、codeDesc、queryRegex、codeFragment节点按顺序组成；processingMode节点必须在最前面。" + gl(1)
+    + gs(4) + "ILCode::processingMode" + gs(2) + "在自动生成已修改的IL源文件时对IL代码的处理模式，取值范围为：0,1，默认值为0；取0表示提取原始IL源文件的数据；取1表示提取ILCode::codeFragment的数据。" + gl(1)
+    + gs(4) + "ILCode::lineNumber" + gs(6) + "IL源文件中IL代码片段的起止行号，匹配的正则表达式为：；如果要修改的代码只有1行，可以只指定一个行号，即1与1-1等效。" + gl(1)
+    + gs(4) + "ILCode::codeDesc" + gs(8) + "需要修改的IL代码片段的功能描述。" + gl(1)
+    + gs(4) + "ILCode::queryRegex" + gs(6) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式。" + gl(1)
+    + gs(4) + "ILCode::codeFragment" + gs(4) + "在IL源文件中ILCode::lineNumber位置处需要被修改的IL代码片段。" + gl(1) + gs(4);
+    String HELP_FILE = APP_INFO + "命令参数：" + gl(2)
     + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
     + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
@@ -194,7 +209,8 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_LOW + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文字母替换为小写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。" + gl(2)
-    + CMD + CMD_REP_FILE + OPTIONS + "regex src replacement [split] [level]" + gl(1) + "根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。" + gl(2)
+    + CMD + CMD_REP_FILE_BT + OPTIONS + "regex src replacement [split] [level]" + gl(1) + "根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。" + gl(2)
+    + CMD + CMD_REP_FILE_IL + OPTIONS + "regex src [level]" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动修改src中所有文件名匹配regex的文件；若配置文件" + CONFIG_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
     + CMD + CMD_COPY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
@@ -261,17 +277,18 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_LOW + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为小写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询（作用同-fd）再将该目录中所有匹配的目录名中英单词首字母替换为大写。" + gl(2)
-    + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FILE_BT + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
     + "先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行原子规则：将英文字母全部替换为小写；" + gl(1)
     + "2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
-    + CMD + CMD_REP_FILE + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FILE_BT + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
     + "先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
+    + CMD + CMD_REP_FILE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动修改E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件。" + gl(2)
     + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)

@@ -7,7 +7,10 @@ open module legend{
     exports legend.intf;
     exports legend.util;
     exports legend.util.intf;
+    exports legend.util.entity;
     exports legend.util.param;
+    exports legend.util.rule;
+    exports legend.util.rule.intf;
     exports legend.helper;
     exports legend.helper.entity;
     exports legend.helper.intf;

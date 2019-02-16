@@ -13,13 +13,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import legend.game.run.intf.IMain;
+
 @XmlRootElement(name = "Games")
 @XmlType(propOrder = {"comment","games"})
-public class Games{
+public class Games implements IMain{
     @XmlTransient
     private ConcurrentMap<String,Game> gameMap = new ConcurrentHashMap<>();
     @XmlElement
-    private String comment = "";
+    private String comment = GAMES_COMMENT;
     @XmlElementRef
     private List<Game> games = new CopyOnWriteArrayList<>();
 
@@ -31,14 +33,6 @@ public class Games{
     public ConcurrentMap<String,Game> refreshGameMap(){
         if(nonEmpty(games)) games.parallelStream().forEach(game->gameMap.put(game.getId(),game));
         return gameMap;
-    }
-
-    public String getComment(){
-        return comment;
-    }
-
-    public void setComment(String comment){
-        this.comment = comment;
     }
 
     public List<Game> getGames(){

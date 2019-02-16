@@ -203,7 +203,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
-            case CMD_REP_FILE:
+            case CMD_REP_FILE_BT:
             case CMD_UPGRADE:
             case CMD_ZIP_DEF:
             case CMD_PAK_DEF:
@@ -407,7 +407,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     });
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
-                    case CMD_REP_FILE:
+                    case CMD_REP_FILE_BT:
                     param.setReplacement(replacePlaceHolders(as[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(replacePlaceHolders(s[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
@@ -556,7 +556,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_OLY_DIF:
             s += dp + S_SPACE + limit + S_SPACE + level;
             break;
-            case CMD_REP_FILE:
+            case CMD_REP_FILE_BT:
             s += rm + spt + S_SPACE + level;
             break;
             case CMD_RENAME:

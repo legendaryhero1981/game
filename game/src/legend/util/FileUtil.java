@@ -159,7 +159,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_FND_DIR_OLY_DIF:
                 findSortedFilesByCompared(param);
                 break;
-                case CMD_REP_FILE:
+                case CMD_REP_FILE_BT:
                 replaceFiles(param);
                 break;
                 case CMD_RENAME:
