@@ -6,8 +6,16 @@ import static legend.util.StringUtil.gs;
 import legend.intf.ICommon;
 
 public interface IILCode extends ICommon{
+    String SPRT_LINE_NUMBER = "-";
     String REG_SPRT_CODE = "(?m)\n";
-    String REG_LINE_NUMBER = "([1-9]\\d*)(-([1-9]\\d*))?";
+    String REG_LINE_NUMBER = "([1-9]\\d*)(" + SPRT_LINE_NUMBER + "([1-9]\\d*))?";
+    String ERR_ILCODE_NON = "ILCodes节点下必须至少有一个ILCode节点！";
+    String ERR_QUERY_REGEX = "当ILCodes::mode为0且ILCode::processingMode非0时，ILCode::queryRegex不能为空！";
+    String ERR_LINE_NUM_FORMAT = "ILCode::lineNumber为空或格式错误！";
+    String ERR_LINE_NUM_VAL_RANGE = "ILCode::lineNumber中的起始行号必须小于等于终止行号！";
+    String ERR_LINE_NUM_VAL_ADJION = "当前ILCode::lineNumber中的起始行号必须与上一个ILCode::lineNumber中的终止行号或终止行号+1相等！";
+    String ERR_LINE_NUM_VAL_MIN = "ILCode::lineNumber的最小值必须为1！";
+    String ERR_LINE_NUM_VAL_MAX = "ILCode::lineNumber的最大值必须等于IL源文件中的最大行号！";
     String ILCODES_COMMENT = "\n" + gs(4) + "ILCodes配置集节点结构说明：\n"
     + gs(4) + "ILCodes节点由一个唯一节点comment、一个唯一节点mode和多个ILCode节点按顺序组成，comment节点必须在最前面。" + gl(1)
     + gs(4) + "ILCodes::comment" + gs(8) + "ILCodes配置集节点结构说明，对IL文件的修改无影响，仅此说明而已。" + gl(1)
@@ -19,11 +27,4 @@ public interface IILCode extends ICommon{
     + gs(4) + "ILCode::codeDesc" + gs(8) + "需要修改的IL代码片段的功能描述。" + gl(1)
     + gs(4) + "ILCode::queryRegex" + gs(6) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式。" + gl(1)
     + gs(4) + "ILCode::codeFragment" + gs(4) + "在IL源文件中ILCode::lineNumber位置处需要被修改的IL代码片段。" + gl(1) + gs(4);
-    String ERR_ILCODE_NON = "ILCodes节点下必须至少有一个ILCode节点！";
-    String ERR_QUERY_REGEX = "当ILCodes::mode为0且ILCode::processingMode非0时，ILCode::queryRegex不能为空！";
-    String ERR_LINE_NUM_FORMAT = "ILCode::lineNumber为空或格式错误！";
-    String ERR_LINE_NUM_VAL_RANGE = "ILCode::lineNumber中的起始行号必须小于等于终止行号！";
-    String ERR_LINE_NUM_VAL_ADJION = "当前ILCode::lineNumber中的起始行号必须与上一个ILCode::lineNumber中的终止行号或终止行号+1相等！";
-    String ERR_LINE_NUM_VAL_MIN = "ILCode::lineNumber的最小值必须为1！";
-    String ERR_LINE_NUM_VAL_MAX = "ILCode::lineNumber的最大值必须等于IL源文件中的最大行号！";
 }

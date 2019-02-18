@@ -44,7 +44,7 @@ public class ILCodes implements IILCode{
             }
             return false;
         })){
-            sortedCodes();
+            sortCodes(codes);
             if(1 != codes.get(0).getStartLine()){
                 errorInfo = ERR_LINE_NUM_VAL_MIN;
                 return false;
@@ -72,6 +72,16 @@ public class ILCodes implements IILCode{
         return this;
     }
 
+    public void sortCodes(List<ILCode> codes){
+        ILCode[] codeArray = (ILCode[])codes.stream().sorted((ILCode code1, ILCode code2)->{
+            int start1 = code1.getStartLine(), start2 = code2.getStartLine();
+            if(start1 == start2) return 0;
+            return start1 > start2 ? 1 : -1;
+        }).toArray();
+        codes.clear();
+        addAll(codes,codeArray);
+    }
+
     public String errorInfo(){
         return errorInfo;
     }
@@ -90,15 +100,5 @@ public class ILCodes implements IILCode{
 
     public void setCodes(List<ILCode> codes){
         this.codes = codes;
-    }
-
-    private void sortedCodes(){
-        ILCode[] codeArray = (ILCode[])codes.stream().sorted((ILCode code1, ILCode code2)->{
-            int start1 = code1.getStartLine(), start2 = code2.getStartLine();
-            if(start1 == start2) return 0;
-            return start1 > start2 ? 1 : -1;
-        }).toArray();
-        codes.clear();
-        addAll(codes,codeArray);
     }
 }

@@ -1,5 +1,6 @@
 package legend.util.entity;
 
+import static java.lang.String.valueOf;
 import static java.util.Collections.addAll;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.nonEmpty;
@@ -70,15 +71,19 @@ public class ILCode implements IILCode{
         return this;
     }
 
-    public List<String> refreshRegexCache(){
-        regexCache.clear();
-        if(nonEmpty(queryRegex)) addAll(regexCache,pattern.split(queryRegex));
+    public List<String> refreshRegexCache(boolean force){
+        if(force || regexCache.isEmpty()){
+            regexCache.clear();
+            if(nonEmpty(queryRegex)) addAll(regexCache,pattern.split(queryRegex));
+        }
         return regexCache;
     }
 
-    public List<String> refreshFragmentCache(){
-        fragmentCache.clear();
-        if(nonEmpty(codeFragment)) addAll(fragmentCache,pattern.split(codeFragment));
+    public List<String> refreshFragmentCache(boolean force){
+        if(force || fragmentCache.isEmpty()){
+            fragmentCache.clear();
+            if(nonEmpty(codeFragment)) addAll(fragmentCache,pattern.split(codeFragment));
+        }
         return fragmentCache;
     }
 
@@ -90,20 +95,16 @@ public class ILCode implements IILCode{
         this.processingMode = processingMode;
     }
 
+    public void setLineNumer(int start, int end){
+        lineNumber = valueOf(start) + SPRT_LINE_NUMBER + valueOf(end);
+    }
+
     public int getStartLine(){
         return startLine;
     }
 
-    public void setStartLine(int startLine){
-        this.startLine = startLine;
-    }
-
     public int getEndLine(){
         return endLine;
-    }
-
-    public void setEndLine(int endLine){
-        this.endLine = endLine;
     }
 
     public String getQueryRegex(){

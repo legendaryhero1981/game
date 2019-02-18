@@ -49,8 +49,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -424,27 +426,38 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 Path path = e.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
                 List<String> datas = readFile(path);
-                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(datas.size()));
+                int dataSize = datas.size();
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
                 if(MODE_NATIVE == mode){
-                    List<ILCode> codes = new CopyOnWriteArrayList<>();
-                    ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).forEach(c->{
-                        ;
+                    int n = dataSize / SIZE_IL_PARTITION, r = dataSize % SIZE_IL_PARTITION;
+                    List<Integer> partitions = new CopyOnWriteArrayList<>();
+                    for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
+                        partitions.add(i);
+                    if(1 < r) partitions.add(r - 1);
+                    List<ILCode> caches = new CopyOnWriteArrayList<>((ILCode[])ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).toArray());
+                    partitions.parallelStream().forEach(p->{
+                        caches.parallelStream().forEach(code->{
+                            List<String> regexCache = code.refreshRegexCache(false);
+                            List<String> fragmentCache = code.refreshFragmentCache(false);
+                            int l = regexCache.size() - 1, i = l, j = p;
+                            while(0 <= i && 0 <= j && p - SIZE_IL_PARTITION < j){
+                                if(!regexCache.get(i--).equals(datas.get(j--))){
+                                    j += l - i;
+                                    i = l;
+                                }
+                            }
+                            
+                        });
                     });
-                    ilCodes.setCodes(codes);
-                    CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(datas.size()));
+                    ilCodes.sortCodes(caches);
+                    CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
                 }
                 List<String> results = new CopyOnWriteArrayList<>();
                 ilCodes.getCodes().stream().forEach(code->{
                     int start = code.getStartLine(), end = code.getEndLine();
-                    switch(code.getProcessingMode()){
-                        case MODE_REPL:
-                        case MODE_ADD:
-                        results.addAll(code.refreshFragmentCache());
-                        break;
-                        default:
-                        for(int i = start - 1;i < end;i++)
-                            results.add(datas.get(i));
-                    }
+                    if(MODE_NATIVE == code.getProcessingMode()) for(int i = start - 1;i < end;i++)
+                        results.add(datas.get(i));
+                    else results.addAll(code.refreshFragmentCache(false));
                 });
                 param.getCmdOptional().ifPresent(c->writeFile(path,results));
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
