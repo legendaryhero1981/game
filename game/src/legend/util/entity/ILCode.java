@@ -7,49 +7,64 @@ import static legend.util.ValueUtil.nonEmpty;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import legend.util.intf.IFileUtil;
+import legend.util.adapter.CDataAdapter;
+import legend.util.intf.IILCode;
 
 @XmlRootElement(name = "ILCode")
 @XmlType(propOrder = {"processingMode","lineNumber","codeDesc","queryRegex","codeFragment"})
-public class ILCode implements IFileUtil{
+public class ILCode implements IILCode{
     @XmlElement
-    private String processingMode = MODE_IL_NATIVE;
+    private String processingMode = MODE_NATIVE;
     @XmlElement
-    private String lineNumber = "";
+    private String lineNumber = "1-1";
     @XmlElement
     private String codeDesc = "";
+    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     private String queryRegex = "";
+    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     private String codeFragment = "";
     @XmlTransient
-    private int startLine;
+    protected String errorInfo = "";
     @XmlTransient
-    private int endLine;
+    private Pattern pattern = compile(REG_SPRT_CODE);
     @XmlTransient
     private List<String> regexCache = new CopyOnWriteArrayList<>();
     @XmlTransient
     private List<String> fragmentCache = new CopyOnWriteArrayList<>();
+    @XmlTransient
+    private int startLine = 1;
+    @XmlTransient
+    private int endLine = 1;
 
     protected boolean validate(){
-        if(MODE_IL_NATIVE != processingMode && MODE_IL_MOD != processingMode) processingMode = MODE_IL_NATIVE;
+        if(MODE_NATIVE != processingMode && MODE_REPL != processingMode && MODE_ADD != processingMode) processingMode = MODE_NATIVE;
         Matcher matcher = compile(REG_LINE_NUMBER).matcher(lineNumber);
-        if(!matcher.matches()) return false;
+        if(!matcher.matches()){
+            errorInfo = ERR_LINE_NUM_FORMAT;
+            return false;
+        }
         startLine = Integer.parseInt(matcher.group(1));
         endLine = matcher.groupCount() > 1 ? Integer.parseInt(matcher.group(3)) : startLine;
-        return startLine <= endLine && (MODE_IL_NATIVE == processingMode || nonEmpty(queryRegex));
+        if(startLine > endLine){
+            errorInfo = ERR_LINE_NUM_VAL_RANGE;
+            return false;
+        }
+        return true;
     }
 
     protected ILCode trim(){
         processingMode = processingMode.trim();
         lineNumber = lineNumber.trim();
-        codeDesc = codeDesc.trim();
         queryRegex = queryRegex.trim();
         codeFragment = codeFragment.trim();
         return this;
@@ -57,13 +72,13 @@ public class ILCode implements IFileUtil{
 
     public List<String> refreshRegexCache(){
         regexCache.clear();
-        if(nonEmpty(queryRegex)) addAll(regexCache,queryRegex.split(SPRT_LINE));
+        if(nonEmpty(queryRegex)) addAll(regexCache,pattern.split(queryRegex));
         return regexCache;
     }
 
     public List<String> refreshFragmentCache(){
         fragmentCache.clear();
-        if(nonEmpty(codeFragment)) addAll(fragmentCache,codeFragment.split(SPRT_LINE));
+        if(nonEmpty(codeFragment)) addAll(fragmentCache,pattern.split(codeFragment));
         return fragmentCache;
     }
 

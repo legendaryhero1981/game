@@ -9,8 +9,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import legend.game.run.intf.IMain;
+import legend.util.adapter.CDataAdapter;
 
 @XmlRootElement(name = "Game")
 @XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentExecutablePath","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
@@ -35,8 +37,10 @@ public class Game implements IMain{
     private String agentExecutablePath = "";
     @XmlElement
     private String agentArgs = "";
+    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     private String before = "";
+    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     private String after = "";
     @XmlElement

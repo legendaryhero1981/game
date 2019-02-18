@@ -88,6 +88,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         fileParam.srcPath = srcPath;
         fileParam.destPath = destPath;
         fileParam.backupPath = backupPath;
+        fileParam.rootPath = rootPath;
+        fileParam.outPath = outPath;
         fileParam.pattern = pattern;
         fileParam.split = split;
         fileParam.replacement = replacement;
@@ -203,7 +205,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_JSON_DEC:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
-            case CMD_REP_FILE_BT:
             case CMD_UPGRADE:
             case CMD_ZIP_DEF:
             case CMD_PAK_DEF:
@@ -214,6 +215,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MD5_U16:
             case CMD_MD5_L32:
             case CMD_MD5_U32:
+            case CMD_REP_FILE_BT:
+            case CMD_REP_FILE_IL:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -412,6 +415,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(replacePlaceHolders(s[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
+                    case CMD_REP_FILE_IL:
+                    optional.filter(s->s.length > 3).ifPresent(s->{
+                        String s3 = replacePlaceHolders(s[3]);
+                        if(s3.matches(REG_NUMBER)){
+                            param.setDestPath(get(CONFIG_FILE_IL));
+                            param.setLevel(Integer.parseInt(s3));
+                        }else param.setDestPath(get(s3));
+                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
                     case CMD_RENAME:
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_OLY:
@@ -596,6 +609,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR:
             case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
+            case CMD_REP_FILE_IL:
             s += dp + S_SPACE + level;
             break;
             case CMD_ITCHG_UGD:

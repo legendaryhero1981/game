@@ -285,24 +285,22 @@ public final class Main implements IMain{
         writeScript(pattern.split(game.getBefore()),1);
         writeScript(pattern.split(game.getAfter()),2);
         // BAT脚本方式实现进程监控
-        /*
-         * if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){
-         * File batFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_BAT);
-         * StringBuilder builder = new StringBuilder();
-         * game.getWatches().stream().forEach(watch->{
-         * watch = watch.replaceAll(REG_SPRT_PATH,gs(SPRT_FILE,4));
-         * if(watch.contains(SPRT_FILE)) builder.append(glph(CMD_BAT_PROC_DEL_BY_PATH,1,watch));
-         * else builder.append(glph(CMD_BAT_PROC_DEL_BY_NAME,1,watch));
-         * });
-         * script.append(glph(CMD_BAT_GAME_WATCH,1,game.getExe() +
-         * FILE_SUFFIX_EXE,game.getWatchWait(),builder.toString()));
-         * caches[3] = batFile.getCanonicalPath();
-         * caches[caches.length - 1] = script.toString();
-         * CS.sl(caches[3]).sl(caches[caches.length - 1]);
-         * write(new BufferedWriter(new FileWriter(batFile)),caches[caches.length - 1]);
-         * script.delete(0,script.length());
-         * }
-         */
+        // if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){
+        // File batFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_BAT);
+        // StringBuilder builder = new StringBuilder();
+        // game.getWatches().stream().forEach(watch->{
+        // watch = watch.replaceAll(REG_SPRT_PATH,gs(SPRT_FILE,4));
+        // if(watch.contains(SPRT_FILE)) builder.append(glph(CMD_BAT_PROC_DEL_BY_PATH,1,watch));
+        // else builder.append(glph(CMD_BAT_PROC_DEL_BY_NAME,1,watch));
+        // });
+        // script.append(glph(CMD_BAT_GAME_WATCH,1,game.getExe() +
+        // FILE_SUFFIX_EXE,game.getWatchWait(),builder.toString()));
+        // caches[3] = batFile.getCanonicalPath();
+        // caches[caches.length - 1] = script.toString();
+        // CS.sl(caches[3]).sl(caches[caches.length - 1]);
+        // write(new BufferedWriter(new FileWriter(batFile)),caches[caches.length - 1]);
+        // script.delete(0,script.length());
+        // }
     }
 
     private static void writeScript(String[] cmds, int index) throws IOException{

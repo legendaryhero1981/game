@@ -110,6 +110,12 @@ public interface ICommon{
     String PH_ARG7 = PLACE_HOLDER + "7" + PLACE_HOLDER;
     String PH_ARG8 = PLACE_HOLDER + "8" + PLACE_HOLDER;
     String PH_ARG9 = PLACE_HOLDER + "9" + PLACE_HOLDER;
+    String MODE_NATIVE = "0";
+    String MODE_REPL = "1";
+    String MODE_ADD = "2";
+    String FLAG_DEBUG = "#";
+    String FLAG_MOD = "*";
+    String FLAG_ADD = "+";
     String SPRT_CMD = "::";
     String SPRT_FIELD = "##";
     String SPRT_RULE = ";;";
@@ -117,6 +123,13 @@ public interface ICommon{
     String SPRT_ARG = ",,";
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
+    String XML_NOTE_START = "<!--";
+    String XML_NOTE_END = "-->";
+    String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;
+    String XML_CDATA_START = "<![CDATA[";
+    String XML_CDATA_END = "]]>";
+    String XML_CDATA = XML_CDATA_START + PH_ARG0 + XML_CDATA_END;
+    String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
     String REG_SPC_SQM = "(?i)" + PLACE_HOLDER + SPC_SQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPC_DQM = "(?i)" + PLACE_HOLDER + SPC_DQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPRT_CMD = SPRT_CMD + "+";
@@ -129,10 +142,14 @@ public interface ICommon{
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
     String REG_OPT_ASK = "\\A[" + OPT_ASK + "]+$";
     String REG_ASK_NO = "\\A[nN]$";
+    String REG_NUMBER = "\\d+";
     String REG_ANY = ".";
-    String XML_NOTE_START = "<!--";
-    String XML_NOTE_END = "-->";
-    String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;
+    String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
+    String REG_XML_CDATA = XML_CDATA_START + "(.*)" + XML_CDATA_END;
+    String REG_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
+    String REG_DEBUG = FLAG_DEBUG + "\\d+" + FLAG_DEBUG;
+    String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
+    String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(\\d+)" + FLAG_DEBUG + ".*";
     String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
     String ST_ARG_DONE = N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + V_ANLS + V_DONE + S_PERIOD;
     String ST_CMD_START = V_START + V_EXEC + N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
@@ -144,13 +161,4 @@ public interface ICommon{
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;
-    String FLAG_DEBUG = "#";
-    String FLAG_MOD = "*";
-    String FLAG_ADD = "+";
-    String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
-    String REG_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
-    String REG_DEBUG = FLAG_DEBUG + "\\d+" + FLAG_DEBUG;
-    String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
-    String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(\\d+)" + FLAG_DEBUG + ".*";
-    String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
 }

@@ -10,6 +10,8 @@ import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Stream.of;
 import static legend.util.ConsoleUtil.IN;
+import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
 import static legend.util.MD5Util.getGuidL32;
@@ -64,6 +66,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import legend.util.entity.ILCode;
+import legend.util.entity.ILCodes;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
@@ -160,7 +164,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 findSortedFilesByCompared(param);
                 break;
                 case CMD_REP_FILE_BT:
-                replaceFiles(param);
+                replaceFilesWithBT(param);
+                break;
+                case CMD_REP_FILE_IL:
+                replaceFilesWithIL(param);
                 break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
@@ -397,7 +404,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }));
     }
 
-    private static void replaceFiles(FileParam param){
+    private static void replaceFilesWithBT(FileParam param){
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             Path path = e.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
@@ -407,6 +414,49 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getCmdOptional().ifPresent(c->writeFile(path,results));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
+    }
+
+    private static void replaceFilesWithIL(FileParam param){
+        if(existsPath(param.getDestPath())){
+            ILCodes ilCodes = convertToJavaBean(param.getDestPath(),ILCodes.class);
+            String mode = ilCodes.getMode();
+            param.getPathMap().entrySet().stream().forEach(e->{
+                Path path = e.getValue();
+                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
+                List<String> datas = readFile(path);
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(datas.size()));
+                if(MODE_NATIVE == mode){
+                    List<ILCode> codes = new CopyOnWriteArrayList<>();
+                    ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).forEach(c->{
+                        ;
+                    });
+                    ilCodes.setCodes(codes);
+                    CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(datas.size()));
+                }
+                List<String> results = new CopyOnWriteArrayList<>();
+                ilCodes.getCodes().stream().forEach(code->{
+                    int start = code.getStartLine(), end = code.getEndLine();
+                    switch(code.getProcessingMode()){
+                        case MODE_REPL:
+                        case MODE_ADD:
+                        results.addAll(code.refreshFragmentCache());
+                        break;
+                        default:
+                        for(int i = start - 1;i < end;i++)
+                            results.add(datas.get(i));
+                    }
+                });
+                param.getCmdOptional().ifPresent(c->writeFile(path,results));
+                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+            });
+        }else{
+            param.getCmdOptional().ifPresent(c->{
+                ILCodes ilCodes = new ILCodes();
+                ilCodes.getCodes().add(new ILCode());
+                convertToXml(param.getDestPath(),ilCodes);
+            });
+            param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,param.getDestPath().toString())));
+        }
     }
 
     private static void renameFiles(FileParam param){
@@ -493,7 +543,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void delNulFiles(FileParam param){
-        param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).forEach(p->{
+        param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_DEL + N_FLE_NUL + gs(2) + p));
             param.getCmdOptional().ifPresent(c->deleteFile(p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));

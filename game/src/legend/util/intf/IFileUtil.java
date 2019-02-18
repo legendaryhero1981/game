@@ -105,14 +105,12 @@ public interface IFileUtil extends ICommon{
     String CMD_JSON_ENC = "-je";
     String CMD_JSON_DEC = "-jd";
     String OPTIONS = "[" + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
-    String MODE_IL_NATIVE = "0";
-    String MODE_IL_MOD = "1";
     String FILE_LOG = "./file.log";
     String CONFIG_FILE_IL = "./file-il.xml";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
-    String REG_LINE_NUMBER = "([1-9]\\d*)(-([1-9]\\d*))?";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
+    String ST_FILE_IL_CONF = "已生成替换IL源文件内容所需的IL配置文件" + S_SPACE + PH_ARG0 + S_SPACE + S_BANG;
     String ERR_DIR_VST = V_VST + N_DIR + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_VST = V_VST + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_DEL = V_DEL + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -120,6 +118,7 @@ public interface IFileUtil extends ICommon{
     String ERR_FLE_MOV = V_MOV + N_FLE + S_SPACE + PH_ARG0 + V_TO + PH_ARG1 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG2;
     String ERR_FLE_WRT = V_WRITE + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_READ = V_READ + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_REPL = V_REPL + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_EXTR = V_EXTR + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -127,25 +126,14 @@ public interface IFileUtil extends ICommon{
     String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FLE_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FLE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FLE + N_PATH_NAME + S_SPACE + PH_ARG0 + S_SPACE + V_SAME + N_A + N_FLE + S_BANG;
-    String ILCODES_COMMENT = "\n" + gs(4) + "ILCodes配置集节点结构说明：\n"
-    + gs(4) + "ILCodes节点由一个唯一节点comment、一个唯一节点mode和多个ILCode节点按顺序组成，comment节点必须在最前面。" + gl(1)
-    + gs(4) + "ILCodes::comment" + gs(8) + "ILCodes配置集节点结构说明，对IL文件的修改无影响，仅此说明而已。" + gl(1)
-    + gs(4) + "ILCodes::mode" + gs(11) + "对IL源文件内容的处理模式，取值范围为：0,1，默认值为0；取0表示先根据ILCodes::ILCode查询定位IL源文件中需要修改的内容，再自动生成已修改的IL源文件；取1表示根据ILCodes::ILCode直接自动生成已修改的IL源文件。" + gl(1)
-    + gs(4) + "ILCodes::ILCode" + gs(9) + "ILCode配置节点，包括对IL代码的处理模式和修改IL代码片段所需的相关参数等等。" + gl(1)
-    + gs(4) + "ILCode节点由processingMode、lineNumber、codeDesc、queryRegex、codeFragment节点按顺序组成；processingMode节点必须在最前面。" + gl(1)
-    + gs(4) + "ILCode::processingMode" + gs(2) + "在自动生成已修改的IL源文件时对IL代码的处理模式，取值范围为：0,1，默认值为0；取0表示提取原始IL源文件的数据；取1表示提取ILCode::codeFragment的数据。" + gl(1)
-    + gs(4) + "ILCode::lineNumber" + gs(6) + "IL源文件中IL代码片段的起止行号，匹配的正则表达式为：；如果要修改的代码只有1行，可以只指定一个行号，即1与1-1等效。" + gl(1)
-    + gs(4) + "ILCode::codeDesc" + gs(8) + "需要修改的IL代码片段的功能描述。" + gl(1)
-    + gs(4) + "ILCode::queryRegex" + gs(6) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式。" + gl(1)
-    + gs(4) + "ILCode::codeFragment" + gs(4) + "在IL源文件中ILCode::lineNumber位置处需要被修改的IL代码片段。" + gl(1) + gs(4);
     String HELP_FILE = APP_INFO + "命令参数：" + gl(2)
     + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
     + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
     + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
     + "src" + gs(9) + "文件输入目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "dest" + gs(8) + "文件输入或输出目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "backup" + gs(6) + "文件备份目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "dest" + gs(8) + "文件输入输出目录或输入文件路径名；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "backup" + gs(6) + "文件备份输出目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipName" + gs(5) + "压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipLevel" + gs(4) + "文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。" + gl(2)
     + "limit" + gs(7) + "查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定或指定一个非正整数则取默认值2147483647。" + gl(2)
@@ -210,7 +198,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_UP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REP_FILE_BT + OPTIONS + "regex src replacement [split] [level]" + gl(1) + "根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。" + gl(2)
-    + CMD + CMD_REP_FILE_IL + OPTIONS + "regex src [level]" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动修改src中所有文件名匹配regex的文件；若配置文件" + CONFIG_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
+    + CMD + CMD_REP_FILE_IL + OPTIONS + "regex src [dest] [level]" + gl(1) + "根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件" + CONFIG_FILE_IL + "自动替换src中所有文件名匹配regex的文件内容，若配置文件" + CONFIG_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
     + CMD + CMD_COPY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
@@ -288,7 +276,8 @@ public interface IFileUtil extends ICommon{
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
-    + CMD + CMD_REP_FILE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动修改E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件。" + gl(2)
+    + CMD + CMD_REP_FILE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REP_FILE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
     + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
