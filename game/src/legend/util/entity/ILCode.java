@@ -1,6 +1,5 @@
 package legend.util.entity;
 
-import static java.lang.String.valueOf;
 import static java.util.Collections.addAll;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.nonEmpty;
@@ -96,7 +95,9 @@ public class ILCode implements IILCode{
     }
 
     public void setLineNumer(int start, int end){
-        lineNumber = valueOf(start) + SPRT_LINE_NUMBER + valueOf(end);
+        startLine = start;
+        endLine = end;
+        lineNumber = startLine + SPRT_LINE_NUMBER + endLine;
     }
 
     public int getStartLine(){

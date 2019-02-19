@@ -420,38 +420,50 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void replaceFilesWithIL(FileParam param){
         if(existsPath(param.getDestPath())){
-            ILCodes ilCodes = convertToJavaBean(param.getDestPath(),ILCodes.class);
-            String mode = ilCodes.getMode();
+            ILCodes ILCODES = convertToJavaBean(param.getDestPath(),ILCodes.class);
             param.getPathMap().entrySet().stream().forEach(e->{
                 Path path = e.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
                 List<String> datas = readFile(path);
                 int dataSize = datas.size();
-                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
-                if(MODE_NATIVE == mode){
-                    int n = dataSize / SIZE_IL_PARTITION, r = dataSize % SIZE_IL_PARTITION;
+                ILCodes ilCodes = ILCODES.cloneValue();
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(0));
+                if(MODE_NATIVE == ilCodes.getMode()){
+                    int r = dataSize % SIZE_IL_PARTITION;
                     List<Integer> partitions = new CopyOnWriteArrayList<>();
                     for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
                         partitions.add(i);
                     if(1 < r) partitions.add(r - 1);
+                    List<ILCode> codes = new CopyOnWriteArrayList<>();
                     List<ILCode> caches = new CopyOnWriteArrayList<>((ILCode[])ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).toArray());
                     partitions.parallelStream().forEach(p->{
                         caches.parallelStream().forEach(code->{
                             List<String> regexCache = code.refreshRegexCache(false);
-                            List<String> fragmentCache = code.refreshFragmentCache(false);
                             int l = regexCache.size() - 1, i = l, j = p;
-                            while(0 <= i && 0 <= j && p - SIZE_IL_PARTITION < j){
-                                if(!regexCache.get(i--).equals(datas.get(j--))){
+                            for(;0 <= i && 0 <= j && p - SIZE_IL_PARTITION < j;j--){
+                                if(regexCache.get(i).equals(datas.get(j))) i--;
+                                else if(i < l){
                                     j += l - i;
                                     i = l;
                                 }
                             }
-                            
+                            if(l == i) return;
+                            for(;0 <= i && 0 <= j && regexCache.get(i).equals(datas.get(j));i--,j--);
+                            if(-1 != i) return;
+                            List<String> fragmentCache = code.refreshFragmentCache(false);
+                            if(MODE_REPL == code.getProcessingMode()){
+                                ;
+                            }else{
+                                ;
+                            }
+                            caches.remove(code);
+                            codes.add(code);
                         });
                     });
-                    ilCodes.sortCodes(caches);
-                    CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
+                    CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
+                    ilCodes.regenSortedCodes(codes);
                 }
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
                 List<String> results = new CopyOnWriteArrayList<>();
                 ilCodes.getCodes().stream().forEach(code->{
                     int start = code.getStartLine(), end = code.getEndLine();
