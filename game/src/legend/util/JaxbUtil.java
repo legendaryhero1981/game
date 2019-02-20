@@ -3,6 +3,7 @@ package legend.util;
 import static java.lang.String.valueOf;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.gsph;
+import static legend.util.ValueUtil.isEmpty;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -64,6 +65,12 @@ public final class JaxbUtil implements IJaxbUtil{
             CS.s(gsph(ERR_ANLS_XML,e.toString())).l(2);
         }
         return t;
+    }
+
+    public static String escape(String s, boolean reverse){
+        if(isEmpty(s)) return S_EMPTY;
+        if(reverse) return s.replaceAll(ESCAPE_CUSP_L,XML_CUSP_L).replaceAll(ESCAPE_CUSP_R,XML_CUSP_R);
+        else return s.replaceAll(XML_CUSP_L,ESCAPE_CUSP_L).replaceAll(XML_CUSP_R,ESCAPE_CUSP_R);
     }
 
     private static class LexicalHandlerImpl implements LexicalHandler{

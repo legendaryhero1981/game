@@ -8,6 +8,7 @@ import static java.nio.file.Files.move;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.JaxbUtil.convertToJavaBean;
@@ -42,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -254,6 +256,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.saveCache(CACHE);
         }catch(Exception e){
             CS.sl(gsph(ERR_CMD_EXEC,e.toString()));
+            e.printStackTrace();
         }finally{
             fileParam.getDetailOptional().ifPresent(s->CS.l(1));
         }
@@ -272,6 +275,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static boolean existsPath(Path path){
         return exists(path);
+    }
+
+    public static List<String> readFile(Path path, String charsetName){
+        try{
+            return readAllLines(path,Charset.forName(charsetName));
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
+        }
+        return new ArrayList<String>();
     }
 
     public static List<String> readFile(Path path){
@@ -422,10 +434,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getPathMap().entrySet().stream().forEach(e->{
                 Path path = e.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
-                List<String> datas = readFile(path);
+                List<String> datas = readFile(path,ENCODING_GBK);
                 int dataSize = datas.size();
                 ILCodes ilCodes = ILCODES.cloneValue();
-                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(0));
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->!ilCodes.validate(0));
                 if(MODE_NATIVE == ilCodes.getMode()){
                     int r = dataSize % SIZE_IL_PARTITION;
                     List<Integer> partitions = new CopyOnWriteArrayList<>();
@@ -433,7 +445,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                         partitions.add(i);
                     if(1 < r) partitions.add(r - 1);
                     List<ILCode> codes = new CopyOnWriteArrayList<>();
-                    List<ILCode> caches = new CopyOnWriteArrayList<>((ILCode[])ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).toArray());
+                    List<ILCode> caches = new CopyOnWriteArrayList<>(ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).collect(toList()));
                     partitions.parallelStream().forEach(p->{
                         caches.parallelStream().forEach(code->{
                             List<Pattern> queryRegexCache = code.refreshQueryRegexCache(false);

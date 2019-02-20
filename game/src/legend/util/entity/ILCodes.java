@@ -1,6 +1,6 @@
 package legend.util.entity;
 
-import static java.util.Collections.addAll;
+import static java.util.stream.Collectors.toList;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.matchRange;
@@ -133,13 +133,13 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
     }
 
     private void sortCodes(List<ILCode> codes){
-        ILCode[] codeArray = (ILCode[])codes.stream().sorted((ILCode code1, ILCode code2)->{
+        List<ILCode> caches = codes.stream().sorted((ILCode code1, ILCode code2)->{
             int start1 = code1.startLine, start2 = code2.startLine;
             if(start1 == start2) return 0;
             return start1 > start2 ? 1 : -1;
-        }).toArray();
+        }).collect(toList());
         codes.clear();
-        addAll(codes,codeArray);
+        codes.addAll(caches);
     }
 
     public String errorInfo(){

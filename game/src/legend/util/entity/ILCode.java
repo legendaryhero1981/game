@@ -14,9 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import legend.util.adapter.CDataAdapter;
 import legend.util.intf.IILCode;
 
 @XmlRootElement(name = "ILCode")
@@ -28,12 +26,10 @@ public class ILCode implements IILCode{
     protected String lineNumber = "1-1";
     @XmlElement
     protected String codeDesc = "";
-    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     protected String queryRegex = "";
     @XmlElement
     protected String codeRegex = "";
-    @XmlJavaTypeAdapter(CDataAdapter.class)
     @XmlElement
     protected String codeFragment = "";
     @XmlTransient
@@ -95,9 +91,9 @@ public class ILCode implements IILCode{
         if(force || queryRegexCache.isEmpty()){
             queryRegexCache.clear();
             if(nonEmpty(queryRegex)){
-                List<String> cache = new CopyOnWriteArrayList<>();
-                addAll(cache,pattern.split(queryRegex));
-                cache.stream().forEach(s->queryRegexCache.add(compile(s.trim())));
+                List<String> caches = new CopyOnWriteArrayList<>();
+                addAll(caches,pattern.split(queryRegex));
+                caches.stream().forEach(s->queryRegexCache.add(compile(s.trim())));
             }
         }
         return queryRegexCache;
@@ -107,9 +103,9 @@ public class ILCode implements IILCode{
         if(force || codeRegexCache.isEmpty()){
             codeRegexCache.clear();
             if(nonEmpty(codeRegex)){
-                List<String> cache = new CopyOnWriteArrayList<>();
-                addAll(cache,pattern.split(codeRegex));
-                cache.stream().forEach(s->codeRegexCache.add(compile(s.trim())));
+                List<String> caches = new CopyOnWriteArrayList<>();
+                addAll(caches,pattern.split(codeRegex));
+                caches.stream().forEach(s->codeRegexCache.add(compile(s.trim())));
             }
         }
         return codeRegexCache;

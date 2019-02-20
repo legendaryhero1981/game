@@ -18,13 +18,13 @@ public class TestRun extends TestBase{
     public void monkParam(){
         String s = "";
 //        s = "-c ew F:/games/The Evil Within EvilWithin 恶灵附身";
-//        s = "-v";
+        s = "-v";
 //        s = "-x  sg";
 //        s = "-la";
 //        s = "-l  ew";
 //        s = "-d  bio4";
 //        s = "-a  bio4  F:/games/Resident Evil 4/Bin32  bio4  生化危机4";
-        s = "-k  ew";
+//        s = "-k  ew";
         super.monkParam(s);
     }
 }

@@ -11,8 +11,8 @@ public interface ICommon{
     String AUTHOR = "作者：李允";
     String VERSION = "版本：V4.0";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
-    String ENCODING_UTF8 = "UTF-8";
     String ENCODING_GBK = "GBK";
+    String ENCODING_UTF8 = "UTF-8";
     String EXT_IL = ".il";
     String EXT_PAK = ".pak";
     String EXT_XML = ".xml";

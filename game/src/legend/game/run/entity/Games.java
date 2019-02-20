@@ -1,6 +1,6 @@
 package legend.game.run.entity;
 
-import static java.util.Collections.addAll;
+import static java.util.stream.Collectors.toList;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.List;
@@ -37,12 +37,12 @@ public class Games implements IMain{
     }
 
     public List<Game> sortGames(){
-        Game[] gameArray = (Game[])games.stream().sorted((Game game1, Game game2)->{
+        List<Game> caches = games.stream().sorted((Game game1, Game game2)->{
             if(game1.path.equalsIgnoreCase(game2.path)) return game1.name.compareTo(game2.name);
             return game1.path.compareTo(game2.path);
-        }).toArray();
+        }).collect(toList());
         games.clear();
-        addAll(games,gameArray);
+        games.addAll(caches);
         return games;
     }
 
