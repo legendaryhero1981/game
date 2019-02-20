@@ -13,8 +13,10 @@ public interface ICommon{
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String ENCODING_UTF8 = "UTF-8";
     String ENCODING_GBK = "GBK";
-    String EXT_ZIP = ".zip";
+    String EXT_IL = ".il";
     String EXT_PAK = ".pak";
+    String EXT_XML = ".xml";
+    String EXT_ZIP = ".zip";
     String S_EMPTY = "";
     String S_SPACE = " ";
     String S_SQM = "'";
@@ -142,6 +144,7 @@ public interface ICommon{
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
     String REG_OPT_ASK = "\\A[" + OPT_ASK + "]+$";
     String REG_ASK_NO = "\\A[nN]$";
+    String REG_SPRT_CODE = "(?m)\n+";
     String REG_NUMBER = "\\d+";
     String REG_ANY = ".";
     String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;

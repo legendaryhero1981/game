@@ -112,7 +112,7 @@ public interface IFileUtil extends ICommon{
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
     String ST_FILE_IL_MISMATCH = "IL配置文件与IL源文件内容不匹配！";
-    String ST_FILE_IL_CONF = "已生成替换IL源文件内容所需的IL配置文件" + S_SPACE + PH_ARG0 + S_SPACE + S_BANG;
+    String ST_FILE_IL_CONF = "已生成替换IL源文件" + S_SPACE + PH_ARG0 + S_SPACE + "内容所需的IL配置文件" + S_SPACE + PH_ARG1 + S_SPACE + S_BANG;
     String ERR_DIR_VST = V_VST + N_DIR + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_VST = V_VST + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_DEL = V_DEL + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;

@@ -49,10 +49,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -438,23 +436,30 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     List<ILCode> caches = new CopyOnWriteArrayList<>((ILCode[])ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).toArray());
                     partitions.parallelStream().forEach(p->{
                         caches.parallelStream().forEach(code->{
-                            List<String> regexCache = code.refreshRegexCache(false);
-                            int l = regexCache.size() - 1, i = l, j = p;
-                            for(;0 <= i && 0 <= j && p - SIZE_IL_PARTITION < j;j--){
-                                if(regexCache.get(i).equals(datas.get(j))) i--;
+                            List<Pattern> queryRegexCache = code.refreshQueryRegexCache(false);
+                            int l = queryRegexCache.size() - 1, i = l, j = p;
+                            for(;0 <= i && 0 <= j && SIZE_IL_PARTITION > p - j;j--){
+                                if(queryRegexCache.get(i).matcher(datas.get(j)).find()) i--;
                                 else if(i < l){
                                     j += l - i;
                                     i = l;
                                 }
                             }
                             if(l == i) return;
-                            for(;0 <= i && 0 <= j && regexCache.get(i).equals(datas.get(j));i--,j--);
+                            for(;0 <= i && 0 <= j && queryRegexCache.get(i).matcher(datas.get(j)).find();i--,j--);
                             if(-1 != i) return;
-                            List<String> fragmentCache = code.refreshFragmentCache(false);
                             if(MODE_REPL == code.getProcessingMode()){
-                                ;
+                                List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
+                                for(l = 0,i = codeRegexCache.size() - 1;0 <= i && 0 <= j && SIZE_IL_PARTITION * 2 > p - j;j--)
+                                    if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
+                                        if(0 == l) l = j;
+                                        i--;
+                                    }
+                                if(-1 != i) return;
+                                code.setLineNumer(j + 1,l);
                             }else{
-                                ;
+                                l += j + 1;
+                                code.setLineNumer(l,l);
                             }
                             caches.remove(code);
                             codes.add(code);
@@ -469,9 +474,13 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     int start = code.getStartLine(), end = code.getEndLine();
                     if(MODE_NATIVE == code.getProcessingMode()) for(int i = start - 1;i < end;i++)
                         results.add(datas.get(i));
-                    else results.addAll(code.refreshFragmentCache(false));
+                    else results.addAll(code.refreshCodeFragmentCache(false));
                 });
-                param.getCmdOptional().ifPresent(c->writeFile(path,results));
+                param.getCmdOptional().ifPresent(c->{
+                    convertToXml(path.resolveSibling(path.getFileName() + EXT_XML),ilCodes);
+                    writeFile(path,results);
+                });
+                param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,path.toString(),path + EXT_XML)));
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
             });
         }else{
@@ -480,7 +489,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 ilCodes.getCodes().add(new ILCode());
                 convertToXml(param.getDestPath(),ilCodes);
             });
-            param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,param.getDestPath().toString())));
+            param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,EXT_IL,param.getDestPath().toString())));
         }
     }
 

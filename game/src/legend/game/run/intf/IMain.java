@@ -19,7 +19,6 @@ public interface IMain extends ICommon{
     String PRIORITY_HIGH = "128";
     String REG_PRIORITY = "32|64|128|256|16384|32768";
     String REG_TIME = "60|[1-9]|[1-5]\\d";
-    String REG_SPRT_CMD = "(?m)\n";
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
     String REG_PATH_NAME = "(.*" + REG_SPRT_PATH + ")(.*)";
     String N_GAME_CONFIG = "游戏配置文件";

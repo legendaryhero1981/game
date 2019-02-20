@@ -15,12 +15,10 @@ public final class ValueUtil{
             return true;
         }else if(o instanceof String){
             return ((String)o).isEmpty();
-        }else if(o instanceof String[]){
-            return 0 == ((String[])o).length || isEmpty((((String[])o)[0]));
         }else if(o instanceof Object[]){
-            return 0 == ((Object[])o).length || isNull((((Object[])o)[0]));
+            return 0 == ((Object[])o).length;
         }else if(o instanceof Collection){
-            return ((Collection<?>)o).isEmpty() || isNull((((Collection<?>)o).toArray()[0]));
+            return ((Collection<?>)o).isEmpty();
         }else if(o instanceof Map) return ((Map<?,?>)o).isEmpty();
         return false;
     }
@@ -31,6 +29,10 @@ public final class ValueUtil{
 
     public static boolean isNull(Object o){
         return null == o;
+    }
+
+    public static boolean matchRange(int n, int min, int max){
+        return min <= n && max >= n;
     }
 
     public static int limitValue(int n, int min, int max){

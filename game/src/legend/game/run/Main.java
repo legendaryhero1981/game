@@ -153,14 +153,13 @@ public final class Main implements IMain{
     }
 
     private static void view(){
-        ConcurrentMap<String,Game> gameMap = loadModel().getGameMap();
-        gameMap.values().parallelStream().forEach(game->CS.s(gl(game.toString(),2)));
+        loadModel().sortGames().stream().forEach(game->CS.s(gl(game.toString(),2)));
     }
 
     private static void del(){
         Games games = loadModel();
         CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,game.getId()},()->!games.getGameMap().containsKey(game.getId()));
-        games.getGames().remove(games.getGameMap().get(game.getId()));
+        games.sortGames().remove(games.getGameMap().get(game.getId()));
         saveModel(games);
     }
 
@@ -168,6 +167,7 @@ public final class Main implements IMain{
         Games games = loadModel();
         CS.showError(ERR_ID_EXISTS,new String[]{RUN_FILE_CONFIG,game.getId()},()->games.getGameMap().containsKey(game.getId()));
         games.getGames().add(game);
+        games.sortGames();
         saveModel(games);
     }
 
@@ -181,7 +181,7 @@ public final class Main implements IMain{
         ConcurrentMap<String,Game> gameMap = loadModel().getGameMap();
         String id = game.getId();
         if(isEmpty(id)){
-            gameMap.values().parallelStream().forEach(g->CS.s(gl(g.toString(),2)));
+            view();
             do{
                 CS.s(ST_CHOICE_ID);
                 id = IN.nextLine();
@@ -281,7 +281,7 @@ public final class Main implements IMain{
     }
 
     private static void writeOtherScript() throws IOException{
-        Pattern pattern = compile(REG_SPRT_CMD);
+        Pattern pattern = compile(REG_SPRT_CODE);
         writeScript(pattern.split(game.getBefore()),1);
         writeScript(pattern.split(game.getAfter()),2);
         // BAT脚本方式实现进程监控

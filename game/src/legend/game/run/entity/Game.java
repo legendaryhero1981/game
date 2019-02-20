@@ -20,11 +20,11 @@ public class Game implements IMain{
     @XmlElement
     private String comment = "";
     @XmlElement
-    private String name = "";
+    protected String name = "";
     @XmlElement
     private String id = "";
     @XmlElement
-    private String path = "";
+    protected String path = "";
     @XmlElement
     private String exe = "";
     @XmlElement
