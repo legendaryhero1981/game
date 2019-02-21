@@ -15,11 +15,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import legend.intf.IValue;
 import legend.util.intf.IILCode;
 
 @XmlRootElement(name = "ILCode")
 @XmlType(propOrder = {"processingMode","quoteMode","lineNumber","queryRegex","codeRegex","codeDesc","codeFragment"})
-public class ILCode implements IILCode{
+public class ILCode implements IILCode,IValue<ILCode>{
     @XmlElement
     private String processingMode = MODE_NATIVE;
     @XmlElement
@@ -48,6 +49,21 @@ public class ILCode implements IILCode{
     private List<Pattern> codeRegexCache = new ArrayList<>();
     @XmlTransient
     private List<String> codeFragmentCache = new ArrayList<>();
+
+    @Override
+    public ILCode cloneValue(){
+        ILCode ilCode = new ILCode();
+        ilCode.processingMode = processingMode;
+        ilCode.quoteMode = quoteMode;
+        ilCode.lineNumber = lineNumber;
+        ilCode.queryRegex = queryRegex;
+        ilCode.codeRegex = codeRegex;
+        ilCode.codeDesc = codeDesc;
+        ilCode.codeFragment = codeFragment;
+        ilCode.startLine = startLine;
+        ilCode.endLine = endLine;
+        return ilCode;
+    }
 
     protected boolean validate(){
         if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD.equals(processingMode)) processingMode = MODE_NATIVE;

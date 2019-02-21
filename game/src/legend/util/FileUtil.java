@@ -431,9 +431,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static void replaceFilesWithIL(FileParam param){
         if(existsPath(param.getDestPath())){
             ILCodes ILCODES = convertToJavaBean(param.getDestPath(),ILCodes.class);
-            param.getPathMap().entrySet().stream().forEach(e->{
-                Path path = e.getValue();
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
+            param.getPathMap().entrySet().stream().forEach(entry->{
+                Path path = entry.getValue();
+                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(entry.getKey()),path));
                 List<String> datas = readFile(path,ENCODING_GBK);
                 int dataSize = datas.size();
                 ILCodes ilCodes = ILCODES.cloneValue();
@@ -447,7 +447,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     List<ILCode> codes = new ArrayList<>();
                     Collection<ILCode> caches = new ConcurrentLinkedQueue<ILCode>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
                     partitions.parallelStream().forEach(p->{
-                        caches.parallelStream().forEach(code->{
+                        caches.parallelStream().forEach(c->{
+                            ILCode code = c.cloneValue();
                             List<Pattern> queryRegexCache = code.refreshQueryRegexCache(false);
                             int l = queryRegexCache.size() - 1, i = l, j = p;
                             for(;0 <= i && 0 <= j && SIZE_IL_PARTITION > p - j;j--){
@@ -474,7 +475,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                                 code.setLineNumer(l,l);
                             }
                             codes.add(code);
-                            caches.remove(code);
+                            caches.remove(c);
                         });
                     });
                     CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
