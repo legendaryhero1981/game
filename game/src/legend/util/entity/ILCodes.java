@@ -4,10 +4,9 @@ import static java.util.stream.Collectors.toList;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.matchRange;
-import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -26,7 +25,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
     @XmlElement
     private String mode = MODE_NATIVE;
     @XmlElementRef
-    private List<ILCode> codes = new CopyOnWriteArrayList<>();
+    private List<ILCode> codes = new ArrayList<>();
     @XmlTransient
     private String errorInfo = "";
     @XmlTransient
@@ -42,8 +41,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
     }
 
     public boolean validate(int maxLine){
-        this.maxLine = 0 < maxLine ? maxLine : 0;
-        if(MODE_NATIVE != mode && MODE_REPL != mode) mode = MODE_NATIVE;
+        if(!MODE_NATIVE.equals(mode) && !MODE_REPL.equals(mode)) mode = MODE_NATIVE;
         if(isEmpty(codes)){
             errorInfo = ERR_ILCODE_NON;
             return false;
@@ -53,14 +51,14 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
                 errorInfo = code.errorInfo;
                 return true;
             }
-            if(MODE_NATIVE == mode){
-                if(MODE_NATIVE != code.processingMode && nonEmpty(code.queryRegex)){
+            if(MODE_NATIVE.equals(mode)){
+                if(!MODE_NATIVE.equals(code.getProcessingMode()) && isEmpty(code.getQueryRegex())){
                     errorInfo = ERR_QUERY_REGEX;
                     return true;
                 }
-                if(MODE_REPL == code.processingMode){
-                    if(matchRange(code.refreshCodeRegexCache(false).size(),1,2)){
-                        errorInfo = ERR_QUERY_REGEX;
+                if(MODE_REPL.equals(code.getProcessingMode())){
+                    if(!matchRange(code.refreshCodeRegexCache(false).size(),1,2)){
+                        errorInfo = ERR_CODE_REGEX;
                         return true;
                     }
                 }
@@ -71,27 +69,28 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
                 sortCodes(codes);
                 ILCode code = codes.get(0);
                 if(1 != code.startLine){
-                    errorInfo = gsph(ERR_LINE_NUM_VAL_MIN,code.lineNumber);
+                    errorInfo = gsph(ERR_LINE_NUM_VAL_MIN,code.getLineNumber());
                     return false;
                 }
                 code = codes.get(codes.size() - 1);
-                if(this.maxLine != code.endLine){
-                    errorInfo = gsph(ERR_LINE_NUM_VAL_MAX,code.lineNumber);
+                if(maxLine != code.endLine){
+                    errorInfo = gsph(ERR_LINE_NUM_VAL_MAX,new String[]{code.getLineNumber(),maxLine + ""});
                     return false;
                 }
                 for(int i = 0;i < codes.size() - 1;){
                     code = codes.get(i);
                     ILCode nextCode = codes.get(++i);
-                    if(MODE_ADD == nextCode.processingMode && nextCode.startLine != code.endLine){
-                        errorInfo = gsph(ERR_LINE_NUM_ADJION_ADD,nextCode.lineNumber,code.lineNumber);
+                    if(MODE_ADD.equals(nextCode.getProcessingMode()) && nextCode.startLine != code.endLine){
+                        errorInfo = gsph(ERR_LINE_NUM_ADJION_ADD,nextCode.getLineNumber(),code.getLineNumber());
                         return false;
                     }
-                    if(MODE_ADD != nextCode.processingMode && nextCode.startLine != code.endLine){
-                        errorInfo = gsph(ERR_LINE_NUM_ADJION_OTHER,nextCode.lineNumber,code.lineNumber);
+                    if(!MODE_ADD.equals(nextCode.getProcessingMode()) && nextCode.startLine != code.endLine + 1){
+                        errorInfo = gsph(ERR_LINE_NUM_ADJION_OTHER,nextCode.getLineNumber(),code.getLineNumber());
                         return false;
                     }
                 }
             }
+            this.maxLine = maxLine;
             return true;
         }
         return false;
@@ -107,29 +106,24 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
         if(isEmpty(ilCodes)) return;
         codes.clear();
         sortCodes(ilCodes);
-        ILCode nativeCode, code = ilCodes.get(0);
-        int start = 1, end = code.startLine;
-        if(MODE_ADD == code.processingMode){
-            nativeCode = new ILCode();
-            nativeCode.setLineNumer(start,end);
-            codes.add(nativeCode);
-            start = end + 1;
-        }else if(1 < end){
-            nativeCode = new ILCode();
-            nativeCode.setLineNumer(start,end - 1);
-            codes.add(nativeCode);
-            start = code.endLine + 1;
-        }
-        for(int i = 1;i < ilCodes.size();i++){
+        ILCode code;
+        int start, end, size = ilCodes.size();
+        for(int i = 0;i < size;i++){
             code = ilCodes.get(i);
-            end = MODE_ADD == code.processingMode ? code.startLine : code.startLine - 1;
-            if(start <= end){
-                nativeCode = new ILCode();
-                nativeCode.setLineNumer(start,end);
-                codes.add(nativeCode);
+            if(0 == i){
+                start = 1;
+                end = MODE_ADD.equals(code.getProcessingMode()) ? code.getStartLine() : code.getStartLine() - 1;
+                if(0 < end) addNativeCode(start,end);
+            }else{
+                start = ilCodes.get(i - 1).getEndLine() + 1;
+                end = MODE_ADD.equals(code.getProcessingMode()) ? code.getStartLine() : code.getStartLine() - 1;
+                addNativeCode(start,end);
             }
-            start = code.endLine + 1;
+            codes.add(code);
         }
+        code = ilCodes.get(size - 1);
+        start = code.getEndLine() + 1;
+        if(start <= maxLine) addNativeCode(start,maxLine);
     }
 
     private void sortCodes(List<ILCode> codes){
@@ -140,6 +134,12 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
         }).collect(toList());
         codes.clear();
         codes.addAll(caches);
+    }
+
+    private void addNativeCode(int start, int end){
+        ILCode nativeCode = new ILCode();
+        nativeCode.setLineNumer(start,end);
+        codes.add(nativeCode);
     }
 
     public String errorInfo(){

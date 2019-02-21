@@ -1,12 +1,12 @@
 package legend.util.entity;
 
-import static java.util.Collections.addAll;
 import static java.util.regex.Pattern.compile;
+import static java.util.regex.Pattern.quote;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,20 +18,22 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.intf.IILCode;
 
 @XmlRootElement(name = "ILCode")
-@XmlType(propOrder = {"processingMode","lineNumber","codeDesc","queryRegex","codeRegex","codeFragment"})
+@XmlType(propOrder = {"processingMode","quoteMode","lineNumber","queryRegex","codeRegex","codeDesc","codeFragment"})
 public class ILCode implements IILCode{
     @XmlElement
-    protected String processingMode = MODE_NATIVE;
+    private String processingMode = MODE_NATIVE;
     @XmlElement
-    protected String lineNumber = "1-1";
+    private String quoteMode = MODE_NATIVE;
     @XmlElement
-    protected String codeDesc = "";
+    private String lineNumber = "1-1";
     @XmlElement
-    protected String queryRegex = "";
+    private String queryRegex = "";
     @XmlElement
-    protected String codeRegex = "";
+    private String codeRegex = "";
     @XmlElement
-    protected String codeFragment = "";
+    private String codeDesc = "";
+    @XmlElement
+    private String codeFragment = "";
     @XmlTransient
     protected String errorInfo = "";
     @XmlTransient
@@ -41,60 +43,54 @@ public class ILCode implements IILCode{
     @XmlTransient
     private Pattern pattern = compile(REG_SPRT_CODE);
     @XmlTransient
-    private List<Pattern> queryRegexCache = new CopyOnWriteArrayList<>();
+    private List<Pattern> queryRegexCache = new ArrayList<>();
     @XmlTransient
-    private List<Pattern> codeRegexCache = new CopyOnWriteArrayList<>();
+    private List<Pattern> codeRegexCache = new ArrayList<>();
     @XmlTransient
-    private List<String> codeFragmentCache = new CopyOnWriteArrayList<>();
+    private List<String> codeFragmentCache = new ArrayList<>();
 
     protected boolean validate(){
+        if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD.equals(processingMode)) processingMode = MODE_NATIVE;
+        if(!MODE_NATIVE.equals(quoteMode) && !MODE_REPL.equals(quoteMode)) quoteMode = MODE_NATIVE;
         Matcher matcher = compile(REG_LINE_NUMBER).matcher(lineNumber);
         if(!matcher.matches()){
             errorInfo = ERR_LINE_NUM_FORMAT;
             return false;
         }
         startLine = Integer.parseInt(matcher.group(1));
-        endLine = matcher.groupCount() > 1 ? Integer.parseInt(matcher.group(3)) : startLine;
-        switch(processingMode){
-            case MODE_NATIVE:
-            case MODE_REPL:
-            if(startLine > endLine){
-                errorInfo = gsph(ERR_LINE_NUM_VAL_LESS,lineNumber);
-                return false;
-            }
-            break;
-            case MODE_ADD:
-            if(startLine != endLine){
-                errorInfo = gsph(ERR_LINE_NUM_VAL_EQUAL,lineNumber);
-                return false;
-            }
-            break;
-            default:
-            processingMode = MODE_NATIVE;
-            if(startLine > endLine){
-                errorInfo = gsph(ERR_LINE_NUM_VAL_LESS,lineNumber);
-                return false;
-            }
+        endLine = nonEmpty(matcher.group(3)) ? Integer.parseInt(matcher.group(3)) : startLine;
+        if(!MODE_ADD.equals(processingMode) && startLine > endLine){
+            errorInfo = gsph(ERR_LINE_NUM_VAL_LESS,lineNumber);
+            return false;
+        }
+        if(MODE_ADD.equals(processingMode) && startLine != endLine){
+            errorInfo = gsph(ERR_LINE_NUM_VAL_EQUAL,lineNumber);
+            return false;
         }
         return true;
     }
 
     protected ILCode trim(){
         processingMode = processingMode.trim();
+        quoteMode = quoteMode.trim();
         lineNumber = lineNumber.trim();
         queryRegex = queryRegex.trim();
         codeRegex = codeRegex.trim();
         return this;
     }
 
+    protected String getLineNumber(){
+        return lineNumber;
+    }
+
+    protected String getQueryRegex(){
+        return queryRegex;
+    }
+
     public List<Pattern> refreshQueryRegexCache(boolean force){
         if(force || queryRegexCache.isEmpty()){
             queryRegexCache.clear();
-            if(nonEmpty(queryRegex)){
-                List<String> caches = new CopyOnWriteArrayList<>();
-                addAll(caches,pattern.split(queryRegex));
-                caches.stream().forEach(s->queryRegexCache.add(compile(s.trim())));
-            }
+            if(nonEmpty(queryRegex)) generateRegexCaches(queryRegex).stream().forEach(s->queryRegexCache.add(compile(s)));
         }
         return queryRegexCache;
     }
@@ -102,11 +98,7 @@ public class ILCode implements IILCode{
     public List<Pattern> refreshCodeRegexCache(boolean force){
         if(force || codeRegexCache.isEmpty()){
             codeRegexCache.clear();
-            if(nonEmpty(codeRegex)){
-                List<String> caches = new CopyOnWriteArrayList<>();
-                addAll(caches,pattern.split(codeRegex));
-                caches.stream().forEach(s->codeRegexCache.add(compile(s.trim())));
-            }
+            if(nonEmpty(codeRegex)) generateRegexCaches(codeRegex).stream().forEach(s->codeRegexCache.add(compile(s)));
         }
         return codeRegexCache;
     }
@@ -114,23 +106,30 @@ public class ILCode implements IILCode{
     public List<String> refreshCodeFragmentCache(boolean force){
         if(force || codeFragmentCache.isEmpty()){
             codeFragmentCache.clear();
-            if(nonEmpty(codeFragment)) addAll(codeFragmentCache,pattern.split(codeFragment));
+            if(nonEmpty(codeFragment)){
+                String[] codes = pattern.split(codeFragment);
+                for(int i = 0;i < codes.length;i++)
+                    if(nonEmpty(codes[i].trim())) codeFragmentCache.add(codes[i]);
+            }
         }
         return codeFragmentCache;
     }
 
+    private List<String> generateRegexCaches(String regex){
+        List<String> caches = new ArrayList<>();
+        String[] regexes = pattern.split(regex);
+        for(int i = 0;i < regexes.length;i++){
+            regex = regexes[i].trim();
+            if(nonEmpty(regex)){
+                if(MODE_NATIVE.equals(quoteMode)) caches.add(regex);
+                else caches.add(quote(regex));
+            }
+        }
+        return caches;
+    }
+
     public String getProcessingMode(){
         return processingMode;
-    }
-
-    public void setProcessingMode(String processingMode){
-        this.processingMode = processingMode;
-    }
-
-    public void setLineNumer(int start, int end){
-        startLine = start;
-        endLine = end;
-        lineNumber = startLine + SPRT_LINE_NUMBER + endLine;
     }
 
     public int getStartLine(){
@@ -141,11 +140,9 @@ public class ILCode implements IILCode{
         return endLine;
     }
 
-    public String getQueryRegex(){
-        return queryRegex;
-    }
-
-    public String getCodeFragment(){
-        return codeFragment;
+    public void setLineNumer(int start, int end){
+        startLine = start;
+        endLine = end;
+        lineNumber = startLine + SPRT_LINE_NUMBER + endLine;
     }
 }

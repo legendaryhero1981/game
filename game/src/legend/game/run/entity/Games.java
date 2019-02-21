@@ -38,8 +38,8 @@ public class Games implements IMain{
 
     public List<Game> sortGames(){
         List<Game> caches = games.stream().sorted((Game game1, Game game2)->{
-            if(game1.path.equalsIgnoreCase(game2.path)) return game1.name.compareTo(game2.name);
-            return game1.path.compareTo(game2.path);
+            if(game1.getPath().equalsIgnoreCase(game2.getPath())) return game1.getName().compareTo(game2.getName());
+            return game1.getPath().compareTo(game2.getPath());
         }).collect(toList());
         games.clear();
         games.addAll(caches);

@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiPredicate;
@@ -287,20 +288,19 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static List<String> readFile(Path path){
-        try{
-            return readAllLines(path);
-        }catch(IOException e){
-            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
-        }
-        return new ArrayList<String>();
+        return readFile(path,ENCODING_UTF8);
     }
 
-    public static void writeFile(Path path, Collection<String> lines){
+    public static void writeFile(Path path, Collection<String> lines, String charsetName){
         try{
-            write(makeDirs(path),lines);
+            write(makeDirs(path),lines,Charset.forName(charsetName));
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
+    }
+
+    public static void writeFile(Path path, Collection<String> lines){
+        writeFile(path,lines,ENCODING_UTF8);
     }
 
     public static void deleteFile(Path path){
@@ -437,15 +437,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 List<String> datas = readFile(path,ENCODING_GBK);
                 int dataSize = datas.size();
                 ILCodes ilCodes = ILCODES.cloneValue();
-                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->!ilCodes.validate(0));
-                if(MODE_NATIVE == ilCodes.getMode()){
+                if(!ilCodes.validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+                if(MODE_NATIVE.equals(ilCodes.getMode())){
                     int r = dataSize % SIZE_IL_PARTITION;
                     List<Integer> partitions = new CopyOnWriteArrayList<>();
                     for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
                         partitions.add(i);
                     if(1 < r) partitions.add(r - 1);
-                    List<ILCode> codes = new CopyOnWriteArrayList<>();
-                    List<ILCode> caches = new CopyOnWriteArrayList<>(ilCodes.getCodes().parallelStream().filter(c->MODE_NATIVE != c.getProcessingMode()).collect(toList()));
+                    List<ILCode> codes = new ArrayList<>();
+                    Collection<ILCode> caches = new ConcurrentLinkedQueue<ILCode>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
                     partitions.parallelStream().forEach(p->{
                         caches.parallelStream().forEach(code->{
                             List<Pattern> queryRegexCache = code.refreshQueryRegexCache(false);
@@ -460,37 +460,38 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                             if(l == i) return;
                             for(;0 <= i && 0 <= j && queryRegexCache.get(i).matcher(datas.get(j)).find();i--,j--);
                             if(-1 != i) return;
-                            if(MODE_REPL == code.getProcessingMode()){
+                            if(MODE_REPL.equals(code.getProcessingMode())){
                                 List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
                                 for(l = 0,i = codeRegexCache.size() - 1;0 <= i && 0 <= j && SIZE_IL_PARTITION * 2 > p - j;j--)
                                     if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
-                                        if(0 == l) l = j;
+                                        if(0 == l) l = j + 1;
                                         i--;
                                     }
                                 if(-1 != i) return;
-                                code.setLineNumer(j + 1,l);
+                                code.setLineNumer(j + 2,l);
                             }else{
-                                l += j + 1;
+                                l += j + 2;
                                 code.setLineNumer(l,l);
                             }
-                            caches.remove(code);
                             codes.add(code);
+                            caches.remove(code);
                         });
                     });
                     CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
                     ilCodes.regenSortedCodes(codes);
                 }
-                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->ilCodes.validate(dataSize));
-                List<String> results = new CopyOnWriteArrayList<>();
+                if(!ilCodes.validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+                List<String> results = new ArrayList<>();
                 ilCodes.getCodes().stream().forEach(code->{
                     int start = code.getStartLine(), end = code.getEndLine();
-                    if(MODE_NATIVE == code.getProcessingMode()) for(int i = start - 1;i < end;i++)
+                    if(MODE_NATIVE.equals(code.getProcessingMode())) for(int i = start - 1;i < end;i++)
                         results.add(datas.get(i));
                     else results.addAll(code.refreshCodeFragmentCache(false));
                 });
                 param.getCmdOptional().ifPresent(c->{
+                    ilCodes.setMode(MODE_REPL);
                     convertToXml(path.resolveSibling(path.getFileName() + EXT_XML),ilCodes);
-                    writeFile(path,results);
+                    writeFile(path,results,ENCODING_GBK);
                 });
                 param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,path.toString(),path + EXT_XML)));
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));

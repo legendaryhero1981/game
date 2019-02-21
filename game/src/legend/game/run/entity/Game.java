@@ -18,11 +18,11 @@ public class Game implements IMain{
     @XmlElement
     private String comment = "";
     @XmlElement
-    protected String name = "";
+    private String name = "";
     @XmlElement
     private String id = "";
     @XmlElement
-    protected String path = "";
+    private String path = "";
     @XmlElement
     private String exe = "";
     @XmlElement
