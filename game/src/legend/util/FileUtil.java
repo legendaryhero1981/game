@@ -437,7 +437,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 List<String> datas = readFile(path,ENCODING_GBK);
                 int dataSize = datas.size();
                 ILCodes ilCodes = ILCODES.cloneValue();
-                if(!ilCodes.validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+                if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
                 if(MODE_NATIVE.equals(ilCodes.getMode())){
                     int r = dataSize % SIZE_IL_PARTITION;
                     List<Integer> partitions = new CopyOnWriteArrayList<>();
