@@ -90,8 +90,7 @@ public class ILCode implements IILCode,IValue<ILCode>{
         processingMode = processingMode.trim();
         quoteMode = quoteMode.trim();
         lineNumber = lineNumber.trim();
-        queryRegex = queryRegex.trim();
-        codeRegex = codeRegex.trim();
+        codeRegex = codeDesc.trim();
         return this;
     }
 
