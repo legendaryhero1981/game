@@ -20,7 +20,7 @@ public interface IILCode extends ICommon{
     String ILCODES_COMMENT = "\n" + gs(4) + "ILCodes配置集节点结构说明：\n"
     + gs(4) + "ILCodes节点由一个唯一节点comment、一个唯一节点mode和多个ILCode节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "ILCodes::comment" + gs(8) + "ILCodes配置集节点结构说明，对IL文件的修改无影响，仅此说明而已。\n"
-    + gs(4) + "ILCodes::mode" + gs(11) + "对IL源文件内容的处理模式，取值范围为：" + MODE_NATIVE + "," + MODE_REPL + "，默认值为" + MODE_NATIVE + "；取" + MODE_NATIVE + "表示先根据ILCodes::ILCode节点下的ILCode::queryRegex节点和ILCode::codeRegex节点值查询定位IL源文件中需要修改的内容（此时会更新ILCode::lineNumber节点值），再自动生成已修改的IL源文件；取" + MODE_REPL + "表示根据ILCodes::ILCode节点下的ILCode::lineNumber节点值直接自动生成已修改的IL源文件。\n"
+    + gs(4) + "ILCodes::mode" + gs(11) + "对IL源文件内容的处理模式，取值范围为：" + MODE_NATIVE + "," + MODE_REPL + "，默认值为" + MODE_NATIVE + "；取" + MODE_NATIVE + "表示先根据ILCodes::ILCode节点下的ILCode::queryRegex节点和ILCode::codeRegex节点值查询定位IL源文件中需要修改的内容（此时将忽略ILCode::processingMode为0的所有ILCode节点，且会更新ILCode::processingMode不为0的所有ILCode节点的ILCode::lineNumber节点值），再自动生成已修改的IL源文件；取" + MODE_REPL + "表示根据ILCodes::ILCode节点下的ILCode::lineNumber节点值直接自动生成已修改的IL源文件。\n"
     + gs(4) + "ILCodes::ILCode" + gs(9) + "ILCode配置节点，包括对IL代码的处理模式和修改IL代码片段所需的相关参数等等。\n"
     + gs(4) + "ILCode节点由processingMode、quoteMode、lineNumber、codeDesc、queryRegex、codeRegex、codeFragment节点按顺序组成，processingMode节点必须在最前面。\n"
     + gs(4) + "ILCode::processingMode" + gs(2) + "在自动生成已修改的IL源文件时对IL代码的处理模式，取值范围为：" + MODE_NATIVE + "," + MODE_REPL + "," + MODE_ADD + "，默认值为" + MODE_NATIVE + "；取" + MODE_NATIVE + "表示提取IL源文件的原始数据；取" + MODE_REPL + "表示提取ILCode::codeFragment作为替换数据，此时ILCode::queryRegex节点和ILCode::codeRegex节点都不能为空，且ILCode::codeRegex节点值最多只能指定2个正则查询表达式，分别匹配起始代码行和终止代码行，只指定1个则表示只唯一匹配一行待替换代码；取" + MODE_ADD + "表示提取ILCode::codeFragment作为新增数据，此时ILCode::queryRegex节点不能为空，且ILCode::codeRegex节点值将被忽略。\n"

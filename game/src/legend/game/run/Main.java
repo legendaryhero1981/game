@@ -89,6 +89,37 @@ public final class Main implements IMain{
         }
     }
 
+    private static void dealParam(String[] args){
+        try{
+            switch(args[0]){
+                case CMD_EXEC:
+                case CMD_KILL:
+                case CMD_VIEW:
+                case CMD_LINK:
+                case CMD_LINK_ALL:
+                if(args.length > 1) game.setId(args[1]);
+                break;
+                case CMD_DEL:
+                game.setId(args[1]);
+                break;
+                case CMD_ADD:
+                case CMD_CREATE:
+                game.setId(args[1]);
+                game.setPath(args[2]);
+                game.setExe(args[3]);
+                game.setName(args[4]);
+                if(args.length > 5) game.setComment(args[5]);
+                else game.setComment(game.getName());
+                break;
+                default:
+                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            }
+            game.trim();
+        }catch(Exception e){
+            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
+        }
+    }
+
     private static void exec(){
         try{
             // 根据ID获得需要被执行的游戏
@@ -192,37 +223,6 @@ public final class Main implements IMain{
         // 数据验证
         CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
         CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->game.trim().validate());
-    }
-
-    private static void dealParam(String[] args){
-        try{
-            switch(args[0]){
-                case CMD_EXEC:
-                case CMD_KILL:
-                case CMD_VIEW:
-                case CMD_LINK:
-                case CMD_LINK_ALL:
-                if(args.length > 1) game.setId(args[1]);
-                break;
-                case CMD_DEL:
-                game.setId(args[1]);
-                break;
-                case CMD_ADD:
-                case CMD_CREATE:
-                game.setId(args[1]);
-                game.setPath(args[2]);
-                game.setExe(args[3]);
-                game.setName(args[4]);
-                if(args.length > 5) game.setComment(args[5]);
-                else game.setComment(game.getName());
-                break;
-                default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
-            }
-            game.trim();
-        }catch(Exception e){
-            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
-        }
     }
 
     private static void saveModel(Games games){

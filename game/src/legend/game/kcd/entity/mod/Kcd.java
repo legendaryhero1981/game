@@ -3,13 +3,13 @@ package legend.game.kcd.entity.mod;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -36,16 +36,16 @@ public class Kcd{
     private Config config = new Config();
     @XmlElementWrapper(name = "Mods")
     @XmlElementRef
-    private List<Mod> mods = new CopyOnWriteArrayList<>();
+    private List<Mod> mods = new ArrayList<>();
     @XmlElementWrapper(name = "Merges")
     @XmlElementRef
-    private List<Merge> merges = new CopyOnWriteArrayList<>();
+    private List<Merge> merges = new ArrayList<>();
     @XmlElementWrapper(name = "Conflicts")
     @XmlElementRef
-    private List<Conflict> conflicts = new CopyOnWriteArrayList<>();
+    private List<Conflict> conflicts = new ArrayList<>();
     @XmlElementWrapper(name = "Uniques")
     @XmlElementRef
-    private List<Mapping> uniques = new CopyOnWriteArrayList<>();
+    private List<Mapping> uniques = new ArrayList<>();
 
     public void clearCache(){
         mergeSet.clear();

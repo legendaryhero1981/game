@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -76,7 +75,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         pathsMap = new ConcurrentHashMap<>();
         sizeMap = new ConcurrentHashMap<>();
         pathDeque = new LinkedBlockingDeque<>();
-        pathList = new CopyOnWriteArrayList<>();
+        pathList = new ArrayList<>();
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();

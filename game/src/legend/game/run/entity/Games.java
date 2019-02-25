@@ -3,10 +3,10 @@ package legend.game.run.entity;
 import static java.util.stream.Collectors.toList;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -24,7 +24,7 @@ public class Games implements IMain{
     @XmlElement
     private String comment = GAMES_COMMENT;
     @XmlElementRef
-    private List<Game> games = new CopyOnWriteArrayList<>();
+    private List<Game> games = new ArrayList<>();
 
     public ConcurrentMap<String,Game> getGameMap(){
         if(gameMap.isEmpty()) refreshGameMap();

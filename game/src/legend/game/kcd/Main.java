@@ -126,6 +126,55 @@ public final class Main implements IMain,IFileUtil{
         }
     }
 
+    private static void dealParam(String[] args){
+        try{
+            switch(args[0]){
+                case KCD_LOC_MRG:
+                case KCD_LOC_MRG_A:
+                case KCD_LOC_MRG_U:
+                case KCD_LOC_CMP:
+                case KCD_LOC_CMP_A:
+                case KCD_LOC_CMP_U:
+                srcParam.setLevel(1);
+                srcParam.setCmd(CMD_FIND);
+                srcParam.setOpt(args[0]);
+                srcParam.setPattern(compile(args[1]));
+                destParam = srcParam.cloneValue();
+                destParam.setSrcPath(get(args[3]));
+                srcParam.setSrcPath(get(args[2]));
+                srcParam.setDestPath(get(args[4]));
+                break;
+                case KCD_LOC_DBG:
+                case KCD_LOC_RLS:
+                srcParam.setLevel(1);
+                srcParam.setCmd(CMD_FIND);
+                srcParam.setPattern(compile(args[1]));
+                srcParam.setSrcPath(get(args[2]));
+                srcParam.setDestPath(get(args[3]));
+                break;
+                case KCD_MOD_CRT:
+                kcd = new Kcd();
+                config = kcd.getConfig();
+                config.setGamePath(args[1]);
+                config.setModPath(args[2]);
+                config.setMergePath(args[3]);
+                config.setMergeExecutablePath(args[4]);
+                case KCD_MOD_PAK:
+                case KCD_MOD_UNPAK:
+                case KCD_MOD_MRG_A:
+                case KCD_MOD_MRG_C:
+                case KCD_MOD_MRG_F:
+                case KCD_MOD_MRG_O:
+                case KCD_MOD_MRG_U:
+                break;
+                default:
+                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            }
+        }catch(Exception e){
+            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
+        }
+    }
+
     private static void loadKcd(){
         if(nonEmpty(kcd)) return;
         CS.showError(ERR_KCD_NON,null,()->!kcdPath.toFile().isFile());
@@ -295,7 +344,7 @@ public final class Main implements IMain,IFileUtil{
         dealFile(srcParam);
         progress.update(5);
         conflicts.stream().forEach(conflict->{
-            conflict.getMappings().parallelStream().forEach(m->mergeMap.computeIfAbsent(m.getPath(),path->{
+            conflict.getMappings().parallelStream().forEach(m->mergeMap.computeIfAbsent(m.getPath(),p->{
                 Merge merge = new Merge();
                 merge.setPath(m.getPath());
                 return merge;
@@ -474,55 +523,6 @@ public final class Main implements IMain,IFileUtil{
             convertToXml(makeDirs(srcParam.getDestPath().resolve(src.getFileName())),srcTable,true);
             progress.update(1,PROGRESS_SCALE);
         });
-    }
-
-    private static void dealParam(String[] args){
-        try{
-            switch(args[0]){
-                case KCD_LOC_MRG:
-                case KCD_LOC_MRG_A:
-                case KCD_LOC_MRG_U:
-                case KCD_LOC_CMP:
-                case KCD_LOC_CMP_A:
-                case KCD_LOC_CMP_U:
-                srcParam.setLevel(1);
-                srcParam.setCmd(CMD_FIND);
-                srcParam.setOpt(args[0]);
-                srcParam.setPattern(compile(args[1]));
-                destParam = srcParam.cloneValue();
-                destParam.setSrcPath(get(args[3]));
-                srcParam.setSrcPath(get(args[2]));
-                srcParam.setDestPath(get(args[4]));
-                break;
-                case KCD_LOC_DBG:
-                case KCD_LOC_RLS:
-                srcParam.setLevel(1);
-                srcParam.setCmd(CMD_FIND);
-                srcParam.setPattern(compile(args[1]));
-                srcParam.setSrcPath(get(args[2]));
-                srcParam.setDestPath(get(args[3]));
-                break;
-                case KCD_MOD_CRT:
-                kcd = new Kcd();
-                config = kcd.getConfig();
-                config.setGamePath(args[1]);
-                config.setModPath(args[2]);
-                config.setMergePath(args[3]);
-                config.setMergeExecutablePath(args[4]);
-                case KCD_MOD_PAK:
-                case KCD_MOD_UNPAK:
-                case KCD_MOD_MRG_A:
-                case KCD_MOD_MRG_C:
-                case KCD_MOD_MRG_F:
-                case KCD_MOD_MRG_O:
-                case KCD_MOD_MRG_U:
-                break;
-                default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
-            }
-        }catch(Exception e){
-            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
-        }
     }
 
     private static void dealFile(FileParam param){

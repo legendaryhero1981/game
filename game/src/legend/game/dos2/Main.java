@@ -1,6 +1,7 @@
 package legend.game.dos2;
 
 import static java.nio.file.Paths.get;
+import static java.util.Optional.of;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.makeDirs;
@@ -8,7 +9,6 @@ import static legend.util.JaxbUtil.convertToJavaBean;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.TimeUtil.runWithConsole;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -50,7 +50,7 @@ public final class Main implements IMain{
 
     public static void toDebugVersion(IProgress progress){
         ContentList contentList = convertToJavaBean(param.getSrcPath(),ContentList.class);
-        Optional.of(contentList.getContents()).ifPresent(contents->{
+        of(contentList.getContents()).ifPresent(contents->{
             progress.reset(contents.size(),0,90);
             AtomicInteger i = new AtomicInteger(1);
             contents.parallelStream().forEach((content)->{
@@ -64,7 +64,7 @@ public final class Main implements IMain{
 
     public static void toReleaseVersion(IProgress progress){
         ContentList contentList = convertToJavaBean(param.getSrcPath(),ContentList.class);
-        Optional.of(contentList.getContents()).ifPresent(contents->{
+        of(contentList.getContents()).ifPresent(contents->{
             progress.reset(contents.size(),0,90);
             Pattern pattern = Pattern.compile(REG_RELEASE);
             contents.parallelStream().forEach((content)->{
@@ -79,7 +79,7 @@ public final class Main implements IMain{
     public static void toUpdateVersion(IProgress progress){
         ContentList updateList = convertToJavaBean(param.getSrcPath(),ContentList.class);
         ContentList resultList = convertToJavaBean(param.getDestPath(),ContentList.class);
-        Optional.of(resultList.getContents()).ifPresent(resultContents->{
+        of(resultList.getContents()).ifPresent(resultContents->{
             progress.reset(updateList.getContentMap().size(),0,90);
             AtomicInteger i = new AtomicInteger(resultContents.size());
             Pattern pattern = compile(REG_DEBUG);
