@@ -57,7 +57,6 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -440,7 +439,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
                 if(MODE_NATIVE.equals(ilCodes.getMode())){
                     int r = dataSize % SIZE_IL_PARTITION;
-                    List<Integer> partitions = new CopyOnWriteArrayList<>();
+                    List<Integer> partitions = new ArrayList<>();
                     for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
                         partitions.add(i);
                     if(1 < r) partitions.add(r - 1);
@@ -632,7 +631,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
             if(dest.getParent().toFile().isDirectory()) try{
                 if(isEmpty(param.getPathsMap().get(dest.getParent()))){
-                    List<Path> paths = new CopyOnWriteArrayList<>();
+                    List<Path> paths = new ArrayList<>();
                     param.getPathsMap().put(dest.getParent(),paths);
                     find(dest.getParent(),1,(p, b)->b.isRegularFile()).parallel().forEach(p->paths.add(p));
                 }
