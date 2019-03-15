@@ -23,7 +23,11 @@ public class TestFileUtil extends TestBase{
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
-        s = "-rfil*  (?i)assembly-csharp\\.il$  E:/Decompile/DLL-ildasm";
+//        s = "-rfil*  (?i)assembly-csharp\\.il$  E:/Decompile/DLL-ildasm";
+        s = "-rfgbk  .  D:/games/jaot  D:/games/font_schinese.txt";
+        s = "-rfgbk  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
+//        s = "-rfbig5  .  D:/games/jaot  D:/games/font_tchinese.txt";
+        s = "-rfbig5  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";
         super.monkParam(s);
     }
 }

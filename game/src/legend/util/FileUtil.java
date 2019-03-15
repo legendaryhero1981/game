@@ -1,10 +1,13 @@
 package legend.util;
 
+import static java.nio.charset.Charset.forName;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.deleteIfExists;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.find;
 import static java.nio.file.Files.move;
+import static java.nio.file.Files.newInputStream;
+import static java.nio.file.Files.newOutputStream;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
@@ -36,14 +39,17 @@ import static legend.util.rule.ReplaceRuleEngine.ProvideRuleEngine;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -51,8 +57,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -171,6 +179,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_REP_FILE_IL:
                 replaceFilesWithIL(param);
                 break;
+                case CMD_REG_FILE_GBK:
+                regenFileWithGBK(param);
+                break;
+                case CMD_REG_FILE_BIG5:
+                regenFileWithBIG5(param);
+                break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
                 case CMD_REN_DIR_OLY:
@@ -279,7 +293,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static List<String> readFile(Path path, String charsetName){
         try{
-            return readAllLines(path,Charset.forName(charsetName));
+            return readAllLines(path,forName(charsetName));
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
@@ -292,7 +306,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static void writeFile(Path path, Collection<String> lines, String charsetName){
         try{
-            write(makeDirs(path),lines,Charset.forName(charsetName));
+            write(makeDirs(path),lines,forName(charsetName));
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
@@ -300,6 +314,56 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static void writeFile(Path path, Collection<String> lines){
         writeFile(path,lines,ENCODING_UTF8);
+    }
+
+    public static void writeFileWithUTF8Bom(Path path, String data){
+        try{
+            OutputStream outputStream = newOutputStream(path);
+            outputStream.write(BOM_UTF8);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF8));
+            bufferedWriter.write(data);
+            bufferedWriter.close();
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
+        }
+    }
+
+    public static void writeFileWithUTF16LEBom(Path path, String data){
+        try{
+            OutputStream outputStream = newOutputStream(path);
+            outputStream.write(BOM_UTF16LE);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF16LE));
+            bufferedWriter.write(data);
+            bufferedWriter.close();
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
+        }
+    }
+
+    public static void writeFileWithUTF16BEBom(Path path, String data){
+        try{
+            OutputStream outputStream = newOutputStream(path);
+            outputStream.write(BOM_UTF16BE);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF16BE));
+            bufferedWriter.write(data);
+            bufferedWriter.close();
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
+        }
+    }
+
+    public static String analyzeCharsetWithBom(Path path){
+        try{
+            InputStream inputStream = newInputStream(path);
+            byte[] bom = new byte[3];
+            inputStream.read(bom);
+            if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return ENCODING_UTF16LE;
+            else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return ENCODING_UTF16BE;
+            else if(BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return ENCODING_UTF8;
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
+        }
+        return ENCODING_UTF8;
     }
 
     public static void deleteFile(Path path){
@@ -442,7 +506,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     List<Integer> partitions = new ArrayList<>();
                     for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
                         partitions.add(i);
-                    if(1 < r) partitions.add(r - 1);
+                    if(SIZE_IL_HEADER < r) partitions.add(r - 1);
                     List<ILCode> codes = new ArrayList<>();
                     Collection<ILCode> caches = new ConcurrentLinkedQueue<ILCode>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
                     partitions.parallelStream().forEach(p->{
@@ -504,6 +568,59 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             });
             param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,EXT_IL,param.getDestPath().toString())));
         }
+    }
+
+    private static void regenFileWithGBK(FileParam param){
+        Pattern pattern = compile(REG_UC_NON_CHS);
+        StringBuffer buffer = new StringBuffer();
+        param.getPathMap().entrySet().parallelStream().forEach(entry->{
+            Path path = entry.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
+            List<String> datas = readFile(path,analyzeCharsetWithBom(path));
+            datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+        if(0 == buffer.length()){
+            fillDatas(buffer,ENCODING_GBK,0xa1,0xa9,0xa1,0xfe);
+            fillDatas(buffer,ENCODING_GBK,0xb0,0xf7,0xa1,0xfe);
+        }else{
+            Set<String> caches = new HashSet<>();
+            char[] ca = buffer.toString().toCharArray();
+            for(int i = 0;i < ca.length;i++)
+                caches.add(ca[i] + S_EMPTY);
+            buffer.delete(0,buffer.length());
+            caches.parallelStream().forEach(cache->buffer.append(cache));
+        }
+        String result = pattern.matcher(buffer.toString().replaceAll(REG_UC_MC_GBK,S_EMPTY)).replaceAll(S_EMPTY);
+        param.getDetailOptional().ifPresent(c->CS.sl(result,1));
+        param.getCmdOptional().ifPresent(c->writeFileWithUTF16LEBom(param.getDestPath(),result));
+    }
+
+    private static void regenFileWithBIG5(FileParam param){
+        Pattern pattern = compile(REG_UC_NON_CHS);
+        StringBuffer buffer = new StringBuffer();
+        param.getPathMap().entrySet().parallelStream().forEach(entry->{
+            Path path = entry.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
+            List<String> datas = readFile(path,analyzeCharsetWithBom(path));
+            datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+        if(0 == buffer.length()){
+            fillDatas(buffer,ENCODING_BIG5,0xa1,0xa3,0x40,0xbf);
+            fillDatas(buffer,ENCODING_BIG5,0xa4,0xc6,0x40,0x7e);
+            fillDatas(buffer,ENCODING_BIG5,0xc9,0xf9,0x40,0xd5);
+        }else{
+            Set<String> caches = new HashSet<>();
+            char[] ca = buffer.toString().toCharArray();
+            for(int i = 0;i < ca.length;i++)
+                caches.add(ca[i] + S_EMPTY);
+            buffer.delete(0,buffer.length());
+            caches.parallelStream().forEach(cache->buffer.append(cache));
+        }
+        String result = pattern.matcher(buffer.toString().replaceAll(REG_UC_MC_BIG5,S_EMPTY)).replaceAll(S_EMPTY);
+        param.getDetailOptional().ifPresent(c->CS.sl(result,1));
+        param.getCmdOptional().ifPresent(c->writeFileWithUTF16LEBom(param.getDestPath(),result));
     }
 
     private static void renameFiles(FileParam param){
@@ -824,6 +941,19 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
+    private static void fillDatas(StringBuffer buffer, String charset, int... values){
+        byte[] bytes = new byte[2];
+        for(int high = values[0];high <= values[1];high++){
+            bytes[0] = (byte)high;
+            for(int low = values[2];low <= values[3];low++){
+                bytes[1] = (byte)low;
+                try{
+                    buffer.append(new String(bytes,charset));
+                }catch(UnsupportedEncodingException e){}
+            }
+        }
+    }
+
     private static void showFile(String[] s, BooleanSupplier b, Path... p){
         if(1 == s.length){
             if(b.getAsBoolean()) CS.sl(s[0] + N_FLE_NUL + gs(2) + p[0]);
@@ -861,13 +991,14 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
         private FileParam param;
-        boolean matchFileOnly, matchDirOnly, excludeRoot;
+        boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex;
 
         private PathMatcher(FileParam param){
             this.param = param;
             matchFileOnly = param.matchConditions(MATCH_FILE_ONLY);
             matchDirOnly = param.matchConditions(MATCH_DIR_ONLY);
             excludeRoot = param.matchConditions(EXCLUDE_ROOT);
+            ignoreRegex = param.matchConditions(IGNORE_REGEX);
         }
 
         @Override
@@ -875,7 +1006,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             boolean find = false;
             if(a.isRegularFile()){
                 if(matchDirOnly) return false;
-                find = param.getPattern().matcher(p.getFileName().toString()).find();
+                find = ignoreRegex ? ignoreRegex : param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_DEL_NUL:
                     case CMD_DEL_DIR_NUL:
@@ -887,7 +1018,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 }
             }else if(a.isDirectory()){
                 if(matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
-                find = param.getPattern().matcher(p.getFileName().toString()).find();
+                find = ignoreRegex ? ignoreRegex : param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_FND_DIR_SAM:
                     case CMD_FND_DIR_DIF:

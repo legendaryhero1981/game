@@ -1,10 +1,12 @@
 package legend.util.test;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,19 +17,100 @@ import legend.intf.ICommon;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
-    public static void main(String[] args){
-        new TestArithmetic().test();
-    }
-
     @Test
     public void test(){
-        ClassVersionChecker.checkClassVersion("E:\\Java\\myeclise-2018破解文件\\patch\\plugins\\jar\\com.genuitec.eclipse.core_16.0.0.201808301917\\com\\genuitec\\eclipse\\core\\RSAUtil.class");
+        testGBK();
+//         testBIG5();
+//        CS.s("兙兛兞兝兡兣嗧瓩糎".toCharArray()[8]+"");
+    }
+
+    // @Test
+    public void testGBK(){
+        StringBuilder sb = new StringBuilder();
+        byte[] by = new byte[2];
+        for(int b1 = 0xa1;b1 <= 0xa9;b1++){
+            by[0] = (byte)b1;
+            for(int b2 = 0xa1;b2 <= 0xfe;b2++){
+                by[1] = (byte)b2;
+                String str = "";
+                try{
+                    str = new String(by,ENCODING_GBK);
+                }catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                sb.append(str);
+            }
+        }
+        for(int b1 = 0xb0;b1 <= 0xf7;b1++){
+            by[0] = (byte)b1;
+            for(int b2 = 0xa1;b2 <= 0xfe;b2++){
+                by[1] = (byte)b2;
+                String str = "";
+                try{
+                    str = new String(by,ENCODING_GBK);
+                }catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                sb.append(str);
+            }
+        }
+        String s = sb.toString().replaceAll(REG_UC_MC_GBK,"");
+        Matcher matcher = compile(REG_UC_NON_CHS).matcher(s);
+        CS.s(matcher.replaceAll(""));
+    }
+
+    // @Test
+    public void testBIG5(){
+        StringBuilder sb = new StringBuilder();
+        byte[] by = new byte[2];
+        for(int b1 = 0xa1;b1 <= 0xa3;b1++){
+            by[0] = (byte)b1;
+            for(int b2 = 0x40;b2 <= 0xbf;b2++){
+                by[1] = (byte)b2;
+                String str = "";
+                try{
+                    str = new String(by,ENCODING_BIG5);
+                }catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                sb.append(str);
+            }
+        }
+        for(int b1 = 0xa4;b1 <= 0xc6;b1++){
+            by[0] = (byte)b1;
+            for(int b2 = 0x40;b2 <= 0x7e;b2++){
+                by[1] = (byte)b2;
+                String str = "";
+                try{
+                    str = new String(by,ENCODING_BIG5);
+                }catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                sb.append(str);
+            }
+        }
+        for(int b1 = 0xc9;b1 <= 0xf9;b1++){
+            by[0] = (byte)b1;
+            for(int b2 = 0x40;b2 <= 0xd5;b2++){
+                by[1] = (byte)b2;
+                String str = "";
+                try{
+                    str = new String(by,ENCODING_BIG5);
+                }catch(UnsupportedEncodingException e){
+                    e.printStackTrace();
+                }
+                sb.append(str);
+            }
+        }
+        String s = sb.toString().replaceAll(REG_UC_MC_BIG5,"");
+        Matcher matcher = compile(REG_UC_NON_CHS).matcher(s);
+        CS.s(matcher.replaceAll(""));
     }
 
     // @Test
     public void testJZT(){
         Scanner scanner = new Scanner(System.in);
-        Pattern pattern = Pattern.compile("[A-Z]");
+        Pattern pattern = compile("[A-Z]");
         Matcher matcher = null;
         // 正则匹配输入，直到输入字符串中包含至少一个英文大写字母为止
         do{
@@ -53,7 +136,7 @@ public class TestArithmetic implements ICommon{
     public void testGCD(){
         Scanner scanner = new Scanner(System.in);
         // 正则匹配任意一个自然数
-        Pattern pattern = Pattern.compile("^[1-9]\\d*$");
+        Pattern pattern = compile("^[1-9]\\d*$");
         Matcher matcher = null;
         // 正则匹配输入，直到输入任意一个自然数为止
         do{
@@ -72,6 +155,11 @@ public class TestArithmetic implements ICommon{
         model.gcd();
         // 打印计算结果
         CS.sl("最大公约数为：" + model.getMax() + "\n最小公倍数为：" + model.getMin());
+    }
+
+    // @Test
+    public void testClassVersion(){
+        ClassVersionChecker.checkClassVersion("");
     }
 
     private static class ClassVersionChecker{

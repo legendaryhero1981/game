@@ -30,11 +30,13 @@ public interface IFileUtil extends ICommon{
     long PATH_RELATIVE = 1l << 10;
     long INTERCHANGE_UPGRADE = 1l << 11;
     long ZIP_UNZIP = 1l << 12;
+    long IGNORE_REGEX = 1l << 13;
     long ENABLE_CACHE = 1l << 50;
     long CAN_USE_CACHE = 1l << 51;
     long CAN_SAVE_CACHE = 1l << 52;
     long NEED_CLEAR_CACHE = 1l << 53;
     int SIZE_IL_PARTITION = 10000;
+    int SIZE_IL_HEADER = 7;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String CMD = "file ";
@@ -75,6 +77,8 @@ public interface IFileUtil extends ICommon{
     String CMD_REN_DIR_OLY_UP_FST = "-rdouf";
     String CMD_REP_FILE_BT = "-rfbt";
     String CMD_REP_FILE_IL = "-rfil";
+    String CMD_REG_FILE_GBK = "-rfgbk";
+    String CMD_REG_FILE_BIG5 = "-rfbig5";
     String CMD_COPY = "-c";
     String CMD_CPY_DIR = "-cd";
     String CMD_CPY_DIR_OLY = "-cdo";

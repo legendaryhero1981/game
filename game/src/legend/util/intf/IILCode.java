@@ -27,7 +27,7 @@ public interface IILCode extends ICommon{
     + gs(4) + "ILCode::quoteMode" + gs(11) + "对ILCode::queryRegex节点和ILCode::codeRegex节点表示的正则查询表达式是否启用引用模式，取值范围为：" + MODE_NATIVE + "," + MODE_REPL + "，默认值为" + MODE_NATIVE + "；取" + MODE_NATIVE + "表示不启用引用模式；取"  + MODE_REPL + "表示启用引用模式，此时正则查询表达式将被当成无特殊含义的普通字符串对待。\n"
     + gs(4) + "ILCode::lineNumber" + gs(10) + "IL源文件中IL代码片段的起止行号，匹配的正则表达式为：" + REG_LINE_NUMBER + "；取值范围：最小值为1，最大值为IL源文件的最大行号；如果要修改的代码只有1行，可以只指定一个行号，即1与1-1等效。\n"
     + gs(4) + "ILCode::codeDesc" + gs(12) + "需要修改的IL代码片段的功能描述。\n"
-    + gs(4) + "ILCode::queryRegex" + gs(10) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；仅当ILCode::processingMode不为" + MODE_NATIVE + "时有效；若ILCode::processingMode为" + MODE_REPL + "，将继续向上回溯查询ILCode::codeRegex以正确定位。\n"
-    + gs(4) + "ILCode::codeRegex" + gs(11) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；仅当ILCode::processingMode为" + MODE_REPL + "时有效。\n"
-    + gs(4) + "ILCode::codeFragment" + gs(8) + "在IL源文件中ILCode::lineNumber位置处需要被替换或新增的IL代码片段。\n" + gs(4);
+    + gs(4) + "ILCode::queryRegex" + gs(10) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；数据格式为每行一个表达式，忽略表达式首尾的空白字符和所有的空白行；仅当ILCode::processingMode不为" + MODE_NATIVE + "时有效；若ILCode::processingMode为" + MODE_REPL + "，将继续向上回溯查询ILCode::codeRegex以正确定位。\n"
+    + gs(4) + "ILCode::codeRegex" + gs(11) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；数据格式为每行一个表达式，忽略表达式首尾的空白字符和所有的空白行，最多只能指定2个表达式以匹配起始和终止IL代码行；仅当ILCode::processingMode为" + MODE_REPL + "时有效。\n"
+    + gs(4) + "ILCode::codeFragment" + gs(8) + "在IL源文件中ILCode::lineNumber位置处需要被替换或新增的IL代码片段；忽略IL代码片段中所有的空白行。\n" + gs(4);
 }

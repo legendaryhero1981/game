@@ -5,6 +5,9 @@ import static legend.util.StringUtil.gl;
 import java.io.File;
 
 public interface ICommon{
+    byte[] BOM_UTF16LE = new byte[]{(byte)0xff,(byte)0xfe};
+    byte[] BOM_UTF16BE = new byte[]{(byte)0xfe,(byte)0xff};
+    byte[] BOM_UTF8 = new byte[]{(byte)0xef,(byte)0xbb,(byte)0xbf};
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
@@ -12,7 +15,10 @@ public interface ICommon{
     String VERSION = "版本：V4.0";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String ENCODING_GBK = "GBK";
-    String ENCODING_UTF8 = "UTF-8";
+    String ENCODING_BIG5 = "BIG5";
+    String ENCODING_UTF8 = "UTF8";
+    String ENCODING_UTF16LE = "UTF_16LE";
+    String ENCODING_UTF16BE = "UTF_16BE";
     String EXT_IL = ".il";
     String EXT_PAK = ".pak";
     String EXT_XML = ".xml";
@@ -132,6 +138,9 @@ public interface ICommon{
     String XML_CDATA_END = "]]>";
     String XML_CDATA = XML_CDATA_START + PH_ARG0 + XML_CDATA_END;
     String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
+    String REG_UC_MC_GBK = "[\\u3000\\ue766-\\ue76b\\ue76d-\\ue76f\\ue770-\\ue78c\\ue797-\\ue79f\\ue7a0-\\ue7bb\\ue7c9-\\ue7e1\\ue7fe-\\ue7ff\\ue800-\\ue814]";
+    String REG_UC_MC_BIG5 = "[\\u3000\\u007f\\ufffd]";
+    String REG_UC_NON_CHS = "[^\\u2e80-\\uffef]";
     String REG_SPC_SQM = "(?i)" + PLACE_HOLDER + SPC_SQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPC_DQM = "(?i)" + PLACE_HOLDER + SPC_DQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPRT_CMD = SPRT_CMD + "+";

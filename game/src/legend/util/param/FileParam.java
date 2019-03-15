@@ -216,6 +216,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MD5_U32:
             case CMD_REP_FILE_BT:
             case CMD_REP_FILE_IL:
+            case CMD_REG_FILE_GBK:
+            case CMD_REG_FILE_BIG5:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -226,6 +228,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             pattern = cache.pattern;
             srcPath = cache.srcPath;
         }
+        if(REG_ANY.equals(pattern.pattern())) condition |= IGNORE_REGEX;
         if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
         if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
@@ -307,7 +310,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         aa[0] = args[0].split(REG_SPRT_CMD);
         Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
-        Matcher mph = compile(REG_OPT_ASK).matcher("");
+        Matcher mph = compile(REG_OPT_ASK).matcher(S_EMPTY);
         for(int i = 0;i < aa[0].length;i++){
             mph.reset(aa[0][i]);
             CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
@@ -321,7 +324,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             String s = aa[i][0];
             for(int j = 1;j < aa[0].length;j++){
                 mrpt.reset(aa[i][j]);
-                if(mrpt.find()) aa[i][j] = s.replaceAll(OPT_CACHE,"") + mrpt.group(1);
+                if(mrpt.find()) aa[i][j] = s.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
                 else s = aa[i][j];
             }
         }
@@ -464,6 +467,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
                     case CMD_ZIP_INF:
+                    case CMD_REG_FILE_GBK:
+                    case CMD_REG_FILE_BIG5:
                     param.setDestPath(get(replacePlaceHolders(as[3])));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
@@ -610,6 +615,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
             case CMD_REP_FILE_IL:
+            case CMD_REG_FILE_GBK:
+            case CMD_REG_FILE_BIG5:
             s += dp + S_SPACE + level;
             break;
             case CMD_ITCHG_UGD:
