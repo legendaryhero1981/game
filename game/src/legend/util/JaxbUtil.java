@@ -32,7 +32,7 @@ public final class JaxbUtil implements IJaxbUtil{
     }
 
     public static void convertToXml(Path path, Object object, boolean fragment){
-        convertToXml(path,object,ENCODING_UTF8,fragment);
+        convertToXml(path,object,CHARSET_UTF8,fragment);
     }
 
     public static void convertToXml(Path path, Object object, String encoding, boolean fragment){

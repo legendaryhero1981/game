@@ -311,7 +311,7 @@ public final class Main implements IMain{
             caches[index] = batFile.getCanonicalPath();
             caches[caches.length - 1] = script.toString();
             CS.sl(caches[index]).sl(caches[caches.length - 1]);
-            write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(batFile),ENCODING_UTF8)),caches[caches.length - 1]);
+            write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(batFile),CHARSET_UTF8)),caches[caches.length - 1]);
             script.delete(0,script.length());
         }
     }
@@ -332,7 +332,7 @@ public final class Main implements IMain{
         script.append(glph(CMD_VBS_RUN_DEL,1,caches[0]));
         caches[caches.length - 1] = script.toString();
         CS.sl(caches[0]).sl(caches[caches.length - 1]);
-        write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(vbsFile),ENCODING_GBK)),caches[caches.length - 1]);
+        write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(vbsFile),CHARSET_GBK)),caches[caches.length - 1]);
     }
 
     private static void runVbsFile(boolean waitFor) throws Exception{

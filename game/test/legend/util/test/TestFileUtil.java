@@ -27,7 +27,7 @@ public class TestFileUtil extends TestBase{
         s = "-rfgbk  .  D:/games/jaot  D:/games/font_schinese.txt";
         s = "-rfgbk  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
 //        s = "-rfbig5  .  D:/games/jaot  D:/games/font_tchinese.txt";
-        s = "-rfbig5  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";
+//        s = "-rfbig5  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";
         super.monkParam(s);
     }
 }

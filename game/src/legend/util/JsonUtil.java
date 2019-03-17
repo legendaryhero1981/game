@@ -20,7 +20,7 @@ public final class JsonUtil implements IJsonUtil{
     public static void trimJson(Path path){
         try{
             List<String> lines = readAllLines(path);
-            write(path,trimJson(lines).getBytes(ENCODING_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
+            write(path,trimJson(lines).getBytes(CHARSET_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
         }catch(IOException e){
             CS.sl(gsph(ERR_JSON_PARSE,e.toString()));
         }
@@ -35,7 +35,7 @@ public final class JsonUtil implements IJsonUtil{
     public static void formatJson(Path path){
         try{
             String s = trimJson(readAllLines(path));
-            write(path,formatJson(s).getBytes(ENCODING_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
+            write(path,formatJson(s).getBytes(CHARSET_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
         }catch(IOException e){
             CS.sl(gsph(ERR_JSON_PARSE,e.toString()));
         }

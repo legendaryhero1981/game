@@ -19,9 +19,15 @@ import legend.util.test.model.GCDModel;
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-        testGBK();
-//         testBIG5();
-//        CS.s("兙兛兞兝兡兣嗧瓩糎".toCharArray()[8]+"");
+        // testGBK();
+        // testBIG5();
+        byte[] bytes = new byte[]{(byte)0xef,(byte)0xad,(byte)0xb2,(byte)0xef,(byte)0xad,(byte)0xb2};
+        try{
+            Pattern pattern = compile("(?:[\\u2e80-\\uffef])");
+            CS.sl(new String(bytes,CHARSET_GBK)).sl(pattern.matcher(new String(bytes,CHARSET_GBK)).find() + "");
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
     }
 
     // @Test
@@ -34,7 +40,7 @@ public class TestArithmetic implements ICommon{
                 by[1] = (byte)b2;
                 String str = "";
                 try{
-                    str = new String(by,ENCODING_GBK);
+                    str = new String(by,CHARSET_GBK);
                 }catch(UnsupportedEncodingException e){
                     e.printStackTrace();
                 }
@@ -47,7 +53,7 @@ public class TestArithmetic implements ICommon{
                 by[1] = (byte)b2;
                 String str = "";
                 try{
-                    str = new String(by,ENCODING_GBK);
+                    str = new String(by,CHARSET_GBK);
                 }catch(UnsupportedEncodingException e){
                     e.printStackTrace();
                 }
@@ -69,7 +75,7 @@ public class TestArithmetic implements ICommon{
                 by[1] = (byte)b2;
                 String str = "";
                 try{
-                    str = new String(by,ENCODING_BIG5);
+                    str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
                     e.printStackTrace();
                 }
@@ -82,7 +88,7 @@ public class TestArithmetic implements ICommon{
                 by[1] = (byte)b2;
                 String str = "";
                 try{
-                    str = new String(by,ENCODING_BIG5);
+                    str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
                     e.printStackTrace();
                 }
@@ -95,7 +101,7 @@ public class TestArithmetic implements ICommon{
                 by[1] = (byte)b2;
                 String str = "";
                 try{
-                    str = new String(by,ENCODING_BIG5);
+                    str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
                     e.printStackTrace();
                 }

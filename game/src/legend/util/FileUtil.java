@@ -33,6 +33,7 @@ import static legend.util.TimeUtil.getTotalDurationString;
 import static legend.util.TimeUtil.incTotalDuration;
 import static legend.util.TimeUtil.resetTime;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.matchRange;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.analyzeParam;
 import static legend.util.rule.ReplaceRuleEngine.ProvideRuleEngine;
@@ -301,7 +302,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static List<String> readFile(Path path){
-        return readFile(path,ENCODING_UTF8);
+        return readFile(path,CHARSET_UTF8);
     }
 
     public static void writeFile(Path path, Collection<String> lines, String charsetName){
@@ -313,57 +314,64 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static void writeFile(Path path, Collection<String> lines){
-        writeFile(path,lines,ENCODING_UTF8);
+        writeFile(path,lines,CHARSET_UTF8);
     }
 
     public static void writeFileWithUTF8Bom(Path path, String data){
-        try{
-            OutputStream outputStream = newOutputStream(path);
+        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF8))){
             outputStream.write(BOM_UTF8);
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF8));
             bufferedWriter.write(data);
-            bufferedWriter.close();
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
     }
 
     public static void writeFileWithUTF16LEBom(Path path, String data){
-        try{
-            OutputStream outputStream = newOutputStream(path);
+        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16LE))){
             outputStream.write(BOM_UTF16LE);
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF16LE));
             bufferedWriter.write(data);
-            bufferedWriter.close();
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
     }
 
     public static void writeFileWithUTF16BEBom(Path path, String data){
-        try{
-            OutputStream outputStream = newOutputStream(path);
+        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16BE))){
             outputStream.write(BOM_UTF16BE);
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,ENCODING_UTF16BE));
             bufferedWriter.write(data);
-            bufferedWriter.close();
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
         }
     }
 
-    public static String analyzeCharsetWithBom(Path path){
-        try{
-            InputStream inputStream = newInputStream(path);
+    public static String analyzeCharsetEncode(Path path, String charset){
+        try(InputStream inputStream = newInputStream(path)){
             byte[] bom = new byte[3];
-            inputStream.read(bom);
-            if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return ENCODING_UTF16LE;
-            else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return ENCODING_UTF16BE;
-            else if(BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return ENCODING_UTF8;
+            int i, m = 0, r = inputStream.read(bom);
+            if(-1 == r || BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return CHARSET_UTF8;
+            else if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return CHARSET_UTF16LE;
+            else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return CHARSET_UTF16BE;
+            SingleValue<Integer> bytesCount = new SingleValue<>(0);
+            byte[] bytes = new byte[BLOCK_SIZE_FILE + 3];
+            for(i = 0;i < bom.length;i++)
+                bytes[i] = bom[i];
+            r = inputStream.read(bytes,3,BLOCK_SIZE_FILE) + 3;
+            for(i = 0;-1 < m && i < r - 3;i += (0 > m ? 0 : 0 == m ? 1 : m)){
+                switch(bytesCount.get()){
+                    case 2:
+                    case 3:
+                    case 4:
+                    m = matchCharsetWithUTF8(bytes,i,m,bytesCount);
+                    break;
+                    default:
+                    m = matchCharsetWithUTF8(bytes,i,0,bytesCount);
+                }
+            }
+            if(0 > m) return charset;
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
-        return ENCODING_UTF8;
+        return CHARSET_UTF8;
     }
 
     public static void deleteFile(Path path){
@@ -497,7 +505,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getPathMap().entrySet().stream().forEach(entry->{
                 Path path = entry.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(entry.getKey()),path));
-                List<String> datas = readFile(path,ENCODING_GBK);
+                List<String> datas = readFile(path,CHARSET_GBK);
                 int dataSize = datas.size();
                 ILCodes ilCodes = ILCODES.cloneValue();
                 if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
@@ -555,7 +563,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 param.getCmdOptional().ifPresent(c->{
                     ilCodes.setMode(MODE_REPL);
                     convertToXml(path.resolveSibling(path.getFileName() + EXT_XML),ilCodes);
-                    writeFile(path,results,ENCODING_GBK);
+                    writeFile(path,results,CHARSET_GBK);
                 });
                 param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,path.toString(),path + EXT_XML)));
                 param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
@@ -576,13 +584,13 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
-            List<String> datas = readFile(path,analyzeCharsetWithBom(path));
+            List<String> datas = readFile(path,analyzeCharsetEncode(path,CHARSET_GBK));
             datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         if(0 == buffer.length()){
-            fillDatas(buffer,ENCODING_GBK,0xa1,0xa9,0xa1,0xfe);
-            fillDatas(buffer,ENCODING_GBK,0xb0,0xf7,0xa1,0xfe);
+            fillDatas(buffer,CHARSET_GBK,0xa1,0xa9,0xa1,0xfe);
+            fillDatas(buffer,CHARSET_GBK,0xb0,0xf7,0xa1,0xfe);
         }else{
             Set<String> caches = new HashSet<>();
             char[] ca = buffer.toString().toCharArray();
@@ -602,14 +610,14 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
-            List<String> datas = readFile(path,analyzeCharsetWithBom(path));
+            List<String> datas = readFile(path,analyzeCharsetEncode(path,CHARSET_BIG5));
             datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         if(0 == buffer.length()){
-            fillDatas(buffer,ENCODING_BIG5,0xa1,0xa3,0x40,0xbf);
-            fillDatas(buffer,ENCODING_BIG5,0xa4,0xc6,0x40,0x7e);
-            fillDatas(buffer,ENCODING_BIG5,0xc9,0xf9,0x40,0xd5);
+            fillDatas(buffer,CHARSET_BIG5,0xa1,0xa3,0x40,0xbf);
+            fillDatas(buffer,CHARSET_BIG5,0xa4,0xc6,0x40,0x7e);
+            fillDatas(buffer,CHARSET_BIG5,0xc9,0xf9,0x40,0xd5);
         }else{
             Set<String> caches = new HashSet<>();
             char[] ca = buffer.toString().toCharArray();
@@ -882,6 +890,67 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getCmdOptional().ifPresent(c->formatJson(p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
+    }
+
+    private static int matchCharsetWithUTF8(byte[] bytes, int index, int matchedCount, SingleValue<Integer> bytesCount){
+        int r = matchedCount, c = bytesCount.get();
+        switch(matchedCount){
+            case 1:
+            switch(c){
+                case 2:
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                return r;
+                case 3:
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                return r;
+                case 4:
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
+                return r;
+            }
+            case 2:
+            switch(c){
+                case 3:
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                return r;
+                case 4:
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
+                return r;
+            }
+            case 3:
+            switch(c){
+                case 4:
+                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
+                return r;
+            }
+            default:
+            r = 0;
+            if(0 <= bytes[index]){
+                bytesCount.set(1);
+                return 0;
+            }else if(matchRange(bytes[index],-64,-33)){
+                bytesCount.set(2);
+                r++;
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                return r;
+            }else if(matchRange(bytes[index],-32,-17)){
+                bytesCount.set(3);
+                r++;
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                return r;
+            }else if(matchRange(bytes[index],-16,-9)){
+                bytesCount.set(4);
+                r++;
+                if(matchRange(bytes[index + 1],-128,-65)) r++;
+                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
+                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
+                return r;
+            }else return -1;
+        }
     }
 
     private static void dealMismatch(FileParam param, StringBuffer stringBuffer, String string){
