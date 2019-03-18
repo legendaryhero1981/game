@@ -274,6 +274,12 @@ file -rfbt[+*!@?] regex src replacement [split] [level]
 file -rfil[+*!@?] regex src [dest] [level]
 根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件./file-il.xml自动替换src中所有文件名匹配regex的文件内容，若配置文件./file-il.xml不存在，则会自动生成一个与该文件同名且同格式的模版文件。
 
+file -rfgbk[+*!@?] regex src dest [level]
+根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF_16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
+
+file -rfbig5[+*!@?] regex src dest [level]
+根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF_16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
+
 file -c[+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
 
@@ -490,6 +496,12 @@ file -rfil* (?i)\.il$ E:/Decompile/DLL-ildasm
 
 file -rfil* (?i)\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
 根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
+
+file -rfgbk* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
+提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF_16LE编码格式保存到文件 .../font_schinese.txt。
+
+file -rfbig5* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
+提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF_16LE编码格式保存到文件 .../font_tchinese.txt。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。
