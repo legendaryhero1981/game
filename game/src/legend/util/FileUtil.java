@@ -347,27 +347,21 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     public static String analyzeCharsetEncode(Path path, String charset){
         try(InputStream inputStream = newInputStream(path)){
             byte[] bom = new byte[3];
-            int i, m = 0, r = inputStream.read(bom);
+            int i, r = inputStream.read(bom);
             if(-1 == r || BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return CHARSET_UTF8;
             else if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return CHARSET_UTF16LE;
             else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return CHARSET_UTF16BE;
+            boolean match = false;
             SingleValue<Integer> bytesCount = new SingleValue<>(0);
             byte[] bytes = new byte[BLOCK_SIZE_FILE + 3];
             for(i = 0;i < bom.length;i++)
                 bytes[i] = bom[i];
             r = inputStream.read(bytes,3,BLOCK_SIZE_FILE) + 3;
-            for(i = 0;-1 < m && i < r - 3;i += (0 > m ? 0 : 0 == m ? 1 : m)){
-                switch(bytesCount.get()){
-                    case 2:
-                    case 3:
-                    case 4:
-                    m = matchCharsetWithUTF8(bytes,i,m,bytesCount);
-                    break;
-                    default:
-                    m = matchCharsetWithUTF8(bytes,i,0,bytesCount);
-                }
-            }
-            if(0 > m) return charset;
+            do{
+                for(i = 0;matchCharsetWithUTF8(bytes,i,bytesCount) && i < r - 3;i += bytesCount.get())
+                    if(1 < bytesCount.get()) match = true;
+            }while(!match && -1 != (r = inputStream.read(bytes)));
+            if(r - 3 > i) return charset;
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
@@ -892,65 +886,23 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
-    private static int matchCharsetWithUTF8(byte[] bytes, int index, int matchedCount, SingleValue<Integer> bytesCount){
-        int r = matchedCount, c = bytesCount.get();
-        switch(matchedCount){
-            case 1:
-            switch(c){
-                case 2:
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                return r;
-                case 3:
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                return r;
-                case 4:
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
-                return r;
-            }
-            case 2:
-            switch(c){
-                case 3:
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                return r;
-                case 4:
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
-                return r;
-            }
-            case 3:
-            switch(c){
-                case 4:
-                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
-                return r;
-            }
-            default:
-            r = 0;
-            if(0 <= bytes[index]){
-                bytesCount.set(1);
-                return 0;
-            }else if(matchRange(bytes[index],-64,-33)){
-                bytesCount.set(2);
-                r++;
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                return r;
-            }else if(matchRange(bytes[index],-32,-17)){
-                bytesCount.set(3);
-                r++;
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                return r;
-            }else if(matchRange(bytes[index],-16,-9)){
-                bytesCount.set(4);
-                r++;
-                if(matchRange(bytes[index + 1],-128,-65)) r++;
-                if(2 == r && matchRange(bytes[index + 2],-128,-65)) r++;
-                if(3 == r && matchRange(bytes[index + 3],-128,-65)) r++;
-                return r;
-            }else return -1;
-        }
+    private static boolean matchCharsetWithUTF8(byte[] bytes, int index, SingleValue<Integer> bytesCount){
+        if(0 <= bytes[index]){
+            bytesCount.set(1);
+            return true;
+        }else if(matchRange(bytes[index],-64,-33)){
+            bytesCount.set(2);
+            if(matchRange(bytes[index + 1],-128,-65)) return true;
+            return false;
+        }else if(matchRange(bytes[index],-32,-17)){
+            bytesCount.set(3);
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) return true;
+            return false;
+        }else if(matchRange(bytes[index],-16,-9)){
+            bytesCount.set(4);
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) return true;
+            return false;
+        }else return false;
     }
 
     private static void dealMismatch(FileParam param, StringBuffer stringBuffer, String string){
