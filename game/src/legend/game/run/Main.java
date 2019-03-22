@@ -92,15 +92,13 @@ public final class Main implements IMain{
     private static void dealParam(String[] args){
         try{
             switch(args[0]){
+                case CMD_DEL:
                 case CMD_EXEC:
                 case CMD_KILL:
                 case CMD_VIEW:
                 case CMD_LINK:
                 case CMD_LINK_ALL:
                 if(args.length > 1) game.setId(args[1]);
-                break;
-                case CMD_DEL:
-                game.setId(args[1]);
                 break;
                 case CMD_ADD:
                 case CMD_CREATE:
@@ -123,7 +121,7 @@ public final class Main implements IMain{
     private static void exec(){
         try{
             // 根据ID获得需要被执行的游戏
-            loadData();
+            loadAndValidate();
             // 处理游戏进程的优先级数值，游戏执行前、游戏执行后需要执行的BAT脚本以及游戏进程监控的等待时间
             dealIntegerValues();
             // 生成游戏执行前、游戏执行后需要执行的BAT脚本文件
@@ -140,7 +138,7 @@ public final class Main implements IMain{
     private static void kill(){
         try{
             // 根据ID获得需要被终止的游戏
-            loadData();
+            loadAndValidate();
             // 执行终止游戏进程的VBS主脚本文件
             runVbsScript(false,t->script.append(glph(CMD_VBS_GAME_KILL,1,game.getExe())));
         }catch(IOException e){
@@ -170,7 +168,7 @@ public final class Main implements IMain{
 
     private static void link(){
         try{
-            loadData();
+            loadAndValidate();
             runVbsScript(true,t->{
                 script.append(gl(CMD_VBS_SC_INIT,1));
                 cacheLinkScript(game);
@@ -188,9 +186,8 @@ public final class Main implements IMain{
     }
 
     private static void del(){
-        Games games = loadModel();
-        CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,game.getId()},()->!games.getGameMap().containsKey(game.getId()));
-        games.sortGames().remove(games.getGameMap().get(game.getId()));
+        Games games = loadAndValidate();
+        games.sortGames().remove(game);
         saveModel(games);
     }
 
@@ -208,8 +205,9 @@ public final class Main implements IMain{
         saveModel(games);
     }
 
-    private static void loadData(){
-        ConcurrentMap<String,Game> gameMap = loadModel().getGameMap();
+    private static Games loadAndValidate(){
+        Games games = loadModel();
+        ConcurrentMap<String,Game> gameMap = games.getGameMap();
         String id = game.getId();
         if(isEmpty(id)){
             view();
@@ -223,6 +221,7 @@ public final class Main implements IMain{
         // 数据验证
         CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
         CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->game.trim().validate());
+        return games;
     }
 
     private static void saveModel(Games games){
