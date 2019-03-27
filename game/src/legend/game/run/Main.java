@@ -305,6 +305,7 @@ public final class Main implements IMain{
     private static void writeScript(String[] cmds, int index) throws IOException{
         if(nonEmpty(cmds[0])){
             File batFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_BAT);
+            script.append(gl(CMD_BAT_CHCP_UTF8,1));
             for(String cmd : cmds)
                 script.append(gl(cmd.trim(),1));
             caches[index] = batFile.getCanonicalPath();

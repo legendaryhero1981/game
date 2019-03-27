@@ -95,9 +95,11 @@ public interface IMain extends ICommon{
     String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
     String CMD_VBS_SC_WS = "shortcut.WindowStyle=1";
     String CMD_VBS_SC_SAVE = "shortcut.Save";
+    String CMD_BAT_CHCP_UTF8 = "chcp 65001";
     String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARG0 + "'\" delete";
     String CMD_BAT_PROC_DEL_BY_PATH = "wmic process where \"executablepath='" + PH_ARG0 + "'\" delete";
-    String CMD_BAT_GAME_WATCH = "setlocal enableextensions" + gl(1) + "setlocal enabledelayedexpansion" + gl(1)
+    String CMD_BAT_GAME_WATCH = CMD_BAT_CHCP_UTF8 + gl(1)
+    + "setlocal enableextensions" + gl(1) + "setlocal enabledelayedexpansion" + gl(1)
     + ":watch" + gl(1)
     + "set pid=" + gl(1)
     + "for /f \"usebackq skip=1\" %%i in (`wmic process where \"name='" + PH_ARG0 + "'\" get processid`) do if \"!pid!\"==\"\" set pid=%%i" + gl(1)
