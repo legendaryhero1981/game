@@ -614,9 +614,9 @@ comment 游戏快捷方式说明。
 
 -a id path exe name [comment] 添加一个游戏配置节点到游戏配置文件./run.xml中。
 
--d id 根据id删除游戏配置文件./run.xml中对应的一个游戏配置节点。
-
 -v 显示游戏配置文件./run.xml中所有的游戏配置节点的id列表，显示格式为：id		comment。
+
+-d [id] 根据id删除游戏配置文件./run.xml中对应的一个游戏配置节点；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id删除对应的游戏配置节点。
 
 -k [id] 根据id终止游戏配置文件./run.xml中对应的的游戏进程；如果不指定id程序则会先显示id列表（同-v），再提示输入一个id，根据id终止对应的游戏进程。
 
@@ -642,9 +642,11 @@ run -a poe2 "F:/games/Pillars of Eternity II" PillarsOfEternityII 永恒之柱2
 
 run -a poe2-d "F:/games/Pillars of Eternity II" PillarsOfEternityII 永恒之柱2：开发者模式
 
-run -d ew2
-
 run -v
+
+run -d
+
+run -d ew2
 
 run -k
 
