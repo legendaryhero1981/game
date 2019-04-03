@@ -21,13 +21,8 @@ public class TestArithmetic implements ICommon{
     public void test(){
         // testGBK();
         // testBIG5();
-        byte[] bytes = new byte[]{(byte)0xef,(byte)0xad,(byte)0xb2,(byte)0xef,(byte)0xad,(byte)0xb2};
-        try{
-            Pattern pattern = compile("(?:[\\u2e80-\\uffef])");
-            CS.sl(new String(bytes,CHARSET_GBK)).sl(pattern.matcher(new String(bytes,CHARSET_GBK)).find() + "");
-        }catch(UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
+        String s = "abc123" + SPC_NUL;
+        CS.sl(s).sl(s.replaceAll(SPC_NUL,""));
     }
 
     // @Test

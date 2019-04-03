@@ -21,4 +21,9 @@ public abstract class ReplaceRule implements IReplaceRule{
     protected abstract String[] execute(String data);
 
     protected abstract void refreshRule(String rule);
+
+    @Override
+    public String toString(){
+        return rule;
+    }
 }

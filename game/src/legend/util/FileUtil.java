@@ -58,6 +58,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -132,8 +133,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
-    public static void dealFiles(FileParam fileParam){
-        try(FileParam param = fileParam){
+    public static void dealFiles(FileParam param){
+        try(param){
             if(FP != param) param.refreshConditions(CACHE);
             if(!param.useCache(CACHE)){
                 long count = cachePaths(param);
@@ -273,7 +274,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             CS.sl(gsph(ERR_CMD_EXEC,e.toString()));
             e.printStackTrace();
         }finally{
-            fileParam.getDetailOptional().ifPresent(s->CS.l(1));
+            param.getDetailOptional().ifPresent(s->CS.l(1));
         }
     }
 
@@ -909,8 +910,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         Matcher matcher = param.getPattern().matcher(string);
         final int count = matcher.groupCount();
         if(0 == count) return;
-        ArrayDeque<Integer> starts = new ArrayDeque<>();
-        ArrayDeque<Integer> ends = new ArrayDeque<>();
+        Deque<Integer> starts = new ArrayDeque<>();
+        Deque<Integer> ends = new ArrayDeque<>();
         while(matcher.find()){
             int start = matcher.start(1), end = matcher.end(1), i = 2;
             starts.add(0 == start ? end : 0);

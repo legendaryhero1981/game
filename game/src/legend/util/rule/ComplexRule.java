@@ -1,5 +1,6 @@
 package legend.util.rule;
 
+import static legend.util.StringUtil.concat;
 import static legend.util.rule.ReplaceRuleStrategy.provideStrategy;
 
 import legend.intf.IValue;
@@ -26,7 +27,7 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
             AtomRule atomRule = new AtomRule(engine,i + 1,rules[i]);
             atomRules[i] = atomRule;
         }
-        this.rule = rule;
+        this.rule = concat(atomRules,SPRT_ATOM);
     }
 
     @Override

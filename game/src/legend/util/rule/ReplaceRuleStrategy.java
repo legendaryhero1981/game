@@ -1,5 +1,7 @@
 package legend.util.rule;
 
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.isEmpty;
@@ -9,7 +11,6 @@ import static legend.util.ValueUtil.nonEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 
@@ -18,20 +19,15 @@ import legend.util.rule.intf.IReplaceRule;
 public final class ReplaceRuleStrategy implements IReplaceRule{
     private static final Map<String,BiFunction<ReplaceRule,String,String[]>> strategiesCache;
     static{
-        strategiesCache = new ConcurrentHashMap<>();
-        strategiesCache.put(SPRT_ATOM,(rule, data)->{
-            if(rule instanceof ComplexRule){
-                AtomRule[] atomRules = ((ComplexRule)rule).atomRules;
-                String[] results = new String[atomRules.length];
-                for(int i = 0;i < atomRules.length;i++){
-                    results[i] = atomRules[i].execute(data)[0];
-                    data = results[i];
-                }
-                return results;
+        strategiesCache = ofEntries(entry(SPRT_ATOM,(rule, data)->{
+            AtomRule[] atomRules = ((ComplexRule)rule).atomRules;
+            String[] results = new String[atomRules.length];
+            for(int i = 0;i < atomRules.length;i++){
+                results[i] = atomRules[i].execute(data)[0];
+                data = results[i];
             }
-            return new String[]{data};
-        });
-        strategiesCache.put(RULE_REGENROW,(rule, data)->{
+            return results;
+        }),entry(RULE_REGENROW,(rule, data)->{
             Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
             Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
             final int size = atomsCache.size(), colSize = atomsCache.get(0).length,
@@ -94,8 +90,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 });
             }
             return results;
-        });
-        strategiesCache.put(RULE_LOWER,(rule, data)->{
+        }),entry(RULE_LOWER,(rule, data)->{
             String[] args = rule.args;
             if(isEmpty(args)) return new String[]{data.toLowerCase()};
             else{
@@ -103,8 +98,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 if(matcher.find()) return new String[]{data.toLowerCase()};
             }
             return new String[]{data};
-        });
-        strategiesCache.put(RULE_UPPER,(rule, data)->{
+        }),entry(RULE_UPPER,(rule, data)->{
             String[] args = rule.args;
             if(isEmpty(args)) return new String[]{data.toUpperCase()};
             else{
@@ -112,13 +106,12 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 if(matcher.find()) return new String[]{data.toUpperCase()};
             }
             return new String[]{data};
-        });
-        strategiesCache.put(RULE_REPLACE,(rule, data)->{
+        }),entry(RULE_REPLACE,(rule, data)->{
             String[] args = rule.args;
             if(isEmpty(args)) return new String[]{data};
             else if(1 == args.length) return new String[]{data.replaceAll(args[0],"")};
             else return new String[]{data.replaceAll(args[0],quoteReplacement(args[1]))};
-        });
+        }));
     }
 
     protected static BiFunction<ReplaceRule,String,String[]> provideStrategy(String name){

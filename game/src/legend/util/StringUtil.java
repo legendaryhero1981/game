@@ -5,28 +5,36 @@ import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import legend.intf.ICommon;
 import legend.util.param.SingleValue;
 
 public final class StringUtil implements ICommon{
-    public static final StringUtil SU;
-    static{
-        SU = new StringUtil();
-    }
-
     private StringUtil(){}
 
-    public String concat(Collection<String> c, String join){
-        return concat(c.toArray(new String[0]),join);
+    public static String concat(Object[] objects, String join){
+        if(0 == objects.length) return "";
+        String r = "";
+        for(int i = 0;i < objects.length - 1;i++)
+            r = r.concat(objects[i].toString()).concat(join);
+        return r.concat(objects[objects.length - 1].toString());
     }
 
-    public String concat(Collection<String> c){
-        return concat(c,"");
+    public static String concat(Object[] objects){
+        return concat(objects,"");
     }
 
-    public String concat(String[] s, String join){
+    public static String concat(Collection<Object> collection, String join){
+        return concat(collection.toArray(new Object[0]),join);
+    }
+
+    public static String concat(Collection<Object> collection){
+        return concat(collection,"");
+    }
+
+    public static String concat(String[] s, String join){
         if(0 == s.length) return "";
         String r = "";
         for(int i = 0;i < s.length - 1;i++)
@@ -34,25 +42,29 @@ public final class StringUtil implements ICommon{
         return r.concat(s[s.length - 1]);
     }
 
-    public String concat(String[] s){
+    public static String concat(String[] s){
         return concat(s,"");
     }
 
-    public StringUtil rph(SingleValue<String> value, String regex, String repl){
-        Matcher matcher = compile(regex).matcher(value.get());
-        while(matcher.find()){
-            String ph = matcher.group(), m = matcher.group(1);
-            rph(value,ph,repl,nonEmpty(m) ? Integer.parseInt(m) : 1);
-        }
-        return SU;
+    public static String brph(String s, Map<String,String> map){
+        SingleValue<String> value = new SingleValue<>(s);
+        if(nonEmpty(map)) map.entrySet().stream().forEach(entry->value.set(brph(value.get(),entry.getKey(),entry.getValue())));
+        return value.get();
     }
 
-    public StringUtil rph(SingleValue<String> value, String ph, String repl, int n){
-        String r = repl;
-        for(int i = 1;i < n;i++)
-            r += repl;
-        value.set(value.get().replaceAll(ph,quoteReplacement(r)));
-        return SU;
+    public static String brph(String s, String regex, String repl){
+        StringBuilder builder = new StringBuilder();
+        Matcher matcher = compile(regex).matcher(s);
+        while(matcher.find()){
+            String r = repl;
+            String match = matcher.group(1);
+            if(nonEmpty(match)){
+                for(int i = 1,n = Integer.valueOf(match);i < n;i++)
+                    r += repl;
+            }
+            matcher.appendReplacement(builder,r);
+        }
+        return matcher.appendTail(builder).toString();
     }
 
     public static String rph(String s, String ph, String repl, int n){

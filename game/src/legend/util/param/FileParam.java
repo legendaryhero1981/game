@@ -1,16 +1,19 @@
 package legend.util.param;
 
 import static java.nio.file.Paths.get;
+import static java.util.Optional.of;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
-import static legend.util.StringUtil.SU;
+import static legend.util.StringUtil.brph;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
@@ -105,6 +108,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     @Override
     public void close() throws Exception{
         if(nonEmpty(zipOutputStream)) zipOutputStream.close();
+    }
+
+    @Override
+    public String toString(){
+        return getWholeCommand();
     }
 
     public void cacheZipOutputStream(ZipOutputStream zipOutputStream){
@@ -239,9 +247,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         if(nonEmpty(backupPath)) outPath = backupPath;
         else if(nonEmpty(destPath)) outPath = destPath;
         else outPath = rootPath;
-        cmdOptional = Optional.of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
-        progressOptional = Optional.of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
-        detailOptional = Optional.of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
+        cmdOptional = of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
+        progressOptional = of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
+        detailOptional = of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
     }
 
     public boolean matchConditions(long condition){
@@ -306,46 +314,81 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public static List<FileParam> analyzeParam(String[] args){
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
-        String[][] aa = new String[args.length][];
-        aa[0] = args[0].split(REG_SPRT_CMD);
-        Matcher mrpt = compile(REG_RPT_ARG).matcher(aa[0][0]);
+        String[][] aa1 = new String[args.length][], aa2 = new String[args.length][];
+        aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMD);
+        Matcher mrpt = compile(REG_RPT_ARG).matcher(aa1[0][0]);
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
         Matcher mph = compile(REG_OPT_ASK).matcher(S_EMPTY);
-        for(int i = 0;i < aa[0].length;i++){
-            mph.reset(aa[0][i]);
+        for(int i = 0;i < aa1[0].length;i++){
+            mph.reset(aa1[0][i]);
             CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
+        Deque<String> quotes1 = new ArrayDeque<>(), quotes2 = new ArrayDeque<>();
+        Matcher mbq = compile(REG_QUOTE_BQ).matcher(S_EMPTY);
         for(int i = 1;i < args.length;i++){
-            aa[i] = args[i].split(REG_SPRT_CMD);
-            mrpt.reset(aa[i][0]);
-            if(aa[0].length != aa[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            mbq.reset(args[i]);
+            while(mbq.find()){
+                quotes1.add(mbq.group(1));
+                quotes2.add(mbq.group());
+            }
+            String s = mbq.replaceAll(SPC_NUL);
+            aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMD);
+            aa2[i] = s.split(REG_SPRT_CMD);
+            mrpt.reset(aa1[i][0]);
+            if(aa1[0].length != aa1[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
-        for(int i = 0;i < aa.length;i++){
-            String s = aa[i][0];
-            for(int j = 1;j < aa[0].length;j++){
-                mrpt.reset(aa[i][j]);
-                if(mrpt.find()) aa[i][j] = s.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
-                else s = aa[i][j];
+        Matcher mnul = compile(SPC_NUL).matcher(S_EMPTY);
+        StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
+        for(int i = 0;i < aa1.length;i++){
+            String s1 = aa1[i][0], s2 = aa2[i][0];
+            if(0 < i){
+                sb1.delete(0,sb1.length());
+                mnul.reset(aa1[i][0]);
+                while(mnul.find() && !quotes1.isEmpty())
+                    mnul.appendReplacement(sb1,quotes1.remove());
+                s1 = aa1[i][0] = mnul.appendTail(sb1).toString();
+                sb2.delete(0,sb2.length());
+                mnul.reset(aa2[i][0]);
+                while(mnul.find() && !quotes2.isEmpty())
+                    mnul.appendReplacement(sb2,quotes2.remove());
+                s2 = aa2[i][0] = mnul.appendTail(sb2).toString();
+            }
+            for(int j = 1;j < aa1[0].length;j++){
+                sb1.delete(0,sb1.length());
+                mnul.reset(aa1[i][j]);
+                while(mnul.find() && !quotes1.isEmpty())
+                    mnul.appendReplacement(sb1,quotes1.remove());
+                if(mrpt.reset(mnul.appendTail(sb1).toString()).find()) aa1[i][j] = s1.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+                else s1 = aa1[i][j];
+                sb2.delete(0,sb2.length());
+                mnul.reset(aa2[i][j]);
+                while(mnul.find() && !quotes2.isEmpty())
+                    mnul.appendReplacement(sb2,quotes2.remove());
+                if(mrpt.reset(mnul.appendTail(sb2).toString()).find()) aa2[i][j] = s2.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+                else s2 = aa2[i][j];
             }
         }
-        String[][] ss = new String[aa[0].length][];
-        for(int i = 0,j,k;i < aa[0].length;i++){
-            int[] n = new int[aa.length];
-            for(j = k = 0;k < aa.length;k++){
-                mph.reset(aa[k][i]);
+        String[][] ss1 = new String[aa1[0].length][], ss2 = new String[aa2[0].length][];
+        for(int i = 0,j,k;i < aa1[0].length;i++){
+            int[] n = new int[aa1.length];
+            for(j = k = 0;k < aa1.length;k++){
+                mph.reset(aa1[k][i]);
                 if(!mph.matches()) n[j++] = k;
             }
-            for(ss[i] = new String[j],k = 0;k < j;k++)
-                ss[i][k] = aa[n[k]][i];
+            for(ss1[i] = new String[j],ss2[i] = new String[j],k = 0;k < j;k++){
+                ss1[i][k] = aa1[n[k]][i];
+                ss2[i][k] = aa2[n[k]][i];
+            }
         }
-        List<FileParam> fileParams = new ArrayList<>(ss.length);
-        for(String[] as : ss){
-            FileParam param = new FileParam();
+        List<FileParam> fileParams = new ArrayList<>(ss1.length);
+        for(int i = 0;i < ss1.length;i++)
             try{
-                Optional<String[]> optional = Optional.of(as);
-                param.setCmd(as[0]);
-                if(as[0].length() > 2){
-                    Matcher matcher = compile(REG_OPT).matcher(as[0]);
+                FileParam param = new FileParam();
+                String[] s1 = ss1[i], s2 = ss2[i];
+                Optional<String[]> optional = of(s1);
+                param.setCmd(s1[0]);
+                if(s1[0].length() > 2){
+                    Matcher matcher = compile(REG_OPT).matcher(s1[0]);
                     if(matcher.find()){
                         param.setCmd(matcher.group(1));
                         param.setOpt(matcher.group(2));
@@ -353,8 +396,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                             param.setOpt(param.getOpt() + matcher.group(2));
                     }
                 }
-                param.setPattern(compile(replacePlaceHolders(as[1])));
-                param.setSrcPath(get(replacePlaceHolders(as[2])));
+                param.setPattern(compile(s1[1]));
+                param.setSrcPath(get(s1[2]));
                 switch(param.getCmd()){
                     case CMD_FND_SIZ_ASC:
                     case CMD_FND_SIZ_DSC:
@@ -362,7 +405,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_DIR_SIZ_DSC:
                     optional.filter(s->s.length > 3).ifPresent(s->{
                         param.setSizeExpr(s[3]);
-                        matchSizes(param,as[3].toUpperCase());
+                        matchSizes(param,s1[3].toUpperCase());
                     });
                     optional.filter(s->s.length > 4).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[4]);
@@ -391,7 +434,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_DIR_OLY_SIZ_DSC:
                     optional.filter(s->s.length > 3).ifPresent(s->{
                         param.setSizeExpr(s[3]);
-                        matchSizes(param,as[3].toUpperCase());
+                        matchSizes(param,s1[3].toUpperCase());
                     });
                     optional.filter(s->s.length > 4).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[4]);
@@ -405,7 +448,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_DIR_DIF:
                     case CMD_FND_DIR_OLY_SAM:
                     case CMD_FND_DIR_OLY_DIF:
-                    param.setDestPath(get(replacePlaceHolders(as[3])));
+                    param.setDestPath(get(s1[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->{
                         int filesCountLimit = Integer.parseInt(s[4]);
                         param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
@@ -413,25 +456,24 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_REP_FILE_BT:
-                    param.setReplacement(replacePlaceHolders(as[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(replacePlaceHolders(s[4])));
+                    param.setReplacement(s2[3]);
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_REP_FILE_IL:
                     optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONFIG_FILE_IL)));
                     optional.filter(s->s.length > 3).ifPresent(s->{
-                        String s3 = replacePlaceHolders(s[3]);
-                        if(s3.matches(REG_NUMBER)){
+                        if(s[3].matches(REG_NUMBER)){
                             param.setDestPath(get(CONFIG_FILE_IL));
-                            param.setLevel(Integer.parseInt(s3));
-                        }else param.setDestPath(get(s3));
+                            param.setLevel(Integer.parseInt(s[3]));
+                        }else param.setDestPath(get(s[3]));
                     });
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_RENAME:
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_OLY:
-                    param.setReplacement(replacePlaceHolders(as[3]));
+                    param.setReplacement(s1[3]);
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_REN_LOW:
@@ -469,46 +511,39 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_ZIP_INF:
                     case CMD_REG_FILE_GBK:
                     case CMD_REG_FILE_BIG5:
-                    param.setDestPath(get(replacePlaceHolders(as[3])));
+                    param.setDestPath(get(s1[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_ITCHG_UGD:
                     case CMD_ITCHG_RST:
                     case CMD_UPGRADE:
                     case CMD_UGD_DIR:
-                    param.setDestPath(get(replacePlaceHolders(as[3])));
-                    param.setBackupPath(get(replacePlaceHolders(as[4])));
+                    param.setDestPath(get(s1[3]));
+                    param.setBackupPath(get(s1[4]));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_ZIP_DEF:
                     case CMD_ZIP_DIR_DEF:
-                    param.setDestPath(get(replacePlaceHolders(as[3])));
-                    param.setZipName(replacePlaceHolders(as[4]) + EXT_ZIP);
-                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
+                    param.setDestPath(get(s1[3]));
+                    param.setZipName(s1[4] + EXT_ZIP);
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     case CMD_PAK_DEF:
                     case CMD_PAK_DIR_DEF:
-                    param.setDestPath(get(replacePlaceHolders(as[3])));
-                    param.setZipName(replacePlaceHolders(as[4]) + EXT_PAK);
-                    optional.filter(s->s.length > 5).ifPresent(s2->param.setZipLevel(Integer.parseInt(s2[5])));
+                    param.setDestPath(get(s1[3]));
+                    param.setZipName(s1[4] + EXT_PAK);
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     default:
                     CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
                 }
+                fileParams.add(param);
             }catch(Exception e){
                 CS.showError(ERR_ARG_ANLS,new String[]{e.toString()});
             }
-            fileParams.add(param);
-        }
         return fileParams;
-    }
-
-    public static String replacePlaceHolders(String s){
-        SingleValue<String> value = new SingleValue<>(s);
-        SU.rph(value,REG_SPC_SQM,S_SQM).rph(value,REG_SPC_DQM,S_DQM);
-        return value.get();
     }
 
     private static void matchSizes(FileParam param, String size){

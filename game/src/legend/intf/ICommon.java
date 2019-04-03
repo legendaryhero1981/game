@@ -1,8 +1,11 @@
 package legend.intf;
 
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static legend.util.StringUtil.gl;
 
 import java.io.File;
+import java.util.Map;
 
 public interface ICommon{
     int BLOCK_SIZE_FILE = 1 << 20;
@@ -28,6 +31,7 @@ public interface ICommon{
     String S_SPACE = " ";
     String S_SQM = "'";
     String S_DQM = "\"";
+    String S_BQ = "`";
     String S_COMMA = "，";
     String S_SEMICOLON = "；";
     String S_PERIOD = "。";
@@ -102,7 +106,7 @@ public interface ICommon{
     String V_TO = " 到 ";
     String V_BY = " 为 ";
     String OPT_NONE = "";
-    String OPT_INSIDE = "`";
+    String OPT_INSIDE = "~";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";
     String OPT_EXCLUDE_ROOT = "!";
@@ -130,8 +134,10 @@ public interface ICommon{
     String SPRT_RULE = ";;";
     String SPRT_ATOM = "=>";
     String SPRT_ARG = ",,";
+    String SPC_NUL = new String(new byte[] {0});
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
+    String SPC_BQ = "BQ";
     String XML_NOTE_START = "<!--";
     String XML_NOTE_END = "-->";
     String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;
@@ -144,6 +150,8 @@ public interface ICommon{
     String REG_UC_NON_CHS = "(?:[^\\u2e80-\\uffef])";
     String REG_SPC_SQM = "(?i)" + PLACE_HOLDER + SPC_SQM + "=?([1-9]?)" + PLACE_HOLDER;
     String REG_SPC_DQM = "(?i)" + PLACE_HOLDER + SPC_DQM + "=?([1-9]?)" + PLACE_HOLDER;
+    String REG_SPC_BQ = "(?i)" + PLACE_HOLDER + SPC_BQ + "=?([1-9]?)" + PLACE_HOLDER;
+    String REG_QUOTE_BQ = S_BQ + "(.*?)" + S_BQ;
     String REG_SPRT_CMD = SPRT_CMD + "+";
     String REG_SPRT_FIELD = SPRT_FIELD + "+";
     String REG_SPRT_RULE = SPRT_RULE + "+";
@@ -174,4 +182,5 @@ public interface ICommon{
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;
+    Map<String,String> SPH_MAP = ofEntries(entry(REG_SPC_SQM,S_SQM),entry(REG_SPC_DQM,S_DQM),entry(REG_SPC_BQ,S_BQ));
 }

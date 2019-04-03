@@ -13,6 +13,7 @@ public interface IReplaceRule extends ICommon{
     String REG_RULE_REPLACE = "(?i)(" + RULE_REPLACE + ")\\((.+)" + REG_SPRT_ARG + "(.*)\\)";
     String REG_RULE_REGENROW = "(?i)(" + RULE_REGENROW + ")\\((.+)\\)";
     String REG_RULE_ATOM = "(?i)(.+?)(\\((.*)\\))?";
+    String REG_RULE_ATOM_QUOTE = "(?i)(.+?\\().+(\\))";
     String REG_COL_NUM = "([1-9]\\d*)(-([1-9]\\d*))?,?+";
     String REG_COL_REPL_ATOM = PLACE_HOLDER + "([1-9]\\d*)\\.(0|[1-9]\\d*)" + PLACE_HOLDER;
     String REG_COL_REPL_COMP = PLACE_HOLDER + "([1-9]\\d*)" + FLAG_COL_REPL_COMP + "([1-9]\\d*)\\.?([1-9]\\d*)?" + PLACE_HOLDER;

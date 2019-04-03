@@ -2,11 +2,15 @@ package legend.util.rule;
 
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.brph;
+import static legend.util.StringUtil.concat;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +24,8 @@ import legend.util.rule.intf.IReplaceRuleEngine;
 public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<ReplaceRuleEngine>{
     protected Map<Integer,String[][]> atomsCache = new ConcurrentHashMap<>();
     protected Map<Integer,String[][][]> complexesCache = new ConcurrentHashMap<>();
+    protected Deque<String> quotesCache = new ArrayDeque<>();
+    private Matcher mbq = compile(REG_QUOTE_BQ).matcher(S_EMPTY);
     private Set<Integer> colIndexesCache = new HashSet<>();
     private ReplaceRule[] rules;
     private String colSplit;
@@ -51,7 +57,11 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
 
     @Override
     public void refreshRule(String replaceRule){
-        String[] s = replaceRule.split(REG_SPRT_FIELD);
+        quotesCache.clear();
+        mbq.reset(replaceRule);
+        while(mbq.find())
+            quotesCache.add(mbq.group(1));
+        String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELD);
         CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
             colNumber = s[0];
@@ -78,11 +88,19 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             }
             validateRule(rules[i],i + 1,r.length);
         }
+        rule = concat(rules,SPRT_RULE);
         hasTerminationRule = RULE_REGENROW.equals(rules[rules.length - 1].name) ? true : false;
     }
 
+    @Override
+    public String toString(){
+        return rule;
+    }
+
     private boolean refreshData(List<String> datas, String colSplitRegex){
-        clearCache();
+        atomsCache.clear();
+        complexesCache.clear();
+        colIndexesCache.clear();
         if(isEmpty(datas)) return false;
         final int datasSize = datas.size();
         String[] data = datas.toArray(new String[datasSize]);
@@ -178,11 +196,5 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     private void validateRule(ReplaceRule replaceRule, int index, int length){
         CS.showError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
         CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_TMNT},()->RULE_REGENROW.equals(replaceRule.name) && index < length);
-    }
-
-    private void clearCache(){
-        atomsCache.clear();
-        complexesCache.clear();
-        colIndexesCache.clear();
     }
 }
