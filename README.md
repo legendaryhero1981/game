@@ -90,9 +90,11 @@ il -s instance
 
 命令参数：
 
-regex       文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；
+regex       文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；各命令参数均可使用一对反引号来表示一个引用子字符串，程序会将引用字符串当成无特殊含义的普通字符串对待（即特殊字符占位符表达式和参数分隔符字符串等都将被当成普通字符串对待）；引用字符串匹配的正则表达式为：`(.*?)`。
 
 目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：
+
+#BQ=n# 英文反引号（`）占位符表达式，匹配的正则表达式为：(?i)#BQ=?([1-9]?)#；BQ表示反引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个反引号；例如：#BQ#（替换为1个反引号）,#BQ1#（替换为1个反引号）,#BQ=2#（替换为2个反引号）。
 
 #SQM=n# 英文单引号（'）占位符表达式，匹配的正则表达式为：(?i)#SQM=?([1-9]?)#；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。
 
@@ -137,9 +139,11 @@ REGENROW(rstring)          根据rstring重新生成每一行数据，匹配的�
 
 命令选项：
 
-+ 可添加在命令选项末尾，表示输出详细信息；可与!或@或?连用；例如：-fd!+@?。
+~ 可添加在命令选项末尾，表示显示最简明的信息，也不会显示进度条；优先级低于+和*；若未指定且+和*也未指定则默认显示进度条；可与!或@或?连用；例如：-fd~!@?。
 
-* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；可与!或@或?连用；例如：-fd*?@!。
++ 可添加在命令选项末尾，表示输出详细信息；优先级高于~和*；可与!或@或?连用；例如：-fd!+@?。
+
+* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；优先级低于+但高于~；可与!或@或?连用；例如：-fd*?@!。
 
 ! 可添加在命令选项末尾，表示不匹配查询的根目录，可与+或*或@或?连用；例如：file -fd!+ . d:/games 不匹配games目录，只匹配该目录中的任意文件和子目录名称。
 
@@ -175,6 +179,9 @@ file -fdo[+*!@?] regex src [limit] [level]
 file -fs[+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在的同名文件。
 
+file -fsmd5[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容相同的同名文件。
+
 file -fds[+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中存在的同名目录和文件。
 
@@ -183,6 +190,9 @@ file -fdos[+*!@?] regex src dest [limit] [level]
 
 file -fdf[+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中不存在的文件。
+
+file -fdfmd5[+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容不同的同名文件。
 
 file -fddf[+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。
@@ -382,22 +392,28 @@ file -fd+ (?i)strings$ "F:/games/Fallout 4"
 file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
 查询该目录中的第一级目录。
 
-file -fs+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fs+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名文件。
 
-file -fds+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fsmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
+查询D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd目录中的所有文件；且只选取在G:/games/DSParamEditor/gameparam-parambnd目录的同一相对路径中存在且文件内容相同的同名文件。
+
+file -fds+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录和文件。
 
-file -fdos+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fdos+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录。
 
-file -fdf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fdf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的文件。
 
-file -fddf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fdfmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
+查询D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd目录中的所有文件；且只选取在G:/games/DSParamEditor/gameparam-parambnd目录的同一相对路径中存在且文件内容不同的同名文件。
+
+file -fddf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录和文件。
 
-file -fdodf+ "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
+file -fdodf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录。
 
 file -fpa+ . "F:/games/DARK SOULS REMASTERED" 20
