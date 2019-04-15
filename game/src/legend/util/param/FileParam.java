@@ -128,6 +128,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         condition = 0;
         switch(cmd){
             case CMD_FND_SAM:
+            case CMD_FND_SAM_MD5:
             condition |= COMPARE_SAME | IS_QUERY_COMMAND | MATCH_FILE_ONLY;
             break;
             case CMD_FND_DIR_OLY_SAM:
@@ -147,6 +148,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             break;
             case CMD_FIND:
             case CMD_FND_DIF:
+            case CMD_FND_DIF_MD5:
             case CMD_FND_PTH_ABS:
             condition |= IS_QUERY_COMMAND | MATCH_FILE_ONLY;
             break;
@@ -222,16 +224,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MD5_U16:
             case CMD_MD5_L32:
             case CMD_MD5_U32:
-            case CMD_REP_FILE_BT:
-            case CMD_REP_FILE_IL:
-            case CMD_REG_FILE_GBK:
-            case CMD_REG_FILE_BIG5:
+            case CMD_REP_FLE_BT:
+            case CMD_REP_FLE_IL:
+            case CMD_REG_FLE_GBK:
+            case CMD_REG_FLE_BIG5:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
             condition |= ENABLE_CACHE;
-            if(!matchConditions(NEED_CLEAR_CACHE)) condition |= CAN_SAVE_CACHE;
-        }else if(nonEmpty(cache) && !cache.getPathMap().isEmpty() && !matchConditions(IS_QUERY_COMMAND)){
+            if(!meetConditions(NEED_CLEAR_CACHE)) condition |= CAN_SAVE_CACHE;
+        }else if(nonEmpty(cache) && !cache.getPathMap().isEmpty() && !meetConditions(IS_QUERY_COMMAND)){
             condition |= CAN_USE_CACHE;
             pattern = cache.pattern;
             srcPath = cache.srcPath;
@@ -252,11 +254,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         detailOptional = of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
     }
 
-    public boolean matchConditions(long condition){
+    public boolean meetConditions(long condition){
         return condition == (condition & this.condition);
     }
 
-    public boolean matchFilesSize(long size){
+    public boolean meetFilesSize(long size){
         if(minSize <= size && maxSize >= size){
             filesSize.addAndGet(size);
             return true;
@@ -265,7 +267,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void saveCache(FileParam cache){
-        if(matchConditions(CAN_USE_CACHE)){
+        if(meetConditions(CAN_USE_CACHE)){
             cache.getFilesSize().addAndGet(filesSize.addAndGet(cache.getCacheFileSize()));
             cache.getFilesCount().addAndGet(filesCount.addAndGet(cache.getCacheFilesCount()));
             cache.getDirsCount().addAndGet(dirsCount.addAndGet(cache.getCacheDirsCount()));
@@ -274,7 +276,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.getFilesCount().addAndGet(filesCount.get());
             cache.getDirsCount().addAndGet(dirsCount.get());
         }
-        if(matchConditions(CAN_SAVE_CACHE)){
+        if(meetConditions(CAN_SAVE_CACHE)){
             cache.clearCache();
             cache.setPathMap(pathMap);
             cache.setRePathMap(rePathMap);
@@ -287,11 +289,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.setCacheFileSize(filesSize.get());
             cache.setCacheFilesCount(filesCount.get());
             cache.setCacheDirsCount(dirsCount.get());
-        }else if(matchConditions(NEED_CLEAR_CACHE)) cache.clearCache();
+        }else if(meetConditions(NEED_CLEAR_CACHE)) cache.clearCache();
     }
 
     public boolean useCache(FileParam cache){
-        if(matchConditions(CAN_USE_CACHE)){
+        if(meetConditions(CAN_USE_CACHE)){
             clearCache();
             pathMap = cache.getPathMap();
             rePathMap = cache.getRePathMap();
@@ -444,6 +446,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     break;
                     case CMD_FND_SAM:
                     case CMD_FND_DIF:
+                    case CMD_FND_SAM_MD5:
+                    case CMD_FND_DIF_MD5:
                     case CMD_FND_DIR_SAM:
                     case CMD_FND_DIR_DIF:
                     case CMD_FND_DIR_OLY_SAM:
@@ -455,12 +459,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     });
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
-                    case CMD_REP_FILE_BT:
+                    case CMD_REP_FLE_BT:
                     param.setReplacement(s2[3]);
                     optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
-                    case CMD_REP_FILE_IL:
+                    case CMD_REP_FLE_IL:
                     optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONFIG_FILE_IL)));
                     optional.filter(s->s.length > 3).ifPresent(s->{
                         if(s[3].matches(REG_NUMBER)){
@@ -509,8 +513,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
                     case CMD_ZIP_INF:
-                    case CMD_REG_FILE_GBK:
-                    case CMD_REG_FILE_BIG5:
+                    case CMD_REG_FLE_GBK:
+                    case CMD_REG_FLE_BIG5:
                     param.setDestPath(get(s1[3]));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
@@ -603,13 +607,15 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             break;
             case CMD_FND_SAM:
             case CMD_FND_DIF:
+            case CMD_FND_SAM_MD5:
+            case CMD_FND_DIF_MD5:
             case CMD_FND_DIR_SAM:
             case CMD_FND_DIR_DIF:
             case CMD_FND_DIR_OLY_SAM:
             case CMD_FND_DIR_OLY_DIF:
             s += dp + S_SPACE + limit + S_SPACE + level;
             break;
-            case CMD_REP_FILE_BT:
+            case CMD_REP_FLE_BT:
             s += rm + spt + S_SPACE + level;
             break;
             case CMD_RENAME:
@@ -649,9 +655,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR:
             case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
-            case CMD_REP_FILE_IL:
-            case CMD_REG_FILE_GBK:
-            case CMD_REG_FILE_BIG5:
+            case CMD_REP_FLE_IL:
+            case CMD_REG_FLE_GBK:
+            case CMD_REG_FLE_BIG5:
             s += dp + S_SPACE + level;
             break;
             case CMD_ITCHG_UGD:

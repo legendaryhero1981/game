@@ -175,16 +175,16 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_FND_DIR_OLY_DIF:
                 findSortedFilesByCompared(param);
                 break;
-                case CMD_REP_FILE_BT:
+                case CMD_REP_FLE_BT:
                 replaceFilesWithBT(param);
                 break;
-                case CMD_REP_FILE_IL:
+                case CMD_REP_FLE_IL:
                 replaceFilesWithIL(param);
                 break;
-                case CMD_REG_FILE_GBK:
+                case CMD_REG_FLE_GBK:
                 regenFileWithGBK(param);
                 break;
-                case CMD_REG_FILE_BIG5:
+                case CMD_REG_FLE_BIG5:
                 regenFileWithBIG5(param);
                 break;
                 case CMD_RENAME:
@@ -211,6 +211,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_CPY_DIR:
                 case CMD_CPY_DIR_OLY:
                 copyFiles(param);
+                break;
+                case CMD_FND_SAM_MD5:
+                case CMD_FND_DIF_MD5:
+                findFilesByComparedUseMD5(param);
                 break;
                 case CMD_DELETE:
                 case CMD_DEL_DIR:
@@ -246,22 +250,22 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 unzipFiles(param);
                 break;
                 case CMD_GUID_L32:
-                showMd5(param,p->getGuidL32(p));
+                showMD5(param,p->getGuidL32(p));
                 break;
                 case CMD_GUID_U32:
-                showMd5(param,p->getGuidU32(p));
+                showMD5(param,p->getGuidU32(p));
                 break;
                 case CMD_MD5_L16:
-                showMd5(param,p->getMD5L16(p));
+                showMD5(param,p->getMD5L16(p));
                 break;
                 case CMD_MD5_U16:
-                showMd5(param,p->getMD5U16(p));
+                showMD5(param,p->getMD5U16(p));
                 break;
                 case CMD_MD5_L32:
-                showMd5(param,p->getMD5L32(p));
+                showMD5(param,p->getMD5L32(p));
                 break;
                 case CMD_MD5_U32:
-                showMd5(param,p->getMD5U32(p));
+                showMD5(param,p->getMD5U32(p));
                 break;
                 case CMD_JSON_ENC:
                 encodeJson(param);
@@ -424,7 +428,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFilePaths(FileParam param){
-        boolean relative = param.matchConditions(PATH_RELATIVE);
+        boolean relative = param.meetConditions(PATH_RELATIVE);
         param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
             if(relative) CS.sl(param.getRootPath().relativize(p).toString());
             else CS.sl(p.toString());
@@ -437,11 +441,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFileSizes(FileParam param){
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).sorted(new BasicFileAttributesPathComparator(param.matchConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->CS.formatSize(e.getKey().size(),UNIT_TYPE.GB).s(4).sl(e.getValue().toString())));
+        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).sorted(new BasicFileAttributesPathComparator(param.meetConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->CS.formatSize(e.getKey().size(),UNIT_TYPE.GB).s(4).sl(e.getValue().toString())));
     }
 
     private static void findSortedFilesByCompared(FileParam param){
-        boolean same = param.matchConditions(COMPARE_SAME);
+        boolean same = param.meetConditions(COMPARE_SAME);
         ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             BasicFileAttributes a = e.getKey();
@@ -463,6 +467,24 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         findSortedFiles(param);
     }
 
+    private static void findFilesByComparedUseMD5(FileParam param){
+        boolean same = param.meetConditions(COMPARE_SAME);
+        ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
+        param.getPathMap().entrySet().parallelStream().forEach(e->{
+            BasicFileAttributes a = e.getKey();
+            Path p1 = e.getValue();
+            Path p2 = param.getDestPath().resolve(param.getSrcPath().relativize(p1));
+            if(p2.toFile().isFile() && (same && getMD5L32(p1).equals(getMD5L32(p2)) || !same && !getMD5L32(p1).equals(getMD5L32(p2)))) pathMap.put(a,p1);
+            else{
+                param.getFilesCount().addAndGet(-1);
+                param.getFilesSize().addAndGet(a.size() * -1);
+            }
+        });
+        param.getPathMap().clear();
+        param.getPathMap().putAll(pathMap);
+        findSortedFiles(param);
+    }
+
     private static void findSortedDirSizes(FileParam param){
         param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->param.getSizeMap().put(e.getValue(),e.getKey().size()));
         param.getPathList().parallelStream().forEach(p->{
@@ -473,9 +495,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             cachePaths(fp);
             fp.clearCache();
             long size = fp.getFilesSize().get();
-            if(param.matchFilesSize(size)) param.getSizeMap().put(p,size);
+            if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
         });
-        param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.matchConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
+        param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
             Path path = e.getKey();
             if(path.toFile().isFile()) CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_FLE + gs(4) + path.toString());
             else CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_DIR + gs(4) + path.toString());
@@ -745,7 +767,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
-        boolean upgrade = param.matchConditions(INTERCHANGE_UPGRADE);
+        boolean upgrade = param.meetConditions(INTERCHANGE_UPGRADE);
         param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
@@ -819,7 +841,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void unzipFiles(FileParam param){
-        boolean unzip = param.matchConditions(ZIP_UNZIP);
+        boolean unzip = param.meetConditions(ZIP_UNZIP);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             SingleValue<ZipEntry> value = new SingleValue<>(null);
@@ -864,7 +886,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
-    private static void showMd5(FileParam param, Function<Path,String> function){
+    private static void showMD5(FileParam param, Function<Path,String> function){
         param.getPathMap().values().parallelStream().forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.sl(p.toString() + gs(4) + function.apply(p)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
@@ -1008,7 +1030,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void cacheRepaths(FileParam param){
-        if(!param.matchConditions(MATCH_FILE_ONLY) && param.matchConditions(NEED_REPATH)) param.getPathList().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
+        if(!param.meetConditions(MATCH_FILE_ONLY) && param.meetConditions(NEED_REPATH)) param.getPathList().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
     }
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
@@ -1017,10 +1039,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
         private PathMatcher(FileParam param){
             this.param = param;
-            matchFileOnly = param.matchConditions(MATCH_FILE_ONLY);
-            matchDirOnly = param.matchConditions(MATCH_DIR_ONLY);
-            excludeRoot = param.matchConditions(EXCLUDE_ROOT);
-            ignoreRegex = param.matchConditions(IGNORE_REGEX);
+            matchFileOnly = param.meetConditions(MATCH_FILE_ONLY);
+            matchDirOnly = param.meetConditions(MATCH_DIR_ONLY);
+            excludeRoot = param.meetConditions(EXCLUDE_ROOT);
+            ignoreRegex = param.meetConditions(IGNORE_REGEX);
         }
 
         @Override
@@ -1035,8 +1057,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find = find && 0 == a.size()) param.getPathMap().put(a,p);
                     break;
                     default:
-                    find = find && param.matchFilesSize(a.size());
-                    if(find || (find = matchPath(p) && param.matchFilesSize(a.size()))) param.getPathMap().put(a,p);
+                    find = find && param.meetFilesSize(a.size());
+                    if(find || (find = matchPath(p) && param.meetFilesSize(a.size()))) param.getPathMap().put(a,p);
                 }
             }else if(a.isDirectory()){
                 if(matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
