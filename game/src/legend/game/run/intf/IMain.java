@@ -93,7 +93,7 @@ public interface IMain extends ICommon{
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
     String CMD_VBS_SC_WD = "shortcut.WorkingDirectory=\"" + PH_ARG0 + "\"";
     String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
-    String CMD_VBS_SC_WS = "shortcut.WindowStyle=1";
+    String CMD_VBS_SC_WS = "shortcut.WindowStyle=7";
     String CMD_VBS_SC_SAVE = "shortcut.Save";
     String CMD_BAT_CHCP_UTF8 = "chcp 65001";
     String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARG0 + "'\" delete";
