@@ -11,7 +11,7 @@ public interface IMain extends ICommon{
     String RUN_FILE_CONFIG = "./run.xml";
     String EXE_JAVA = "java.exe";
     String EXE_RUN = "run.exe";
-    String BAT_RUN = "run.bat";
+    String BAT_RUN = "run-javaw.bat";
     String MODULE_RUN = "legend/legend.game.run.Main";
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
