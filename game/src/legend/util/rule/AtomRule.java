@@ -1,5 +1,6 @@
 package legend.util.rule;
 
+import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.nonEmpty;
@@ -34,7 +35,7 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
                     sb.delete(0,sb.length());
                     mnul.reset(args[i]);
                     while(mnul.find() && !engine.quotesCache.isEmpty())
-                        mnul.appendReplacement(sb,engine.quotesCache.remove());
+                        mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
                     args[i] = mnul.appendTail(sb).toString();
                 }
                 rule = rule.replaceFirst(REG_RULE_ATOM_QUOTE,"$1" + concat(args,SPRT_ARG) + "$2");
