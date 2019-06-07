@@ -10,8 +10,8 @@ import java.util.regex.Matcher;
 import legend.intf.IValue;
 
 public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
-    protected AtomRule(ReplaceRuleEngine engine, int index, String rule){
-        super(engine,index,rule);
+    protected AtomRule(ReplaceRuleEngine engine, String rule){
+        super(engine,rule);
     }
 
     @Override
@@ -45,6 +45,6 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
 
     @Override
     public AtomRule cloneValue(){
-        return new AtomRule(engine,index,rule);
+        return new AtomRule(engine,rule);
     }
 }

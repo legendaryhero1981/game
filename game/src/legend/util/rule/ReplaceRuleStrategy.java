@@ -2,7 +2,6 @@ package legend.util.rule;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
-import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.limitValue;
@@ -110,7 +109,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             String[] args = rule.args;
             if(isEmpty(args)) return new String[]{data};
             else if(1 == args.length) return new String[]{data.replaceAll(args[0],"")};
-            else return new String[]{data.replaceAll(args[0],quoteReplacement(args[1]))};
+            else return new String[]{data.replaceAll(args[0],args[1])};
         }));
     }
 

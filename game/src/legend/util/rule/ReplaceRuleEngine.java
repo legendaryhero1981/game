@@ -1,5 +1,6 @@
 package legend.util.rule;
 
+import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.brph;
@@ -60,7 +61,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         quotesCache.clear();
         mbq.reset(replaceRule);
         while(mbq.find())
-            quotesCache.add(mbq.group(1));
+            quotesCache.add(quoteReplacement(mbq.group(1)));
         String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELD);
         CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
@@ -77,13 +78,13 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         atomsSize = complexesSize = 0;
         for(int i = 0;i < r.length;i++){
             if(r[i].contains(SPRT_ATOM)){
-                ComplexRule complexRule = new ComplexRule(this,i + 1,r[i]);
+                ComplexRule complexRule = new ComplexRule(this,r[i]);
                 for(int j = 0;j < complexRule.atomRules.length;j++)
                     validateRule(complexRule.atomRules[j],j,complexRule.atomRules.length);
                 rules[i] = complexRule;
                 complexesSize++;
             }else{
-                rules[i] = new AtomRule(this,i + 1,r[i]);
+                rules[i] = new AtomRule(this,r[i]);
                 atomsSize++;
             }
             validateRule(rules[i],i + 1,r.length);

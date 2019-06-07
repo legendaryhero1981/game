@@ -10,11 +10,9 @@ public abstract class ReplaceRule implements IReplaceRule{
     protected String[] args;
     protected String rule;
     protected String name;
-    protected int index;
 
-    protected ReplaceRule(ReplaceRuleEngine engine, int index, String rule){
+    protected ReplaceRule(ReplaceRuleEngine engine, String rule){
         this.engine = engine;
-        this.index = index;
         refreshRule(rule);
     }
 

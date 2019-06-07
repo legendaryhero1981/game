@@ -2,6 +2,7 @@ package legend.util.param;
 
 import static java.nio.file.Paths.get;
 import static java.util.Optional.of;
+import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
@@ -315,6 +316,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public static List<FileParam> analyzeParam(String[] args){
+        // 验证参数格式
         CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa1 = new String[args.length][], aa2 = new String[args.length][];
         aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMD);
@@ -325,13 +327,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             mph.reset(aa1[0][i]);
             CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
+        // 将参数格式字符串解析成参数数组
         Deque<String> quotes1 = new ArrayDeque<>(), quotes2 = new ArrayDeque<>();
         Matcher mbq = compile(REG_QUOTE_BQ).matcher(S_EMPTY);
         for(int i = 1;i < args.length;i++){
             mbq.reset(args[i]);
             while(mbq.find()){
-                quotes1.add(mbq.group(1));
-                quotes2.add(mbq.group());
+                quotes1.add(quoteReplacement(mbq.group(1)));
+                quotes2.add(quoteReplacement(mbq.group()));
             }
             String s = mbq.replaceAll(SPC_NUL);
             aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMD);
@@ -341,35 +344,24 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         }
         Matcher mnul = compile(SPC_NUL).matcher(S_EMPTY);
         StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
-        for(int i = 0;i < aa1.length;i++){
-            String s1 = aa1[i][0], s2 = aa2[i][0];
-            if(0 < i){
-                sb1.delete(0,sb1.length());
-                mnul.reset(aa1[i][0]);
-                while(mnul.find() && !quotes1.isEmpty())
-                    mnul.appendReplacement(sb1,quotes1.remove());
-                s1 = aa1[i][0] = mnul.appendTail(sb1).toString();
-                sb2.delete(0,sb2.length());
-                mnul.reset(aa2[i][0]);
-                while(mnul.find() && !quotes2.isEmpty())
-                    mnul.appendReplacement(sb2,quotes2.remove());
-                s2 = aa2[i][0] = mnul.appendTail(sb2).toString();
+        for(int i = 0;i < aa1.length;i++)
+            for(int j = 0;j < aa1[i].length;j++){
+                if(0 < i){
+                    sb1.delete(0,sb1.length());
+                    mnul.reset(aa1[i][j]);
+                    while(mnul.find() && !quotes1.isEmpty())
+                        mnul.appendReplacement(sb1,quotes1.remove());
+                    aa1[i][j] = mnul.appendTail(sb1).toString();
+                    sb2.delete(0,sb2.length());
+                    mnul.reset(aa2[i][j]);
+                    while(mnul.find() && !quotes2.isEmpty())
+                        mnul.appendReplacement(sb2,quotes2.remove());
+                    aa2[i][j] = mnul.appendTail(sb2).toString();
+                }
+                if(0 < j && mrpt.reset(aa1[i][j]).find()) aa1[i][j] = aa1[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+                if(0 < j && mrpt.reset(aa2[i][j]).find()) aa2[i][j] = aa2[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
             }
-            for(int j = 1;j < aa1[0].length;j++){
-                sb1.delete(0,sb1.length());
-                mnul.reset(aa1[i][j]);
-                while(mnul.find() && !quotes1.isEmpty())
-                    mnul.appendReplacement(sb1,quotes1.remove());
-                if(mrpt.reset(mnul.appendTail(sb1).toString()).find()) aa1[i][j] = s1.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
-                else s1 = aa1[i][j];
-                sb2.delete(0,sb2.length());
-                mnul.reset(aa2[i][j]);
-                while(mnul.find() && !quotes2.isEmpty())
-                    mnul.appendReplacement(sb2,quotes2.remove());
-                if(mrpt.reset(mnul.appendTail(sb2).toString()).find()) aa2[i][j] = s2.replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
-                else s2 = aa2[i][j];
-            }
-        }
+        // 去除所有占位符参数，重新生成每条子命令的有效参数数组。
         String[][] ss1 = new String[aa1[0].length][], ss2 = new String[aa2[0].length][];
         for(int i = 0,j,k;i < aa1[0].length;i++){
             int[] n = new int[aa1.length];
@@ -382,6 +374,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                 ss2[i][k] = aa2[n[k]][i];
             }
         }
+        // 生成所有子命令的参数对象集合，子命令与参数对象一一对应。
         List<FileParam> fileParams = new ArrayList<>(ss1.length);
         for(int i = 0;i < ss1.length;i++)
             try{

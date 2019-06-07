@@ -8,8 +8,8 @@ import legend.intf.IValue;
 public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
     protected AtomRule[] atomRules;
 
-    protected ComplexRule(ReplaceRuleEngine engine, int index, String rule){
-        super(engine,index,rule);
+    protected ComplexRule(ReplaceRuleEngine engine, String rule){
+        super(engine,rule);
         name = SPRT_ATOM;
         strategy = provideStrategy(name);
     }
@@ -24,7 +24,7 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
         String[] rules = rule.split(SPRT_ATOM);
         atomRules = new AtomRule[rules.length];
         for(int i = 0;i < rules.length;i++){
-            AtomRule atomRule = new AtomRule(engine,i + 1,rules[i]);
+            AtomRule atomRule = new AtomRule(engine,rules[i]);
             atomRules[i] = atomRule;
         }
         this.rule = concat(atomRules,SPRT_ATOM);
@@ -32,6 +32,6 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
 
     @Override
     public ComplexRule cloneValue(){
-        return new ComplexRule(engine,index,rule);
+        return new ComplexRule(engine,rule);
     }
 }
