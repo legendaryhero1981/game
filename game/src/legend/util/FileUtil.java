@@ -363,7 +363,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 bytes[i] = bom[i];
             r = inputStream.read(bytes,3,BLOCK_SIZE_FILE) + 3;
             do{
-                for(i = 0;matchCharsetWithUTF8(bytes,i,bytesCount) && i < r - 3;i += bytesCount.get())
+                for(i = 0;i < r - 3 && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.get())
                     if(1 < bytesCount.get()) match = true;
             }while(!match && -1 != (r = inputStream.read(bytes)));
             if(r - 3 > i) return charset;
