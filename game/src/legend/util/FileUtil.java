@@ -549,6 +549,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                             if(l == i) return;
                             for(;0 <= i && 0 <= j && queryRegexCache.get(i).matcher(datas.get(j)).find();i--,j--);
                             if(-1 != i) return;
+                            j += l;
                             if(MODE_REPL.equals(code.getProcessingMode())){
                                 List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
                                 for(l = 0,i = codeRegexCache.size() - 1;0 <= i && 0 <= j && SIZE_IL_PARTITION * 2 > p - j;j--)
