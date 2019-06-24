@@ -6,6 +6,7 @@ open module legend{
     exports legend;
     exports legend.intf;
     exports legend.util;
+    exports legend.util.chardet;
     exports legend.util.intf;
     exports legend.util.entity;
     exports legend.util.param;

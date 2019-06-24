@@ -54,22 +54,17 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
     }
 
     private static boolean matchCharsetWithUTF8(byte[] bytes, int index, SingleValue<Integer> bytesCount){
-        if(0 <= bytes[index]){
-            bytesCount.set(1);
-            return true;
-        }else if(matchRange(bytes[index],-64,-33)){
-            bytesCount.set(2);
-            if(matchRange(bytes[index + 1],-128,-65)) return true;
-            return false;
+        if(0 <= bytes[index]) bytesCount.set(1);
+        else if(matchRange(bytes[index],-64,-33)){
+            if(matchRange(bytes[index + 1],-128,-65)) bytesCount.set(2);
+            else bytesCount.set(0);
         }else if(matchRange(bytes[index],-32,-17)){
-            bytesCount.set(3);
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) return true;
-            return false;
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) bytesCount.set(3);
+            else bytesCount.set(0);
         }else if(matchRange(bytes[index],-16,-9)){
-            bytesCount.set(4);
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) return true;
-            return false;
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) bytesCount.set(4);
+            else bytesCount.set(0);
         }else bytesCount.set(0);
-        return false;
+        return 0 < bytesCount.get();
     }
 }
