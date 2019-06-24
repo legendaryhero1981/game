@@ -6,13 +6,13 @@ import static java.nio.file.Files.deleteIfExists;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.find;
 import static java.nio.file.Files.move;
-import static java.nio.file.Files.newInputStream;
 import static java.nio.file.Files.newOutputStream;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
+import static legend.util.CharsetDetectorUtil.detectorFileCharset;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.JaxbUtil.convertToJavaBean;
 import static legend.util.JaxbUtil.convertToXml;
@@ -33,7 +33,6 @@ import static legend.util.TimeUtil.getTotalDurationString;
 import static legend.util.TimeUtil.incTotalDuration;
 import static legend.util.TimeUtil.resetTime;
 import static legend.util.ValueUtil.isEmpty;
-import static legend.util.ValueUtil.matchRange;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.analyzeParam;
 import static legend.util.rule.ReplaceRuleEngine.ProvideRuleEngine;
@@ -80,6 +79,7 @@ import java.util.zip.ZipOutputStream;
 
 import legend.util.entity.ILCode;
 import legend.util.entity.ILCodes;
+import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
@@ -349,30 +349,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    public static String analyzeCharsetEncode(Path path, String charset){
-        try(InputStream inputStream = newInputStream(path)){
-            byte[] bom = new byte[3];
-            int i, r = inputStream.read(bom);
-            if(-1 == r || BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return CHARSET_UTF8;
-            else if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return CHARSET_UTF16LE;
-            else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return CHARSET_UTF16BE;
-            boolean match = false;
-            SingleValue<Integer> bytesCount = new SingleValue<>(0);
-            byte[] bytes = new byte[BLOCK_SIZE_FILE + 3];
-            for(i = 0;i < bom.length;i++)
-                bytes[i] = bom[i];
-            r = inputStream.read(bytes,3,BLOCK_SIZE_FILE) + 3;
-            do{
-                for(i = 0;i < r - 3 && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.get())
-                    if(1 < bytesCount.get()) match = true;
-            }while(!match && -1 != (r = inputStream.read(bytes)));
-            if(r - 3 > i) return charset;
-        }catch(IOException e){
-            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
-        }
-        return CHARSET_UTF8;
-    }
-
     public static void deleteFile(Path path){
         try{
             path.toFile().setWritable(true,true);
@@ -602,7 +578,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
-            List<String> datas = readFile(path,analyzeCharsetEncode(path,CHARSET_GBK));
+            List<String> datas = readFile(path,detectorFileCharset(path,Language.SIMPLIFIED_CHINESE));
             datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
@@ -628,7 +604,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
-            List<String> datas = readFile(path,analyzeCharsetEncode(path,CHARSET_BIG5));
+            List<String> datas = readFile(path,detectorFileCharset(path,Language.TRADITIONAL_CHINESE));
             datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
@@ -908,25 +884,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getCmdOptional().ifPresent(c->formatJson(p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
-    }
-
-    private static boolean matchCharsetWithUTF8(byte[] bytes, int index, SingleValue<Integer> bytesCount){
-        if(0 <= bytes[index]){
-            bytesCount.set(1);
-            return true;
-        }else if(matchRange(bytes[index],-64,-33)){
-            bytesCount.set(2);
-            if(matchRange(bytes[index + 1],-128,-65)) return true;
-            return false;
-        }else if(matchRange(bytes[index],-32,-17)){
-            bytesCount.set(3);
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) return true;
-            return false;
-        }else if(matchRange(bytes[index],-16,-9)){
-            bytesCount.set(4);
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) return true;
-            return false;
-        }else return false;
     }
 
     private static void dealMismatch(FileParam param, StringBuffer stringBuffer, String string){
