@@ -118,7 +118,7 @@ sizeExpr    文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([
 
 split       二维表格式文件中的列分隔符正则表达式，例如：[,;| \t]+；不指定则取默认值[ \t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。
 
-replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式##]规则1(参数列表);;[规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则REGENROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(-([1-9]\d*))?,?+；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；
+replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项-rfcs）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式##]规则1(参数列表);;[规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则REGENROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(-([1-9]\d*))?,?+；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；
 
 目前支持的所有原子规则（英文字母不区分大小写）如下：
 
@@ -285,10 +285,13 @@ file -rfil[+*!@?] regex src [dest] [level]
 根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件./file-il.xml自动替换src中所有文件名匹配regex的文件内容，若配置文件./file-il.xml不存在，则会自动生成一个与该文件同名且同格式的模版文件。
 
 file -rfgbk[+*!@?] regex src dest [level]
-根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF_16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
+根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
 
 file -rfbig5[+*!@?] regex src dest [level]
-根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF_16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
+根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
+
+file -rfcs[+*!@?] regex src replacement [level]
+根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：GBK，BIG5，UTF8（不带BOM），UTF-8（带BOM），UTF-16LE（带BOM），UTF-16BE（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。
 
 file -c[+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
@@ -514,19 +517,22 @@ file -rfil* (?i)\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
 根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
 
 file -rfgbk* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
-提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF_16LE编码格式保存到文件 .../font_schinese.txt。
+提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件 .../font_schinese.txt。
 
 file -rfbig5* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
-提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF_16LE编码格式保存到文件 .../font_tchinese.txt。
+提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
+
+file -rfcs* (?i)\.txt$ E:/Decompile/DLL-ildasm gbk
+先查询（作用同-f）再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。
+先查询（作用同-f）再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
 
 file -cd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
 
 file -cdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
 
 file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 先查询（作用同-f）再删除该目录中所有匹配文件。
@@ -547,13 +553,13 @@ file -ddon . "F:/games/FINAL FANTASY XV"
 先查询（作用同-fd）再删除该目录中所有匹配的空目录。
 
 file -m (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询（作用同-f）再将 .../Strings中所有匹配文件移动到 .../备份 目录中。
+先查询（作用同-f）再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。
 
 file -md (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
 
 file -mdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
+先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
 
 file -iu . "F:/games/Resident Evil 4/修改/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/备份/BIO4"
 先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
@@ -866,6 +872,3 @@ poe -e (?i)\..*bundle$ "F:/games/Pillars of Eternity II/PillarsOfEternityII_Data
 poe -g Great_Sword_WarGod
 获得自定义MOD对象名称Great_Sword_WarGod的GUID字符串。
 ```
-
-
-
