@@ -186,7 +186,7 @@ public final class ConsoleUtil implements IConsoleUtil{
 
         public UNIT_TYPE matchType(String type){
             if(isNull(type)) return UNIT_TYPE.NON;
-            switch(type){
+            switch(type.toUpperCase()){
                 case SIZE_B:
                 return UNIT_TYPE.B;
                 case SIZE_KB:

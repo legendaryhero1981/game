@@ -81,6 +81,7 @@ public interface IFileUtil extends ICommon{
     String CMD_REP_FLE_IL = "-rfil";
     String CMD_REG_FLE_GBK = "-rfgbk";
     String CMD_REG_FLE_BIG5 = "-rfbig5";
+    String CMD_REG_FLE_CS = "-rfcs";
     String CMD_COPY = "-c";
     String CMD_CPY_DIR = "-cd";
     String CMD_CPY_DIR_OLY = "-cdo";
@@ -149,7 +150,7 @@ public interface IFileUtil extends ICommon{
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + RULE_REGENROW + "；各事务性规则通过" + SPRT_RULE + "分隔，复合规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
+    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + RULE_REGENROW + "；各事务性规则通过" + SPRT_RULE + "分隔，复合规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
     + "目前支持的所有原子规则（英文字母不区分大小写）如下：" + gl(2)
     + RULE_LOWER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数qstring，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_UPPER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数qstring，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
@@ -213,6 +214,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REP_FLE_IL + OPTIONS + "regex src [dest] [level]" + gl(1) + "根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件" + CONFIG_FILE_IL + "自动替换src中所有文件名匹配regex的文件内容，若配置文件" + CONFIG_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
     + CMD + CMD_REG_FLE_GBK + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。" + gl(2)
     + CMD + CMD_REG_FLE_BIG5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
     + CMD + CMD_COPY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
@@ -294,20 +296,21 @@ public interface IFileUtil extends ICommon{
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
     + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
     + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REG_FLE_GBK + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_BIG5 + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
-    + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 中所有匹配文件复制到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_REG_FLE_GBK + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_BIG5 + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + "* (?i)\\.txt$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询（作用同-f）再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
+    + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_DELETE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询（作用同-f）再删除该目录中所有匹配文件。" + gl(2)
     + CMD + CMD_DEL_DIR + " \"\\Ade$|\\Afr$|\\Aru$|\\Aus$\" \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配文件和目录及其中所有文件。" + gl(2)
     + CMD + CMD_DEL_DIR_OLY + " \"\\Ade$|\\Afr$|\\Aru$|\\Aus$\" \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配的目录及其中所有文件。" + gl(2)
     + CMD + CMD_DEL_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配的空文件。" + gl(2)
     + CMD + CMD_DEL_DIR_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。" + gl(2)
     + CMD + CMD_DEL_DIR_OLY_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询（作用同-fd）再删除该目录中所有匹配的空目录。" + gl(2)
-    + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings中所有匹配文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 中所有匹配的目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-f）再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
     + CMD + CMD_ITCHG_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
     + CMD + CMD_ITCHG_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询（作用同-f）获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
     + CMD + CMD_UPGRADE + " \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询（作用同-f）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)

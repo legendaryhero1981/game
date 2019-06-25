@@ -21,7 +21,7 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
         try(InputStream inputStream = newInputStream(path)){
             byte[] bom = new byte[3];
             int i, r = inputStream.read(bom);
-            if(-1 == r || BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return CHARSET_UTF8;
+            if(-1 == r || BOM_UTF8[0] == bom[0] && BOM_UTF8[1] == bom[1] && BOM_UTF8[2] == bom[2]) return CHARSET_UTF8_BOM;
             else if(BOM_UTF16LE[0] == bom[0] && BOM_UTF16LE[1] == bom[1]) return CHARSET_UTF16LE;
             else if(BOM_UTF16BE[0] == bom[0] && BOM_UTF16BE[1] == bom[1]) return CHARSET_UTF16BE;
             byte[] bytes = new byte[BLOCK_SIZE_FILE + 3];

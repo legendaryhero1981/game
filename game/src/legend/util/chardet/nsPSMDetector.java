@@ -96,14 +96,13 @@ public abstract class nsPSMDetector{
                     }
                 }else mState[j++] = st;
             }
-            if(mItems < 2){
-                if(1 == mItems) report(mVerifier[mItemIdx[0]].charset());
+            if(1 == mItems){
+                report(mVerifier[mItemIdx[0]].charset());
                 return mDone = true;
-            }else{
-                int nonUCS2Num = 0;
-                int nonUCS2Idx = 0;
+            }else if(1 < mItems){
+                int nonUCS2Num = 0, nonUCS2Idx = 0;
                 for(j = 0;j < mItems;j++)
-                    if((!(mVerifier[mItemIdx[j]].isUCS2())) && (!(mVerifier[mItemIdx[j]].isUCS2()))){
+                    if(!mVerifier[mItemIdx[j]].isUCS2()){
                         nonUCS2Num++;
                         nonUCS2Idx = j;
                     }
@@ -136,26 +135,24 @@ public abstract class nsPSMDetector{
     }
 
     public void sample(byte[] aBuf, int aLen, boolean aLastChance){
-        int possibleCandidateNum = 0;
-        int j;
-        int eucNum = 0;
-        for(j = 0;j < mItems;j++){
-            if(null != mStatisticsData[mItemIdx[j]]) eucNum++;
-            if((!mVerifier[mItemIdx[j]].isUCS2()) && (!(mVerifier[mItemIdx[j]].charset()).equals("GB18030"))) possibleCandidateNum++;
+        int i, eucNum = 0, possibleCandidateNum = 0;
+        for(i = 0;i < mItems;i++){
+            if(null != mStatisticsData[mItemIdx[i]]) eucNum++;
+            if(!mVerifier[mItemIdx[i]].isUCS2() && !mVerifier[mItemIdx[i]].charset().equals("GB18030")) possibleCandidateNum++;
         }
-        if(mRunSampler = (eucNum > 1)){
+        if(mRunSampler = eucNum > 1){
             mRunSampler = mSampler.Sample(aBuf,aLen);
-            if(((aLastChance && mSampler.GetSomeData()) || mSampler.EnoughData()) && (eucNum == possibleCandidateNum)){
+            if((aLastChance && mSampler.GetSomeData() || mSampler.EnoughData()) && eucNum == possibleCandidateNum){
                 mSampler.CalFreq();
                 int bestIdx = -1;
                 int eucCnt = 0;
                 float bestScore = 0.0f;
-                for(j = 0;j < mItems;j++){
-                    if((null != mStatisticsData[mItemIdx[j]]) && (!(mVerifier[mItemIdx[j]].charset()).equals("Big5"))){
-                        float score = mSampler.GetScore(mStatisticsData[mItemIdx[j]].mFirstByteFreq(),mStatisticsData[mItemIdx[j]].mFirstByteWeight(),mStatisticsData[mItemIdx[j]].mSecondByteFreq(),mStatisticsData[mItemIdx[j]].mSecondByteWeight());
+                for(i = 0;i < mItems;i++){
+                    if(null != mStatisticsData[mItemIdx[i]] && !mVerifier[mItemIdx[i]].charset().equals("Big5")){
+                        float score = mSampler.GetScore(mStatisticsData[mItemIdx[i]].mFirstByteFreq(),mStatisticsData[mItemIdx[i]].mFirstByteWeight(),mStatisticsData[mItemIdx[i]].mSecondByteFreq(),mStatisticsData[mItemIdx[i]].mSecondByteWeight());
                         if((0 == eucCnt++) || (bestScore > score)){
                             bestScore = score;
-                            bestIdx = j;
+                            bestIdx = i;
                         }
                     }
                 }

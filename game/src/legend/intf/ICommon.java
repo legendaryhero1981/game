@@ -21,8 +21,9 @@ public interface ICommon{
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
     String CHARSET_UTF8 = "UTF8";
-    String CHARSET_UTF16LE = "UTF_16LE";
-    String CHARSET_UTF16BE = "UTF_16BE";
+    String CHARSET_UTF8_BOM = "UTF-8";
+    String CHARSET_UTF16LE = "UTF-16LE";
+    String CHARSET_UTF16BE = "UTF-16BE";
     String EXT_IL = ".il";
     String EXT_PAK = ".pak";
     String EXT_XML = ".xml";
@@ -99,13 +100,14 @@ public interface ICommon{
     String V_CRT = "创建";
     String V_CPRS = "压缩";
     String V_DCPRS = "解压缩";
+    String V_TSC = "转码";
     String V_ENC = "编码";
     String V_DEC = "解码";
     String V_CLS = "关闭";
     String V_IS = "是";
     String V_TO = " 到 ";
     String V_BY = " 为 ";
-    String OPT_NONE = "";
+    String OPT_NONE = S_EMPTY;
     String OPT_INSIDE = "~";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";

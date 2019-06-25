@@ -7,8 +7,10 @@ import static java.nio.file.Files.exists;
 import static java.nio.file.Files.find;
 import static java.nio.file.Files.move;
 import static java.nio.file.Files.newOutputStream;
+import static java.nio.file.Files.readAllBytes;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
+import static java.nio.file.Files.writeString;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
@@ -187,6 +189,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_REG_FLE_BIG5:
                 regenFileWithBIG5(param);
                 break;
+                case CMD_REG_FLE_CS:
+                regenFileCharset(param);
+                break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
                 case CMD_REN_DIR_OLY:
@@ -276,7 +281,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.saveCache(CACHE);
         }catch(Exception e){
             CS.sl(gsph(ERR_CMD_EXEC,e.toString()));
-            e.printStackTrace();
         }finally{
             param.getDetailOptional().ifPresent(s->CS.l(1));
         }
@@ -349,6 +353,34 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
+    public static void writeFileForTranscoding(Path path, String charsetDest){
+        try{
+            byte[] bytes = readAllBytes(path);
+            int offset = 0, length = bytes.length;
+            if(1 > length) return;
+            String charsetSrc = detectorFileCharset(path,Language.CHINESE);
+            switch(charsetSrc){
+                case CHARSET_UTF8_BOM:
+                if(4 > length) return;
+                offset = 3;
+                length -= offset;
+                break;
+                case CHARSET_UTF16LE:
+                case CHARSET_UTF16BE:
+                if(3 > length) return;
+                offset = 2;
+                length -= offset;
+            }
+            String data = new String(bytes,offset,length,charsetSrc);
+            if(CHARSET_UTF8_BOM.equalsIgnoreCase(charsetDest)) writeFileWithUTF8Bom(path,data);
+            else if(CHARSET_UTF16LE.equalsIgnoreCase(charsetDest)) writeFileWithUTF16LEBom(path,data);
+            else if(CHARSET_UTF16BE.equalsIgnoreCase(charsetDest)) writeFileWithUTF16BEBom(path,data);
+            else writeString(path,data,forName(charsetDest));
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
+        }
+    }
+
     public static void deleteFile(Path path){
         try{
             path.toFile().setWritable(true,true);
@@ -404,7 +436,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFilePaths(FileParam param){
-        boolean relative = param.meetConditions(PATH_RELATIVE);
+        boolean relative = param.meetCondition(PATH_RELATIVE);
         param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
             if(relative) CS.sl(param.getRootPath().relativize(p).toString());
             else CS.sl(p.toString());
@@ -417,11 +449,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFileSizes(FileParam param){
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).sorted(new BasicFileAttributesPathComparator(param.meetConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->CS.formatSize(e.getKey().size(),UNIT_TYPE.GB).s(4).sl(e.getValue().toString())));
+        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).sorted(new BasicFileAttributesPathComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->CS.formatSize(e.getKey().size(),UNIT_TYPE.GB).s(4).sl(e.getValue().toString())));
     }
 
     private static void findSortedFilesByCompared(FileParam param){
-        boolean same = param.meetConditions(COMPARE_SAME);
+        boolean same = param.meetCondition(COMPARE_SAME);
         ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             BasicFileAttributes a = e.getKey();
@@ -444,7 +476,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findFilesByComparedUseMD5(FileParam param){
-        boolean same = param.meetConditions(COMPARE_SAME);
+        boolean same = param.meetCondition(COMPARE_SAME);
         ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             BasicFileAttributes a = e.getKey();
@@ -473,7 +505,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             long size = fp.getFilesSize().get();
             if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
         });
-        param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetConditions(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
+        param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
             Path path = e.getKey();
             if(path.toFile().isFile()) CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_FLE + gs(4) + path.toString());
             else CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_DIR + gs(4) + path.toString());
@@ -625,6 +657,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getCmdOptional().ifPresent(c->writeFileWithUTF16LEBom(param.getDestPath(),result));
     }
 
+    private static void regenFileCharset(FileParam param){
+        param.getPathMap().entrySet().parallelStream().forEach(entry->{
+            Path path = entry.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_TSC},new FileSizeMatcher(entry.getKey()),path));
+            param.getCmdOptional().ifPresent(c->writeFileForTranscoding(path,param.getReplacement()));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+    }
+
     private static void renameFiles(FileParam param){
         renameFile(param,name->param.getPattern().matcher(name).replaceAll(param.getReplacement()));
     }
@@ -744,7 +785,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
-        boolean upgrade = param.meetConditions(INTERCHANGE_UPGRADE);
+        boolean upgrade = param.meetCondition(INTERCHANGE_UPGRADE);
         param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
@@ -818,7 +859,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void unzipFiles(FileParam param){
-        boolean unzip = param.meetConditions(ZIP_UNZIP);
+        boolean unzip = param.meetCondition(ZIP_UNZIP);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             SingleValue<ZipEntry> value = new SingleValue<>(null);
@@ -988,7 +1029,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void cacheRepaths(FileParam param){
-        if(!param.meetConditions(MATCH_FILE_ONLY) && param.meetConditions(NEED_REPATH)) param.getPathList().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
+        if(!param.meetCondition(MATCH_FILE_ONLY) && param.meetCondition(NEED_REPATH)) param.getPathList().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
     }
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
@@ -997,10 +1038,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
         private PathMatcher(FileParam param){
             this.param = param;
-            matchFileOnly = param.meetConditions(MATCH_FILE_ONLY);
-            matchDirOnly = param.meetConditions(MATCH_DIR_ONLY);
-            excludeRoot = param.meetConditions(EXCLUDE_ROOT);
-            ignoreRegex = param.meetConditions(IGNORE_REGEX);
+            matchFileOnly = param.meetCondition(MATCH_FILE_ONLY);
+            matchDirOnly = param.meetCondition(MATCH_DIR_ONLY);
+            excludeRoot = param.meetCondition(EXCLUDE_ROOT);
+            ignoreRegex = param.meetCondition(IGNORE_REGEX);
         }
 
         @Override
