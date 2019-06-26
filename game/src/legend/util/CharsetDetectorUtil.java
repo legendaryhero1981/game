@@ -27,10 +27,10 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
             byte[] bytes = new byte[BLOCK_SIZE_FILE + 3];
             for(i = 0;i < bom.length;i++)
                 bytes[i] = bom[i];
-            r = inputStream.read(bytes,3,BLOCK_SIZE_FILE) + 3;
+            r = inputStream.read(bytes,3,BLOCK_SIZE_FILE);
             do{
-                for(i = 0;i < r - 3 && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.get());
-            }while(0 < bytesCount.get() && -1 != (r = inputStream.read(bytes)));
+                for(i = 0;i < r && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.get());
+            }while(0 < bytesCount.get() && -1 != (r = inputStream.read(bytes,0,BLOCK_SIZE_FILE)));
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
