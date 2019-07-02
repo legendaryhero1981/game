@@ -4,6 +4,7 @@ import static java.nio.file.Paths.get;
 import static java.util.Optional.of;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
+import static java.util.regex.Pattern.quote;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.StringUtil.brph;
@@ -334,8 +335,13 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         for(int i = 1;i < args.length;i++){
             mbq.reset(args[i]);
             while(mbq.find()){
-                quotes1.add(quoteReplacement(mbq.group(1)));
-                quotes2.add(quoteReplacement(mbq.group()));
+                if(1 == i){
+                    quotes1.add(quote(mbq.group(1)));
+                    quotes2.add(quote(mbq.group()));
+                }else{
+                    quotes1.add(mbq.group(1));
+                    quotes2.add(mbq.group());
+                }
             }
             String s = mbq.replaceAll(SPC_NUL);
             aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMD);
@@ -351,12 +357,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     sb1.delete(0,sb1.length());
                     mnul.reset(aa1[i][j]);
                     while(mnul.find() && !quotes1.isEmpty())
-                        mnul.appendReplacement(sb1,quotes1.remove());
+                        mnul.appendReplacement(sb1,quoteReplacement(quotes1.remove()));
                     aa1[i][j] = mnul.appendTail(sb1).toString();
                     sb2.delete(0,sb2.length());
                     mnul.reset(aa2[i][j]);
                     while(mnul.find() && !quotes2.isEmpty())
-                        mnul.appendReplacement(sb2,quotes2.remove());
+                        mnul.appendReplacement(sb2,quoteReplacement(quotes2.remove()));
                     aa2[i][j] = mnul.appendTail(sb2).toString();
                 }
                 if(0 < j && mrpt.reset(aa1[i][j]).find()) aa1[i][j] = aa1[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);

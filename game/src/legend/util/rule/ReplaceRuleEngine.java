@@ -1,6 +1,5 @@
 package legend.util.rule;
 
-import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.brph;
@@ -61,7 +60,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         quotesCache.clear();
         mbq.reset(replaceRule);
         while(mbq.find())
-            quotesCache.add(quoteReplacement(mbq.group(1)));
+            quotesCache.add(mbq.group(1));
         String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELD);
         CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
@@ -146,7 +145,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
 
     private void excuteRules(){
         final int length = hasTerminationRule ? rules.length - 1 : rules.length;
-        if(length < 1) return;
+        if(1 > length) return;
         atomsCache.entrySet().parallelStream().forEach(entry->{
             String[][] atoms = entry.getValue();
             String[][][] complexes = complexesCache.get(entry.getKey());

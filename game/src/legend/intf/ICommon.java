@@ -16,7 +16,7 @@ public interface ICommon{
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
     String AUTHOR = "作者：李允";
-    String VERSION = "版本：V4.0";
+    String VERSION = "版本：V5.0";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
