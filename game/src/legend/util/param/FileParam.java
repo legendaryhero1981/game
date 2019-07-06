@@ -478,7 +478,12 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_REN_DIR:
                     case CMD_REN_DIR_OLY:
                     case CMD_REG_FLE_CS:
-                    param.setReplacement(s1[3]);
+                    sb1.delete(0,sb1.length());
+                    mbq.reset(s2[3]);
+                    while(mbq.find())
+                        mbq.appendReplacement(sb1,quoteReplacement(quoteReplacement(mbq.group(1))));
+                    s2[3] = mbq.appendTail(sb1).toString();
+                    param.setReplacement(s2[3]);
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_REN_LOW:
@@ -582,7 +587,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         String bp = getWrapedParam(backupPath);
         String se = getWrapedParam(sizeExpr);
         String spt = getWrapedParam(split);
-        String rm = getWrapedParam(replacement);
+        String rp = getWrapedParam(replacement);
         String zn = getWrapedParam(zipName);
         String s = CMD + cmd + opt + regex + sp;
         switch(cmd){
@@ -590,6 +595,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_SIZ_DSC:
             case CMD_FND_DIR_SIZ_ASC:
             case CMD_FND_DIR_SIZ_DSC:
+            case CMD_FND_DIR_DIR_SIZ_ASC:
+            case CMD_FND_DIR_DIR_SIZ_DSC:
+            case CMD_FND_DIR_OLY_SIZ_ASC:
+            case CMD_FND_DIR_OLY_SIZ_DSC:
             s += se;
             case CMD_FIND:
             case CMD_FND_DIR:
@@ -600,10 +609,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_PTH_DIR_RLT:
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
-            case CMD_FND_DIR_DIR_SIZ_ASC:
-            case CMD_FND_DIR_DIR_SIZ_DSC:
-            case CMD_FND_DIR_OLY_SIZ_ASC:
-            case CMD_FND_DIR_OLY_SIZ_DSC:
             s += S_SPACE + limit + S_SPACE + level;
             break;
             case CMD_FND_SAM:
@@ -617,13 +622,13 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             s += dp + S_SPACE + limit + S_SPACE + level;
             break;
             case CMD_REP_FLE_BT:
-            s += rm + spt + S_SPACE + level;
+            s += rp + spt + S_SPACE + level;
             break;
             case CMD_RENAME:
             case CMD_REN_DIR:
             case CMD_REN_DIR_OLY:
             case CMD_REG_FLE_CS:
-            s += rm;
+            s += rp;
             case CMD_REN_LOW:
             case CMD_REN_DIR_LOW:
             case CMD_REN_UP:
