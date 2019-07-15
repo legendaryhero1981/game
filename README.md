@@ -110,9 +110,9 @@ zipName     压缩文件名（程序会根据命令选项自动添加文件扩�
 
 zipLevel    文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。
 
-limit       查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；取值范围为：1~2147483647，不指定或指定一个非正整数则取默认值2147483647。
+limit       查询类命令（即命令选项以-f开头的命令）的查询结果显示数量限制，即显示前limit条记录；或同名文件替换类命令（见命令选项-rfsn）的最大查询层数，即只查询limit层目录结构；取值范围为：1~2147483647，不指定或指定一个非正整数则取默认值2147483647。
 
-level       文件目录最大查询层数；取值范围为：1~2147483647，不指定则取默认值2147483647层。
+level       文件目录最大查询层数；取值范围为：1~2147483647，不指定则或指定一个非正整数则取默认值2147483647。
 
 sizeExpr    文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。
 
@@ -292,6 +292,9 @@ file -rfbig5[+*!@?] regex src dest [level]
 
 file -rfcs[+*!@?] regex src replacement [level]
 根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：GBK，BIG5，UTF8（不带BOM），UTF-8（带BOM），UTF-16LE（带BOM），UTF-16BE（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。
+
+file -rfsn[+*!@?] regex src dest [limit] [level]
+根据regex获得src中所有匹配文件，再使用这些文件替换dest中的所有同名文件；limit为dest的最大查询层数，level为src的最大查询层数。
 
 file -c[+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
@@ -524,6 +527,9 @@ file -rfbig5* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/f
 
 file -rfcs* (?i)\.txt$ E:/Decompile/DLL-ildasm gbk
 先查询（作用同-f）再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
+
+file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2
+先查询（作用同-f）获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询（作用同-f）再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
