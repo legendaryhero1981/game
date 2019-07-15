@@ -192,6 +192,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_REG_FLE_CS:
                 regenFileCharset(param);
                 break;
+                case CMD_REG_FLE_SN:
+                replaceFilesForSameName(param);
+                break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
                 case CMD_REN_DIR_OLY:
@@ -512,6 +515,26 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }));
     }
 
+    private static void replaceFilesForSameName(FileParam param){
+        FileParam fp = param.cloneValue();
+        fp.setCmd(CMD_FIND);
+        fp.setSrcPath(fp.getDestPath());
+        fp.setLevel(fp.getLimit());
+        cachePaths(fp);
+        Collection<Entry<BasicFileAttributes,Path>> caches = new ConcurrentLinkedQueue<>(fp.getPathMap().entrySet());
+        param.getPathMap().values().parallelStream().forEach(p1->{
+            caches.parallelStream().forEach(e->{
+                Path p2 = e.getValue();
+                if(p2.getFileName().toString().equalsIgnoreCase(p1.getFileName().toString())){
+                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),p2));
+                    param.getCmdOptional().ifPresent(c->copyFile(p1,p2));
+                    caches.remove(e);
+                }
+            });
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+    }
+
     private static void replaceFilesWithBT(FileParam param){
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             Path path = e.getValue();
@@ -541,7 +564,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                         partitions.add(i);
                     if(SIZE_IL_HEADER < r) partitions.add(r - 1);
                     List<ILCode> codes = new ArrayList<>();
-                    Collection<ILCode> caches = new ConcurrentLinkedQueue<ILCode>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
+                    Collection<ILCode> caches = new ConcurrentLinkedQueue<>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
                     partitions.parallelStream().forEach(p->{
                         caches.parallelStream().forEach(c->{
                             ILCode code = c.cloneValue();

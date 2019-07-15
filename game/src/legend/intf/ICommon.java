@@ -147,6 +147,8 @@ public interface ICommon{
     String XML_CDATA_END = "]]>";
     String XML_CDATA = XML_CDATA_START + PH_ARG0 + XML_CDATA_END;
     String REP_ADD = FLAG_DEBUG + "$1" + FLAG_DEBUG;
+    String REG_WHOLE_MATCH = "\\A" + PH_ARG0 + "$";
+    String REG_WHOLE_MATCH_IC = "(?i)" + REG_WHOLE_MATCH;
     String REG_UC_MC_GBK = "(?:[\\u3000\\ue766-\\ue76b\\ue76d-\\ue76f\\ue770-\\ue78c\\ue797-\\ue79f\\ue7a0-\\ue7bb\\ue7c9-\\ue7e1\\ue7fe-\\ue7ff\\ue800-\\ue814])";
     String REG_UC_MC_BIG5 = "(?:[\\u3000\\u007f\\ufffd])";
     String REG_UC_NON_CHS = "(?:[^\\u2e80-\\uffef])";
@@ -170,9 +172,9 @@ public interface ICommon{
     String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
     String REG_XML_CDATA = XML_CDATA_START + "(.*)" + XML_CDATA_END;
     String REG_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
-    String REG_DEBUG = FLAG_DEBUG + "\\d+" + FLAG_DEBUG;
-    String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + "\\d+" + FLAG_DEBUG;
-    String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(\\d+)" + FLAG_DEBUG + ".*";
+    String REG_DEBUG = FLAG_DEBUG + REG_NUMBER + FLAG_DEBUG;
+    String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + REG_NUMBER + FLAG_DEBUG;
+    String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(" + REG_NUMBER + ")" + FLAG_DEBUG + ".*";
     String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
     String ST_ARG_DONE = N_CMD + N_ARG + S_DQM_L + PH_ARG0 + S_DQM_R + V_ANLS + V_DONE + S_PERIOD;
     String ST_CMD_START = V_START + V_EXEC + N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;

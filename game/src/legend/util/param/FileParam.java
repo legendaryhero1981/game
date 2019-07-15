@@ -9,7 +9,10 @@ import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.StringUtil.brph;
 import static legend.util.StringUtil.gsph;
+import static legend.util.ValueUtil.matchRange;
 import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.ValueUtil.takeMaxValueIfBeyond;
+import static legend.util.ValueUtil.takeMinValueIfBeyond;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -72,6 +75,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     public FileParam(){
         zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
         split = REG_SPRT_COL;
+        minSize = 0l;
         maxSize = Long.MAX_VALUE;
         limit = level = Integer.MAX_VALUE;
         zipLevel = Deflater.DEFAULT_COMPRESSION;
@@ -231,6 +235,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_REG_FLE_GBK:
             case CMD_REG_FLE_BIG5:
             case CMD_REG_FLE_CS:
+            case CMD_REG_FLE_SN:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -262,11 +267,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public boolean meetFilesSize(long size){
-        if(minSize <= size && maxSize >= size){
-            filesSize.addAndGet(size);
-            return true;
-        }
-        return false;
+        if(!matchRange(size,minSize,maxSize)) return false;
+        filesSize.addAndGet(size);
+        return true;
     }
 
     public void saveCache(FileParam cache){
@@ -410,10 +413,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_PTH_DIR_RLT:
                     case CMD_FND_PTH_DIR_OLY_ABS:
                     case CMD_FND_PTH_DIR_OLY_RLT:
-                    optional.filter(s->s.length > 3).ifPresent(s->{
-                        int filesCountLimit = Integer.parseInt(s[3]);
-                        param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
-                    });
+                    optional.filter(s->s.length > 3).ifPresent(s->param.setLimit(Integer.parseInt(s[3])));
                     optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
                     break;
                     case CMD_FND_SIZ_ASC:
@@ -424,10 +424,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                         param.setSizeExpr(s[3]);
                         matchSizes(param,s[3]);
                     });
-                    optional.filter(s->s.length > 4).ifPresent(s->{
-                        int filesCountLimit = Integer.parseInt(s[4]);
-                        param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
-                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_FND_DIR_DIR_SIZ_ASC:
@@ -438,10 +435,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                         param.setSizeExpr(s[3]);
                         matchSizes(param,s[3]);
                     });
-                    optional.filter(s->s.length > 4).ifPresent(s->{
-                        int filesCountLimit = Integer.parseInt(s[4]);
-                        param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
-                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
                     param.setLevel(1);
                     break;
                     case CMD_FND_SAM:
@@ -452,11 +446,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_DIR_DIF:
                     case CMD_FND_DIR_OLY_SAM:
                     case CMD_FND_DIR_OLY_DIF:
+                    case CMD_REG_FLE_SN:
                     param.setDestPath(get(s1[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->{
-                        int filesCountLimit = Integer.parseInt(s[4]);
-                        param.setLimit(0 < filesCountLimit ? filesCountLimit : Integer.MAX_VALUE);
-                    });
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_REP_FLE_BT:
@@ -619,6 +611,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_DIF:
             case CMD_FND_DIR_OLY_SAM:
             case CMD_FND_DIR_OLY_DIF:
+            case CMD_REG_FLE_SN:
             s += dp + S_SPACE + limit + S_SPACE + level;
             break;
             case CMD_REP_FLE_BT:
@@ -801,7 +794,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void setLimit(int limit){
-        this.limit = limit;
+        this.limit = takeMaxValueIfBeyond(limit,1,Integer.MAX_VALUE);
     }
 
     public int getLevel(){
@@ -809,7 +802,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void setLevel(int level){
-        this.level = level;
+        this.level = takeMaxValueIfBeyond(level,1,Integer.MAX_VALUE);
     }
 
     public int getZipLevel(){
@@ -817,7 +810,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     }
 
     public void setZipLevel(int zipLevel){
-        this.zipLevel = zipLevel;
+        this.zipLevel = takeMinValueIfBeyond(zipLevel,Deflater.DEFAULT_COMPRESSION,Deflater.BEST_COMPRESSION);
     }
 
     public ZipOutputStream getZipOutputStream(){

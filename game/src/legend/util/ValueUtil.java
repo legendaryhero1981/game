@@ -31,11 +31,27 @@ public final class ValueUtil{
         return null == o;
     }
 
+    public static boolean matchRange(long n, long min, long max){
+        return min <= n && max >= n;
+    }
+
     public static boolean matchRange(int n, int min, int max){
         return min <= n && max >= n;
     }
 
     public static int limitValue(int n, int min, int max){
         return n < min ? min : n > max ? max : n;
+    }
+
+    public static int takeValueIfBeyond(int n, int min, int max, int value){
+        return n < min || n > max ? value : n;
+    }
+
+    public static int takeMinValueIfBeyond(int n, int min, int max){
+        return takeValueIfBeyond(n,min,max,min);
+    }
+
+    public static int takeMaxValueIfBeyond(int n, int min, int max){
+        return takeValueIfBeyond(n,min,max,max);
     }
 }
