@@ -113,7 +113,7 @@ public interface IFileUtil extends ICommon{
     String CMD_MD5_U32 = "-mu32";
     String CMD_JSON_ENC = "-je";
     String CMD_JSON_DEC = "-jd";
-    String OPTIONS = "[" + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
+    String OPTIONS = "[" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
     String FILE_LOG = "./file.log";
     String CONFIG_FILE_IL = "./file-il.xml";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
