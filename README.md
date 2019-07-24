@@ -14,7 +14,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 
 4、将game.exe放置在任意目录，如：D:\tools，再将D:\tools\game.exe的文件路径名添加到系统环境变量中；
 
-5、打开命令提示符，输入 game 可以看到命令帮助信息，现在已经可以像使用windows内置命令一样使用使用了！
+5、打开命令提示符，输入 game 可以看到命令帮助信息，现在已经可以像使用windows内置命令一样使用了！
 
 # 功能描述
 
@@ -167,223 +167,223 @@ file -zi*::-cd@*::* \.zip$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?
 
 单条命令：
 
-file -f[+*!@?] regex src [limit] [level]
+file -f[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件。
 
-file -fd[+*!@?] regex src [limit] [level]
+file -fd[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配。
 
-file -fdo[+*!@?] regex src [limit] [level]
+file -fdo[~+*!@?] regex src [limit] [level]
 根据regex查找src中的目录。
 
-file -fs[+*!@?] regex src dest [limit] [level]
+file -fs[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在的同名文件。
 
-file -fsmd5[+*!@?] regex src dest [limit] [level]
+file -fsmd5[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容相同的同名文件。
 
-file -fds[+*!@?] regex src dest [limit] [level]
+file -fds[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中存在的同名目录和文件。
 
-file -fdos[+*!@?] regex src dest [limit] [level]
+file -fdos[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的目录，且只选取在desc目录的同一相对路径中存在的同名目录。
 
-file -fdf[+*!@?] regex src dest [limit] [level]
+file -fdf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中不存在的文件。
 
-file -fdfmd5[+*!@?] regex src dest [limit] [level]
+file -fdfmd5[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容不同的同名文件。
 
-file -fddf[+*!@?] regex src dest [limit] [level]
+file -fddf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。
 
-file -fdodf[+*!@?] regex src dest [limit] [level]
+file -fdodf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。
 
-file -fpa[+*!@?] regex src [limit] [level]
+file -fpa[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的绝对路径名。
 
-file -fpr[+*!@?] regex src [limit] [level]
+file -fpr[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件（同-f），显示文件的相对路径名。
 
-file -fpda[+*!@?] regex src [limit] [level]
+file -fpda[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。
 
-file -fpdr[+*!@?] regex src [limit] [level]
+file -fpdr[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名。
 
-file -fpdoa[+*!@?] regex src [limit] [level]
+file -fpdoa[~+*!@?] regex src [limit] [level]
 根据regex查找src中的目录（同-fdo），显示目录的绝对路径名。
 
-file -fpdor[+*!@?] regex src [limit] [level]
+file -fpdor[~+*!@?] regex src [limit] [level]
 根据regex查找src中的目录（同-fdo），显示目录的相对路径名。
 
-file -fsa[+*!@?] regex src [sizeExpr] [limit] [level]
+file -fsa[~+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递增排序。
 
-file -fsd[+*!@?] regex src [sizeExpr] [limit] [level]
+file -fsd[~+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递减排序。
 
-file -fdsa[+*!@?] regex src [sizeExpr] [limit] [level]
+file -fdsa[~+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和目录，按文件大小递增排序。
 
-file -fdsd[+*!@?] regex src [sizeExpr] [limit] [level]
+file -fdsd[~+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件和目录，按文件大小递减排序。
 
-file -fddsa[+*!@?] regex src [sizeExpr] [limit]
+file -fddsa[~+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按文件和子目录大小递增排序。
 
-file -fddsd[+*!@?] regex src [sizeExpr] [limit]
+file -fddsd[~+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的文件和第一级子目录，按文件和子目录大小递减排序。
 
-file -fdosa[+*!@?] regex src [sizeExpr] [limit]
+file -fdosa[~+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递增排序。
 
-file -fdosd[+*!@?] regex src [sizeExpr] [limit]
+file -fdosd[~+*!@?] regex src [sizeExpr] [limit]
 根据regex和sizeExpr查找src中的第一级子目录，按子目录大小递减排序。
 
-file -r[+*!@?] regex src replacement [level]
+file -r[~+*!@?] regex src replacement [level]
 根据regex和replacement重命名src中的文件。
 
-file -rl[+*!@?] regex src [level]
+file -rl[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\.txt$则文件名和扩展名都会被替换；也适用于-ru和-ruf。
 
-file -ru[+*!@?] regex src [level]
+file -ru[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文字母替换为大写。
 
-file -ruf[+*!@?] regex src [level]
+file -ruf[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名中英文单词首字母替换为大写。
 
-file -rd[+*!@?] regex src replacement [level]
+file -rd[~+*!@?] regex src replacement [level]
 根据regex和replacement重命名src中的文件和目录。
 
-file -rdl[+*!@?] regex src [level]
+file -rdl[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\.txt$则文件名和扩展名都会被替换；也适用于-rdu和-rduf。
 
-file -rdu[+*!@?] regex src [level]
+file -rdu[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文字母替换为大写。
 
-file -rduf[+*!@?] regex src [level]
+file -rduf[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件名和目录名中英文单词首字母替换为大写。
 
-file -rdo[+*!@?] regex src replacement [level]
+file -rdo[~+*!@?] regex src replacement [level]
 根据regex和replacement重命名src中的目录。
 
-file -rdol[+*!@?] regex src [level]
+file -rdol[~+*!@?] regex src [level]
 根据regex将src中所有匹配的目录名中英文字母替换为小写。
 
-file -rdou[+*!@?] regex src [level]
+file -rdou[~+*!@?] regex src [level]
 根据regex将src中所有匹配的目录名中英文字母替换为大写。
 
-file -rdouf[+*!@?] regex src [level]
+file -rdouf[~+*!@?] regex src [level]
 根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。
 
-file -rfbt[+*!@?] regex src replacement [split] [level]
+file -rfbt[~+*!@?] regex src replacement [split] [level]
 根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。
 
-file -rfil[+*!@?] regex src [dest] [level]
+file -rfil[~+*!@?] regex src [dest] [level]
 根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件./file-il.xml自动替换src中所有文件名匹配regex的文件内容，若配置文件./file-il.xml不存在，则会自动生成一个与该文件同名且同格式的模版文件。
 
-file -rfgbk[+*!@?] regex src dest [level]
+file -rfgbk[~+*!@?] regex src dest [level]
 根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
 
-file -rfbig5[+*!@?] regex src dest [level]
+file -rfbig5[~+*!@?] regex src dest [level]
 根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
 
-file -rfcs[+*!@?] regex src replacement [level]
+file -rfcs[~+*!@?] regex src replacement [level]
 根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：GBK，BIG5，UTF8（不带BOM），UTF-8（带BOM），UTF-16LE（带BOM），UTF-16BE（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。
 
-file -rfsn[+*!@?] regex src dest [limit] [level]
+file -rfsn[~+*!@?] regex src dest [limit] [level]
 根据regex获得src中所有匹配文件，再使用这些文件替换dest中的所有同名文件；limit为dest的最大查询层数，level为src的最大查询层数。
 
-file -c[+*!@?] regex src dest [level]
+file -c[~+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
 
-file -cd[+*!@?] regex src dest [level]
+file -cd[~+*!@?] regex src dest [level]
 根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。
 
-file -cdo[+*!@?] regex src dest [level]
+file -cdo[~+*!@?] regex src dest [level]
 根据regex复制src中所有匹配的目录及其中所有文件到dest中。
 
-file -d[+*!@?] regex src [level]
+file -d[~+*!@?] regex src [level]
 根据regex删除src中所有匹配文件。
 
-file -dd[+*!@?] regex src [level]
+file -dd[~+*!@?] regex src [level]
 根据regex删除src中所有匹配文件和目录及其中所有文件。
 
-file -ddo[+*!@?] regex src [level]
+file -ddo[~+*!@?] regex src [level]
 根据regex删除src中所有匹配的目录及其中所有文件。
 
-file -dn[+*!@?] regex src [level]
+file -dn[~+*!@?] regex src [level]
 根据regex删除src中所有匹配的空文件。
 
-file -ddn[+*!@?] regex src [level]
+file -ddn[~+*!@?] regex src [level]
 根据regex删除src中所有匹配的空文件和空目录。
 
-file -ddon[+*!@?] regex src [level]
+file -ddon[~+*!@?] regex src [level]
 根据regex删除src中所有匹配的空目录。
 
-file -m[+*!@?] regex src dest [level]
+file -m[~+*!@?] regex src dest [level]
 根据regex移动src中文件到dest中。
 
-file -md[+*!@?] regex src dest [level]
+file -md[~+*!@?] regex src dest [level]
 根据regex移动src中所有匹配文件和目录及其中所有文件到dest中。
 
-file -mdo[+*!@?] regex src dest [level]
+file -mdo[~+*!@?] regex src dest [level]
 根据regex移动src中所有匹配的目录及其中所有文件到dest中。
 
-file -iu[+*!@?] regex src dest backup [level]
+file -iu[~+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。
 
-file -ir[+*!@?] regex src dest backup [level]
+file -ir[~+*!@?] regex src dest backup [level]
 根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。
 
-file -u[+*!@?] regex src dest backup [level]
+file -u[~+*!@?] regex src dest backup [level]
 根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
 
-file -ud[+*!@?] regex src dest backup [level]
+file -ud[~+*!@?] regex src dest backup [level]
 根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
 
-file -zd[+*!@?] regex src dest zipName [zipLevel] [level]
+file -zd[~+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件压缩到dest/zipName.zip文件中。
 
-file -zdd[+*!@?] regex src dest zipName [zipLevel] [level]
+file -zdd[~+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件和目录及其中所有文件压缩到dest/zipName.zip文件中。
 
-file -zi[+*!@?] regex src dest [level]
+file -zi[~+*!@?] regex src dest [level]
 根据regex将src中所有匹配文件解压缩到dest中。
 
-file -pd[+*!@?] regex src dest zipName [zipLevel] [level]
+file -pd[~+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件打包到dest/zipName.pak文件中。
 
-file -pdd[+*!@?] regex src dest zipName [zipLevel] [level]
+file -pdd[~+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName.pak文件中。
 
-file -pi[+*!@?] regex src [level]
+file -pi[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件解包到该文件所在目录中。
 
-file -gl32[+*!@?] regex src [level]
+file -gl32[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全小写）。
 
-file -gu32[+*!@?] regex src [level]
+file -gu32[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全大写）。
 
-file -ml16[+*!@?] regex src [level]
+file -ml16[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全小写）。
 
-file -mu16[+*!@?] regex src [level]
+file -mu16[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全大写）。
 
-file -ml32[+*!@?] regex src [level]
+file -ml32[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全小写）。
 
-file -mu32[+*!@?] regex src [level]
+file -mu32[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全大写）。
 
-file -je[+*!@?] regex src [level]
+file -je[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），编码（即压缩为一行）JSON格式文件。
 
-file -jd[+*!@?] regex src [level]
+file -jd[~+*!@?] regex src [level]
 根据regex查找src中的文件（同-f），解码（即格式化）JSON格式文件。
 
 
