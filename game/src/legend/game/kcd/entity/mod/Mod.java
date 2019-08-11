@@ -14,7 +14,7 @@ import legend.game.kcd.intf.IMain;
 public class Mod implements IMain{
     @XmlElement
     @XmlID
-    private String mod = "";
+    private String mod = S_EMPTY;
     @XmlElement
     private String desc = MOD_INGNORE_DESC;
     @XmlElement

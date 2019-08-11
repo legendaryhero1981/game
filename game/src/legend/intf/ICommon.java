@@ -66,6 +66,8 @@ public interface ICommon{
     String N_OR = "或";
     String N_IN = "中";
     String N_FMT = "格式";
+    String N_DEAL = "处理了";
+    String V_DEAL = "处理";
     String V_INPUT = "输入";
     String V_OUTPUT = "输出";
     String V_IMPORT = "导入";
@@ -84,7 +86,6 @@ public interface ICommon{
     String V_EXEC = "执行";
     String V_START = "开始";
     String V_DONE = "完毕";
-    String V_DEAL = "处理了";
     String V_FIND = "找到";
     String V_ANLS = "解析";
     String V_VST = "访问";
@@ -140,6 +141,8 @@ public interface ICommon{
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
     String SPC_BQ = "BQ";
+    String EXEC_KDIFF_F2 = "\"" + PH_ARG0 + "\" \"" + PH_ARG1 + "\" \"" + PH_ARG2 + "\" -o \"" + PH_ARG3 + "\"";
+    String EXEC_KDIFF_F3 = "\"" + PH_ARG0 + "\" \"" + PH_ARG1 + "\" \"" + PH_ARG2 + "\" \"" + PH_ARG3 + "\" -o \"" + PH_ARG4 + "\"";
     String XML_NOTE_START = "<!--";
     String XML_NOTE_END = "-->";
     String XML_NOTE = XML_NOTE_START + PH_ARG0 + XML_NOTE_END;

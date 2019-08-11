@@ -1,4 +1,4 @@
-package legend.helper.il;
+package legend.helper.entity;
 
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-
-import legend.helper.entity.Helper;
 
 @XmlRootElement(name = "IL")
 @XmlType(propOrder = {"instructions","statements"})

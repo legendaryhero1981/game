@@ -85,6 +85,8 @@ import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
+import legend.util.logic.FileMergeLogic;
+import legend.util.logic.intf.IFileMergeLogic;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
@@ -130,8 +132,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 }else resetTime();
             }else if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
             else countDuration(t->dealFiles(FP));
-            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_DONE,command) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(param.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
-            else CS.s(gsph(ST_CMD_DONE,command) + V_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(FP.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
+            if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_DONE,command) + N_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(param.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
+            else CS.s(gsph(ST_CMD_DONE,command) + N_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(FP.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
         });
     }
 
@@ -183,6 +185,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_REP_FLE_IL:
                 replaceFilesWithIL(param);
                 break;
+                case CMD_REP_FLE_SN:
+                replaceFilesForSameName(param);
+                break;
+                case CMD_REP_FLE_MEG:
+                replaceFilesForMergeContent(param);
+                break;
                 case CMD_REG_FLE_GBK:
                 regenFileWithGBK(param);
                 break;
@@ -191,9 +199,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 break;
                 case CMD_REG_FLE_CS:
                 regenFileCharset(param);
-                break;
-                case CMD_REG_FLE_SN:
-                replaceFilesForSameName(param);
                 break;
                 case CMD_RENAME:
                 case CMD_REN_DIR:
@@ -423,7 +428,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         List<FileParam> fileParams = incTotalDuration(()->analyzeParam(args));
         CS.s(gsph(ST_ARG_DONE,cmds) + N_TIME + S_COLON + getTotalDurationString() + S_PERIOD).l(2);
         incTotalDuration(t->dealFiles(fileParams));
-        CS.s(ST_PRG_DONE + V_DEAL + CACHE.getDirsCount().get() + N_AN + N_DIR + S_COMMA + CACHE.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(CACHE.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getTotalDurationString() + S_PERIOD).l(2);
+        CS.s(ST_PRG_DONE + N_DEAL + CACHE.getDirsCount().get() + N_AN + N_DIR + S_COMMA + CACHE.getFilesCount().get() + N_AN + N_FLE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(CACHE.getFilesSize().get(),UNIT_TYPE.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getTotalDurationString() + S_PERIOD).l(2);
     }
 
     private static void dealFiles(IProgress progress){
@@ -513,26 +518,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             if(path.toFile().isFile()) CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_FLE + gs(4) + path.toString());
             else CS.formatSize(e.getValue(),UNIT_TYPE.GB).sl(gs(4) + N_DIR + gs(4) + path.toString());
         }));
-    }
-
-    private static void replaceFilesForSameName(FileParam param){
-        FileParam fp = param.cloneValue();
-        fp.setCmd(CMD_FIND);
-        fp.setSrcPath(fp.getDestPath());
-        fp.setLevel(fp.getLimit());
-        cachePaths(fp);
-        Collection<Entry<BasicFileAttributes,Path>> caches = new ConcurrentLinkedQueue<>(fp.getPathMap().entrySet());
-        param.getPathMap().values().parallelStream().forEach(p1->{
-            caches.parallelStream().forEach(e->{
-                Path p2 = e.getValue();
-                if(p2.getFileName().toString().equalsIgnoreCase(p1.getFileName().toString())){
-                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),p2));
-                    param.getCmdOptional().ifPresent(c->copyFile(p1,p2));
-                    caches.remove(e);
-                }
-            });
-            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-        });
     }
 
     private static void replaceFilesWithBT(FileParam param){
@@ -625,6 +610,36 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             });
             param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,EXT_IL,param.getDestPath().toString())));
         }
+    }
+
+    private static void replaceFilesForSameName(FileParam param){
+        FileParam fp = param.cloneValue();
+        fp.setCmd(CMD_FIND);
+        fp.setSrcPath(fp.getDestPath());
+        fp.setLevel(fp.getLimit());
+        cachePaths(fp);
+        Collection<Entry<BasicFileAttributes,Path>> caches = new ConcurrentLinkedQueue<>(fp.getPathMap().entrySet());
+        param.getPathMap().values().parallelStream().forEach(p1->{
+            caches.parallelStream().forEach(e->{
+                Path p2 = e.getValue();
+                if(p2.getFileName().toString().equalsIgnoreCase(p1.getFileName().toString())){
+                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),p2));
+                    param.getCmdOptional().ifPresent(c->copyFile(p1,p2));
+                    caches.remove(e);
+                }
+            });
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
+    }
+
+    private static void replaceFilesForMergeContent(FileParam param){
+        IFileMergeLogic mergeLogic = new FileMergeLogic(param);
+        param.getPathMap().entrySet().stream().forEach(e->{
+            Path p = e.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEAL},new FileSizeMatcher(e.getKey()),p));
+            param.getCmdOptional().ifPresent(c->mergeLogic.execute(p));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
     }
 
     private static void regenFileWithGBK(FileParam param){

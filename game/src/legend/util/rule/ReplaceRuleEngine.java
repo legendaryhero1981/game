@@ -69,7 +69,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_COL_NUM},()->!matcher.find());
             rule = s[1];
         }else{
-            colNumber = "";
+            colNumber = S_EMPTY;
             rule = s[0];
         }
         String[] r = rule.split(REG_SPRT_RULE);
@@ -89,7 +89,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             validateRule(rules[i],i + 1,r.length);
         }
         rule = concat(rules,SPRT_RULE);
-        hasTerminationRule = RULE_REGENROW.equals(rules[rules.length - 1].name) ? true : false;
+        hasTerminationRule = RULE_REGENROW.equals(rules[rules.length - 1].name);
     }
 
     @Override
@@ -139,7 +139,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             colIndexesCache.add(i);
         Matcher matcher = compile(colSplitRegex).matcher(data[0]);
         if(matcher.find()) colSplit = matcher.group();
-        else colSplit = "";
+        else colSplit = S_EMPTY;
         return true;
     }
 

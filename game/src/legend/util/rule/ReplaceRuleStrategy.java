@@ -45,7 +45,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                         indexList.add(new Integer[]{index++});
                     }
                     start = matcher.end();
-                    matchList.add("");
+                    matchList.add(S_EMPTY);
                     String match = matcher.group();
                     if(match.contains(FLAG_COL_REPL_COMP)){
                         int x = limitValue(Integer.parseInt(matcher.group(3)),1,colSize) - 1;
@@ -69,7 +69,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                     int i = entry.getKey();
                     String[][] atoms = entry.getValue();
                     String[][][] complexes = complexesCache.get(i);
-                    results[i] = "";
+                    results[i] = S_EMPTY;
                     for(int j = 0;j < indexes.length;j++){
                         int x = indexes[j][0];
                         switch(indexes[j].length){
@@ -108,7 +108,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
         }),entry(RULE_REPLACE,(rule, data)->{
             String[] args = rule.args;
             if(isEmpty(args)) return new String[]{data};
-            else if(1 == args.length) return new String[]{data.replaceAll(args[0],"")};
+            else if(1 == args.length) return new String[]{data.replaceAll(args[0],S_EMPTY)};
             else return new String[]{data.replaceAll(args[0],args[1])};
         }));
     }

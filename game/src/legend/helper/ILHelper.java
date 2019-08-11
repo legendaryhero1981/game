@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import legend.helper.entity.Helper;
-import legend.helper.il.IL;
+import legend.helper.entity.IL;
 import legend.helper.intf.IILHelper;
 
 public class ILHelper implements IILHelper{

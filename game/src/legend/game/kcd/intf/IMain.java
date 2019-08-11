@@ -34,8 +34,6 @@ public interface IMain extends ICommon{
     String REG_MOD_PAK = "(?i)\\" + EXT_PAK + "$";
     String REG_MOD_NOT_PAK = ".*(?i)(?<!\\" + EXT_PAK + ")$";
     String REG_ORDER = "\\d|[1-9]\\d{1,2}";
-    String EXEC_KDIFF_F2 = "\"" + PH_ARG0 + "\" \"" + PH_ARG1 + "\" \"" + PH_ARG2 + "\" -o \"" + PH_ARG3 + "\"";
-    String EXEC_KDIFF_F3 = "\"" + PH_ARG0 + "\" \"" + PH_ARG1 + "\" \"" + PH_ARG2 + "\" \"" + PH_ARG3 + "\" -o \"" + PH_ARG4 + "\"";
     String KCD_LOC_MRG = "-lm";
     String KCD_LOC_MRG_A = "-lma";
     String KCD_LOC_MRG_U = "-lmu";

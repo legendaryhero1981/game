@@ -31,8 +31,8 @@ public class TestFileUtil extends TestBase{
 //        s = "-fsmd5+  (?i)\\.param$  D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd  G:/games/DSParamEditor/gameparam-parambnd";
 //        s = "-fdfmd5+  (?i)\\.param$  D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd  G:/games/DSParamEditor/gameparam-parambnd";
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
-        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
-        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
+//        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
+//        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
         super.monkParam(s);
     }
 }
