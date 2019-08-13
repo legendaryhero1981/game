@@ -1,7 +1,5 @@
 package legend.util.logic.intf;
 
-import legend.intf.ICommon;
-
-public interface ILogic<T> extends ICommon{
+public interface ILogic<T>{
     void execute(T t);
 }

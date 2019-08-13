@@ -143,15 +143,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_SAM:
             condition |= COMPARE_SAME | IS_QUERY_COMMAND;
             break;
-            case CMD_FND_PTH_RLT:
-            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | MATCH_FILE_ONLY;
-            break;
-            case CMD_FND_PTH_DIR_OLY_RLT:
-            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | MATCH_DIR_ONLY;
-            break;
-            case CMD_FND_PTH_DIR_RLT:
-            condition |= PATH_RELATIVE | IS_QUERY_COMMAND;
-            break;
             case CMD_FIND:
             case CMD_FND_DIF:
             case CMD_FND_DIF_MD5:
@@ -177,6 +168,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_SIZ_DSC:
             case CMD_FND_DIR_DIR_SIZ_DSC:
             condition |= IS_QUERY_COMMAND;
+            break;
+            case CMD_FND_PTH_RLT:
+            condition |= MATCH_FILE_ONLY;
+            case CMD_FND_PTH_DIR_RLT:
+            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | NEED_CLEAR_CACHE;
+            break;
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            condition |= MATCH_DIR_ONLY | PATH_RELATIVE | IS_QUERY_COMMAND | NEED_CLEAR_CACHE;
             break;
             case CMD_REN_DIR_OLY:
             case CMD_REN_DIR_OLY_LOW:

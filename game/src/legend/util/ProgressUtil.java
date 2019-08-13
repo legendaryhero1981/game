@@ -141,8 +141,8 @@ public final class ProgressUtil implements IProgressUtil{
         }
 
         @Override
-        public float countUpdate(float amount, float size, float scale){
-            return countUpdate(amount,size) * scale;
+        public float countUpdate(float amount, float size, float percent){
+            return countUpdate(amount,size) * percent;
         }
 
         private void run0(){

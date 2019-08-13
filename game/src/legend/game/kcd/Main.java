@@ -3,6 +3,7 @@ package legend.game.kcd;
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.ConsoleUtil.exec;
 import static legend.util.FileUtil.copyFile;
 import static legend.util.FileUtil.dealFiles;
 import static legend.util.FileUtil.deleteFile;
@@ -21,7 +22,6 @@ import static legend.util.TimeUtil.runWithConsole;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
@@ -193,7 +193,7 @@ public final class Main implements IMain,IFileUtil{
         uniqueMap = kcd.getUniqueMap();
         mergeMap = kcd.getMergeMap();
         conflictMap = kcd.getConflictMap();
-        CS.showError(ERR_KCD_NUL_CFG,null,()->config.trim().validate());
+        CS.showError(ERR_KCD_NUL_CFG,null,()->!config.trim().validate());
         CS.showError(ERR_KCD_MOD_PATH,null,()->!existsPath(modPath));
         CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
     }
@@ -663,14 +663,6 @@ public final class Main implements IMain,IFileUtil{
         conflicts.addAll(conflictMap.values());
         conflicts.parallelStream().forEach(conflict->conflict.getMappings().parallelStream().forEach(mapping->copyFile(getModPath(mapping),getConflictPath(mapping))));
         progress.update(5,scale);
-    }
-
-    private static void exec(String cmd){
-        try{
-            Runtime.getRuntime().exec(cmd).waitFor();
-        }catch(InterruptedException | IOException e){
-            CS.showError(ERR_KCD_MERGE,new String[]{e.toString()});
-        }
     }
 
     private static Mapping getMapping(Path path){

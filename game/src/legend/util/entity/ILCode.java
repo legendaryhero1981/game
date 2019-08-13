@@ -28,15 +28,15 @@ public class ILCode implements IILCode,IValue<ILCode>{
     @XmlElement
     private String lineNumber = "1-1";
     @XmlElement
-    private String queryRegex = "";
+    private String queryRegex = S_EMPTY;
     @XmlElement
-    private String codeRegex = "";
+    private String codeRegex = S_EMPTY;
     @XmlElement
-    private String codeDesc = "";
+    private String codeDesc = S_EMPTY;
     @XmlElement
-    private String codeFragment = "";
+    private String codeFragment = S_EMPTY;
     @XmlTransient
-    protected String errorInfo = "";
+    protected String errorInfo = S_EMPTY;
     @XmlTransient
     protected int startLine = 1;
     @XmlTransient

@@ -27,7 +27,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
     @XmlElementRef
     private List<ILCode> codes = new ArrayList<>();
     @XmlTransient
-    private String errorInfo = "";
+    private String errorInfo = S_EMPTY;
     @XmlTransient
     private int maxLine;
 

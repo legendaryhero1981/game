@@ -151,7 +151,7 @@ public final class Main implements IMain{
     private static void linkAll(){
         // 数据验证
         List<Game> games = loadModel().getGames();
-        games.parallelStream().forEach(g->CS.showError(ERR_INVALIDATE,new String[]{RUN_FILE_CONFIG},()->g.trim().validate()));
+        games.parallelStream().forEach(g->CS.showError(ERR_INVALIDATE,new String[]{RUN_FILE_CONFIG},()->!g.trim().validate()));
         // 执行脚本批量生成游戏快捷方式
         try{
             runVbsScript(true,t->{
@@ -220,7 +220,7 @@ public final class Main implements IMain{
         }else game = gameMap.get(id);
         // 数据验证
         CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
-        CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->game.trim().validate());
+        CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->!game.trim().validate());
         return games;
     }
 

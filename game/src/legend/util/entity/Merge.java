@@ -14,6 +14,18 @@ public class Merge{
     @XmlElement
     private String md5 = "";
 
+    @Override
+    public boolean equals(Object object){
+        if(!(object instanceof Merge)) return false;
+        Merge merge = (Merge)object;
+        return this == merge || path.equalsIgnoreCase(merge.getPath()) && md5.equalsIgnoreCase(merge.getMd5());
+    }
+
+    public void trim(){
+        path = path.trim();
+        md5 = md5.trim();
+    }
+
     public String getPath(){
         return path;
     }

@@ -86,23 +86,23 @@ import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
 import legend.util.logic.FileMergeLogic;
-import legend.util.logic.intf.IFileMergeLogic;
+import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class FileUtil implements IFileUtil,IConsoleUtil{
+    public static final ConsoleUtil CS;
+    public static final IProgress PG;
     private static final FileParam CACHE;
-    private static final ConsoleUtil CS;
-    private static final IProgress PG;
     private static final Pattern RPTN;
     private static final Pattern APTN;
     private static FileParam FP;
     private static PrintStream PS;
     static{
-        CACHE = new FileParam();
         CS = new ConsoleUtil();
         PG = ProgressUtil.ConsoleProgress();
+        CACHE = new FileParam();
         RPTN = compile(REG_REN_UP_FST);
         APTN = compile(REG_ASK_NO);
     }
@@ -445,7 +445,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void findSortedFilePaths(FileParam param){
         boolean relative = param.meetCondition(PATH_RELATIVE);
-        param.getDetailOptional().ifPresent(c->param.getPathList().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
+        if(relative) param.getPathMap().entrySet().parallelStream().forEach(e->e.setValue(param.getRootPath().relativize(e.getValue())));
+        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
             if(relative) CS.sl(param.getRootPath().relativize(p).toString());
             else CS.sl(p.toString());
         }));
@@ -534,14 +535,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void replaceFilesWithIL(FileParam param){
         if(existsPath(param.getDestPath())){
-            ILCodes ILCODES = convertToJavaBean(param.getDestPath(),ILCodes.class);
+            SingleValue<ILCodes> codeValue = new SingleValue<>(convertToJavaBean(param.getDestPath(),ILCodes.class));
             param.getPathMap().entrySet().stream().forEach(entry->{
                 Path path = entry.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(entry.getKey()),path));
                 List<String> datas = readFile(path,CHARSET_GBK);
                 int dataSize = datas.size();
-                ILCodes ilCodes = ILCODES.cloneValue();
-                if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+                ILCodes ilCodes = codeValue.get();
+                codeValue.set(ilCodes.cloneValue());
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()},()->!ilCodes.trim().validate(dataSize));
                 if(MODE_NATIVE.equals(ilCodes.getMode())){
                     int r = dataSize % SIZE_IL_PARTITION;
                     List<Integer> partitions = new ArrayList<>();
@@ -586,7 +588,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
                     ilCodes.regenSortedCodes(codes);
                 }
-                if(!ilCodes.validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+                CS.showError(ERR_FLE_REPL,new String[]{path.toString(),codeValue.get().errorInfo()},()->!ilCodes.trim().validate(dataSize));
                 List<String> results = new ArrayList<>();
                 ilCodes.getCodes().stream().forEach(code->{
                     int start = code.getStartLine(), end = code.getEndLine();
@@ -633,7 +635,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void replaceFilesForMergeContent(FileParam param){
-        IFileMergeLogic mergeLogic = new FileMergeLogic(param);
+        ILogic<Path> mergeLogic = new FileMergeLogic(param);
         param.getPathMap().entrySet().stream().forEach(e->{
             Path p = e.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEAL},new FileSizeMatcher(e.getKey()),p));

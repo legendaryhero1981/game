@@ -11,7 +11,6 @@ public interface IMain extends ICommon{
     String N_KCD_CFG = "Config节点内有任一个节点";
     String N_KCD_MOD_PATH = "Config节点内的modPath节点对应的目录";
     String N_KCD_MOD = "Mods节点内有任一个Mod节点的mod节点";
-    String N_KCD_MERGE = "合并文件";
     String MOD_ORDER_MERGE = "0";
     String MOD_ORDER_CONFLICT = "1";
     String MOD_ORDER_INGNORE = "999";
@@ -56,7 +55,6 @@ public interface IMain extends ICommon{
     String ERR_KCD_NUL_CFG = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_CFG + V_BY_NUL;
     String ERR_KCD_MOD_PATH = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD_PATH + V_NON_EXISTS;
     String ERR_KCD_NUL_MOD = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD + V_BY_NUL;
-    String ERR_KCD_MERGE = V_EXEC + N_KCD_MERGE + N_CMD + V_FAIL + N_ERR_INFO + PH_ARG0;
     String HELP_KCD = APP_INFO + "参数说明：" + gl(2)
     + "kcd -lm|-lma|-lmu|-lc|-lca|-lcu|-ld|-lr|-mc|-mp|-mu|-mma|-mmf|-mmc|-mmo|-mmu regex src dest merge gamePath modPath mergePath mergeExecutablePath" + gl(2)
     + "-lm\t\t\t全量合并翻译文件，合并所有；包含原有的、新增的和更新的记录。" + gl(2)

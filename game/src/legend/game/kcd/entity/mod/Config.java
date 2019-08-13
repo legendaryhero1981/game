@@ -1,6 +1,6 @@
 package legend.game.kcd.entity.mod;
 
-import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.nonEmpty;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -19,7 +19,7 @@ public class Config{
     private String mergeExecutablePath = "";
 
     public boolean validate(){
-        return isEmpty(gamePath) || isEmpty(modPath) || isEmpty(mergePath) || isEmpty(mergeExecutablePath);
+        return nonEmpty(gamePath) && nonEmpty(modPath) && nonEmpty(mergePath) && nonEmpty(mergeExecutablePath);
     }
 
     public Config trim(){

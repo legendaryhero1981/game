@@ -90,7 +90,7 @@ public final class MD5Util implements IMD5Util{
     }
 
     private static String getMD5(String s, int mode){
-        StringBuffer sb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer(S_EMPTY);
         try{
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             byte[] bytes = messageDigest.digest(s.getBytes("UTF-8"));
@@ -106,7 +106,7 @@ public final class MD5Util implements IMD5Util{
     }
 
     private static String getMD5(Path path, int mode){
-        StringBuffer sb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer(S_EMPTY);
         try(SeekableByteChannel byteChannel = newByteChannel(path)){
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
             ByteBuffer byteBuffer = allocate(BUFFER_SIZE);

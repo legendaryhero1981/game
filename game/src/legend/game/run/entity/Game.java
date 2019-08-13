@@ -1,7 +1,7 @@
 package legend.game.run.entity;
 
 import static legend.util.StringUtil.gs;
-import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,29 +16,29 @@ import legend.game.run.intf.IMain;
 @XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentExecutablePath","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
 public class Game implements IMain{
     @XmlElement
-    private String comment = "";
+    private String comment = S_EMPTY;
     @XmlElement
-    private String name = "";
+    private String name = S_EMPTY;
     @XmlElement
-    private String id = "";
+    private String id = S_EMPTY;
     @XmlElement
-    private String path = "";
+    private String path = S_EMPTY;
     @XmlElement
-    private String exe = "";
+    private String exe = S_EMPTY;
     @XmlElement
-    private String args = "";
+    private String args = S_EMPTY;
     @XmlElement
     private String priority = PRIORITY_HIGH;
     @XmlElement
-    private String icon = "";
+    private String icon = S_EMPTY;
     @XmlElement
-    private String agentExecutablePath = "";
+    private String agentExecutablePath = S_EMPTY;
     @XmlElement
-    private String agentArgs = "";
+    private String agentArgs = S_EMPTY;
     @XmlElement
-    private String before = "";
+    private String before = S_EMPTY;
     @XmlElement
-    private String after = "";
+    private String after = S_EMPTY;
     @XmlElement
     private String beforeWait = WAIT_TIME;
     @XmlElement
@@ -54,7 +54,7 @@ public class Game implements IMain{
     }
 
     public boolean validate(){
-        return isEmpty(id) || isEmpty(name) || isEmpty(path) || isEmpty(exe);
+        return nonEmpty(id) && nonEmpty(name) && nonEmpty(path) && nonEmpty(exe);
     }
 
     public Game trim(){

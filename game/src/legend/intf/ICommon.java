@@ -48,6 +48,7 @@ public interface ICommon{
     String N_ERR_INFO = "错误信息：";
     String N_FLE = "文件";
     String N_FLE_NUL = "空文件";
+    String N_FILE_MERGE = "文件整合";
     String N_PATH_NAME = "路径名";
     String N_DIR = "目录";
     String N_DIR_NUL = "空目录";

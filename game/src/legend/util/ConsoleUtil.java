@@ -8,6 +8,7 @@ import static legend.util.ValueUtil.isNull;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.ValueUtil.nonNull;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Scanner;
@@ -26,6 +27,19 @@ public final class ConsoleUtil implements IConsoleUtil{
         FS = new FileSizeUtil();
         IN = new Scanner(System.in);
         OUT = System.out;
+    }
+
+    public static void exec(String cmd, boolean waitFor){
+        try{
+            if(waitFor) Runtime.getRuntime().exec(cmd).waitFor();
+            else Runtime.getRuntime().exec(cmd);
+        }catch(InterruptedException | IOException e){
+            CS.showError(ERR_FILE_MERGE,new String[]{e.toString()});
+        }
+    }
+
+    public static void exec(String cmd){
+        exec(cmd,true);
     }
 
     public void showHelp(String help, BooleanSupplier... suppliers){
