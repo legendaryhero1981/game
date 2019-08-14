@@ -443,15 +443,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static void findSortedFilePaths(FileParam param){
         boolean relative = param.meetCondition(PATH_RELATIVE);
         if(relative) param.getPathMap().entrySet().parallelStream().forEach(e->e.setValue(param.getRootPath().relativize(e.getValue())));
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->{
-            if(relative) CS.sl(param.getRootPath().relativize(p).toString());
-            else CS.sl(p.toString());
-        }));
+        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->CS.sl(p.toString())));
         int limit = param.getLimit() - param.getPathList().size();
-        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->{
-            if(relative) CS.sl(param.getRootPath().relativize(p).toString());
-            else CS.sl(p.toString());
-        }));
+        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->CS.sl(p.toString())));
     }
 
     private static void findSortedFileSizes(FileParam param){
