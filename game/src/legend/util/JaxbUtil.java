@@ -48,12 +48,12 @@ public final class JaxbUtil implements IJaxbUtil{
         }
     }
 
-    public static <T> T convertToJavaBean(Path path, Class<T> c){
-        return convertToJavaBean(path,c,false);
+    public static <T> T convertToObject(Path path, Class<T> c){
+        return convertToObject(path,c,false);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T convertToJavaBean(Path path, Class<T> c, boolean lexical){
+    public static <T> T convertToObject(Path path, Class<T> c, boolean lexical){
         T t = null;
         try{
             Source source = new SAXSource(new InputSource(new BufferedReader(new FileReader(path.toFile()))));

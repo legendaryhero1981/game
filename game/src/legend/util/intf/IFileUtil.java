@@ -3,8 +3,8 @@ package legend.util.intf;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_COMP;
 import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_ATOM;
+import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_COMP;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_LOWER;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_REGENROW;
 import static legend.util.rule.intf.IReplaceRule.REG_RULE_REPLACE;
@@ -15,8 +15,12 @@ import static legend.util.rule.intf.IReplaceRule.RULE_REPLACE;
 import static legend.util.rule.intf.IReplaceRule.RULE_UPPER;
 
 import legend.intf.ICommon;
+import legend.util.ConsoleUtil;
+import legend.util.ProgressUtil;
 
 public interface IFileUtil extends ICommon{
+    ConsoleUtil CS = new ConsoleUtil();
+    IProgress PG = ProgressUtil.ConsoleProgress();
     long EXEC_CMD = 1l;
     long SHOW_PROGRESS = 1l << 1;
     long SHOW_DETAIL = 1l << 2;
@@ -116,8 +120,8 @@ public interface IFileUtil extends ICommon{
     String CMD_JSON_DEC = "-jd";
     String OPTIONS = "[" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "] ";
     String FILE_LOG = "./file.log";
-    String CONFIG_FILE_IL = "./file-il.xml";
-    String CONFIG_FILE_MERGE = "./file-merge.xml";
+    String CONF_FILE_IL = "./file-il.xml";
+    String CONF_FILE_MERGE = "./file-merge.xml";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
@@ -214,7 +218,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_UP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REP_FLE_BT + OPTIONS + "regex src replacement [split] [level]" + gl(1) + "根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + OPTIONS + "regex src [dest] [level]" + gl(1) + "根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件" + CONFIG_FILE_IL + "自动替换src中所有文件名匹配regex的文件内容，若配置文件" + CONFIG_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + OPTIONS + "regex src [dest] [level]" + gl(1) + "根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件" + CONF_FILE_IL + "自动替换src中所有文件名匹配regex的文件内容，若配置文件" + CONF_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
     + CMD + CMD_REG_FLE_GBK + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。" + gl(2)
     + CMD + CMD_REG_FLE_BIG5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。" + gl(2)
     + CMD + CMD_REG_FLE_CS + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
@@ -299,7 +303,7 @@ public interface IFileUtil extends ICommon{
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONFIG_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
     + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
     + CMD + CMD_REG_FLE_GBK + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
     + CMD + CMD_REG_FLE_BIG5 + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)

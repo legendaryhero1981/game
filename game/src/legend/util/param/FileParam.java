@@ -5,7 +5,6 @@ import static java.util.Optional.of;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static java.util.regex.Pattern.quote;
-import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.StringUtil.brph;
 import static legend.util.StringUtil.gsph;
@@ -457,10 +456,10 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_REP_FLE_IL:
-                    optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONFIG_FILE_IL)));
+                    optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONF_FILE_IL)));
                     optional.filter(s->s.length > 3).ifPresent(s->{
                         if(s[3].matches(REG_NUMBER)){
-                            param.setDestPath(get(CONFIG_FILE_IL));
+                            param.setDestPath(get(CONF_FILE_IL));
                             param.setLevel(Integer.parseInt(s[3]));
                         }else param.setDestPath(get(s[3]));
                     });
@@ -547,6 +546,21 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                 CS.showError(ERR_ARG_ANLS,new String[]{e.toString()});
             }
         return fileParams;
+    }
+
+    public static String convertParam(String param, boolean regex){
+        Deque<String> quotes = new ArrayDeque<>();
+        Matcher matcher = compile(REG_QUOTE_BQ).matcher(param);
+        if(regex) while(matcher.find())
+            quotes.add(quoteReplacement(quote(matcher.group(1))));
+        else while(matcher.find())
+            quotes.add(matcher.group(1));
+        StringBuilder builder = new StringBuilder(brph(matcher.replaceAll(SPC_NUL),SPH_MAP));
+        matcher = compile(SPC_NUL).matcher(builder.toString());
+        builder.delete(0,builder.length());
+        while(matcher.find() && !quotes.isEmpty())
+            matcher.appendReplacement(builder,quotes.remove());
+        return matcher.appendTail(builder).toString();
     }
 
     private static void matchSizes(FileParam param, String size){

@@ -2,7 +2,6 @@ package legend.game.kcd;
 
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
-import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.exec;
 import static legend.util.FileUtil.copyFile;
 import static legend.util.FileUtil.dealFiles;
@@ -12,7 +11,7 @@ import static legend.util.FileUtil.makeDirs;
 import static legend.util.FileUtil.moveFile;
 import static legend.util.FileUtil.nonEmptyDir;
 import static legend.util.FileUtil.writeFile;
-import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.MD5Util.getMD5L16;
 import static legend.util.StringUtil.gs;
@@ -178,7 +177,7 @@ public final class Main implements IMain,IFileUtil{
     private static void loadKcd(){
         if(nonEmpty(kcd)) return;
         CS.showError(ERR_KCD_NON,null,()->!kcdPath.toFile().isFile());
-        kcd = convertToJavaBean(kcdPath,Kcd.class);
+        kcd = convertToObject(kcdPath,Kcd.class);
         config = kcd.getConfig();
         gamePath = get(config.getGamePath());
         modPath = get(config.getModPath());
@@ -384,8 +383,8 @@ public final class Main implements IMain,IFileUtil{
                 Path dest = destEntry.getValue();
                 if(src.getFileName().equals(dest.getFileName())){
                     find.set(true);
-                    Table srcTable = convertToJavaBean(src,Table.class);
-                    Table destTable = convertToJavaBean(dest,Table.class);
+                    Table srcTable = convertToObject(src,Table.class);
+                    Table destTable = convertToObject(dest,Table.class);
                     if(isEmpty(srcTable) || isEmpty(destTable)) return;
                     List<Object> destRows = destTable.getRows();
                     ConcurrentMap<String,Row> rowMap = destTable.getRowMap();
@@ -442,8 +441,8 @@ public final class Main implements IMain,IFileUtil{
                 Path dest = destEntry.getValue();
                 if(src.getFileName().equals(dest.getFileName())){
                     find.set(true);
-                    Table srcTable = convertToJavaBean(src,Table.class);
-                    Table destTable = convertToJavaBean(dest,Table.class);
+                    Table srcTable = convertToObject(src,Table.class);
+                    Table destTable = convertToObject(dest,Table.class);
                     if(isEmpty(srcTable) || isEmpty(destTable)) return;
                     List<Object> destRows = destTable.getRows();
                     ConcurrentMap<String,Row> rowMap = destTable.getRowMap();
@@ -495,7 +494,7 @@ public final class Main implements IMain,IFileUtil{
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
             srcParam.getFilesCount().set(0);
-            Table srcTable = convertToJavaBean(src,Table.class,true);
+            Table srcTable = convertToObject(src,Table.class,true);
             srcTable.getRowMap().values().parallelStream().forEach(row->{
                 Value cell = row.getCells().get(2);
                 String value = FLAG_DEBUG + srcParam.getFilesCount().incrementAndGet() + FLAG_DEBUG + cell.getText();
@@ -514,7 +513,7 @@ public final class Main implements IMain,IFileUtil{
         Pattern pattern = Pattern.compile(REG_RELEASE);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
-            Table srcTable = convertToJavaBean(src,Table.class,true);
+            Table srcTable = convertToObject(src,Table.class,true);
             srcTable.getRowMap().values().parallelStream().forEach(row->{
                 Value cell = row.getCells().get(2);
                 String value = cell.getText();
@@ -621,16 +620,16 @@ public final class Main implements IMain,IFileUtil{
                 for(int i = 0,j = 0,l = mappings.size();i < l;j = i++){
                     if(existsPath(path)){
                         md5[0] = getMD5L16(path);
-                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()));
-                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()));
+                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()),ERR_FILE_MERGE);
+                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()),ERR_FILE_MERGE);
                         md5[1] = getMD5L16(path);
                         if(md5[0].equals(md5[1])){
                             i = j;
                             continue;
                         }
                     }else{
-                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
-                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()));
+                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_FILE_MERGE);
+                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_FILE_MERGE);
                         if(!existsPath(path)) break;
                     }
                 }

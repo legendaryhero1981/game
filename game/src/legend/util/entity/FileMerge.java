@@ -61,10 +61,8 @@ public class FileMerge implements IFileMerge{
     }
 
     public List<Merge> refreshMerges(){
-        if(!mergeMap.isEmpty()){
-            merges.clear();
-            merges.addAll(mergeMap.values());
-        }
+        merges.clear();
+        if(!mergeMap.isEmpty()) merges.addAll(mergeMap.values());
         return merges;
     }
 

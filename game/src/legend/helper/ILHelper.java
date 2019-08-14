@@ -3,7 +3,7 @@ package legend.helper;
 import static java.nio.file.Paths.get;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.existsPath;
-import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
@@ -23,7 +23,7 @@ public class ILHelper implements IILHelper{
     private static final HelperComparator helperComparator;
     static{
         ilPath = get(IL_FILE_CONFIG);
-        if(existsPath(ilPath)) il = convertToJavaBean(ilPath,IL.class);
+        if(existsPath(ilPath)) il = convertToObject(ilPath,IL.class);
         else il = new IL();
         cache = new StringBuilder();
         helperComparator = new HelperComparator();

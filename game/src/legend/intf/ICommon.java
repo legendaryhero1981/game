@@ -16,7 +16,7 @@ public interface ICommon{
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
     String AUTHOR = "作者：李允";
-    String VERSION = "版本：V5.0";
+    String VERSION = "版本：V5.1";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
@@ -138,7 +138,7 @@ public interface ICommon{
     String SPRT_RULE = ";;";
     String SPRT_ATOM = "=>";
     String SPRT_ARG = ",,";
-    String SPC_NUL = new String(new byte[] {0});
+    String SPC_NUL = new String(new byte[]{0});
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
     String SPC_BQ = "BQ";
@@ -185,6 +185,7 @@ public interface ICommon{
     String ST_CMD_DONE = N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ST_PRG_START = V_START + V_EXEC + N_PRG + S_ELLIPSIS;
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
+    String ERR_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_CMD_EXEC = N_CMD + V_EXEC + V_FAIL + N_ERR_INFO + PH_ARG0;
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + N_ERR_INFO + PH_ARG0;

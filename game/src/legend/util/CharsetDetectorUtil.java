@@ -1,7 +1,6 @@
 package legend.util;
 
 import static java.nio.file.Files.newInputStream;
-import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.matchRange;
 

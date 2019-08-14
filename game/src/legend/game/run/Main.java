@@ -6,7 +6,7 @@ import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.IN;
-import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.glph;
@@ -230,7 +230,7 @@ public final class Main implements IMain{
 
     private static Games loadModel(){
         CS.showError(ERR_CONFIG_NON,null,()->!config.toFile().isFile());
-        Games games = convertToJavaBean(config,Games.class);
+        Games games = convertToObject(config,Games.class);
         CS.showError(ERR_CONFIG_NUL,null,()->isEmpty(games.getGames()));
         ConcurrentMap<String,AtomicInteger> gameMap = new ConcurrentHashMap<>();
         games.getGames().parallelStream().forEach(g->gameMap.computeIfAbsent(g.getId(),k->new AtomicInteger()).addAndGet(1));

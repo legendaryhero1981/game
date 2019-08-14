@@ -33,6 +33,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
+        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
         super.monkParam(s);
     }
 }

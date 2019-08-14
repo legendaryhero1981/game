@@ -44,5 +44,5 @@ public interface IProgress{
 
     float countUpdate(float amount, float size);
 
-    float countUpdate(float amount, float size, float percent);
+    float countUpdate(float amount, float size, float scale);
 }

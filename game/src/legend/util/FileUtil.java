@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
 import static legend.util.CharsetDetectorUtil.detectorFileCharset;
 import static legend.util.ConsoleUtil.IN;
-import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
@@ -92,16 +92,12 @@ import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class FileUtil implements IFileUtil,IConsoleUtil{
-    public static final ConsoleUtil CS;
-    public static final IProgress PG;
     private static final FileParam CACHE;
     private static final Pattern RPTN;
     private static final Pattern APTN;
     private static FileParam FP;
     private static PrintStream PS;
     static{
-        CS = new ConsoleUtil();
-        PG = ProgressUtil.ConsoleProgress();
         CACHE = new FileParam();
         RPTN = compile(REG_REN_UP_FST);
         APTN = compile(REG_ASK_NO);
@@ -145,6 +141,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 param.getProgressOptional().ifPresent(c->PG.reset(count,PROGRESS_POSITION));
             }else param.getProgressOptional().ifPresent(c->PG.reset(CACHE.getCacheDirsCount() + CACHE.getCacheFilesCount(),PROGRESS_POSITION));
             cacheRepaths(param);
+            param.getProgressOptional().ifPresent(c->PG.resume());
             switch(param.getCmd()){
                 case CMD_FIND:
                 case CMD_FND_DIR:
@@ -535,7 +532,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void replaceFilesWithIL(FileParam param){
         if(existsPath(param.getDestPath())){
-            SingleValue<ILCodes> codeValue = new SingleValue<>(convertToJavaBean(param.getDestPath(),ILCodes.class));
+            SingleValue<ILCodes> codeValue = new SingleValue<>(convertToObject(param.getDestPath(),ILCodes.class));
             param.getPathMap().entrySet().stream().forEach(entry->{
                 Path path = entry.getValue();
                 param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(entry.getKey()),path));

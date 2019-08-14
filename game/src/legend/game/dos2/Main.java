@@ -5,7 +5,7 @@ import static java.util.Optional.of;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.makeDirs;
-import static legend.util.JaxbUtil.convertToJavaBean;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.TimeUtil.runWithConsole;
 
@@ -49,7 +49,7 @@ public final class Main implements IMain{
     }
 
     public static void toDebugVersion(IProgress progress){
-        ContentList contentList = convertToJavaBean(param.getSrcPath(),ContentList.class);
+        ContentList contentList = convertToObject(param.getSrcPath(),ContentList.class);
         of(contentList.getContents()).ifPresent(contents->{
             progress.reset(contents.size(),0,90);
             AtomicInteger i = new AtomicInteger(1);
@@ -63,7 +63,7 @@ public final class Main implements IMain{
     }
 
     public static void toReleaseVersion(IProgress progress){
-        ContentList contentList = convertToJavaBean(param.getSrcPath(),ContentList.class);
+        ContentList contentList = convertToObject(param.getSrcPath(),ContentList.class);
         of(contentList.getContents()).ifPresent(contents->{
             progress.reset(contents.size(),0,90);
             Pattern pattern = Pattern.compile(REG_RELEASE);
@@ -77,8 +77,8 @@ public final class Main implements IMain{
     }
 
     public static void toUpdateVersion(IProgress progress){
-        ContentList updateList = convertToJavaBean(param.getSrcPath(),ContentList.class);
-        ContentList resultList = convertToJavaBean(param.getDestPath(),ContentList.class);
+        ContentList updateList = convertToObject(param.getSrcPath(),ContentList.class);
+        ContentList resultList = convertToObject(param.getDestPath(),ContentList.class);
         of(resultList.getContents()).ifPresent(resultContents->{
             progress.reset(updateList.getContentMap().size(),0,90);
             AtomicInteger i = new AtomicInteger(resultContents.size());

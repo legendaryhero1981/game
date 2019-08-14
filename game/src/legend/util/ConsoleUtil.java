@@ -29,17 +29,12 @@ public final class ConsoleUtil implements IConsoleUtil{
         OUT = System.out;
     }
 
-    public static void exec(String cmd, boolean waitFor){
+    public static void exec(String cmd, String error){
         try{
-            if(waitFor) Runtime.getRuntime().exec(cmd).waitFor();
-            else Runtime.getRuntime().exec(cmd);
+            Runtime.getRuntime().exec(cmd).waitFor();
         }catch(InterruptedException | IOException e){
-            CS.showError(ERR_FILE_MERGE,new String[]{e.toString()});
+            CS.showError(error,new String[]{e.toString()});
         }
-    }
-
-    public static void exec(String cmd){
-        exec(cmd,true);
     }
 
     public void showHelp(String help, BooleanSupplier... suppliers){
