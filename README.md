@@ -22,7 +22,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 目前包含5条命令，输入 game 可以看到命令帮助信息如下：
 
 作者：李允
-版本：V5.0
+版本：V5.1
 
 
 参数说明：
@@ -201,10 +201,10 @@ file -fdodf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。
 
 file -fpa[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件（同-f），显示文件的绝对路径名。
+根据regex查找src中的文件，显示文件的绝对路径名。
 
 file -fpr[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件（同-f），显示文件的相对路径名。
+根据regex查找src中的文件，显示文件的相对路径名。
 
 file -fpda[~+*!@?] regex src [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。
@@ -296,6 +296,9 @@ file -rfcs[~+*!@?] regex src replacement [level]
 file -rfsn[~+*!@?] regex src dest [limit] [level]
 根据regex获得src中所有匹配文件，再使用这些文件替换dest中的所有同名文件；limit为dest的最大查询层数，level为src的最大查询层数。
 
+file -rfmeg[~+*!@?] regex src [level]
+根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。
+
 file -c[~+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
 
@@ -363,28 +366,28 @@ file -pi[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件解包到该文件所在目录中。
 
 file -gl32[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全小写）。
+根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。
 
 file -gu32[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的36位GUID（英文字母全大写）。
+根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。
 
 file -ml16[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全小写）。
+根据regex查找src中的文件，显示文件对应的16位MD5（英文字母全小写）。
 
 file -mu16[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的16位MD5（英文字母全大写）。
+根据regex查找src中的文件，显示文件对应的16位MD5（英文字母全大写）。
 
 file -ml32[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全小写）。
+根据regex查找src中的文件，显示文件对应的32位MD5（英文字母全小写）。
 
 file -mu32[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），显示文件对应的32位MD5（英文字母全大写）。
+根据regex查找src中的文件，显示文件对应的32位MD5（英文字母全大写）。
 
 file -je[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），编码（即压缩为一行）JSON格式文件。
+根据regex查找src中的文件，编码（即压缩为一行）JSON格式文件。
 
 file -jd[~+*!@?] regex src [level]
-根据regex查找src中的文件（同-f），解码（即格式化）JSON格式文件。
+根据regex查找src中的文件，解码（即格式化）JSON格式文件。
 
 
 单条命令示例：
@@ -399,28 +402,28 @@ file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
 查询该目录中的第一级目录。
 
 file -fs+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名文件。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名文件。
 
 file -fsmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
-查询D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd目录中的所有文件；且只选取在G:/games/DSParamEditor/gameparam-parambnd目录的同一相对路径中存在且文件内容相同的同名文件。
+查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容相同的同名文件。
 
 file -fds+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录和文件。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录和文件。
 
 file -fdos+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中存在的同名目录。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录。
 
 file -fdf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的文件。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的文件。
 
 file -fdfmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
-查询D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd目录中的所有文件；且只选取在G:/games/DSParamEditor/gameparam-parambnd目录的同一相对路径中存在且文件内容不同的同名文件。
+查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容不同的同名文件。
 
 file -fddf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录和文件。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录和文件。
 
 file -fdodf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录中的所有文件；且只选取在D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data目录的同一相对路径中不存在的目录。
+查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录。
 
 file -fpa+ . "F:/games/DARK SOULS REMASTERED" 20
 查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。
@@ -465,50 +468,50 @@ file -fdosd+ \Ajp$ "F:/games/DARK SOULS REMASTERED" 100KB;10MB
 先查询该目录中的第一级子目录，再按目录大小递减排序。
 
 file -r (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" $1en$2
-先查询（作用同-f）再以en替换掉所有匹配文件名中的cn（其余字符不变）。
+先查询再以en替换掉所有匹配文件名中的cn（其余字符不变）。
 
 file -rl (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
-先查询（作用同-f）再将该目录中所有匹配文件名中英文字母替换为小写。
+先查询再将该目录中所有匹配文件名中英文字母替换为小写。
 
 file -ru (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
-先查询（作用同-f）再将该目录中所有匹配文件名中英文字母替换为大写。
+先查询再将该目录中所有匹配文件名中英文字母替换为大写。
 
 file -ruf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
-先查询（作用同-f）再将该目录中所有匹配文件名中英单词首字母替换为大写。
+先查询再将该目录中所有匹配文件名中英单词首字母替换为大写。
 
 file -rd (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4" $1en$2
-先查询（作用同-fd）再以en替换掉所有匹配文件名和目录名中的cn（其余字符不变）。
+先查询再以en替换掉所有匹配文件名和目录名中的cn（其余字符不变）。
 
 file -rdl (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英文字母替换为小写。
+先查询再将该目录中所有匹配文件名和目录名中英文字母替换为小写。
 
 file -rdu (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英文字母替换为大写。
+先查询再将该目录中所有匹配文件名和目录名中英文字母替换为大写。
 
 file -rduf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配文件名和目录名中英单词首字母替换为大写。
+先查询再将该目录中所有匹配文件名和目录名中英单词首字母替换为大写。
 
 file -rdo (.*_)(?i)cn(\..{0,2}strings$) "F:/games/Fallout 4" $1en$2
-先查询（作用同-fd）再以en替换掉所有匹配的目录名中的cn（其余字符不变）。
+先查询再以en替换掉所有匹配的目录名中的cn（其余字符不变）。
 
 file -rdol (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为小写。
+先查询再将该目录中所有匹配的目录名中英文字母替换为小写。
 
 file -rdou (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配的目录名中英文字母替换为大写。
+先查询再将该目录中所有匹配的目录名中英文字母替换为大写。
 
 file -rdouf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
-先查询（作用同-fd）再将该目录中所有匹配的目录名中英单词首字母替换为大写。
+先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。
 
 file -rfbt* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##LOWER;;UPPER=>REPLACE(\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
-先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
+先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
 1、对每行的第1列数据执行原子规则：将英文字母全部替换为小写；
 2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；
 3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = "beq.s"”。
 
 file -rfbt* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
-先查询（作用同-f）再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
+先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
 1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；
 2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,"如果两个值相等，则将控制转移到目标指令（短格式）。","");”。
@@ -526,76 +529,79 @@ file -rfbig5* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/f
 提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
 
 file -rfcs* (?i)\.txt$ E:/Decompile/DLL-ildasm gbk
-先查询（作用同-f）再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
+先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
 
 file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2
-先查询（作用同-f）获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。
+先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。
+
+file -rfmeg* (?i)`file-merge.xml`$ . 1
+先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询（作用同-f）再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
+先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
 
 file -cd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
+先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
 
 file -cdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
+先查询再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
 
 file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
-先查询（作用同-f）再删除该目录中所有匹配文件。
+先查询再删除该目录中所有匹配文件。
 
 file -dd "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配文件和目录及其中所有文件。
+先查询再删除该目录中所有匹配文件和目录及其中所有文件。
 
 file -ddo "\Ade$|\Afr$|\Aru$|\Aus$" "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配的目录及其中所有文件。
+先查询再删除该目录中所有匹配的目录及其中所有文件。
 
 file -dn . "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配的空文件。
+先查询再删除该目录中所有匹配的空文件。
 
 file -ddn . "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配的空文件和空目录。
+先查询再删除该目录中所有匹配的空文件和空目录。
 
 file -ddon . "F:/games/FINAL FANTASY XV"
-先查询（作用同-fd）再删除该目录中所有匹配的空目录。
+先查询再删除该目录中所有匹配的空目录。
 
 file -m (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询（作用同-f）再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。
+先查询再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。
 
 file -md (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
+先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
 
 file -mdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询（作用同-fd）再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
+先查询再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
 
 file -iu . "F:/games/Resident Evil 4/修改/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/备份/BIO4"
-先查询（作用同-f）获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
+先查询获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
 
 file -ir . "F:/games/Resident Evil 4/备份/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/修改/BIO4"
-先查询（作用同-f）获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
+先查询获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
 
 file -u "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-f）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
+先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
 
 file -ud \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询（作用同-fd）再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
+先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
 
 file -zd (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份" strings 1
-先查询（作用同-f）再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
+先查询再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
 
 file -zdd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份" strings 1
-先查询（作用同-fd）再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
+先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
 
 file -zi (?i)\.zip$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
-先查询（作用同-f）再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
+先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
 
 file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
-先查询（作用同-f）再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
+先查询再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
 file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
-先查询（作用同-fd）再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
+先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
 file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
-先查询（作用同-f）再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
+先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
 
 file -gl32+ (?i)assembly-csharp\.dll "F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed"
 显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。
