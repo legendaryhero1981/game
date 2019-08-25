@@ -1,8 +1,3 @@
-/file.log
-/run.log
-/run.xml
-/kcd.xml
 bin/*
-/il.xml
-/file-il.xml
-/file-merge.xml
+/*.log
+/*.xml
