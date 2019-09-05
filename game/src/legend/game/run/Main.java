@@ -103,7 +103,7 @@ public final class Main implements IMain{
                 case CMD_ADD:
                 case CMD_CREATE:
                 game.setId(args[1]);
-                game.setPath(args[2]);
+                game.setPath(args[2].replaceAll(REG_SPRT_PATH,SPRT_FILE_ZIP));
                 game.setExe(args[3]);
                 game.setName(args[4]);
                 if(args.length > 5) game.setComment(args[5]);

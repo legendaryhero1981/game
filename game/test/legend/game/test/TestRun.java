@@ -23,7 +23,7 @@ public class TestRun extends TestBase{
 //        s = "-la";
 //        s = "-l  ew";
 //        s = "-d  bio4";
-//        s = "-a  bio4  F:/games/Resident Evil 4/Bin32  bio4  生化危机4";
+        s = "-a  remn  F:\\games\\Remnant\\Remnant\\Binaries\\Win64  Remnant-Win64-Shipping  遗迹：灰烬重生";
 //        s = "-k  ew";
         super.monkParam(s);
     }
