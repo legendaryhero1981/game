@@ -24,7 +24,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
-//        s = "-rfil*  (?i)assembly-csharp\\.il$  E:/Decompile/DLL-ildasm";
+        s = "-rfil*  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
 //        s = "-rfgbk*  mod  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
 //        s = "-rfbig5*  .  D:/games/jaot  D:/games/font_tchinese.txt";
 //        s = "-rfbig5*  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";
@@ -33,8 +33,8 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
-        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
-        s = "-fpr!*  `.java`$  D:/games/src";
+//        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
+//        s = "-fpr!*  `.java`$  D:/games/src";
         super.monkParam(s);
     }
 }

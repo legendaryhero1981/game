@@ -34,7 +34,6 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
     @Override
     public ILCodes cloneValue(){
         ILCodes ilCodes = new ILCodes();
-        ilCodes.comment = comment;
         ilCodes.mode = mode;
         ilCodes.codes.addAll(codes);
         return ilCodes;

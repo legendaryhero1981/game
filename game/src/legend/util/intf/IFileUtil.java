@@ -85,6 +85,7 @@ public interface IFileUtil extends ICommon{
     String CMD_REP_FLE_IL = "-rfil";
     String CMD_REP_FLE_SN = "-rfsn";
     String CMD_REP_FLE_MEG = "-rfmeg";
+    String CMD_REP_FLE_SPK = "-rfspk";
     String CMD_REG_FLE_GBK = "-rfgbk";
     String CMD_REG_FLE_BIG5 = "-rfbig5";
     String CMD_REG_FLE_CS = "-rfcs";
