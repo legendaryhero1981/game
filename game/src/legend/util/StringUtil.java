@@ -5,7 +5,9 @@ import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import legend.intf.ICommon;
@@ -48,8 +50,8 @@ public final class StringUtil implements ICommon{
 
     public static String brph(String s, Map<String,String> map){
         SingleValue<String> value = new SingleValue<>(s);
-        if(nonEmpty(map)) map.entrySet().stream().forEach(entry->value.set(brph(value.get(),entry.getKey(),entry.getValue())));
-        return value.get();
+        if(nonEmpty(map)) map.entrySet().stream().forEach(entry->value.setValue(brph(value.getValue(),entry.getKey(),entry.getValue())));
+        return value.getValue();
     }
 
     public static String brph(String s, String regex, String repl){
@@ -118,8 +120,19 @@ public final class StringUtil implements ICommon{
         return r;
     }
 
+    public static String glph(String s, int n, List<Supplier<String>> suppliers){
+        String r = gl(s,n);
+        if(nonEmpty(suppliers)) for(int i = 0;i < suppliers.size();i++)
+            r = r.replaceAll(gph(i),quoteReplacement(suppliers.get(i).get()));
+        return r;
+    }
+
     public static String gsph(String s, String... ph){
         return glph(s,0,ph);
+    }
+
+    public static String gsph(String s, List<Supplier<String>> suppliers){
+        return glph(s,0,suppliers);
     }
 
     public static String gph(int n){

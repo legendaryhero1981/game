@@ -25,6 +25,7 @@ open module legend{
     exports legend.util.adapter;
     exports legend.util.chardet;
     exports legend.util.entity;
+    exports legend.util.entity.intf;
     exports legend.util.intf;
     exports legend.util.logic;
     exports legend.util.logic.intf;

@@ -11,8 +11,10 @@ import static legend.util.ValueUtil.nonNull;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import legend.util.intf.IConsoleUtil;
 
@@ -48,7 +50,18 @@ public final class ConsoleUtil implements IConsoleUtil{
         if(showException(error,args,suppliers)) exit(0);
     }
 
+    public void showError(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
+        if(showException(error,args,suppliers)) exit(0);
+    }
+
     public boolean showException(String error, String[] args, BooleanSupplier... suppliers){
+        if(meetCondition(suppliers)){
+            sl(gsph(error,args));
+            return true;
+        }else return false;
+    }
+
+    public boolean showException(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
         if(meetCondition(suppliers)){
             sl(gsph(error,args));
             return true;

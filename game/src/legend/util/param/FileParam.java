@@ -235,6 +235,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_REG_FLE_CS:
             case CMD_REP_FLE_SN:
             case CMD_REP_FLE_MEG:
+            case CMD_REP_FLE_SPK:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -502,6 +503,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_JSON_ENC:
                     case CMD_JSON_DEC:
                     case CMD_REP_FLE_MEG:
+                    case CMD_REP_FLE_SPK:
                     optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
                     break;
                     case CMD_COPY:
@@ -662,6 +664,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_JSON_ENC:
             case CMD_JSON_DEC:
             case CMD_REP_FLE_MEG:
+            case CMD_REP_FLE_SPK:
             s += S_SPACE + level;
             break;
             case CMD_COPY:

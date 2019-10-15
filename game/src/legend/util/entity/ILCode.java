@@ -15,12 +15,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import legend.intf.IValue;
-import legend.util.intf.IILCode;
+import legend.util.entity.intf.IILCode;
 
 @XmlRootElement(name = "ILCode")
 @XmlType(propOrder = {"processingMode","quoteMode","lineNumber","queryRegex","codeRegex","codeDesc","codeFragment"})
-public class ILCode implements IILCode,IValue<ILCode>{
+public class ILCode extends BaseEntity<ILCode> implements IILCode{
     @XmlElement
     private String processingMode = MODE_NATIVE;
     @XmlElement
@@ -35,8 +34,6 @@ public class ILCode implements IILCode,IValue<ILCode>{
     private String codeDesc = S_EMPTY;
     @XmlElement
     private String codeFragment = S_EMPTY;
-    @XmlTransient
-    protected String errorInfo = S_EMPTY;
     @XmlTransient
     protected int startLine = 1;
     @XmlTransient
@@ -65,7 +62,8 @@ public class ILCode implements IILCode,IValue<ILCode>{
         return ilCode;
     }
 
-    protected boolean validate(){
+    @Override
+    public boolean validate(){
         if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD.equals(processingMode)) processingMode = MODE_NATIVE;
         if(!MODE_NATIVE.equals(quoteMode) && !MODE_REPL.equals(quoteMode)) quoteMode = MODE_NATIVE;
         Matcher matcher = compile(REG_LINE_NUMBER).matcher(lineNumber);
@@ -86,7 +84,8 @@ public class ILCode implements IILCode,IValue<ILCode>{
         return true;
     }
 
-    protected ILCode trim(){
+    @Override
+    public ILCode trim(){
         processingMode = processingMode.trim();
         quoteMode = quoteMode.trim();
         lineNumber = lineNumber.trim();

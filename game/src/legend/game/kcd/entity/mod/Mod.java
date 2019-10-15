@@ -8,10 +8,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import legend.game.kcd.intf.IMain;
+import legend.intf.IValue;
 
 @XmlRootElement(name = "Mod")
 @XmlType(propOrder = {"mod","desc","order"})
-public class Mod implements IMain{
+public class Mod implements IMain,IValue<Mod>{
     @XmlElement
     @XmlID
     private String mod = S_EMPTY;
@@ -20,6 +21,7 @@ public class Mod implements IMain{
     @XmlElement
     private String order = MOD_ORDER_INGNORE;
 
+    @Override
     public boolean validate(){
         if(nonEmpty(mod)){
             if(!order.matches(REG_ORDER)) order = MOD_ORDER_INGNORE;
@@ -30,6 +32,7 @@ public class Mod implements IMain{
         return false;
     }
 
+    @Override
     public Mod trim(){
         mod = mod.trim();
         desc = desc.trim();

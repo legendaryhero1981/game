@@ -28,12 +28,12 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
                 bytes[i] = bom[i];
             r = inputStream.read(bytes,3,BLOCK_SIZE_FILE);
             do{
-                for(i = 0;i < r && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.get());
-            }while(0 < bytesCount.get() && -1 != (r = inputStream.read(bytes,0,BLOCK_SIZE_FILE)));
+                for(i = 0;i < r && matchCharsetWithUTF8(bytes,i,bytesCount);i += bytesCount.getValue());
+            }while(0 < bytesCount.getValue() && -1 != (r = inputStream.read(bytes,0,BLOCK_SIZE_FILE)));
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
-        if(0 < bytesCount.get()) return CHARSET_UTF8;
+        if(0 < bytesCount.getValue()) return CHARSET_UTF8;
         return detectorCharset(path,language);
     }
 
@@ -41,7 +41,7 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
         SingleValue<String> result = new SingleValue<>(CHARSET_UTF8);
         try(InputStream inputStream = newInputStream(path)){
             nsDetector detector = new nsDetector(language.ordinal());
-            detector.init(cs->result.set(cs));
+            detector.init(cs->result.setValue(cs));
             byte[] bytes = new byte[BLOCK_SIZE_FILE];
             for(int r;-1 != (r = inputStream.read(bytes,0,BLOCK_SIZE_FILE));)
                 if(!detector.isAscii(bytes,r) && detector.doIt(bytes,r,false)) break;
@@ -49,21 +49,21 @@ public final class CharsetDetectorUtil implements ICharsetDetectorUtil{
         }catch(IOException e){
             CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
         }
-        return result.get();
+        return result.getValue();
     }
 
     private static boolean matchCharsetWithUTF8(byte[] bytes, int index, SingleValue<Integer> bytesCount){
-        if(0 <= bytes[index]) bytesCount.set(1);
+        if(0 <= bytes[index]) bytesCount.setValue(1);
         else if(matchRange(bytes[index],-64,-33)){
-            if(matchRange(bytes[index + 1],-128,-65)) bytesCount.set(2);
-            else bytesCount.set(0);
+            if(matchRange(bytes[index + 1],-128,-65)) bytesCount.setValue(2);
+            else bytesCount.setValue(0);
         }else if(matchRange(bytes[index],-32,-17)){
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) bytesCount.set(3);
-            else bytesCount.set(0);
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65)) bytesCount.setValue(3);
+            else bytesCount.setValue(0);
         }else if(matchRange(bytes[index],-16,-9)){
-            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) bytesCount.set(4);
-            else bytesCount.set(0);
-        }else bytesCount.set(0);
-        return 0 < bytesCount.get();
+            if(matchRange(bytes[index + 1],-128,-65) && matchRange(bytes[index + 2],-128,-65) && matchRange(bytes[index + 3],-128,-65)) bytesCount.setValue(4);
+            else bytesCount.setValue(0);
+        }else bytesCount.setValue(0);
+        return 0 < bytesCount.getValue();
     }
 }

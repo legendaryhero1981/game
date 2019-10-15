@@ -176,7 +176,7 @@ public final class Main implements IMain,IFileUtil{
 
     private static void loadKcd(){
         if(nonEmpty(kcd)) return;
-        CS.showError(ERR_KCD_NON,null,()->!kcdPath.toFile().isFile());
+        CS.showError(ERR_KCD_NON,(String[])null,()->!kcdPath.toFile().isFile());
         kcd = convertToObject(kcdPath,Kcd.class);
         config = kcd.getConfig();
         gamePath = get(config.getGamePath());
@@ -192,9 +192,9 @@ public final class Main implements IMain,IFileUtil{
         uniqueMap = kcd.getUniqueMap();
         mergeMap = kcd.getMergeMap();
         conflictMap = kcd.getConflictMap();
-        CS.showError(ERR_KCD_NUL_CFG,null,()->!config.trim().validate());
-        CS.showError(ERR_KCD_MOD_PATH,null,()->!existsPath(modPath));
-        CS.showError(ERR_KCD_NUL_MOD,null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
+        CS.showError(ERR_KCD_NUL_CFG,(String[])null,()->!config.trim().validate());
+        CS.showError(ERR_KCD_MOD_PATH,(String[])null,()->!existsPath(modPath));
+        CS.showError(ERR_KCD_NUL_MOD,(String[])null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
     }
 
     private static void saveKcd(){
@@ -373,7 +373,7 @@ public final class Main implements IMain,IFileUtil{
         dealFiles(destParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs) || isEmpty(dests));
+        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         SingleValue<Boolean> find = new SingleValue<>(false);
@@ -382,7 +382,7 @@ public final class Main implements IMain,IFileUtil{
             dests.entrySet().parallelStream().forEach(destEntry->{
                 Path dest = destEntry.getValue();
                 if(src.getFileName().equals(dest.getFileName())){
-                    find.set(true);
+                    find.setValue(true);
                     Table srcTable = convertToObject(src,Table.class);
                     Table destTable = convertToObject(dest,Table.class);
                     if(isEmpty(srcTable) || isEmpty(destTable)) return;
@@ -423,7 +423,7 @@ public final class Main implements IMain,IFileUtil{
             });
             progress.update(1,PROGRESS_SCALE);
         });
-        CS.showError(ERR_NOT_FIND,null,()->!find.get());
+        CS.showError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
     }
 
     private static void compareLocalization(IProgress progress){
@@ -431,7 +431,7 @@ public final class Main implements IMain,IFileUtil{
         dealFiles(destParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs) || isEmpty(dests));
+        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         SingleValue<Boolean> find = new SingleValue<>(false);
@@ -440,7 +440,7 @@ public final class Main implements IMain,IFileUtil{
             dests.entrySet().parallelStream().forEach(destEntry->{
                 Path dest = destEntry.getValue();
                 if(src.getFileName().equals(dest.getFileName())){
-                    find.set(true);
+                    find.setValue(true);
                     Table srcTable = convertToObject(src,Table.class);
                     Table destTable = convertToObject(dest,Table.class);
                     if(isEmpty(srcTable) || isEmpty(destTable)) return;
@@ -483,13 +483,13 @@ public final class Main implements IMain,IFileUtil{
             });
             progress.update(1,PROGRESS_SCALE);
         });
-        CS.showError(ERR_NOT_FIND,null,()->!find.get());
+        CS.showError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
     }
 
     private static void debugLocalization(IProgress progress){
         dealFiles(srcParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs));
+        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
@@ -508,7 +508,7 @@ public final class Main implements IMain,IFileUtil{
     private static void releaseLocalization(IProgress progress){
         dealFiles(srcParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,null,()->isEmpty(srcs));
+        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Pattern pattern = Pattern.compile(REG_RELEASE);
         srcs.entrySet().parallelStream().forEach(srcEntry->{

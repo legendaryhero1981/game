@@ -1,4 +1,4 @@
-package legend.util.intf;
+package legend.util.entity.intf;
 
 import static legend.util.StringUtil.gs;
 

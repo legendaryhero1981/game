@@ -11,10 +11,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import legend.game.run.intf.IMain;
+import legend.intf.IValue;
 
 @XmlRootElement(name = "Game")
 @XmlType(propOrder = {"comment","name","id","path","exe","args","priority","icon","agentExecutablePath","agentArgs","before","after","beforeWait","afterWait","watchWait","watches"})
-public class Game implements IMain{
+public class Game implements IMain,IValue<Game>{
     @XmlElement
     private String comment = S_EMPTY;
     @XmlElement
@@ -53,10 +54,12 @@ public class Game implements IMain{
         watches.add("");
     }
 
+    @Override
     public boolean validate(){
         return nonEmpty(id) && nonEmpty(name) && nonEmpty(path) && nonEmpty(exe);
     }
 
+    @Override
     public Game trim(){
         comment = comment.trim();
         name = name.trim();

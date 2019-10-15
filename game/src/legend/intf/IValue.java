@@ -1,8 +1,29 @@
 package legend.intf;
 
-@FunctionalInterface
+import java.util.function.Supplier;
+
 public interface IValue<T>extends Cloneable{
-    T cloneValue();
+    default T cloneValue(){
+        return null;
+    }
+
+    default T getValue(){
+        return null;
+    }
+
+    default void setValue(T t){}
+
+    default T trim(){
+        return getValue();
+    }
+
+    default boolean validate(){
+        return true;
+    }
+
+    default boolean validate(Supplier<Object> supplier){
+        return true;
+    }
 
     static Object clone(Object o){
         Object object = null;

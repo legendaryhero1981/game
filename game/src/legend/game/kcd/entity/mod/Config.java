@@ -6,9 +6,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import legend.intf.IValue;
+
 @XmlRootElement(name = "Config")
 @XmlType(propOrder = {"gamePath","modPath","mergePath","mergeExecutablePath"})
-public class Config{
+public class Config implements IValue<Config>{
     @XmlElement
     private String gamePath = "";
     @XmlElement
@@ -18,10 +20,12 @@ public class Config{
     @XmlElement
     private String mergeExecutablePath = "";
 
+    @Override
     public boolean validate(){
         return nonEmpty(gamePath) && nonEmpty(modPath) && nonEmpty(mergePath) && nonEmpty(mergeExecutablePath);
     }
 
+    @Override
     public Config trim(){
         gamePath = gamePath.trim();
         modPath = modPath.trim();

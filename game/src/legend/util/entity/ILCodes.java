@@ -7,6 +7,7 @@ import static legend.util.ValueUtil.matchRange;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -14,20 +15,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import legend.intf.IValue;
-import legend.util.intf.IILCode;
+import legend.util.entity.intf.IILCode;
 
 @XmlRootElement(name = "ILCodes")
 @XmlType(propOrder = {"comment","mode","codes"})
-public class ILCodes implements IILCode,IValue<ILCodes>{
+public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @XmlElement
     private String comment = ILCODES_COMMENT;
     @XmlElement
     private String mode = MODE_NATIVE;
     @XmlElementRef
     private List<ILCode> codes = new ArrayList<>();
-    @XmlTransient
-    private String errorInfo = S_EMPTY;
     @XmlTransient
     private int maxLine;
 
@@ -39,7 +37,8 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
         return ilCodes;
     }
 
-    public boolean validate(int maxLine){
+    @Override
+    public boolean validate(Supplier<Object> supplier){
         if(!MODE_NATIVE.equals(mode) && !MODE_REPL.equals(mode)) mode = MODE_NATIVE;
         if(isEmpty(codes)){
             errorInfo = ERR_ILCODE_NON;
@@ -64,6 +63,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
             }
             return false;
         })){
+            int maxLine = supplier.get() instanceof Integer ? (Integer)supplier.get() : this.maxLine;
             if(0 < this.maxLine){
                 sortCodes(codes);
                 ILCode code = codes.get(0);
@@ -72,7 +72,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
                     return false;
                 }
                 code = codes.get(codes.size() - 1);
-                if(maxLine != code.endLine){
+                if(code.endLine != maxLine){
                     errorInfo = gsph(ERR_LINE_NUM_VAL_MAX,new String[]{code.getLineNumber(),maxLine + ""});
                     return false;
                 }
@@ -95,6 +95,7 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
         return false;
     }
 
+    @Override
     public ILCodes trim(){
         mode = mode.trim();
         codes.parallelStream().forEach(code->code.trim());
@@ -139,10 +140,6 @@ public class ILCodes implements IILCode,IValue<ILCodes>{
         ILCode nativeCode = new ILCode();
         nativeCode.setLineNumer(start,end);
         codes.add(nativeCode);
-    }
-
-    public String errorInfo(){
-        return errorInfo;
     }
 
     public String getMode(){

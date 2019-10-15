@@ -8,6 +8,7 @@ import static legend.util.JaxbUtil.convertToXml;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,7 +34,7 @@ public class FileReplaceILCodeLogic implements IFileUtil,ILogic<Path>{
         List<String> datas = readFile(path,CHARSET_GBK);
         int dataSize = datas.size();
         ILCodes ilCodes = this.ilCodes.cloneValue();
-        if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+        CS.showError(ERR_FLE_REPL,Arrays.asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(()->dataSize));
         if(MODE_NATIVE.equals(ilCodes.getMode())){
             int r = dataSize % SIZE_IL_PARTITION;
             List<Integer> partitions = new ArrayList<>();
@@ -78,7 +79,7 @@ public class FileReplaceILCodeLogic implements IFileUtil,ILogic<Path>{
             CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
             ilCodes.regenSortedCodes(codes);
         }
-        if(!ilCodes.trim().validate(dataSize)) CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ilCodes.errorInfo()});
+        CS.showError(ERR_FLE_REPL,Arrays.asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(()->dataSize));
         List<String> results = new ArrayList<>();
         ilCodes.getCodes().stream().forEach(code->{
             int start = code.getStartLine(), end = code.getEndLine();

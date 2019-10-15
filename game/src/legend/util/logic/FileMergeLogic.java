@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import legend.util.entity.FileMerge;
 import legend.util.entity.Merge;
-import legend.util.logic.intf.IFileMerge;
+import legend.util.entity.intf.IFileMerge;
 import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
 

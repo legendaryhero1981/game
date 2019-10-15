@@ -12,7 +12,7 @@ public class SingleValue<T> implements IValue<T>{
     @SuppressWarnings("unchecked")
     @Override
     public T cloneValue(){
-        if(this.value instanceof IValue) return ((IValue<T>)this.value).cloneValue();
+        if(value instanceof IValue) return ((IValue<T>)value).cloneValue();
         return IValue.cloneValue(value);
     }
 
@@ -21,11 +21,13 @@ public class SingleValue<T> implements IValue<T>{
         return (SingleValue<T>)IValue.clone(this);
     }
 
-    public T get(){
+    @Override
+    public T getValue(){
         return value;
     }
 
-    public void set(T value){
+    @Override
+    public void setValue(T value){
         this.value = value;
     }
 

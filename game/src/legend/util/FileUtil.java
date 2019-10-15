@@ -181,6 +181,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_REP_FLE_IL:
                 replaceFilesWithIL(param);
                 break;
+                case CMD_REP_FLE_SPK:
+                replaceFilesWithSPK(param);
+                break;
                 case CMD_REP_FLE_SN:
                 replaceFilesForSameName(param);
                 break;
@@ -543,6 +546,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
+    private static void replaceFilesWithSPK(FileParam param){
+        
+    }
+    
     private static void replaceFilesForSameName(FileParam param){
         FileParam fp = param.cloneValue();
         fp.setCmd(CMD_FIND);
@@ -840,22 +847,22 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     else return p.equals(p.getParent().resolve(entry.getName()));
                 }));
                 int size = zipFile.size();
-                for(value.set(zipInputStream.getNextEntry());nonEmpty(value.get());value.set(zipInputStream.getNextEntry())){
-                    ZipEntry entry = value.get();
+                for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
+                    ZipEntry entry = value.getValue();
                     SingleValue<Path> dest = new SingleValue<>(null);
-                    if(unzip) dest.set(param.getDestPath().resolve(entry.getName()));
-                    else dest.set(p.getParent().resolve(entry.getName()));
+                    if(unzip) dest.setValue(param.getDestPath().resolve(entry.getName()));
+                    else dest.setValue(p.getParent().resolve(entry.getName()));
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
                         param.getDirsCount().incrementAndGet();
                         param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_DIR_NUL + gs(2) + dest));
-                        param.getCmdOptional().ifPresent(c->dest.get().toFile().mkdirs());
+                        param.getCmdOptional().ifPresent(c->dest.getValue().toFile().mkdirs());
                     }else{
                         param.getFilesCount().incrementAndGet();
                         param.getCmdOptional().ifPresent(c->{
                             try(InputStream inputStream = zipFile.getInputStream(entry)){
-                                dest.get().getParent().toFile().mkdirs();
-                                dest.get().toFile().setWritable(true,true);
-                                if(nonEmpty(inputStream)) copy(inputStream,dest.get(),StandardCopyOption.REPLACE_EXISTING);
+                                dest.getValue().getParent().toFile().mkdirs();
+                                dest.getValue().toFile().setWritable(true,true);
+                                if(nonEmpty(inputStream)) copy(inputStream,dest.getValue(),StandardCopyOption.REPLACE_EXISTING);
                             }catch(Exception ex){
                                 CS.sl(gsph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
                             }

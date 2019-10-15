@@ -14,11 +14,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import legend.util.logic.intf.IFileMerge;
+import legend.intf.IValue;
+import legend.util.entity.intf.IFileMerge;
 
 @XmlRootElement(name = "FileMerge")
 @XmlType(propOrder = {"comment","path","path2","path3","mergeExecutablePath","queryRegex","pathMd5","merges"})
-public class FileMerge implements IFileMerge{
+public class FileMerge implements IFileMerge,IValue<FileMerge>{
     @XmlTransient
     private ConcurrentMap<String,Merge> mergeMap = new ConcurrentHashMap<>();
     @XmlElement
@@ -39,10 +40,12 @@ public class FileMerge implements IFileMerge{
     @XmlElementRef
     private List<Merge> merges = new ArrayList<>();
 
+    @Override
     public boolean validate(){
         return nonEmpty(path) && nonEmpty(path2) && nonEmpty(path3) && nonEmpty(mergeExecutablePath) && nonEmpty(queryRegex);
     }
 
+    @Override
     public FileMerge trim(){
         path = path.trim();
         path2 = path2.trim();
