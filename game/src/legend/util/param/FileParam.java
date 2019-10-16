@@ -459,7 +459,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_REP_FLE_IL:
                     optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONF_FILE_IL)));
                     optional.filter(s->s.length > 3).ifPresent(s->{
-                        if(s[3].matches(REG_NUMBER)){
+                        if(s[3].matches(REG_NUM)){
                             param.setDestPath(get(CONF_FILE_IL));
                             param.setLevel(Integer.parseInt(s[3]));
                         }else param.setDestPath(get(s[3]));

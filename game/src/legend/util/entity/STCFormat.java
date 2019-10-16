@@ -1,5 +1,8 @@
 package legend.util.entity;
 
+import static legend.util.StringUtil.gsph;
+import static legend.util.ValueUtil.isEmpty;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -34,6 +37,15 @@ public class STCFormat extends BaseEntity<STCFormat> implements IFileSPK{
             return false;
         }else if(!listInfo.validate()){
             errorInfo = listInfo.errorInfo;
+            return false;
+        }else if(isEmpty(headerInfo.getHeaderSize()) || isEmpty(headerInfo.getHeaderFlag())){
+            errorInfo = gsph(ERR_CONF_SPKH_NON,N_STCF_HEADER_INFO);
+            return false;
+        }else if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getFileSizeExpr()) || isEmpty(bodyInfo.getFileStartPosExpr())){
+            errorInfo = gsph(ERR_CONF_SPKH_NON,N_STCF_BODY_INFO);
+            return false;
+        }else if(isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFilePathExpr())){
+            errorInfo = gsph(ERR_CONF_SPKH_NON,N_STCF_LIST_INFO);
             return false;
         }else return true;
     }

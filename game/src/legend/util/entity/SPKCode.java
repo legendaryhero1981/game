@@ -38,7 +38,7 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(unpackPath) || isEmpty(filePath) || isEmpty(fileName) || isEmpty(queryRegex)){
-            errorInfo = S_EMPTY;
+            errorInfo = ERR_CONF_SPKC_NON;
             return false;
         }else if(!spkFormat.validate()){
             errorInfo = spkFormat.errorInfo;

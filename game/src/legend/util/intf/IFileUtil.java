@@ -39,8 +39,6 @@ public interface IFileUtil extends ICommon{
     long CAN_USE_CACHE = 1l << 51;
     long CAN_SAVE_CACHE = 1l << 52;
     long NEED_CLEAR_CACHE = 1l << 53;
-    int SIZE_IL_HEADER = 7;
-    int SIZE_IL_PARTITION = 10000;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String CMD = "file ";

@@ -85,6 +85,7 @@ import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
 import legend.util.logic.FileMergeLogic;
 import legend.util.logic.FileReplaceILCodeLogic;
+import legend.util.logic.FileReplaceSPKCodeLogic;
 import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
 import legend.util.param.SingleValue;
@@ -547,9 +548,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void replaceFilesWithSPK(FileParam param){
-        
+        executeFileLogic(param,new FileReplaceSPKCodeLogic(param));
     }
-    
+
     private static void replaceFilesForSameName(FileParam param){
         FileParam fp = param.cloneValue();
         fp.setCmd(CMD_FIND);
@@ -571,13 +572,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void replaceFilesForMergeContent(FileParam param){
-        ILogic<Path> mergeLogic = new FileMergeLogic(param);
-        param.getPathMap().entrySet().stream().forEach(e->{
-            Path p = e.getValue();
-            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEAL},new FileSizeMatcher(e.getKey()),p));
-            param.getCmdOptional().ifPresent(c->mergeLogic.execute(p));
-            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-        });
+        executeFileLogic(param,new FileMergeLogic(param));
     }
 
     private static void regenFileWithGBK(FileParam param){
@@ -958,6 +953,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }catch(IOException e){
             CS.sl(gsph(ERR_ZIP_DIR_NUL_CPY,path.toString(),e.toString()));
         }
+    }
+
+    private static void executeFileLogic(FileParam param, ILogic<Path> fileLogic){
+        param.getPathMap().entrySet().stream().forEach(e->{
+            Path p = e.getValue();
+            param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEAL},new FileSizeMatcher(e.getKey()),p));
+            param.getCmdOptional().ifPresent(c->fileLogic.execute(p));
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        });
     }
 
     private static void fillDatas(StringBuffer buffer, String charset, int... values){

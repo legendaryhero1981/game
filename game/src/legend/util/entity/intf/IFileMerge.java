@@ -5,11 +5,11 @@ import static legend.util.StringUtil.gs;
 import legend.util.intf.IFileUtil;
 
 public interface IFileMerge extends IFileUtil{
-    String N_MERGE_CONFIG = "文件整合配置文件";
-    String N_INVALIDATE = "path或path2或path3或mergeExecutablePath或queryRegex节点为空！";
-    String ST_FILE_MERGE_CONF = "已生成" + N_MERGE_CONFIG + S_DQM + CONF_FILE_MERGE + S_DQM + S_BANG;
-    String ERR_CONFIG_NON = N_MERGE_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + V_NON_EXISTS;
-    String ERR_CONFIG_INVALIDATE = N_MERGE_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_INVALIDATE;
+    String N_MEG_CONF = "文件整合配置文件";
+    String N_MEG_NON = "path或path2或path3或mergeExecutablePath或queryRegex节点";
+    String ST_FILE_MERGE_CONF = "已生成" + N_MEG_CONF + S_DQM + CONF_FILE_MERGE + S_DQM + S_BANG;
+    String ERR_CONF_NON = N_MEG_CONF + S_DQM_L + PH_ARG0 + S_DQM_R + V_NON_EXISTS;
+    String ERR_CONF_MEG_NON = N_MEG_CONF + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_MEG_NON + V_BY_NUL;
     String FILE_MERGE_COMMENT = "\n" + gs(4) + "FileMerge配置节点结构说明：\n"
     + gs(4) + "FileMerge节点由comment、path、path2、path3、mergeExecutablePath、queryRegex、pathMd5、Merges节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "FileMerge::comment" + gs(18) + "FileMerge配置节点结构说明，对文件整合无影响，仅此说明而已。\n"

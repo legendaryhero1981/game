@@ -2,9 +2,11 @@ package legend.util.entity.intf;
 
 import static legend.util.StringUtil.gs;
 
-import legend.intf.ICommon;
+import legend.util.intf.IFileUtil;
 
-public interface IILCode extends ICommon{
+public interface IILCode extends IFileUtil{
+    int SIZE_IL_HEADER = 7;
+    int SIZE_IL_PARTITION = 10000;
     String SPRT_LINE_NUMBER = "-";
     String REG_LINE_NUMBER = "([1-9]\\d*)(" + SPRT_LINE_NUMBER + "([1-9]\\d*))?";
     String ERR_ILCODE_NON = "ILCodes节点下必须至少有一个ILCode节点！";
