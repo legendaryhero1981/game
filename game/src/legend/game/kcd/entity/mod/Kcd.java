@@ -47,6 +47,22 @@ public class Kcd{
     @XmlElementRef
     private List<Mapping> uniques = new ArrayList<>();
 
+    public static final class MergeSet{
+        private Set<String> modSet = new ConcurrentSkipListSet<>();
+        private Set<String> pathSet = new ConcurrentSkipListSet<>();
+        private Set<String> md5Set = new ConcurrentSkipListSet<>();
+
+        private void clear(){
+            modSet.clear();
+            pathSet.clear();
+            md5Set.clear();
+        }
+
+        public boolean contains(Merge merge){
+            return !modSet.isEmpty() && !pathSet.isEmpty() && !md5Set.isEmpty() && pathSet.contains(merge.getPath()) && !merge.getMappings().parallelStream().anyMatch(mapping->!modSet.contains(mapping.getMod()) || !md5Set.contains(mapping.getMd5()));
+        }
+    }
+
     public void clearCache(){
         mergeSet.clear();
         pathsMap.clear();
@@ -142,21 +158,5 @@ public class Kcd{
 
     public List<Mapping> getUniques(){
         return uniques;
-    }
-
-    public static class MergeSet{
-        private Set<String> modSet = new ConcurrentSkipListSet<>();
-        private Set<String> pathSet = new ConcurrentSkipListSet<>();
-        private Set<String> md5Set = new ConcurrentSkipListSet<>();
-
-        private void clear(){
-            modSet.clear();
-            pathSet.clear();
-            md5Set.clear();
-        }
-
-        public boolean contains(Merge merge){
-            return !modSet.isEmpty() && !pathSet.isEmpty() && !md5Set.isEmpty() && pathSet.contains(merge.getPath()) && !merge.getMappings().parallelStream().anyMatch(mapping->!modSet.contains(mapping.getMod()) || !md5Set.contains(mapping.getMd5()));
-        }
     }
 }

@@ -9,10 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IFileSPK;
 
 @XmlRootElement(name = "SPKCode")
-@XmlType(propOrder = {"unpackPath","filePath","fileName","queryRegex","SPKFormat","STCFormat"})
+@XmlType(propOrder = {"unpackPath","repackPath","filePath","fileName","queryRegex","SPKFormat","STCFormat"})
 public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
     @XmlElement
     private String unpackPath = S_EMPTY;
+    @XmlElement
+    private String repackPath = S_EMPTY;
     @XmlElement
     private String filePath = S_EMPTY;
     @XmlElement
@@ -27,6 +29,7 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
     @Override
     public SPKCode trim(){
         unpackPath = unpackPath.trim();
+        repackPath = repackPath.trim();
         filePath = filePath.trim();
         fileName = fileName.trim();
         queryRegex = queryRegex.trim();
@@ -37,8 +40,11 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
 
     @Override
     public boolean validate(){
-        if(isEmpty(unpackPath) || isEmpty(filePath) || isEmpty(fileName) || isEmpty(queryRegex)){
+        if(isEmpty(unpackPath) || isEmpty(repackPath) || isEmpty(filePath) || isEmpty(fileName) || isEmpty(queryRegex)){
             errorInfo = ERR_CONF_SPKC_NON;
+            return false;
+        }else if(repackPath.equalsIgnoreCase(filePath)){
+            errorInfo = ERR_CONF_SPKC_PATH;
             return false;
         }else if(!spkFormat.validate()){
             errorInfo = spkFormat.errorInfo;
@@ -51,6 +57,10 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
 
     public String getUnpackPath(){
         return unpackPath;
+    }
+
+    public String getRepackPath(){
+        return repackPath;
     }
 
     public String getFilePath(){

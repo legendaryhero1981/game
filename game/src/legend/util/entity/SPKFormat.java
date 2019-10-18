@@ -13,11 +13,11 @@ import legend.util.entity.intf.IFileSPK;
 @XmlType(propOrder = {"BodyInfo","ListInfo","TailInfo"})
 public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
     @XmlElement(name = "BodyInfo")
-    private SPKHeader bodyInfo;
+    private SPKHeader bodyInfo = new SPKHeader();
     @XmlElement(name = "ListInfo")
-    private SPKHeader listInfo;
+    private SPKHeader listInfo = new SPKHeader();
     @XmlElement(name = "TailInfo")
-    private SPKHeader tailInfo;
+    private SPKHeader tailInfo = new SPKHeader();
 
     @Override
     public SPKFormat trim(){
@@ -29,16 +29,7 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
 
     @Override
     public boolean validate(){
-        if(!bodyInfo.validate()){
-            errorInfo = bodyInfo.errorInfo;
-            return false;
-        }else if(!listInfo.validate()){
-            errorInfo = listInfo.errorInfo;
-            return false;
-        }else if(!tailInfo.validate()){
-            errorInfo = tailInfo.errorInfo;
-            return false;
-        }else if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFilePathExpr()) || isEmpty(bodyInfo.getFileSizeExpr())){
+        if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFilePathExpr()) || isEmpty(bodyInfo.getFileSizeExpr())){
             errorInfo = gsph(ERR_CONF_SPKH_NON,N_SPKF_BODY_INFO);
             return false;
         }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFilePathExpr()) || isEmpty(listInfo.getFileSizeExpr())){
@@ -46,6 +37,15 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
             return false;
         }else if(isEmpty(tailInfo.getHeaderSize()) || isEmpty(tailInfo.getHeaderFlag())){
             errorInfo = gsph(ERR_CONF_SPKH_NON,N_SPKF_TAIL_INFO);
+            return false;
+        }else if(!bodyInfo.validate()){
+            errorInfo = bodyInfo.errorInfo;
+            return false;
+        }else if(!listInfo.validate()){
+            errorInfo = listInfo.errorInfo;
+            return false;
+        }else if(!tailInfo.validate()){
+            errorInfo = tailInfo.errorInfo;
             return false;
         }else return true;
     }

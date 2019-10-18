@@ -1,5 +1,6 @@
 package legend.util.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -15,7 +16,7 @@ public class FileSPK extends BaseEntity<FileSPK> implements IFileSPK{
     @XmlElement
     private String comment = FILE_SPK_COMMENT;
     @XmlElementRef
-    private List<SPKCode> codes;
+    private List<SPKCode> codes = new ArrayList<>();
 
     @Override
     public FileSPK trim(){

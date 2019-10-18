@@ -13,11 +13,11 @@ import legend.util.entity.intf.IFileSPK;
 @XmlType(propOrder = {"HeaderInfo","BodyInfo","ListInfo"})
 public class STCFormat extends BaseEntity<STCFormat> implements IFileSPK{
     @XmlElement(name = "HeaderInfo")
-    private SPKHeader headerInfo;
+    private SPKHeader headerInfo = new SPKHeader();
     @XmlElement(name = "BodyInfo")
-    private SPKHeader bodyInfo;
+    private SPKHeader bodyInfo = new SPKHeader();
     @XmlElement(name = "ListInfo")
-    private SPKHeader listInfo;
+    private SPKHeader listInfo = new SPKHeader();
 
     @Override
     public STCFormat trim(){
@@ -29,16 +29,7 @@ public class STCFormat extends BaseEntity<STCFormat> implements IFileSPK{
 
     @Override
     public boolean validate(){
-        if(!headerInfo.validate()){
-            errorInfo = headerInfo.errorInfo;
-            return false;
-        }else if(!bodyInfo.validate()){
-            errorInfo = bodyInfo.errorInfo;
-            return false;
-        }else if(!listInfo.validate()){
-            errorInfo = listInfo.errorInfo;
-            return false;
-        }else if(isEmpty(headerInfo.getHeaderSize()) || isEmpty(headerInfo.getHeaderFlag())){
+        if(isEmpty(headerInfo.getHeaderSize()) || isEmpty(headerInfo.getHeaderFlag())){
             errorInfo = gsph(ERR_CONF_SPKH_NON,N_STCF_HEADER_INFO);
             return false;
         }else if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getFileSizeExpr()) || isEmpty(bodyInfo.getFileStartPosExpr())){
@@ -46,6 +37,15 @@ public class STCFormat extends BaseEntity<STCFormat> implements IFileSPK{
             return false;
         }else if(isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFilePathExpr())){
             errorInfo = gsph(ERR_CONF_SPKH_NON,N_STCF_LIST_INFO);
+            return false;
+        }else if(!headerInfo.validate()){
+            errorInfo = headerInfo.errorInfo;
+            return false;
+        }else if(!bodyInfo.validate()){
+            errorInfo = bodyInfo.errorInfo;
+            return false;
+        }else if(!listInfo.validate()){
+            errorInfo = listInfo.errorInfo;
             return false;
         }else return true;
     }

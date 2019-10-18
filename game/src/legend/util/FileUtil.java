@@ -77,6 +77,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import legend.intf.IValue;
 import legend.util.entity.ILCode;
 import legend.util.entity.ILCodes;
 import legend.util.intf.ICharsetDetectorUtil.Language;
@@ -833,7 +834,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         boolean unzip = param.meetCondition(ZIP_UNZIP);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
-            SingleValue<ZipEntry> value = new SingleValue<>(null);
+            IValue<ZipEntry> value = new SingleValue<>(null);
             File file = p.toFile();
             try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
                 CS.showError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
@@ -844,7 +845,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 int size = zipFile.size();
                 for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
                     ZipEntry entry = value.getValue();
-                    SingleValue<Path> dest = new SingleValue<>(null);
+                    IValue<Path> dest = new SingleValue<>(null);
                     if(unzip) dest.setValue(param.getDestPath().resolve(entry.getName()));
                     else dest.setValue(p.getParent().resolve(entry.getName()));
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){

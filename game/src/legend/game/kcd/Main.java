@@ -43,6 +43,7 @@ import legend.game.kcd.entity.mod.Mapping;
 import legend.game.kcd.entity.mod.Merge;
 import legend.game.kcd.entity.mod.Mod;
 import legend.game.kcd.intf.IMain;
+import legend.intf.IValue;
 import legend.util.ProgressUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
@@ -376,7 +377,7 @@ public final class Main implements IMain,IFileUtil{
         CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
-        SingleValue<Boolean> find = new SingleValue<>(false);
+        IValue<Boolean> find = new SingleValue<>(false);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
             dests.entrySet().parallelStream().forEach(destEntry->{
@@ -434,8 +435,8 @@ public final class Main implements IMain,IFileUtil{
         CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
-        SingleValue<Boolean> find = new SingleValue<>(false);
-        srcs.entrySet().forEach(srcEntry->{
+        IValue<Boolean> find = new SingleValue<>(false);
+        srcs.entrySet().stream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
             dests.entrySet().parallelStream().forEach(destEntry->{
                 Path dest = destEntry.getValue();
