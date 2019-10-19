@@ -40,7 +40,7 @@ public final class StringUtil implements ICommon{
     }
 
     public static String hexToString(String hex){
-        return new String(hex);
+        return new String(hexToBytes(hex));
     }
 
     public static String concat(Object[] objects, String join){
