@@ -17,15 +17,13 @@ import java.util.regex.Pattern;
 import legend.util.entity.ILCode;
 import legend.util.entity.ILCodes;
 import legend.util.entity.intf.IILCode;
-import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
 
-public class FileReplaceILCodeLogic implements IILCode,ILogic<Path>{
-    private FileParam param;
+public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
     private ILCodes ilCodes;
 
     public FileReplaceILCodeLogic(FileParam param){
-        this.param = param;
+        super(param);
         this.ilCodes = convertToObject(param.getDestPath(),ILCodes.class);
     }
 

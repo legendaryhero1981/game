@@ -22,26 +22,23 @@ import java.util.concurrent.ConcurrentMap;
 import legend.util.entity.FileMerge;
 import legend.util.entity.Merge;
 import legend.util.entity.intf.IFileMerge;
-import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
 
-public class FileMergeLogic implements IFileMerge,ILogic<Path>{
-    private FileParam param;
-
+public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
     public FileMergeLogic(FileParam param){
-        this.param = param;
+        super(param);
         Path path = get(CONF_FILE_MERGE);
         if(!existsPath(path)){
-            convertToXml(path,new FileMerge());
+            param.getCmdOptional().ifPresent(c->convertToXml(path,new FileMerge()));
             param.getDetailOptional().ifPresent(c->CS.sl(ST_FILE_MERGE_CONF));
         }
     }
 
     @Override
     public void execute(Path path){
-        CS.showError(ERR_CONF_NON,new String[]{path.toString()},()->!path.toFile().isFile());
+        CS.showError(ERR_CONF_MEG_NON,new String[]{path.toString()},()->!path.toFile().isFile());
         FileMerge fileMerge = convertToObject(path,FileMerge.class);
-        CS.showError(ERR_CONF_MEG_NON,new String[]{path.toString()},()->!fileMerge.trim().validate());
+        CS.showError(ERR_CONF_MEG_NODE_NON,new String[]{path.toString()},()->!fileMerge.trim().validate());
         String pathMd5 = getMD5L16(fileMerge.getPath() + fileMerge.getPath2() + fileMerge.getPath3());
         if(!pathMd5.equals(fileMerge.getPathMd5())) fileMerge.refreshMerges();
         fileMerge.setPathMd5(pathMd5);

@@ -11,12 +11,17 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IFileSPK;
 
 @XmlRootElement(name = "FileSPK")
-@XmlType(propOrder = {"comment","SPKCode"})
+@XmlType(propOrder = {"comment","codes"})
 public class FileSPK extends BaseEntity<FileSPK> implements IFileSPK{
     @XmlElement
     private String comment = FILE_SPK_COMMENT;
     @XmlElementRef
-    private List<SPKCode> codes = new ArrayList<>();
+    private List<SPKCode> codes;
+
+    public FileSPK(){
+        codes = new ArrayList<>();
+        codes.add(new SPKCode());
+    }
 
     @Override
     public FileSPK trim(){

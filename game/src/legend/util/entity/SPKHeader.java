@@ -76,7 +76,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         if(nonEmpty(headerSize)){
             matcher = sizePattern.matcher(headerSize);
             if(!matcher.matches()){
-                errorInfo = gsph(ERR_CONF_SPKH_EXPR,"headerSize");
+                errorInfo = gsph(ERR_CONF_SPKH_EXPR_DESC,"headerSize");
                 value.setValue(false);
             }else size = Integer.parseInt(headerSize);
         }else if(nonEmpty(filePathExpr)) validateSizeExpr(value,filePath,filePathExpr,"filePathExpr");
@@ -88,11 +88,12 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     private void validateSizeExpr(IValue<Boolean> value, MetaData metaData, String expr, String field){
         Matcher matcher = sizeExprPattern.matcher(expr);
         if(matcher.matches()){
-            filePath.start = Integer.parseInt(matcher.group(1));
-            filePath.length = Integer.parseInt(matcher.group(3));
+            metaData.start = Integer.parseInt(matcher.group(1));
+            String length = matcher.group(3);
+            metaData.length = nonEmpty(length) ? Integer.parseInt(length) : 4;
             value.setValue(true);
         }else{
-            errorInfo = gsph(ERR_CONF_SPKH_EXPR,field);
+            errorInfo = gsph(ERR_CONF_SPKH_EXPR_DESC,field);
             value.setValue(false);
         }
     }

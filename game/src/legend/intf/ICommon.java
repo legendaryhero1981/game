@@ -12,6 +12,7 @@ public interface ICommon{
     byte[] BOM_UTF16LE = new byte[]{(byte)0xff,(byte)0xfe};
     byte[] BOM_UTF16BE = new byte[]{(byte)0xfe,(byte)0xff};
     byte[] BOM_UTF8 = new byte[]{(byte)0xef,(byte)0xbb,(byte)0xbf};
+    char[] CHAR_HEX = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";

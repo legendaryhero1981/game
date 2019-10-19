@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IFileSPK;
 
 @XmlRootElement(name = "SPKFormat")
-@XmlType(propOrder = {"BodyInfo","ListInfo","TailInfo"})
+@XmlType(propOrder = {"bodyInfo","listInfo","tailInfo"})
 public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
     @XmlElement(name = "BodyInfo")
     private SPKHeader bodyInfo = new SPKHeader();
@@ -30,13 +30,13 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFilePathExpr()) || isEmpty(bodyInfo.getFileSizeExpr())){
-            errorInfo = gsph(ERR_CONF_SPKH_NON,N_SPKF_BODY_INFO);
+            errorInfo = gsph(ERR_CONF_SPKH_NODE_NON,N_SPKF_BODY_INFO);
             return false;
         }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFilePathExpr()) || isEmpty(listInfo.getFileSizeExpr())){
-            errorInfo = gsph(ERR_CONF_SPKH_NON,N_SPKF_LIST_INFO);
+            errorInfo = gsph(ERR_CONF_SPKH_NODE_NON,N_SPKF_LIST_INFO);
             return false;
         }else if(isEmpty(tailInfo.getHeaderSize()) || isEmpty(tailInfo.getHeaderFlag())){
-            errorInfo = gsph(ERR_CONF_SPKH_NON,N_SPKF_TAIL_INFO);
+            errorInfo = gsph(ERR_CONF_SPKH_NODE_NON,N_SPKF_TAIL_INFO);
             return false;
         }else if(!bodyInfo.validate()){
             errorInfo = bodyInfo.errorInfo;

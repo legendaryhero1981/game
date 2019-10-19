@@ -16,6 +16,33 @@ import legend.util.param.SingleValue;
 public final class StringUtil implements ICommon{
     private StringUtil(){}
 
+    public static String bytesToHex(byte[] bytes){
+        char[] cache = new char[bytes.length * 2];
+        for(int i = 0;i < bytes.length;i++){
+            cache[i] = CHAR_HEX[bytes[i] >>> 4 & 0xf];
+            cache[++i] = CHAR_HEX[bytes[i] & 0xf];
+        }
+        return new String(cache);
+    }
+
+    public static byte[] hexToBytes(String hex){
+        final int size = hex.length() / 2;
+        byte[] bytes = new byte[size];
+        for(int i = 0;i < size;i++){
+            String subStr = hex.substring(i * 2,i * 2 + 2);
+            bytes[i] = (byte)Integer.parseInt(subStr,16);
+        }
+        return bytes;
+    }
+
+    public static String stringToHex(String string){
+        return bytesToHex(string.getBytes());
+    }
+
+    public static String hexToString(String hex){
+        return new String(hex);
+    }
+
     public static String concat(Object[] objects, String join){
         if(0 == objects.length) return "";
         String r = "";
