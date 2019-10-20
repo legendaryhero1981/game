@@ -229,13 +229,13 @@ public final class Main implements IMain{
     }
 
     private static Games loadModel(){
-        CS.showError(ERR_CONFIG_NON,(String[])null,()->!config.toFile().isFile());
+        CS.showError(ERR_CONF_NON,(String[])null,()->!config.toFile().isFile());
         Games games = convertToObject(config,Games.class);
-        CS.showError(ERR_CONFIG_NUL,(String[])null,()->isEmpty(games.getGames()));
+        CS.showError(ERR_CONF_NUL,(String[])null,()->isEmpty(games.getGames()));
         ConcurrentMap<String,AtomicInteger> gameMap = new ConcurrentHashMap<>();
         games.getGames().parallelStream().forEach(g->gameMap.computeIfAbsent(g.getId(),k->new AtomicInteger()).addAndGet(1));
         gameMap.entrySet().parallelStream().filter(entry->entry.getValue().get() > 1).forEach(entry->CS.s(glph(ST_REPEAT_ID,2,entry.getKey())));
-        CS.showError(ERR_CONFIG_REPEAT,(String[])null,()->gameMap.values().parallelStream().anyMatch(v->v.get() > 1));
+        CS.showError(ERR_CONF_REPEAT,(String[])null,()->gameMap.values().parallelStream().anyMatch(v->v.get() > 1));
         return games;
     }
 

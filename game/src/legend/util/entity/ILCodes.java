@@ -25,9 +25,14 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @XmlElement
     private String mode = MODE_NATIVE;
     @XmlElementRef
-    private List<ILCode> codes = new ArrayList<>();
+    private List<ILCode> codes;
     @XmlTransient
     private int maxLine;
+
+    public ILCodes(){
+        codes = new ArrayList<>();
+        codes.add(new ILCode());
+    }
 
     @Override
     public ILCodes cloneValue(){

@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import legend.intf.ICommon;
+import legend.intf.IValue;
 import legend.util.param.SingleValue;
 
 public final class StringUtil implements ICommon{
@@ -19,7 +20,7 @@ public final class StringUtil implements ICommon{
     public static String bytesToHex(byte[] bytes){
         char[] cache = new char[bytes.length * 2];
         for(int i = 0;i < bytes.length;i++){
-            cache[i] = CHAR_HEX[bytes[i] >>> 4 & 0xf];
+            cache[i] = CHAR_HEX[bytes[i] >> 4 & 0xf];
             cache[++i] = CHAR_HEX[bytes[i] & 0xf];
         }
         return new String(cache);
@@ -76,7 +77,7 @@ public final class StringUtil implements ICommon{
     }
 
     public static String brph(String s, Map<String,String> map){
-        SingleValue<String> value = new SingleValue<>(s);
+        IValue<String> value = new SingleValue<>(s);
         if(nonEmpty(map)) map.entrySet().stream().forEach(entry->value.setValue(brph(value.getValue(),entry.getKey(),entry.getValue())));
         return value.getValue();
     }

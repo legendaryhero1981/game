@@ -2,7 +2,9 @@ package legend.util.entity;
 
 import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gsph;
+import static legend.util.StringUtil.hexToBytes;
 import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.param.FileParam.convertParam;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +34,8 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlTransient
     protected int size;
     @XmlTransient
+    protected byte[] flags = new byte[0];
+    @XmlTransient
     protected MetaData filePath = new MetaData();
     @XmlTransient
     protected MetaData fileSize = new MetaData();
@@ -41,9 +45,12 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     protected static final Pattern sizePattern;
     @XmlTransient
     protected static final Pattern sizeExprPattern;
+    @XmlTransient
+    protected static final Pattern flagHexPattern;
     static{
         sizePattern = compile(REG_SPK_SIZE);
         sizeExprPattern = compile(REG_SPK_SIZE_EXPR);
+        flagHexPattern = compile(REG_SPK_FLAG_HEX);
     }
 
     public static final class MetaData{
@@ -72,13 +79,16 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @Override
     public boolean validate(){
         IValue<Boolean> value = new SingleValue<>(true);
-        Matcher matcher = null;
         if(nonEmpty(headerSize)){
-            matcher = sizePattern.matcher(headerSize);
+            Matcher matcher = sizePattern.matcher(headerSize);
             if(!matcher.matches()){
-                errorInfo = gsph(ERR_CONF_SPKH_EXPR_DESC,"headerSize");
+                errorInfo = gsph(ERR_SPKH_EXPR_DESC,"headerSize");
                 value.setValue(false);
             }else size = Integer.parseInt(headerSize);
+        }else if(nonEmpty(headerFlag)){
+            Matcher matcher = flagHexPattern.matcher(headerFlag);
+            if(matcher.matches()) flags = hexToBytes(matcher.group(1));
+            else flags = convertParam(headerFlag,false).getBytes();
         }else if(nonEmpty(filePathExpr)) validateSizeExpr(value,filePath,filePathExpr,"filePathExpr");
         else if(nonEmpty(fileSizeExpr)) validateSizeExpr(value,fileSize,fileSizeExpr,"fileSizeExpr");
         else if(nonEmpty(fileStartPosExpr)) validateSizeExpr(value,fileStartPos,fileStartPosExpr,"fileStartPosExpr");
@@ -90,16 +100,19 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         if(matcher.matches()){
             metaData.start = Integer.parseInt(matcher.group(1));
             String length = matcher.group(3);
-            metaData.length = nonEmpty(length) ? Integer.parseInt(length) : 4;
-            value.setValue(true);
+            metaData.length = nonEmpty(length) ? Integer.parseInt(length) : 0;
         }else{
-            errorInfo = gsph(ERR_CONF_SPKH_EXPR_DESC,field);
+            errorInfo = gsph(ERR_SPKH_EXPR_DESC,field);
             value.setValue(false);
         }
     }
 
     public int getSize(){
         return size;
+    }
+
+    public byte[] getFlags(){
+        return flags;
     }
 
     public MetaData getFilePath(){

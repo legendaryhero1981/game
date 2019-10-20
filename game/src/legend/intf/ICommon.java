@@ -92,6 +92,7 @@ public interface ICommon{
     String V_DONE = "完毕";
     String V_FIND = "找到";
     String V_ANLS = "解析";
+    String V_GNRT = "生成";
     String V_VST = "访问";
     String V_DEL = "删除";
     String V_CPY = "复制";

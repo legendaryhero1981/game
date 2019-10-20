@@ -1,7 +1,9 @@
 package legend.util.logic;
 
+import static java.nio.file.Paths.get;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static legend.util.FileUtil.existsPath;
 import static legend.util.FileUtil.readFile;
 import static legend.util.FileUtil.writeFile;
 import static legend.util.JaxbUtil.convertToObject;
@@ -24,7 +26,13 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
 
     public FileReplaceILCodeLogic(FileParam param){
         super(param);
-        this.ilCodes = convertToObject(param.getDestPath(),ILCodes.class);
+        Path path = get(CONF_FILE_IL);
+        if(!existsPath(path)){
+            param.getCmdOptional().ifPresent(c->convertToXml(path,new ILCodes()));
+            param.getDetailOptional().ifPresent(c->CS.sl(ST_FILE_IL_CONF));
+        }
+        if(existsPath(param.getDestPath())) this.ilCodes = convertToObject(param.getDestPath(),ILCodes.class);
+        else this.ilCodes = convertToObject(path,ILCodes.class);
     }
 
     @Override

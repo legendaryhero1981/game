@@ -125,8 +125,6 @@ public interface IFileUtil extends ICommon{
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
-    String ST_FILE_IL_MISMATCH = "IL配置文件与IL源文件内容不匹配！";
-    String ST_FILE_IL_CONF = "已生成替换IL源文件" + S_DQM + PH_ARG0 + S_DQM + "内容所需的IL配置文件" + S_DQM + PH_ARG1 + S_DQM + S_BANG;
     String ERR_DIR_VST = V_VST + N_DIR + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_VST = V_VST + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_DEL = V_DEL + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -135,6 +133,7 @@ public interface IFileUtil extends ICommon{
     String ERR_FLE_WRT = V_WRITE + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_READ = V_READ + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_FLE_REPL = V_REPL + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_ANLS = V_ANLS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_EXTR = V_EXTR + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
@@ -293,22 +292,22 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_LOW + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英文字母替换为小写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。" + gl(2)
-    + CMD + CMD_REP_FLE_BT + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
     + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行原子规则：将英文字母全部替换为小写；" + gl(1)
     + "2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
-    + CMD + CMD_REP_FLE_BT + "* (?i)\\Atemp1\\.txt$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
     + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + "* (?i)\\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REG_FLE_GBK + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_BIG5 + "* (?i)\\.json$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_CS + "* (?i)\\.txt$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
     + CMD + CMD_REP_FLE_SN + "* (?i)\\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2" + gl(1) + "先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。" + gl(2)
     + CMD + CMD_REP_FLE_MEG + "* (?i)`file-merge.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。" + gl(2)
     + CMD + CMD_REP_FLE_SPK + "* (?i)`file-spk.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)

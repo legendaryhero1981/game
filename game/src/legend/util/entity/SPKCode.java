@@ -41,10 +41,10 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(unpackPath) || isEmpty(repackPath) || isEmpty(filePath) || isEmpty(fileName) || isEmpty(queryRegex)){
-            errorInfo = ERR_CONF_SPKC_NODE_NON;
+            errorInfo = ERR_SPKC_NODE_NON;
             return false;
         }else if(repackPath.equalsIgnoreCase(filePath)){
-            errorInfo = ERR_CONF_SPKC_PATH_SAME;
+            errorInfo = ERR_SPKC_PATH_SAME;
             return false;
         }else if(!spkFormat.validate()){
             errorInfo = spkFormat.errorInfo;

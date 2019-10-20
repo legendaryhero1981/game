@@ -36,9 +36,8 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
 
     @Override
     public void execute(Path path){
-        CS.showError(ERR_CONF_MEG_NON,new String[]{path.toString()},()->!path.toFile().isFile());
         FileMerge fileMerge = convertToObject(path,FileMerge.class);
-        CS.showError(ERR_CONF_MEG_NODE_NON,new String[]{path.toString()},()->!fileMerge.trim().validate());
+        CS.showError(ERR_MEG_NODE_NON,new String[]{path.toString()},()->!fileMerge.trim().validate());
         String pathMd5 = getMD5L16(fileMerge.getPath() + fileMerge.getPath2() + fileMerge.getPath3());
         if(!pathMd5.equals(fileMerge.getPathMd5())) fileMerge.refreshMerges();
         fileMerge.setPathMd5(pathMd5);

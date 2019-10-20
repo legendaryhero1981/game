@@ -15,7 +15,6 @@ import static java.util.regex.Pattern.compile;
 import static java.util.stream.Stream.of;
 import static legend.util.CharsetDetectorUtil.detectorFileCharset;
 import static legend.util.ConsoleUtil.IN;
-import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
 import static legend.util.MD5Util.getGuidL32;
@@ -78,8 +77,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import legend.intf.IValue;
-import legend.util.entity.ILCode;
-import legend.util.entity.ILCodes;
 import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
@@ -529,27 +526,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void replaceFilesWithIL(FileParam param){
-        if(existsPath(param.getDestPath())){
-            ILogic<Path> replaceLogic = new FileReplaceILCodeLogic(param);
-            param.getPathMap().entrySet().stream().forEach(entry->{
-                Path path = entry.getValue();
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(entry.getKey()),path));
-                replaceLogic.execute(path);
-                param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,path.toString(),path + EXT_XML)));
-                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-            });
-        }else{
-            param.getCmdOptional().ifPresent(c->{
-                ILCodes ilCodes = new ILCodes();
-                ilCodes.getCodes().add(new ILCode());
-                convertToXml(param.getDestPath(),ilCodes);
-            });
-            param.getDetailOptional().ifPresent(c->CS.sl(gsph(ST_FILE_IL_CONF,EXT_IL,param.getDestPath().toString())));
-        }
+        executeFileLogic(param,new FileReplaceILCodeLogic(param));
     }
 
     private static void replaceFilesWithSPK(FileParam param){
         executeFileLogic(param,new FileReplaceSPKCodeLogic(param));
+    }
+    
+    private static void replaceFilesForMergeContent(FileParam param){
+        executeFileLogic(param,new FileMergeLogic(param));
     }
 
     private static void replaceFilesForSameName(FileParam param){
@@ -570,10 +555,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             });
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
-    }
-
-    private static void replaceFilesForMergeContent(FileParam param){
-        executeFileLogic(param,new FileMergeLogic(param));
     }
 
     private static void regenFileWithGBK(FileParam param){
