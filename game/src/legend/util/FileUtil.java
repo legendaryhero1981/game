@@ -307,6 +307,23 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         return exists(path);
     }
 
+    public static byte[] readFormBinaryFile(Path path){
+        try{
+            return readAllBytes(path);
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_READ,path.toString(),e.toString()));
+        }
+        return new byte[0];
+    }
+
+    public static void writeToBinaryFile(Path path, byte[] bytes){
+        try{
+            write(makeDirs(path),bytes);
+        }catch(IOException e){
+            CS.sl(gsph(ERR_FLE_WRT,path.toString(),e.toString()));
+        }
+    }
+
     public static List<String> readFile(Path path, String charsetName){
         try{
             return readAllLines(path,forName(charsetName));
@@ -532,7 +549,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static void replaceFilesWithSPK(FileParam param){
         executeFileLogic(param,new FileReplaceSPKCodeLogic(param));
     }
-    
+
     private static void replaceFilesForMergeContent(FileParam param){
         executeFileLogic(param,new FileMergeLogic(param));
     }

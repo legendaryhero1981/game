@@ -5,7 +5,6 @@ import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.exec;
 import static legend.util.FileUtil.dealFiles;
-import static legend.util.FileUtil.existsPath;
 import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.MD5Util.getMD5L16;
@@ -27,11 +26,7 @@ import legend.util.param.FileParam;
 public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
     public FileMergeLogic(FileParam param){
         super(param);
-        Path path = get(CONF_FILE_MERGE);
-        if(!existsPath(path)){
-            param.getCmdOptional().ifPresent(c->convertToXml(path,new FileMerge()));
-            param.getDetailOptional().ifPresent(c->CS.sl(ST_FILE_MERGE_CONF));
-        }
+        initialize(CONF_FILE_MERGE,ST_FILE_MERGE_CONF,FileMerge.class);
     }
 
     @Override

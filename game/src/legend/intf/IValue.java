@@ -1,8 +1,11 @@
 package legend.intf;
 
+import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.gsph;
+
 import java.util.function.Supplier;
 
-public interface IValue<T>extends Cloneable{
+public interface IValue<T>extends ICommon{
     default T cloneValue(){
         return null;
     }
@@ -25,19 +28,21 @@ public interface IValue<T>extends Cloneable{
         return true;
     }
 
-    static Object clone(Object o){
-        Object object = null;
-        Class<?> c = o.getClass();
-        try{
-            object = c.getDeclaredConstructor().newInstance((Object[])null);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return object;
+    static Object clone(Object object){
+        return newInstance(object.getClass());
     }
 
     @SuppressWarnings("unchecked")
     static <T> T cloneValue(T t){
         return (T)clone(t);
+    }
+
+    static <T> T newInstance(Class<T> c){
+        try{
+            return c.getDeclaredConstructor().newInstance((Object[])null);
+        }catch(Exception e){
+            CS.sl(gsph(ERR_INFO,e.toString()));
+        }
+        return null;
     }
 }

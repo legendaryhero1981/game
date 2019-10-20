@@ -7,7 +7,7 @@ import static legend.util.StringUtil.gl;
 import java.io.File;
 import java.util.Map;
 
-public interface ICommon{
+public interface ICommon extends Cloneable{
     int BLOCK_SIZE_FILE = 1 << 20;
     byte[] BOM_UTF16LE = new byte[]{(byte)0xff,(byte)0xfe};
     byte[] BOM_UTF16BE = new byte[]{(byte)0xfe,(byte)0xff};
@@ -190,11 +190,12 @@ public interface ICommon{
     String ST_CMD_DONE = N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ST_PRG_START = V_START + V_EXEC + N_PRG + S_ELLIPSIS;
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
-    String ERR_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_CMD_EXEC = N_CMD + V_EXEC + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + N_ERR_INFO + PH_ARG0;
+    String ERR_INFO = N_ERR_INFO + PH_ARG0;
+    String ERR_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
+    String ERR_CMD_EXEC = N_CMD + V_EXEC + V_FAIL + ERR_INFO;
+    String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + ERR_INFO;
+    String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + ERR_INFO;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;
+    String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     Map<String,String> SPH_MAP = ofEntries(entry(REG_SPC_SQM,S_SQM),entry(REG_SPC_DQM,S_DQM),entry(REG_SPC_BQ,S_BQ));
 }
