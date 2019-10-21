@@ -29,10 +29,10 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
 
     @Override
     public boolean validate(){
-        if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFilePathExpr()) || isEmpty(bodyInfo.getFileSizeExpr())){
+        if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFileSizeExpr())){
             errorInfo = gsph(ERR_SPKH_NODE_NON,N_SPKF_BODY_INFO);
             return false;
-        }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFilePathExpr()) || isEmpty(listInfo.getFileSizeExpr())){
+        }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFileSizeExpr())){
             errorInfo = gsph(ERR_SPKH_NODE_NON,N_SPKF_LIST_INFO);
             return false;
         }else if(isEmpty(tailInfo.getHeaderSize()) || isEmpty(tailInfo.getHeaderFlag())){

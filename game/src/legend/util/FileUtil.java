@@ -971,7 +971,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 bytes[1] = (byte)low;
                 try{
                     buffer.append(new String(bytes,charset));
-                }catch(UnsupportedEncodingException e){}
+                }catch(UnsupportedEncodingException e){
+                    CS.sl(gsph(ERR_INFO,e.toString()));
+                }
             }
         }
     }

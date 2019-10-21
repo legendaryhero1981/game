@@ -31,11 +31,11 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 fp.setPattern(compile(spkCode.getQueryRegex()));
                 fp.setSrcPath(get(spkCode.getUnpackPath()));
                 dealFiles(fp);
-                byte[] spkCache = readFormBinaryFile(get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK));
                 byte[] stcCache = readFormBinaryFile(get(spkCode.getFilePath(),spkCode.getFileName() + EXT_STC));
+                byte[] spkCache = readFormBinaryFile(get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK));
                 
-                writeToBinaryFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
                 writeToBinaryFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
+                writeToBinaryFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
             }catch(Exception e){
                 CS.sl(gsph(ERR_INFO,e.toString()));
             }

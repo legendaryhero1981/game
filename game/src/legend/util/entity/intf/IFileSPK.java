@@ -9,12 +9,12 @@ public interface IFileSPK extends IFileUtil{
     String REG_SPK_SIZE_EXPR = "\\A(" + REG_NUM_NATURAL + ")([-,;](" + REG_NUM_NATURAL + "))?$";
     String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-z]+)$";
     String N_SPK_CONF = EXT_SPK + "编码文件的配置文件";
-    String N_SPKF_BODY_INFO = "SPKFormat::BodyInfo节点下的headerSize或headerFlag或filePathExpr或fileSizeExpr子节点值";
-    String N_SPKF_LIST_INFO = "SPKFormat::ListInfo节点下的headerSize或headerFlag或filePathExpr或fileSizeExpr子节点值";
+    String N_SPKF_BODY_INFO = "SPKFormat::BodyInfo节点下的headerSize或headerFlag或fileSizeExpr子节点值";
+    String N_SPKF_LIST_INFO = "SPKFormat::ListInfo节点下的headerSize或headerFlag或fileSizeExpr子节点值";
     String N_SPKF_TAIL_INFO = "SPKFormat::TailInfo节点下的headerSize或headerFlag子节点值";
     String N_STCF_HEADER_INFO = "STCFormat::HeaderInfo节点下的headerSize或headerFlag子节点值";
-    String N_STCF_BODY_INFO = "STCFormat::BodyInfo节点下的headerSize或fileSizeExpr或fileStartPosExpr子节点值";
-    String N_STCF_LIST_INFO = "STCFormat::ListInfo节点下的headerFlag或filePathExpr子节点值";
+    String N_STCF_BODY_INFO = "STCFormat::BodyInfo节点下的headerSize或headerFlag或fileSizeExpr或fileStartPosExpr子节点值";
+    String N_STCF_LIST_INFO = "STCFormat::ListInfo节点下的headerSize或headerFlag子节点值";
     String ST_FILE_SPK_CONF = V_GNRT + N_SPK_CONF + S_DQM + CONF_FILE_SPK + S_DQM + S_BANG;
     String ERR_SPKC_NODE_NON = "SPKCode节点下的unpackPath或repackPath或filePath或fileName或queryRegex子节点值" + V_BY_NUL;
     String ERR_SPKC_PATH_SAME = "repackPath与filePath不能为同一路径" + S_BANG;
@@ -33,16 +33,14 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "SPKCode::SPKFormat" + gs(22) + EXT_SPK + "文件数据格式对象，用于解析该文件的数据结构。\n"
     + gs(4) + "SPKFormat节点由节点BodyInfo、ListInfo、TailInfo按顺序组成，描述了整个" + EXT_SPK + "文件的数据结构。\n"
     + gs(4) + "SPKFormat::BodyInfo" + gs(21) + EXT_SPK + "文件中对象主体信息。\n"
-    + gs(4) + "SPKFormat::BodyInfo节点由节点headerSize、headerFlag、filePathExpr、fileSizeExpr按顺序组成。\n"
+    + gs(4) + "SPKFormat::BodyInfo节点由节点headerSize、headerFlag、fileSizeExpr按顺序组成。\n"
     + gs(4) + "SPKFormat::BodyInfo::headerSize" + gs(9) + "对象主体的头部大小（以字节为单位的自然数，下同）。\n"
     + gs(4) + "SPKFormat::BodyInfo::headerFlag" + gs(9) + "对象主体的头部起始标志；支持16进制字符串表达式（匹配的正则表达式为：" + REG_SPK_FLAG_HEX + "，下同）、引用表达式及特殊字符占位符表达式。\n"
-    + gs(4) + "SPKFormat::BodyInfo::filePathExpr" + gs(7) + "对象主体中文件相对路径名表达式；形如：起始位置[-,;][大小]，若不指定大小，程序会取默认值4个字节；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "（下同）。\n"
     + gs(4) + "SPKFormat::BodyInfo::fileSizeExpr" + gs(7) + "对象主体中文件大小表达式；形如：起始位置[-,;][大小]，若不指定大小，程序会取默认值4个字节；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "（下同）。\n"
     + gs(4) + "SPKFormat::ListInfo" + gs(21) + EXT_SPK + "文件中对象列表信息。\n"
-    + gs(4) + "SPKFormat::ListInfo节点由节点headerSize、headerFlag、filePathExpr、fileSizeExpr按顺序组成。\n"
+    + gs(4) + "SPKFormat::ListInfo节点由节点headerSize、headerFlag、fileSizeExpr按顺序组成。\n"
     + gs(4) + "SPKFormat::ListInfo::headerSize" + gs(9) + "对象列表的头部大小。\n"
     + gs(4) + "SPKFormat::ListInfo::headerFlag" + gs(9) + "对象列表的头部起始标志。\n"
-    + gs(4) + "SPKFormat::ListInfo::filePathExpr" + gs(7) + "对象列表中文件相对路径名表达式。\n"
     + gs(4) + "SPKFormat::ListInfo::fileSizeExpr" + gs(7) + "对象列表中文件大小表达式。\n"
     + gs(4) + "SPKFormat::TailInfo" + gs(21) + EXT_SPK + "文件中文件尾部信息。\n"
     + gs(4) + "SPKFormat::TailInfo节点由节点headerSize、headerFlag按顺序组成。\n"
@@ -55,12 +53,13 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "STCFormat::HeaderInfo::headerSize" + gs(7) + "文件头部的头部大小。\n"
     + gs(4) + "STCFormat::HeaderInfo::headerFlag" + gs(7) + "文件头部的头部起始标志。\n"
     + gs(4) + "STCFormat::BodyInfo" + gs(21) + EXT_STC + "文件中对象主体信息。\n"
-    + gs(4) + "STCFormat::BodyInfo节点由节点headerSize、fileSizeExpr、fileStartPosExpr按顺序组成。\n"
+    + gs(4) + "STCFormat::BodyInfo节点由节点headerSize、headerFlag、fileSizeExpr、fileStartPosExpr按顺序组成。\n"
     + gs(4) + "STCFormat::BodyInfo::headerSize" + gs(9) + "对象主体的头部大小。\n"
+    + gs(4) + "STCFormat::BodyInfo::headerFlag" + gs(9) + "对象主体的头部起始标志；支持16进制字符串表达式、引用表达式及特殊字符占位符表达式。\n"
     + gs(4) + "STCFormat::BodyInfo::fileSizeExpr" + gs(7) + "对象主体中文件大小表达式。\n"
     + gs(4) + "STCFormat::BodyInfo::fileStartPosExpr" + gs(3) + "对象主体中文件起始位置表达式；形如：起始位置[-,;][大小]，若不指定大小，程序会取默认值4个字节；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "。\n"
     + gs(4) + "STCFormat::ListInfo" + gs(21) + EXT_STC + "文件中对象列表信息。\n"
-    + gs(4) + "STCFormat::ListInfo节点由节点headerFlag、filePathExpr按顺序组成。\n"
-    + gs(4) + "STCFormat::ListInfo::headerFlag" + gs(9) + "对象列表的头部起始标志。\n"
-    + gs(4) + "STCFormat::ListInfo::filePathExpr" + gs(7) + "对象列表中文件相对路径名表达式。\n" + gs(4);
+    + gs(4) + "STCFormat::ListInfo节点由节点headerSize、headerFlag按顺序组成。\n"
+    + gs(4) + "STCFormat::ListInfo::headerSize" + gs(9) + "对象列表的头部大小。\n"
+    + gs(4) + "STCFormat::ListInfo::headerFlag" + gs(9) + "对象列表的头部起始标志。\n" + gs(4);
 }
