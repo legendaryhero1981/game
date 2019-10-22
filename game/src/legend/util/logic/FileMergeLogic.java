@@ -9,7 +9,6 @@ import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.MD5Util.getMD5L16;
 import static legend.util.StringUtil.gsph;
-import static legend.util.param.FileParam.convertParam;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -32,14 +31,14 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
     @Override
     public void execute(Path path){
         FileMerge fileMerge = convertToObject(path,FileMerge.class);
-        CS.showError(ERR_MEG_NODE_NON,new String[]{path.toString()},()->!fileMerge.trim().validate());
+        CS.showError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileMerge.getErrorInfo()),()->!fileMerge.trim().validate());
         String pathMd5 = getMD5L16(fileMerge.getPath() + fileMerge.getPath2() + fileMerge.getPath3());
         if(!pathMd5.equals(fileMerge.getPathMd5())) fileMerge.refreshMerges();
         fileMerge.setPathMd5(pathMd5);
         FileParam fp = new FileParam();
         fp.setCmd(CMD_FND_PTH_RLT);
         fp.setOpt(OPT_INSIDE + OPT_EXCLUDE_ROOT);
-        fp.setPattern(compile(convertParam(fileMerge.getQueryRegex(),true)));
+        fp.setPattern(compile(fileMerge.getQueryRegex()));
         fp.setSrcPath(get(fileMerge.getPath()));
         FileParam fp2 = fp.cloneValue(), fp3 = fp.cloneValue();
         fp2.setSrcPath(get(fileMerge.getPath2()));

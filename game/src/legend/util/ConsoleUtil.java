@@ -1,6 +1,5 @@
 package legend.util;
 
-import static java.lang.System.exit;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
@@ -42,16 +41,16 @@ public final class ConsoleUtil implements IConsoleUtil{
     public void showHelp(String help, BooleanSupplier... suppliers){
         if(meetCondition(suppliers)){
             sl(help);
-            exit(0);
+            System.exit(0);
         }
     }
 
     public void showError(String error, String[] args, BooleanSupplier... suppliers){
-        if(showException(error,args,suppliers)) exit(0);
+        if(showException(error,args,suppliers)) System.exit(0);
     }
 
     public void showError(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
-        if(showException(error,args,suppliers)) exit(0);
+        if(showException(error,args,suppliers)) System.exit(0);
     }
 
     public boolean showException(String error, String[] args, BooleanSupplier... suppliers){

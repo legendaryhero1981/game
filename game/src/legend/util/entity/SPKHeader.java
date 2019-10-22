@@ -50,20 +50,59 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     }
 
     public static final class MetaData{
-        protected int start;
+        protected int offset;
         protected int size;
+        protected int position;
+        protected int deviation;
         protected byte[] bytes;
+        protected boolean mod;
 
-        public int getStart(){
-            return start;
+        public int getOffset(){
+            return offset;
+        }
+
+        public void setOffset(int offset){
+            this.offset = offset;
         }
 
         public int getSize(){
             return size;
         }
 
+        public void setSize(int size){
+            this.size = size;
+        }
+
+        public int getPosition(){
+            return position;
+        }
+
+        public void setPosition(int position){
+            this.position = position;
+        }
+
+        public int getDeviation(){
+            return deviation;
+        }
+
+        public void setDeviation(int deviation){
+            this.deviation = deviation;
+        }
+
         public byte[] getBytes(){
             return bytes;
+        }
+
+        public void setBytes(byte[] bytes){
+            this.bytes = bytes;
+        }
+
+        public boolean isMod(){
+            return mod;
+        }
+
+        public void setMod(boolean mod){
+            this.mod = mod;
         }
     }
 
@@ -85,40 +124,42 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
                 errorInfo = gsph(ERR_SPKH_EXPR_DESC,"headerSize");
                 value.setValue(false);
             }else headerSizeData.size = Integer.parseInt(headerSize);
-        }else if(nonEmpty(headerFlag)){
+        }
+        if(nonEmpty(headerFlag) && value.getValue()){
             Matcher matcher = flagHexPattern.matcher(headerFlag);
             if(matcher.matches()) headerFlagData.bytes = hexToBytes(matcher.group(1));
             else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
-        }else if(nonEmpty(fileSizeExpr)) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
-        else if(nonEmpty(fileStartPosExpr)) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
+        }
+        if(nonEmpty(fileSizeExpr) && value.getValue()) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
+        if(nonEmpty(fileStartPosExpr) && value.getValue()) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
         return value.getValue();
     }
 
     private void validateSizeExpr(IValue<Boolean> value, MetaData metaData, String expr, String field){
         Matcher matcher = sizeExprPattern.matcher(expr);
         if(matcher.matches()){
-            metaData.start = Integer.parseInt(matcher.group(1));
+            metaData.offset = Integer.parseInt(matcher.group(1));
             String size = matcher.group(3);
-            metaData.size = nonEmpty(size) ? Integer.parseInt(size) : 4;
+            metaData.size = nonEmpty(size) ? Integer.parseInt(size) : 1;
         }else{
             errorInfo = gsph(ERR_SPKH_EXPR_DESC,field);
             value.setValue(false);
         }
     }
 
-    protected MetaData getSizeData(){
+    public MetaData getSizeData(){
         return headerSizeData;
     }
 
-    protected MetaData getFlagData(){
+    public MetaData getFlagData(){
         return headerFlagData;
     }
 
-    protected MetaData getFileSizeData(){
+    public MetaData getFileSizeData(){
         return fileSizeData;
     }
 
-    protected MetaData getFileStartPosData(){
+    public MetaData getFileStartPosData(){
         return fileStartPosData;
     }
 

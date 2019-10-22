@@ -17,6 +17,21 @@ import legend.util.param.SingleValue;
 public final class StringUtil implements ICommon{
     private StringUtil(){}
 
+    public static int bytesIndexOfBytes(byte[] lb, byte[] sb, boolean reverse){
+        if(lb.length < sb.length) return -1;
+        if(reverse) for(int i = lb.length - 1,j,k;i >= 0;i--){
+            for(j = sb.length - 1,k = i;j >= 0 && i >= 0 && sb[j--] == lb[i--];);
+            if(j == -1) return k - sb.length + 1;
+            i = k;
+        }
+        else for(int i = 0,j,k;i < lb.length;i++){
+            for(j = 0,k = i;j < sb.length && i < lb.length && sb[j++] == lb[i++];);
+            if(j == sb.length) return k;
+            i = k;
+        }
+        return -1;
+    }
+
     public static String bytesToHex(byte[] bytes){
         char[] cache = new char[bytes.length * 2];
         for(int i = 0;i < bytes.length;i++){

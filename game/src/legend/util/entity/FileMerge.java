@@ -1,6 +1,8 @@
 package legend.util.entity;
 
+import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.param.FileParam.convertParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +16,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import legend.intf.IValue;
 import legend.util.entity.intf.IFileMerge;
 
 @XmlRootElement(name = "FileMerge")
 @XmlType(propOrder = {"comment","path","path2","path3","mergeExecutablePath","queryRegex","pathMd5","merges"})
-public class FileMerge implements IFileMerge,IValue<FileMerge>{
+public class FileMerge extends BaseEntity<FileMerge> implements IFileMerge{
     @XmlTransient
     private ConcurrentMap<String,Merge> mergeMap = new ConcurrentHashMap<>();
     @XmlElement
@@ -42,7 +43,10 @@ public class FileMerge implements IFileMerge,IValue<FileMerge>{
 
     @Override
     public boolean validate(){
-        return nonEmpty(path) && nonEmpty(path2) && nonEmpty(path3) && nonEmpty(mergeExecutablePath) && nonEmpty(queryRegex);
+        if(isEmpty(path) || isEmpty(path2) || isEmpty(path3) || isEmpty(mergeExecutablePath) || isEmpty((queryRegex = convertParam(queryRegex,true)))){
+            errorInfo = ERR_MEG_NODE_NON;
+            return false;
+        }else return true;
     }
 
     @Override
