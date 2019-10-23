@@ -19,24 +19,24 @@ import legend.util.entity.intf.IFileSPK;
 import legend.util.param.SingleValue;
 
 @XmlRootElement(name = "SPKHeader")
-@XmlType(propOrder = {"headerSize","headerFlag","fileSizeExpr","fileStartPosExpr"})
+@XmlType(propOrder = {"headerSize","headerFlag","fileStartPosExpr","fileSizeExpr"})
 public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlElement
     private String headerSize = S_EMPTY;
     @XmlElement
     private String headerFlag = S_EMPTY;
     @XmlElement
-    private String fileSizeExpr = S_EMPTY;
-    @XmlElement
     private String fileStartPosExpr = S_EMPTY;
+    @XmlElement
+    private String fileSizeExpr = S_EMPTY;
     @XmlTransient
     protected MetaData headerSizeData = new MetaData();
     @XmlTransient
     protected MetaData headerFlagData = new MetaData();
     @XmlTransient
-    protected MetaData fileSizeData = new MetaData();
-    @XmlTransient
     protected MetaData fileStartPosData = new MetaData();
+    @XmlTransient
+    protected MetaData fileSizeData = new MetaData();
     @XmlTransient
     protected static final Pattern sizePattern;
     @XmlTransient
@@ -55,7 +55,6 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         protected int position;
         protected int deviation;
         protected byte[] bytes;
-        protected boolean mod;
 
         public int getOffset(){
             return offset;
@@ -96,22 +95,14 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         public void setBytes(byte[] bytes){
             this.bytes = bytes;
         }
-
-        public boolean isMod(){
-            return mod;
-        }
-
-        public void setMod(boolean mod){
-            this.mod = mod;
-        }
     }
 
     @Override
     public SPKHeader trim(){
         headerFlag = headerFlag.trim();
         headerSize = headerSize.trim();
-        fileSizeExpr = fileSizeExpr.trim();
         fileStartPosExpr = fileStartPosExpr.trim();
+        fileSizeExpr = fileSizeExpr.trim();
         return this;
     }
 
@@ -155,12 +146,12 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return headerFlagData;
     }
 
-    public MetaData getFileSizeData(){
-        return fileSizeData;
-    }
-
     public MetaData getFileStartPosData(){
         return fileStartPosData;
+    }
+
+    public MetaData getFileSizeData(){
+        return fileSizeData;
     }
 
     protected String getHeaderSize(){
@@ -171,11 +162,11 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return headerFlag;
     }
 
-    protected String getFileSizeExpr(){
-        return fileSizeExpr;
-    }
-
     protected String getFileStartPosExpr(){
         return fileStartPosExpr;
+    }
+
+    protected String getFileSizeExpr(){
+        return fileSizeExpr;
     }
 }

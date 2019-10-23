@@ -18,13 +18,18 @@ public final class StringUtil implements ICommon{
     private StringUtil(){}
 
     public static int bytesIndexOfBytes(byte[] lb, byte[] sb, boolean reverse){
-        if(lb.length < sb.length) return -1;
-        if(reverse) for(int i = lb.length - 1,j,k;i >= 0;i--){
+        if(reverse) return bytesIndexOfBytes(lb,sb,lb.length - 1,reverse);
+        else return bytesIndexOfBytes(lb,sb,0,reverse);
+    }
+
+    public static int bytesIndexOfBytes(byte[] lb, byte[] sb, int lbOffset, boolean reverse){
+        if(lb.length < sb.length || 0 > lbOffset || lb.length < lbOffset + 1) return -1;
+        if(reverse) for(int i = lbOffset,j,k;i >= 0;i--){
             for(j = sb.length - 1,k = i;j >= 0 && i >= 0 && sb[j--] == lb[i--];);
             if(j == -1) return k - sb.length + 1;
             i = k;
         }
-        else for(int i = 0,j,k;i < lb.length;i++){
+        else for(int i = lbOffset,j,k;i < lb.length;i++){
             for(j = 0,k = i;j < sb.length && i < lb.length && sb[j++] == lb[i++];);
             if(j == sb.length) return k;
             i = k;

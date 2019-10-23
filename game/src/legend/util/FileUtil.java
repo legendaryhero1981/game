@@ -307,7 +307,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         return exists(path);
     }
 
-    public static byte[] readFormBinaryFile(Path path){
+    public static byte[] readBinaryFormFile(Path path){
         try{
             return readAllBytes(path);
         }catch(IOException e){
@@ -316,7 +316,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         return new byte[0];
     }
 
-    public static void writeToBinaryFile(Path path, byte[] bytes){
+    public static void writeBinaryToFile(Path path, byte[] bytes){
         try{
             write(makeDirs(path),bytes);
         }catch(IOException e){
