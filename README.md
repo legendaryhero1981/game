@@ -22,7 +22,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 目前包含5条命令，输入 game 可以看到命令帮助信息如下：
 
 作者：李允
-版本：V5.1
+版本：V5.2
 
 
 参数说明：
@@ -299,6 +299,9 @@ file -rfsn[~+*!@?] regex src dest [limit] [level]
 file -rfmeg[~+*!@?] regex src [level]
 根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。
 
+file -rfspk[~+*!@?] regex src [level]
+根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成.spk文件和其相对应的同名.stc文件的修改。
+
 file -c[~+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
 
@@ -503,32 +506,32 @@ file -rdou (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 file -rdouf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。
 
-file -rfbt* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##LOWER;;UPPER=>REPLACE(\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
+file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1##LOWER;;UPPER=>REPLACE(\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
 先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
 1、对每行的第1列数据执行原子规则：将英文字母全部替换为小写；
 2、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；
 3、对每行数据执行原子规则：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = "beq.s"”。
 
-file -rfbt* (?i)\Atemp1\.txt$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
+file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
 先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
 1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；
 2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,"如果两个值相等，则将控制转移到目标指令（短格式）。","");”。
 
-file -rfil* (?i)\.il$ E:/Decompile/DLL-ildasm
+file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm
 根据配置文件./file-il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
 
-file -rfil* (?i)\.il$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
+file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
 根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
 
-file -rfgbk* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
+file -rfgbk* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
 提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件 .../font_schinese.txt。
 
-file -rfbig5* (?i)\.json$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
+file -rfbig5* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
 提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
 
-file -rfcs* (?i)\.txt$ E:/Decompile/DLL-ildasm gbk
+file -rfcs* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk
 先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
 
 file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2
@@ -536,6 +539,9 @@ file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/User
 
 file -rfmeg* (?i)`file-merge.xml`$ . 1
 先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。
+
+file -rfspk* (?i)`file-spk.xml`$ . 1
+先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成.spk文件和其相对应的同名.stc文件的修改。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
