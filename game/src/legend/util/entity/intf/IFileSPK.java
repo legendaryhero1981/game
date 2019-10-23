@@ -41,7 +41,7 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "STCFormat::BodyInfo::headerSize" + gs(9) + "对象主体的头部大小。\n"
     + gs(4) + "STCFormat::BodyInfo::headerFlag" + gs(9) + "对象主体的头部起始标志。\n"
     + gs(4) + "STCFormat::BodyInfo::fileStartPosExpr" + gs(3) + "对象主体中文件起始位置表达式；形如：起始位置[-,;][个数]，若不指定个数，程序会取默认值1个；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "。\n"
-    + gs(4) + "STCFormat::BodyInfo::fileSizeExpr" + gs(7) + "对象主体中文件大小表达式；形如：起始位置[-,;][个数]，若不指定个数，程序会取默认值1个；匹配的正则表达式为：\" + REG_SPK_SIZE_EXPR + \"（下同）。\n"
+    + gs(4) + "STCFormat::BodyInfo::fileSizeExpr" + gs(7) + "对象主体中文件大小表达式；形如：起始位置[-,;][个数]，若不指定个数，程序会取默认值1个；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "（下同）。\n"
     + gs(4) + "STCFormat::ListInfo" + gs(21) + EXT_STC + "文件中对象列表信息。\n"
     + gs(4) + "STCFormat::ListInfo节点由节点headerSize、headerFlag按顺序组成。\n"
     + gs(4) + "STCFormat::ListInfo::headerSize" + gs(9) + "对象列表的头部大小。\n"
