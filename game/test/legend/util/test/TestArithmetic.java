@@ -21,8 +21,7 @@ public class TestArithmetic implements ICommon{
     public void test(){
         // testGBK();
         // testBIG5();
-        String s = "abc123" + SPC_NUL;
-        CS.sl(s).sl(s.replaceAll(SPC_NUL,""));
+        CS.sl(-1 % 16 + "");
     }
 
     // @Test

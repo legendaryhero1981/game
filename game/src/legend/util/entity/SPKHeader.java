@@ -53,8 +53,10 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         protected int offset;
         protected int size;
         protected int position;
+        protected int nextPosition;
         protected int deviation;
         protected byte[] bytes;
+        protected byte[] nulbytes;
 
         public int getOffset(){
             return offset;
@@ -80,6 +82,14 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             this.position = position;
         }
 
+        public int getNextPosition(){
+            return nextPosition;
+        }
+
+        public void setNextPosition(int nextPosition){
+            this.nextPosition = nextPosition;
+        }
+
         public int getDeviation(){
             return deviation;
         }
@@ -94,6 +104,14 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
 
         public void setBytes(byte[] bytes){
             this.bytes = bytes;
+        }
+
+        public byte[] getNulbytes(){
+            return nulbytes;
+        }
+
+        public void setNulbytes(byte[] nulbytes){
+            this.nulbytes = nulbytes;
         }
     }
 
@@ -121,8 +139,8 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             if(matcher.matches()) headerFlagData.bytes = hexToBytes(matcher.group(1));
             else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
         }
-        if(nonEmpty(fileSizeExpr) && value.getValue()) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
         if(nonEmpty(fileStartPosExpr) && value.getValue()) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
+        if(nonEmpty(fileSizeExpr) && value.getValue()) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
         return value.getValue();
     }
 

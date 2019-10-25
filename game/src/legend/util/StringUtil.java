@@ -17,6 +17,17 @@ import legend.util.param.SingleValue;
 public final class StringUtil implements ICommon{
     private StringUtil(){}
 
+    public static byte[] fillBytes(int n, int size){
+        return fillBytes((byte)n,size);
+    }
+
+    public static byte[] fillBytes(byte b, int size){
+        byte[] bytes = new byte[size];
+        for(int i = 0;i < size;i++)
+            bytes[i] = b;
+        return bytes;
+    }
+
     public static int bytesIndexOfBytes(byte[] lb, byte[] sb, boolean reverse){
         if(reverse) return bytesIndexOfBytes(lb,sb,lb.length - 1,reverse);
         else return bytesIndexOfBytes(lb,sb,0,reverse);
