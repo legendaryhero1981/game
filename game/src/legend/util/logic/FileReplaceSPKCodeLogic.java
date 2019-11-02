@@ -130,7 +130,6 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
             }catch(Exception e){
                 CS.sl(gsph(ERR_INFO,e.toString()));
-                e.printStackTrace();
             }
         });
     }
