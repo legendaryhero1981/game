@@ -16,6 +16,7 @@ public interface IFileSPK extends IFileUtil{
     String N_STCF_BODY_INFO = "STCFormat::BodyInfo节点下的headerSize或headerFlag或fileStartPosExpr或fileSizeExpr子节点值";
     String N_STCF_LIST_INFO = "STCFormat::ListInfo节点下的headerSize或headerFlag子节点值";
     String ST_FILE_SPK_CONF = V_GNRT + N_SPK_CONF + S_DQM + CONF_FILE_SPK + S_DQM + S_BANG;
+    String ERR_SPK_NON = N_FLE + S_DQM_L + PH_ARG0 + S_DQM_R + N_OR + S_DQM_L + PH_ARG1 + S_DQM_R + V_NON_EXISTS;
     String ERR_SPKC_NODE_NON = "SPKCode节点下的unpackPath或repackPath或filePath或fileName或queryRegex子节点值" + V_BY_NUL;
     String ERR_SPKC_PATH_SAME = "repackPath与filePath不能为同一路径" + S_BANG;
     String ERR_SPKH_NODE_NON = PH_ARG0 + V_BY_NUL;

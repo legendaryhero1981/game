@@ -5,6 +5,7 @@ import static java.nio.file.Paths.get;
 import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 import static legend.util.FileUtil.dealFiles;
+import static legend.util.FileUtil.existsPath;
 import static legend.util.FileUtil.readBinaryFormFile;
 import static legend.util.FileUtil.writeBinaryToFile;
 import static legend.util.JaxbUtil.convertToObject;
@@ -38,13 +39,16 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
         CS.showError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileSPK.getErrorInfo()),()->!fileSPK.trim().validate());
         fileSPK.getCodes().parallelStream().forEach(spkCode->{
             try(FileParam fp = new FileParam()){
+                Path stcPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_STC);
+                Path spkPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK);
+                CS.showError(ERR_SPK_NON,new String[]{stcPath.toString(),spkPath.toString()},()->!existsPath(stcPath) || !existsPath(spkPath));
                 // 正则查询所有匹配的已修改文件
                 fp.setCmd(CMD_FIND);
                 fp.setPattern(compile(spkCode.getQueryRegex()));
                 fp.setSrcPath(get(spkCode.getUnpackPath()));
                 dealFiles(fp);
                 // 处理.stc编码文件
-                byte[] stcCache = readBinaryFormFile(get(spkCode.getFilePath(),spkCode.getFileName() + EXT_STC));
+                byte[] stcCache = readBinaryFormFile(stcPath);
                 ByteBuffer stcBuffer = wrap(stcCache).order(ByteOrder.LITTLE_ENDIAN);
                 STCFormat stcFormat = spkCode.getStcFormat();
                 SPKHeader stcHeader = stcFormat.getHeaderInfo();
@@ -76,7 +80,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 });
                 writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
                 // 处理.spk编码文件
-                byte[] spkOriginal = readBinaryFormFile(get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK));
+                byte[] spkOriginal = readBinaryFormFile(spkPath);
                 byte[] spkCache = new byte[spkOriginal.length];
                 ByteBuffer spkBuffer = wrap(spkCache).order(ByteOrder.LITTLE_ENDIAN);
                 SPKFormat spkFormat = spkCode.getSpkFormat();
