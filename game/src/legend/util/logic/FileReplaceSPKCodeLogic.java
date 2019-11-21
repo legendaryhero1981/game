@@ -69,7 +69,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                             if(0 != size){
                                 stcBuffer.putInt(offset + stcBody.getFileSizeData().getOffset() - 1,metaData.getSize());
                                 metaData.setDeviation(size);
-                                if(0 > size) metaData.setNulbytes(fillBytes(0,-1 * size));
+                                if(0 > size) metaData.setNulbytes(fillBytes(0,-size));
                             }
                             metaData.setPosition(stcBuffer.getInt(offset + stcBody.getFileStartPosData().getOffset() - 1));
                             if(filePaths.length > i + 1) metaData.setNextPosition(stcBuffer.getInt(offset + stcBody.getSizeData().getSize() + stcBody.getFileStartPosData().getOffset() - 1));

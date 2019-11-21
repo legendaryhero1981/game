@@ -3,8 +3,6 @@ package legend.intf;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.gsph;
 
-import java.util.function.Supplier;
-
 public interface IValue<T>extends ICommon{
     default T cloneValue(){
         return null;
@@ -24,15 +22,15 @@ public interface IValue<T>extends ICommon{
         return true;
     }
 
-    default boolean validate(Supplier<Object> supplier){
+    default <V> boolean validate(V v){
         return true;
     }
 
-    static Object clone(Object object){
-        return newInstance(object.getClass());
+    @SuppressWarnings("unchecked")
+    static <V> V clone(V v){
+        return (V)newInstance(v.getClass());
     }
 
-    @SuppressWarnings("unchecked")
     static <T> T cloneValue(T t){
         return (T)clone(t);
     }

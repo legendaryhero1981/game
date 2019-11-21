@@ -1,13 +1,15 @@
 package legend.util.entity;
 
+import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.matchRange;
+import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -18,16 +20,32 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IILCode;
 
 @XmlRootElement(name = "ILCodes")
-@XmlType(propOrder = {"comment","mode","codes"})
+@XmlType(propOrder = {"comment","mode","header","partition","codes"})
 public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @XmlElement
     private String comment = ILCODES_COMMENT;
     @XmlElement
     private String mode = MODE_NATIVE;
+    @XmlElement
+    private String header = SIZE_IL_HEADER + S_EMPTY;
+    @XmlElement
+    private String partition = SIZE_IL_PARTITION + S_EMPTY;
     @XmlElementRef
     private List<ILCode> codes;
     @XmlTransient
+    private int headerSize = SIZE_IL_HEADER;
+    @XmlTransient
+    private int partitionSize = SIZE_IL_PARTITION;
+    @XmlTransient
     private int maxLine;
+    @XmlTransient
+    protected static final Pattern headerPattern;
+    @XmlTransient
+    protected static final Pattern partitionPattern;
+    static{
+        headerPattern = compile(REG_NUM);
+        partitionPattern = compile(REG_NUM_NATURAL);
+    }
 
     public ILCodes(){
         codes = new ArrayList<>();
@@ -38,13 +56,22 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     public ILCodes cloneValue(){
         ILCodes ilCodes = new ILCodes();
         ilCodes.mode = mode;
+        ilCodes.header = header;
+        ilCodes.partition = partition;
         ilCodes.codes.addAll(codes);
         return ilCodes;
     }
 
     @Override
-    public boolean validate(Supplier<Object> supplier){
+    public <V> boolean validate(V v){
         if(!MODE_NATIVE.equals(mode) && !MODE_REPL.equals(mode)) mode = MODE_NATIVE;
+        if(nonEmpty(header) && headerPattern.matcher(header).matches()) headerSize = Integer.parseInt(header);
+        else headerSize = SIZE_IL_HEADER;
+        header = headerSize + S_EMPTY;
+        if(nonEmpty(partition) && partitionPattern.matcher(partition).matches()) partitionSize = Integer.parseInt(partition);
+        else partitionSize = SIZE_IL_PARTITION;
+        if(partitionSize < SIZE_IL_PARTITION_MIN) partitionSize = SIZE_IL_PARTITION_MIN;
+        partition = partitionSize + S_EMPTY;
         if(isEmpty(codes)){
             errorInfo = ERR_ILCODE_NON;
             return false;
@@ -68,7 +95,7 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
             }
             return false;
         })){
-            int maxLine = supplier.get() instanceof Integer ? (Integer)supplier.get() : this.maxLine;
+            int maxLine = v instanceof Integer ? (Integer)v : this.maxLine;
             if(0 < this.maxLine){
                 sortCodes(codes);
                 ILCode code = codes.get(0);
@@ -103,6 +130,8 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @Override
     public ILCodes trim(){
         mode = mode.trim();
+        header = header.trim();
+        partition = partition.trim();
         codes.parallelStream().forEach(code->code.trim());
         return this;
     }
@@ -145,6 +174,14 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
         ILCode nativeCode = new ILCode();
         nativeCode.setLineNumer(start,end);
         codes.add(nativeCode);
+    }
+
+    public int getHeaderSize(){
+        return headerSize;
+    }
+
+    public int getPartitionSize(){
+        return partitionSize;
     }
 
     public String getMode(){

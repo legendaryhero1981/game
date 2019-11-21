@@ -16,9 +16,8 @@ public class SingleValue<T> implements IValue<T>{
         return IValue.cloneValue(value);
     }
 
-    @SuppressWarnings("unchecked")
     public SingleValue<T> clone(){
-        return (SingleValue<T>)IValue.clone(this);
+        return IValue.clone(this);
     }
 
     @Override

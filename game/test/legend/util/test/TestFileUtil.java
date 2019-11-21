@@ -34,8 +34,8 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
-//        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
-        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
+        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
+//        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
         super.monkParam(s);
     }
 }

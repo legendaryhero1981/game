@@ -33,15 +33,17 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
     @Override
     public void execute(Path path){
         List<String> datas = readFile(path,CHARSET_GBK);
-        int dataSize = datas.size();
+        final int dataSize = datas.size();
         ILCodes ilCodes = this.ilCodes.cloneValue();
-        CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(()->dataSize));
+        CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(dataSize));
         if(MODE_NATIVE.equals(ilCodes.getMode())){
-            int r = dataSize % SIZE_IL_PARTITION;
+            final int headerSize = ilCodes.getHeaderSize();
+            final int partitionSize = ilCodes.getPartitionSize();
+            final int r = dataSize % partitionSize;
             List<Integer> partitions = new ArrayList<>();
-            for(int i = SIZE_IL_PARTITION + r - 1;i < dataSize;i += SIZE_IL_PARTITION)
+            for(int i = partitionSize + headerSize + r - 1;i < dataSize;i += partitionSize)
                 partitions.add(i);
-            if(SIZE_IL_HEADER < r) partitions.add(r - 1);
+            if(headerSize <= dataSize) partitions.add(headerSize + r - 1);
             List<ILCode> codes = new ArrayList<>();
             Collection<ILCode> caches = new ConcurrentLinkedQueue<>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
             partitions.parallelStream().forEach(p->{
@@ -49,7 +51,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
                     ILCode code = c.cloneValue();
                     List<Pattern> queryRegexCache = code.refreshQueryRegexCache(false);
                     int l = queryRegexCache.size() - 1, i = l, j = p;
-                    for(;0 <= i && 0 <= j && SIZE_IL_PARTITION > p - j;j--){
+                    for(;0 <= i && headerSize <= j && partitionSize > p - j;j--){
                         if(queryRegexCache.get(i).matcher(datas.get(j)).find()) i--;
                         else if(i < l){
                             j += l - i;
@@ -62,7 +64,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
                     j += l;
                     if(MODE_REPL.equals(code.getProcessingMode())){
                         List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
-                        for(l = 0,i = codeRegexCache.size() - 1;0 <= i && 0 <= j && SIZE_IL_PARTITION * 2 > p - j;j--)
+                        for(l = 0,i = codeRegexCache.size() - 1;0 <= i && headerSize <= j && partitionSize * 2 > p - j;j--)
                             if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
                                 if(0 == l) l = j + 1;
                                 i--;
@@ -80,7 +82,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
             CS.showError(ERR_FLE_REPL,new String[]{path.toString(),ST_FILE_IL_MISMATCH},()->!caches.isEmpty());
             ilCodes.regenSortedCodes(codes);
         }
-        CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(()->dataSize));
+        CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(dataSize));
         List<String> results = new ArrayList<>();
         ilCodes.getCodes().stream().forEach(code->{
             int start = code.getStartLine(), end = code.getEndLine();

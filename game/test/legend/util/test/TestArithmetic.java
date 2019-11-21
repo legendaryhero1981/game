@@ -21,7 +21,7 @@ public class TestArithmetic implements ICommon{
     public void test(){
         // testGBK();
         // testBIG5();
-        CS.sl(-1 % 16 + "");
+        CS.sl(Integer.parseInt("2147483648")+"");
     }
 
     // @Test
