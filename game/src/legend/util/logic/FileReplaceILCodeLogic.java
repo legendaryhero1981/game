@@ -38,12 +38,13 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
         CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(dataSize));
         if(MODE_NATIVE.equals(ilCodes.getMode())){
             final int headerSize = ilCodes.getHeaderSize();
+            final int tailSize = ilCodes.getTailSize();
             final int partitionSize = ilCodes.getPartitionSize();
-            final int r = dataSize % partitionSize;
+            final int r = (dataSize - headerSize - tailSize) % partitionSize;
             List<Integer> partitions = new ArrayList<>();
-            for(int i = partitionSize + headerSize + r - 1;i < dataSize;i += partitionSize)
+            for(int i = partitionSize + headerSize + r - 1;i < dataSize - tailSize;i += partitionSize)
                 partitions.add(i);
-            if(headerSize <= dataSize) partitions.add(headerSize + r - 1);
+            if(1 < r) partitions.add(headerSize + r - 1);
             List<ILCode> codes = new ArrayList<>();
             Collection<ILCode> caches = new ConcurrentLinkedQueue<>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
             partitions.parallelStream().forEach(p->{

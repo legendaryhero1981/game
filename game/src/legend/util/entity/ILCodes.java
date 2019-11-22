@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IILCode;
 
 @XmlRootElement(name = "ILCodes")
-@XmlType(propOrder = {"comment","mode","header","partition","codes"})
+@XmlType(propOrder = {"comment","mode","header","tail","partition","codes"})
 public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @XmlElement
     private String comment = ILCODES_COMMENT;
@@ -29,11 +29,15 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
     @XmlElement
     private String header = SIZE_IL_HEADER + S_EMPTY;
     @XmlElement
+    private String tail = SIZE_IL_TAIL + S_EMPTY;
+    @XmlElement
     private String partition = SIZE_IL_PARTITION + S_EMPTY;
     @XmlElementRef
     private List<ILCode> codes;
     @XmlTransient
     private int headerSize = SIZE_IL_HEADER;
+    @XmlTransient
+    private int tailSize = SIZE_IL_TAIL;
     @XmlTransient
     private int partitionSize = SIZE_IL_PARTITION;
     @XmlTransient
@@ -57,6 +61,7 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
         ILCodes ilCodes = new ILCodes();
         ilCodes.mode = mode;
         ilCodes.header = header;
+        ilCodes.tail = tail;
         ilCodes.partition = partition;
         ilCodes.codes.addAll(codes);
         return ilCodes;
@@ -68,6 +73,9 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
         if(nonEmpty(header) && headerPattern.matcher(header).matches()) headerSize = Integer.parseInt(header);
         else headerSize = SIZE_IL_HEADER;
         header = headerSize + S_EMPTY;
+        if(nonEmpty(tail) && headerPattern.matcher(tail).matches()) tailSize = Integer.parseInt(tail);
+        else tailSize = SIZE_IL_TAIL;
+        tail = tailSize + S_EMPTY;
         if(nonEmpty(partition) && partitionPattern.matcher(partition).matches()) partitionSize = Integer.parseInt(partition);
         else partitionSize = SIZE_IL_PARTITION;
         if(partitionSize < SIZE_IL_PARTITION_MIN) partitionSize = SIZE_IL_PARTITION_MIN;
@@ -178,6 +186,10 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
 
     public int getHeaderSize(){
         return headerSize;
+    }
+
+    public int getTailSize(){
+        return tailSize;
     }
 
     public int getPartitionSize(){
