@@ -26,15 +26,14 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
     public FileReplaceILCodeLogic(FileParam param){
         super(param);
         Path path = initialize(CONF_FILE_IL,ST_FILE_IL_CONF,ILCodes.class);
-        if(existsPath(param.getDestPath())) this.ilCodes = convertToObject(param.getDestPath(),ILCodes.class);
-        else this.ilCodes = convertToObject(path,ILCodes.class);
+        if(existsPath(param.getDestPath())) ilCodes = convertToObject(param.getDestPath(),ILCodes.class);
+        else ilCodes = convertToObject(path,ILCodes.class);
     }
 
     @Override
     public void execute(Path path){
         List<String> datas = readFile(path,CHARSET_GBK);
         final int dataSize = datas.size();
-        ILCodes ilCodes = this.ilCodes.cloneValue();
         CS.showError(ERR_FLE_REPL,asList(()->path.toString(),()->ilCodes.getErrorInfo()),()->!ilCodes.trim().validate(dataSize));
         if(MODE_NATIVE.equals(ilCodes.getMode())){
             final int headerSize = ilCodes.getHeaderSize();
