@@ -111,6 +111,8 @@ public interface IFileUtil extends ICommon{
     String CMD_PAK_INF = "-pi";
     String CMD_GUID_L32 = "-gl32";
     String CMD_GUID_U32 = "-gu32";
+    String CMD_MD5_L8 = "-ml8";
+    String CMD_MD5_U8 = "-mu8";
     String CMD_MD5_L16 = "-ml16";
     String CMD_MD5_U16 = "-mu16";
     String CMD_MD5_L32 = "-ml32";
@@ -248,6 +250,8 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件解包到该文件所在目录中。" + gl(2)
     + CMD + CMD_GUID_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
+    + CMD + CMD_MD5_L8 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全小写）。" + gl(2)
+    + CMD + CMD_MD5_U8 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L16 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的16位MD5（英文字母全小写）。" + gl(2)
     + CMD + CMD_MD5_U16 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的16位MD5（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的32位MD5（英文字母全小写）。" + gl(2)
@@ -333,12 +337,14 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_PAK_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + CMD_PAK_DIR_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + CMD_PAK_INF + " (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
-    + CMD + CMD_GUID_L32 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
-    + CMD + CMD_GUID_U32 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
-    + CMD + CMD_MD5_L16 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。" + gl(2)
-    + CMD + CMD_MD5_U16 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。" + gl(2)
-    + CMD + CMD_MD5_L32 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。" + gl(2)
-    + CMD + CMD_MD5_U32 + "+ (?i)assembly-csharp\\.dll \"F:/games/Pathfinder Kingmaker/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
+    + CMD + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
+    + CMD + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
+    + CMD + CMD_MD5_L8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全小写）。" + gl(2)
+    + CMD + CMD_MD5_U8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全大写）。" + gl(2)
+    + CMD + CMD_MD5_L16 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全小写）。" + gl(2)
+    + CMD + CMD_MD5_U16 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的16位MD5（英文字母全大写）。" + gl(2)
+    + CMD + CMD_MD5_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全小写）。" + gl(2)
+    + CMD + CMD_MD5_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
     + CMD + CMD_JSON_ENC + " (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，编码（即压缩为一行）JSON格式文件。" + gl(2)
     + CMD + CMD_JSON_DEC + " (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，解码（即格式化）JSON格式文件。";
 }

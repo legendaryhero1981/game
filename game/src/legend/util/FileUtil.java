@@ -21,8 +21,10 @@ import static legend.util.MD5Util.getGuidL32;
 import static legend.util.MD5Util.getGuidU32;
 import static legend.util.MD5Util.getMD5L16;
 import static legend.util.MD5Util.getMD5L32;
+import static legend.util.MD5Util.getMD5L8;
 import static legend.util.MD5Util.getMD5U16;
 import static legend.util.MD5Util.getMD5U32;
+import static legend.util.MD5Util.getMD5U8;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.countDuration;
@@ -265,6 +267,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 break;
                 case CMD_GUID_U32:
                 showMD5(param,p->getGuidU32(p));
+                break;
+                case CMD_MD5_L8:
+                showMD5(param,p->getMD5L8(p));
+                break;
+                case CMD_MD5_U8:
+                showMD5(param,p->getMD5U8(p));
                 break;
                 case CMD_MD5_L16:
                 showMD5(param,p->getMD5L16(p));
