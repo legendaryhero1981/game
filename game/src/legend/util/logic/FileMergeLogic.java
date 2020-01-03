@@ -9,6 +9,7 @@ import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.MD5Util.getMD5L16;
 import static legend.util.StringUtil.gsph;
+import static legend.util.param.FileParam.convertParam;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
         FileParam fp = new FileParam();
         fp.setCmd(CMD_FND_PTH_RLT);
         fp.setOpt(OPT_INSIDE + OPT_EXCLUDE_ROOT);
-        fp.setPattern(compile(fileMerge.getQueryRegex()));
+        fp.setPattern(compile(convertParam(fileMerge.getQueryRegex(),true)));
         fp.setSrcPath(get(fileMerge.getPath()));
         FileParam fp2 = fp.cloneValue(), fp3 = fp.cloneValue();
         fp2.setSrcPath(get(fileMerge.getPath2()));

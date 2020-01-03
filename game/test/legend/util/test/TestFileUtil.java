@@ -33,10 +33,10 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
-//        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
+        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
 //        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
 //        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
-        s = "-ml8+  (?i)`assembly-csharp.dll`$  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands";
+//        s = "-ml8+  (?i)`assembly-csharp.dll`$  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands";
 //        s = "-ml16+  (?i)`assembly-csharp.dll`  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed";
 //        s = "-ml32+  (?i)`assembly-csharp.dll`  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed";
         super.monkParam(s);
