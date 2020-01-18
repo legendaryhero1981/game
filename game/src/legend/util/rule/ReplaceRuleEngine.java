@@ -176,14 +176,14 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             final int length = atomsCache.get(0).length;
             if(replaceRule instanceof AtomRule){
                 atomsCache.values().stream().forEach(atoms->{
-                    String data = "";
+                    String data = S_EMPTY;
                     for(int i = 0;i < length;i++)
                         data = data.concat(atoms[i][atomsSize]).concat(colSplit);
                     results.add(data.substring(0,data.length() - colSplit.length()));
                 });
             }else{
                 complexesCache.values().stream().forEach(complexes->{
-                    String data = "";
+                    String data = S_EMPTY;
                     for(int i = 0;i < length;i++)
                         data = data.concat(complexes[i][complexesSize - 1][complexes[i][complexesSize - 1].length - 1]).concat(colSplit);
                     results.add(data.substring(0,data.length() - colSplit.length()));

@@ -593,7 +593,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         }
     }
 
-    public String getWholeCommand(){
+    private String getWholeCommand(){
         String regex = getWrapedParam(pattern);
         String sp = getWrapedParam(srcPath);
         String dp = getWrapedParam(destPath);
@@ -702,7 +702,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return s;
     }
 
-    private String getWrapedParam(Object param){
+    private static String getWrapedParam(Object param){
         return nonEmpty(param) ? S_SPACE + S_DQM + param + S_DQM : S_EMPTY;
     }
 

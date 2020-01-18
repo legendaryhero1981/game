@@ -113,9 +113,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         fileParams.stream().forEach(param->{
             param.refreshConditions(CACHE);
             FP = param;
-            String opt = FP.getOpt();
-            boolean progress = !opt.matches(REG_NON_PROG);
-            String command = FP.getWholeCommand();
+            final String opt = FP.getOpt();
+            final boolean progress = !opt.matches(REG_NON_PROG);
+            final String command = FP.toString();
             if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_START,command)).l(2);
             else CS.s(gsph(ST_CMD_START,command)).l(2);
             if(FP.getOpt().contains(OPT_ASK)){
@@ -478,7 +478,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFilesByCompared(FileParam param){
-        boolean same = param.meetCondition(COMPARE_SAME);
+        final boolean same = param.meetCondition(COMPARE_SAME);
         ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             BasicFileAttributes a = e.getKey();
@@ -501,7 +501,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findFilesByComparedUseMD5(FileParam param){
-        boolean same = param.meetCondition(COMPARE_SAME);
+        final boolean same = param.meetCondition(COMPARE_SAME);
         ConcurrentMap<BasicFileAttributes,Path> pathMap = new ConcurrentHashMap<>();
         param.getPathMap().entrySet().parallelStream().forEach(e->{
             BasicFileAttributes a = e.getKey();
@@ -762,7 +762,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void interchangeFiles(FileParam param){
-        boolean upgrade = param.meetCondition(INTERCHANGE_UPGRADE);
+        final boolean upgrade = param.meetCondition(INTERCHANGE_UPGRADE);
         param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
@@ -836,7 +836,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void unzipFiles(FileParam param){
-        boolean unzip = param.meetCondition(ZIP_UNZIP);
+        final boolean unzip = param.meetCondition(ZIP_UNZIP);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FLE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             IValue<ZipEntry> value = new SingleValue<>(null);
