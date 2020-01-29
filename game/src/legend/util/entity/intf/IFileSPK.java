@@ -7,7 +7,7 @@ import legend.util.intf.IFileUtil;
 public interface IFileSPK extends IFileUtil{
     String REG_SPK_SIZE = "\\A" + REG_NUM_NATURAL + "$";
     String REG_SPK_SIZE_EXPR = "\\A(" + REG_NUM_NATURAL + ")([-,;](" + REG_NUM_NATURAL + "))?$";
-    String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-z]+)$";
+    String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-f]+)$";
     String N_SPK_CONF = EXT_SPK + "编码文件的配置文件";
     String N_SPKF_BODY_INFO = "SPKFormat::BodyInfo节点下的headerSize或headerFlag或fileSizeExpr子节点值";
     String N_SPKF_LIST_INFO = "SPKFormat::ListInfo节点下的headerSize或headerFlag或fileSizeExpr子节点值";
