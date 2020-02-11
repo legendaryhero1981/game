@@ -6,6 +6,7 @@ import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.IN;
+import static legend.util.ConsoleUtil.exec;
 import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
 import static legend.util.StringUtil.gl;
@@ -64,7 +65,7 @@ public final class Main implements IMain{
         dealParam(args);
         switch(args[0]){
             case CMD_EXEC:
-            exec();
+            run();
             break;
             case CMD_KILL:
             kill();
@@ -114,11 +115,11 @@ public final class Main implements IMain{
             }
             game.trim();
         }catch(Exception e){
-            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
+            CS.showError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
     }
 
-    private static void exec(){
+    private static void run(){
         try{
             // 根据ID获得需要被执行的游戏
             loadAndValidate();
@@ -128,10 +129,8 @@ public final class Main implements IMain{
             writeOtherScript();
             // 执行启动游戏进程的VBS主脚本文件
             runVbsScript(false,t->writeMainScript());
-        }catch(IOException e){
-            CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
         }
     }
 
@@ -142,9 +141,9 @@ public final class Main implements IMain{
             // 执行终止游戏进程的VBS主脚本文件
             runVbsScript(false,t->script.append(glph(CMD_VBS_GAME_KILL,1,game.getExe())));
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
@@ -160,9 +159,9 @@ public final class Main implements IMain{
             });
             sleep(SLEEP_TIME);
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
@@ -175,9 +174,9 @@ public final class Main implements IMain{
             });
             sleep(SLEEP_TIME);
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FAIL,new String[]{e.toString()});
+            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
@@ -335,11 +334,10 @@ public final class Main implements IMain{
         write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(vbsFile),CHARSET_GBK)),caches[caches.length - 1]);
     }
 
-    private static void runVbsFile(boolean waitFor) throws Exception{
+    private static void runVbsFile(boolean waitFor){
         caches[caches.length - 1] = gsph(CMD_CS_RUN,caches[0]);
         CS.s(gl(caches[caches.length - 1],2));
-        if(waitFor) Runtime.getRuntime().exec(caches[caches.length - 1]).waitFor();
-        else Runtime.getRuntime().exec(caches[caches.length - 1]);
+        exec(caches[caches.length - 1],ERR_RUN_FILE,waitFor);
     }
 
     private static void dealIntegerValues(){

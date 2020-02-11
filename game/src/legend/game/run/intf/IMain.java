@@ -117,8 +117,8 @@ public interface IMain extends ICommon{
     String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + V_ARD_EXISTS;
     String ERR_INVALIDATE = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
     String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + N_EXE + V_BY_NUL;
-    String ERR_CREATE_FAIL = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String ERR_RUN_FAIL = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
+    String ERR_CREATE_FILE = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
+    String ERR_RUN_FILE = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
     String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"
     + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "Games::comment" + gs(14) + "游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。\n"

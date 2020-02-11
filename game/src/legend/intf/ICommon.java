@@ -17,7 +17,7 @@ public interface ICommon extends Cloneable{
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
     String AUTHOR = "作者：李允";
-    String VERSION = "版本：V5.2";
+    String VERSION = "版本：V5.3";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
@@ -49,8 +49,8 @@ public interface ICommon extends Cloneable{
     String N_ARG = "参数";
     String N_LOG = "日志";
     String N_ERR_INFO = "错误信息：";
-    String N_FLE = "文件";
-    String N_FLE_NUL = "空文件";
+    String N_FILE = "文件";
+    String N_FILE_NUL = "空文件";
     String N_FILE_MERGE = "文件整合";
     String N_PATH_NAME = "路径名";
     String N_DIR = "目录";
@@ -61,6 +61,7 @@ public interface ICommon extends Cloneable{
     String N_TIME = "耗时";
     String N_CMD = "命令";
     String N_PRG = "程序";
+    String N_PROC = "进程";
     String N_NUM = "个数";
     String N_OTW = "否则";
     String N_STM = "流";
@@ -192,10 +193,10 @@ public interface ICommon extends Cloneable{
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
     String ERR_INFO = N_ERR_INFO + PH_ARG0;
     String ERR_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
-    String ERR_CMD_EXEC = N_CMD + V_EXEC + V_FAIL + ERR_INFO;
+    String ERR_EXEC_CMD = V_EXEC + N_CMD + V_FAIL + ERR_INFO;
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + ERR_INFO;
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + ERR_INFO;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;
-    String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FLE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FILE + S_SPACE + PH_ARG0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARG1;
     Map<String,String> SPH_MAP = ofEntries(entry(REG_SPC_SQM,S_SQM),entry(REG_SPC_DQM,S_DQM),entry(REG_SPC_BQ,S_BQ));
 }

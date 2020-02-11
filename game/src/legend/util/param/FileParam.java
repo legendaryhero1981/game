@@ -32,7 +32,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 
 import legend.intf.IValue;
-import legend.util.intf.IConsoleUtil.UNIT_TYPE;
+import legend.util.intf.IConsoleUtil.UnitType;
 import legend.util.intf.IFileUtil;
 
 public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
@@ -142,11 +142,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_SAM:
             condition |= COMPARE_SAME | IS_QUERY_COMMAND;
             break;
+            case CMD_FND_PTH_RLT:
+            condition |= PATH_RELATIVE;
             case CMD_FIND:
             case CMD_FND_DIF:
             case CMD_FND_DIF_MD5:
             case CMD_FND_PTH_ABS:
             condition |= IS_QUERY_COMMAND | MATCH_FILE_ONLY;
+            break;
+            case CMD_FND_PTH_DIR_OLY_RLT:
+            condition |= MATCH_DIR_ONLY;
+            case CMD_FND_PTH_DIR_RLT:
+            condition |= PATH_RELATIVE | IS_QUERY_COMMAND;
             break;
             case CMD_FND_DIR_OLY_SIZ_ASC:
             condition |= MATCH_DIR_ONLY;
@@ -167,14 +174,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FND_DIR_SIZ_DSC:
             case CMD_FND_DIR_DIR_SIZ_DSC:
             condition |= IS_QUERY_COMMAND;
-            break;
-            case CMD_FND_PTH_RLT:
-            condition |= MATCH_FILE_ONLY;
-            case CMD_FND_PTH_DIR_RLT:
-            condition |= PATH_RELATIVE | IS_QUERY_COMMAND | NEED_CLEAR_CACHE;
-            break;
-            case CMD_FND_PTH_DIR_OLY_RLT:
-            condition |= MATCH_DIR_ONLY | PATH_RELATIVE | IS_QUERY_COMMAND | NEED_CLEAR_CACHE;
             break;
             case CMD_REN_DIR_OLY:
             case CMD_REN_DIR_OLY_LOW:
@@ -409,14 +408,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FIND:
                     case CMD_FND_DIR:
                     case CMD_FND_DIR_OLY:
+                    optional.filter(s->s.length > 3).ifPresent(s->param.setLimit(Integer.parseInt(s[3])));
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    break;
                     case CMD_FND_PTH_ABS:
                     case CMD_FND_PTH_RLT:
                     case CMD_FND_PTH_DIR_ABS:
                     case CMD_FND_PTH_DIR_RLT:
                     case CMD_FND_PTH_DIR_OLY_ABS:
                     case CMD_FND_PTH_DIR_OLY_RLT:
-                    optional.filter(s->s.length > 3).ifPresent(s->param.setLimit(Integer.parseInt(s[3])));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                    param.setDestPath(get(s1[3]));
+                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
+                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                     break;
                     case CMD_FND_SIZ_ASC:
                     case CMD_FND_SIZ_DSC:
@@ -572,8 +575,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private static void matchSizes(FileParam param, String size){
         long minSize = param.getMinSize();
         long maxSize = param.getMaxSize();
-        UNIT_TYPE minType = UNIT_TYPE.NON;
-        UNIT_TYPE maxType = UNIT_TYPE.NON;
+        UnitType minType = UnitType.NON;
+        UnitType maxType = UnitType.NON;
         Matcher matcher = compile(REG_FLE_SIZ).matcher(size);
         if(matcher.find()){
             minType = FS.matchType(matcher.group(2));
@@ -583,7 +586,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             maxType = FS.matchType(matcher.group(2));
             maxSize = FS.matchSize(Long.parseLong(matcher.group(1)),maxType);
         }
-        minSize = FS.matchSize(minSize,UNIT_TYPE.NON == minType ? maxType : minType);
+        minSize = FS.matchSize(minSize,UnitType.NON == minType ? maxType : minType);
         if(minSize <= maxSize){
             param.setMinSize(minSize);
             param.setMaxSize(maxSize);
@@ -616,14 +619,14 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_FIND:
             case CMD_FND_DIR:
             case CMD_FND_DIR_OLY:
+            s += S_SPACE + limit + S_SPACE + level;
+            break;
             case CMD_FND_PTH_ABS:
             case CMD_FND_PTH_RLT:
             case CMD_FND_PTH_DIR_ABS:
             case CMD_FND_PTH_DIR_RLT:
             case CMD_FND_PTH_DIR_OLY_ABS:
             case CMD_FND_PTH_DIR_OLY_RLT:
-            s += S_SPACE + limit + S_SPACE + level;
-            break;
             case CMD_FND_SAM:
             case CMD_FND_DIF:
             case CMD_FND_SAM_MD5:

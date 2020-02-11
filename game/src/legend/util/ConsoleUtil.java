@@ -32,8 +32,13 @@ public final class ConsoleUtil implements IConsoleUtil{
     }
 
     public static void exec(String cmd, String error){
+        exec(cmd,error,true);
+    }
+
+    public static void exec(String cmd, String error, boolean waitFor){
         try{
-            Runtime.getRuntime().exec(cmd).waitFor();
+            if(waitFor) Runtime.getRuntime().exec(cmd).waitFor();
+            else Runtime.getRuntime().exec(cmd);
         }catch(InterruptedException | IOException e){
             CS.showError(error,new String[]{e.toString()});
         }
@@ -141,7 +146,7 @@ public final class ConsoleUtil implements IConsoleUtil{
         return format(flag,format + "%n",args);
     }
 
-    public ConsoleUtil formatSize(boolean flag, long size, UNIT_TYPE type){
+    public ConsoleUtil formatSize(boolean flag, long size, UnitType type){
         long b = size;
         long kb = FS.divideSize(size,1);
         long mb = FS.divideSize(size,2);
@@ -167,7 +172,7 @@ public final class ConsoleUtil implements IConsoleUtil{
         return this;
     }
 
-    public ConsoleUtil formatSize(long size, UNIT_TYPE type){
+    public ConsoleUtil formatSize(long size, UnitType type){
         return formatSize(true,size,type);
     }
 
@@ -206,25 +211,25 @@ public final class ConsoleUtil implements IConsoleUtil{
     public static class FileSizeUtil{
         private FileSizeUtil(){}
 
-        public UNIT_TYPE matchType(String type){
-            if(isNull(type)) return UNIT_TYPE.NON;
+        public UnitType matchType(String type){
+            if(isNull(type)) return UnitType.NON;
             switch(type.toUpperCase()){
                 case SIZE_B:
-                return UNIT_TYPE.B;
+                return UnitType.B;
                 case SIZE_KB:
-                return UNIT_TYPE.KB;
+                return UnitType.KB;
                 case SIZE_MB:
-                return UNIT_TYPE.MB;
+                return UnitType.MB;
                 case SIZE_GB:
-                return UNIT_TYPE.GB;
+                return UnitType.GB;
                 case SIZE_TB:
-                return UNIT_TYPE.TB;
+                return UnitType.TB;
                 default:
-                return UNIT_TYPE.NON;
+                return UnitType.NON;
             }
         }
 
-        public long matchSize(long size, UNIT_TYPE type){
+        public long matchSize(long size, UnitType type){
             switch(type){
                 case KB:
                 return multiplySize(size,1);

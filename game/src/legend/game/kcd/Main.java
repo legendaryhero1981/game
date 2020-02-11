@@ -171,7 +171,7 @@ public final class Main implements IMain,IFileUtil{
                 CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
         }catch(Exception e){
-            CS.showError(ERR_CMD_EXEC,new String[]{e.toString()});
+            CS.showError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
     }
 

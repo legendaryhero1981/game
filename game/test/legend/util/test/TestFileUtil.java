@@ -18,7 +18,8 @@ public class TestFileUtil extends TestBase{
     public void monkParam(){
         String s = "";
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
-//        s = "-fpr!*  `.java`$  D:/games/src";
+        s = "-fpr!+  `.java`$  D:/games/src  ./run.log";
+        s = "-fpr!+  `.class`$  D:/games/classes/11  ./run.log";
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
 //        s = "-r*  file  d:/games  `$$$`$0`$$$`  1";
@@ -33,7 +34,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
-        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
+//        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
 //        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
 //        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
 //        s = "-ml8+  (?i)`assembly-csharp.dll`$  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands";

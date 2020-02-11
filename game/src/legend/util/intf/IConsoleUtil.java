@@ -3,7 +3,7 @@ package legend.util.intf;
 import legend.intf.ICommon;
 
 public interface IConsoleUtil extends ICommon{
-    enum UNIT_TYPE{
+    enum UnitType{
         NON,B,KB,MB,GB,TB
     }
 

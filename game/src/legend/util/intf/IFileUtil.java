@@ -128,21 +128,21 @@ public interface IFileUtil extends ICommon{
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
     String ERR_DIR_VST = V_VST + N_DIR + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_VST = V_VST + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_DEL = V_DEL + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_CPY = V_CPY + N_FLE + S_DQM + PH_ARG0 + V_TO + PH_ARG1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG2;
-    String ERR_FLE_MOV = V_MOV + N_FLE + S_DQM + PH_ARG0 + V_TO + PH_ARG1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG2;
-    String ERR_FLE_WRT = V_WRITE + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_READ = V_READ + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_REPL = V_REPL + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_FLE_ANLS = V_ANLS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_EXTR = V_EXTR + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_CPY = V_CPRS + N_FLE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FLE_NUL + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_VST = V_VST + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_DEL = V_DEL + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_CPY = V_CPY + N_FILE + S_DQM + PH_ARG0 + V_TO + PH_ARG1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG2;
+    String ERR_FLE_MOV = V_MOV + N_FILE + S_DQM + PH_ARG0 + V_TO + PH_ARG1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG2;
+    String ERR_FLE_WRT = V_WRITE + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_READ = V_READ + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_REPL = V_REPL + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_FLE_ANLS = V_ANLS + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_ZIP_FLE_EXTR = V_EXTR + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_ZIP_FLE_CPY = V_CPRS + N_FILE + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FILE_NUL + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_DQM + PH_ARG0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARG1;
-    String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FLE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FLE + N_PATH_NAME + S_DQM + PH_ARG0 + S_DQM + V_SAME + N_A + N_FLE + S_BANG;
+    String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FILE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FILE + N_PATH_NAME + S_DQM + PH_ARG0 + S_DQM + V_SAME + N_A + N_FILE + S_BANG;
     String HELP_FILE = APP_INFO + "命令参数：" + gl(2)
     + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；各命令参数均可使用一对反引号来表示一个引用子字符串，程序会将引用字符串当成无特殊含义的普通字符串对待（即特殊字符占位符表达式和参数分隔符字符串等都将被当成普通字符串对待）；引用字符串匹配的正则表达式为：" + REG_QUOTE_BQ + "。" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
@@ -150,7 +150,7 @@ public interface IFileUtil extends ICommon{
     + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
     + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
     + "src" + gs(9) + "文件输入目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "dest" + gs(8) + "文件输入输出目录或输入文件路径名；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
+    + "dest" + gs(8) + "文件输入输出目录或输入输出文件路径名；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "backup" + gs(6) + "文件备份输出目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipName" + gs(5) + "压缩文件名（程序会根据命令选项自动添加文件扩展名" + EXT_ZIP + "或" + EXT_PAK + "）；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "zipLevel" + gs(4) + "文件压缩级别，取值0：不压缩，1~9：1为最低压缩率，9为最高压缩率；不指定则程序智能选择最佳压缩率。" + gl(2)
@@ -178,8 +178,8 @@ public interface IFileUtil extends ICommon{
     + "可以组合多个命令选项和命令参数，一次连续执行多条命令；命令选项与各命令参数的个数必须相等；各命令选项及各命令参数使用" + SPRT_CMD + "分隔；可使用" + OPT_SIMULATE  + "复用最近一个明确的命令选项或命令参数，将其当作该命令的前缀使用，例如：-f::*d::*dsa等价于-f::-fd::-fdsa，g:/games::*/1::*/2等价于g:/games::g:/games/1::g:/games/2；单条命令未用到的命令参数使用" + OPT_ASK + "占位。" + gl(2)
     + "组合命令示例：" + gl(2)
     + CMD + "-cd*@::*::* .::*::* g:/games::*::* d:/::e:/::f:/" + gl(2)
-    + CMD + "-zdd+::-c+@?::* .::\\.zip$::* g:/games::g:/file::* g:/file::*/1::*/2 games::?::? 0::?::? ?::1::*" + gl(2)
-    + CMD + "-zi*::-cd@*::* \\.zip$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?" + gl(3)
+    + CMD + "-zdd+::-c+@?::* .::`.zip`$::* g:/games::g:/file::* g:/file::*/1::*/2 games::?::? 0::?::? ?::1::*" + gl(2)
+    + CMD + "-zi*::-cd@*::* `.zip`$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?" + gl(3)
     + "单条命令：" + gl(2)
     + CMD + CMD_FIND + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件。" + gl(2)
     + CMD + CMD_FND_DIR + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配。" + gl(2)
@@ -192,12 +192,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FND_DIF_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
     + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。" + gl(2)
-    + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的相对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名。" + gl(2)
+    + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_ABS + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_RLT + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
     + CMD + CMD_FND_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递增排序。" + gl(2)
     + CMD + CMD_FND_SIZ_DSC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递减排序。" + gl(2)
     + CMD + CMD_FND_DIR_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和目录，按文件大小递增排序。" + gl(2)
@@ -270,12 +270,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FND_DIF_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
     + CMD + CMD_FND_DIR_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录和文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录。" + gl(2)
-    + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。" + gl(2)
-    + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有目录，显示目录的绝对路径名。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\"" + gl(1) + "查询该目录中的所有目录，显示目录的相对路径名。" + gl(2)
+    + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录，并将查询结果写入到文件file-list.txt。" + gl(2)
+    + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的所有目录，显示目录的绝对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的所有目录，显示目录的相对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
     + CMD + CMD_FND_SIZ_ASC + "+ . \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。" + gl(2)
     + CMD + CMD_FND_SIZ_DSC + "+ . \"F:/games/FINAL FANTASY XV\" 1MB;1GB" + gl(1) + "查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递减排序。" + gl(2)
     + CMD + CMD_FND_DIR_SIZ_ASC + "+ \\Ajp$ \"F:/games/FINAL FANTASY XV\" 1MB,1GB" + gl(1) + "查询该目录中所有目录名为jp的目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。" + gl(2)

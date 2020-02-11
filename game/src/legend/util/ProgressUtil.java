@@ -131,7 +131,6 @@ public final class ProgressUtil implements IProgressUtil{
                 if(State.FINISH == state.get()) return;
                 this.size.updateAndGet(v->this.size.get() + scale * (MIN > size ? MIN : size));
                 await(update,ERR_UPDATE);
-                resume0();
             });
         }
 
@@ -152,19 +151,18 @@ public final class ProgressUtil implements IProgressUtil{
         }
 
         private void finish0(){
-            if(State.FINISH == state.get()) return;
             state.set(State.FINISH);
         }
 
         private void reset0(){
             size.updateAndGet(v->position.get() * amount.get() / 100f);
             progress.set(position.get());
+            if(State.FINISH == state.get()) return;
             state.set(State.RESET);
         }
 
         private void stop0(){
-            if(State.RUN != state.get()) return;
-            state.set(State.STOP);
+            if(State.RUN == state.get()) state.set(State.STOP);
         }
 
         private void resume0(){
@@ -175,6 +173,7 @@ public final class ProgressUtil implements IProgressUtil{
         private void update0(){
             int n = (int)(MAX * size.get() / amount.get());
             progress.set(MAX > n ? n : MAX - 1);
+            resume0();
         }
 
         private void show(){
