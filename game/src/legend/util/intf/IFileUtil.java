@@ -109,6 +109,7 @@ public interface IFileUtil extends ICommon{
     String CMD_PAK_DEF = "-pd";
     String CMD_PAK_DIR_DEF = "-pdd";
     String CMD_PAK_INF = "-pi";
+    String CMD_7ZIP = "-7zip";
     String CMD_GUID_L32 = "-gl32";
     String CMD_GUID_U32 = "-gu32";
     String CMD_MD5_L8 = "-ml8";
@@ -124,6 +125,7 @@ public interface IFileUtil extends ICommon{
     String CONF_FILE_IL = "./file-il.xml";
     String CONF_FILE_MERGE = "./file-merge.xml";
     String CONF_FILE_SPK = "./file-spk.xml";
+    String CONF_FILE_7ZIP = "./file-7zip.xml";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
@@ -220,12 +222,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_DIR_OLY_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的目录名中英文单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REP_FLE_BT + OPTIONS + "regex src replacement [split] [level]" + gl(1) + "根据regex和replacement替换src中所有匹配的二维表格式文件中所有匹配的列。" + gl(2)
     + CMD + CMD_REP_FLE_IL + OPTIONS + "regex src [dest] [level]" + gl(1) + "根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件" + CONF_FILE_IL + "自动替换src中所有文件名匹配regex的文件内容，若配置文件" + CONF_FILE_IL + "不存在，则会自动生成一个与该文件同名且同格式的模版文件。" + gl(2)
-    + CMD + CMD_REG_FLE_GBK + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。" + gl(2)
-    + CMD + CMD_REG_FLE_BIG5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。" + gl(2)
-    + CMD + CMD_REG_FLE_CS + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
     + CMD + CMD_REP_FLE_SN + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex获得src中所有匹配文件，再使用这些文件替换dest中的所有同名文件；limit为dest的最大查询层数，level为src的最大查询层数。" + gl(2)
     + CMD + CMD_REP_FLE_MEG + OPTIONS + "regex src [level]" + gl(1) + "根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。" + gl(2)
     + CMD + CMD_REP_FLE_SPK + OPTIONS + "regex src [level]" + gl(1) + "根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)
+    + CMD + CMD_REG_FLE_GBK + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。" + gl(2)
+    + CMD + CMD_REG_FLE_BIG5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
     + CMD + CMD_COPY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
@@ -248,6 +250,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_PAK_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
     + CMD + CMD_PAK_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
     + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件解包到该文件所在目录中。" + gl(2)
+    + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
     + CMD + CMD_GUID_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全小写）。" + gl(2)
@@ -309,12 +312,12 @@ public interface IFileUtil extends ICommon{
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
     + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
     + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
     + CMD + CMD_REP_FLE_SN + "* (?i)\\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2" + gl(1) + "先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。" + gl(2)
     + CMD + CMD_REP_FLE_MEG + "* (?i)`file-merge.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。" + gl(2)
     + CMD + CMD_REP_FLE_SPK + "* (?i)`file-spk.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)
+    + CMD + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
     + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
     + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
@@ -333,10 +336,11 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_UGD_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
     + CMD + CMD_ZIP_DEF + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
     + CMD + CMD_ZIP_DIR_DEF + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
-    + CMD + CMD_ZIP_INF + " (?i)\\.zip$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。" + gl(2)
+    + CMD + CMD_ZIP_INF + " (?i)`.zip`$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。" + gl(2)
     + CMD + CMD_PAK_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
     + CMD + CMD_PAK_DIR_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
-    + CMD + CMD_PAK_INF + " (?i)\\.pak$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
+    + CMD + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
+    + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
     + CMD + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全小写）。" + gl(2)

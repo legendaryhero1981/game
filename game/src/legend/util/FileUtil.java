@@ -86,6 +86,7 @@ import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
+import legend.util.logic.FileHandleZip7Logic;
 import legend.util.logic.FileMergeLogic;
 import legend.util.logic.FileReplaceILCodeLogic;
 import legend.util.logic.FileReplaceSPKCodeLogic;
@@ -264,6 +265,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_ZIP_INF:
                 case CMD_PAK_INF:
                 unzipFiles(param);
+                break;
+                case CMD_7ZIP:
+                handleFilesWith7Zip(param);
                 break;
                 case CMD_GUID_L32:
                 showMD5(param,p->getGuidL32(p));
@@ -569,6 +573,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void replaceFilesForMergeContent(FileParam param){
         executeFileLogic(param,new FileMergeLogic(param));
+    }
+
+    private static void handleFilesWith7Zip(FileParam param){
+        executeFileLogic(param,new FileHandleZip7Logic(param));
     }
 
     private static void replaceFilesForSameName(FileParam param){

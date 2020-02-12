@@ -1,6 +1,3 @@
-/**
- * @author liyun
- */
 @XmlAccessorType(XmlAccessType.FIELD)
 package legend.helper.entity;
 

@@ -221,6 +221,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_ZIP_DEF:
             case CMD_PAK_DEF:
             case CMD_PAK_INF:
+            case CMD_7ZIP:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
             case CMD_MD5_L8:
@@ -499,6 +500,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_DEL_DIR_NUL:
                     case CMD_DEL_DIR_OLY_NUL:
                     case CMD_PAK_INF:
+                    case CMD_7ZIP:
                     case CMD_GUID_L32:
                     case CMD_GUID_U32:
                     case CMD_MD5_L8:
@@ -662,6 +664,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_DEL_DIR_NUL:
             case CMD_DEL_DIR_OLY_NUL:
             case CMD_PAK_INF:
+            case CMD_7ZIP:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
             case CMD_MD5_L8:

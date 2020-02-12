@@ -25,14 +25,14 @@ public interface IValue<T>extends ICommon{
     default <V> boolean validate(V v){
         return true;
     }
+    
+    static <T> T cloneValue(T t){
+        return (T)clone(t);
+    }
 
     @SuppressWarnings("unchecked")
     static <V> V clone(V v){
         return (V)newInstance(v.getClass());
-    }
-
-    static <T> T cloneValue(T t){
-        return (T)clone(t);
     }
 
     static <T> T newInstance(Class<T> c){

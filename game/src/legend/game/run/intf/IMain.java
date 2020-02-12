@@ -29,10 +29,6 @@ public interface IMain extends ICommon{
     String ST_REPEAT_ID = "找到重复的游戏ID：" + PH_ARG0;
     String ST_CHOICE_ID = "请输入一个游戏ID（按回车键确认）：";
     String FILE_PREFIX = "run";
-    String FILE_SUFFIX_BAT = ".bat";
-    String FILE_SUFFIX_VBS = ".vbs";
-    String FILE_SUFFIX_EXE = ".exe";
-    String FILE_SUFFIX_LNK = ".lnk";
     String CMD_CREATE = "-c";
     String CMD_ADD = "-a";
     String CMD_DEL = "-d";
@@ -46,9 +42,9 @@ public interface IMain extends ICommon{
     String CMD_VBS_SLEEP = "WScript.Sleep " + PH_ARG0;
     String CMD_VBS_RUN = "sh.Run \"" + PH_ARG0 + "\",0,true";
     String CMD_VBS_RUN_DEL = "sh.Run \"cmd /c del /q \"\"" + PH_ARG0 + "\"\">nul 2>nul\",0,true";
-    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + FILE_SUFFIX_EXE + "\"\" " + PH_ARG2 + "\",0,true";
+    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + EXT_EXE + "\"\" " + PH_ARG2 + "\",0,true";
     String CMD_VBS_RUN_AGENT = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + "\"\" " + PH_ARG2 + "\",0,true";
-    String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
+    String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + EXT_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
     String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
     String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
     + "dim processes,target" + gl(1)
@@ -63,15 +59,15 @@ public interface IMain extends ICommon{
     + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
     + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
     + "end if";
-    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\")";
+    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG0 + EXT_EXE + "'\")";
     String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
     + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARG1;
     String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.ExecQuery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
     String CMD_VBS_GAME_KILL = CMD_VBS_WMI_INIT + gl(1)
-    + "wql=\"select * from win32_process where name='" + PH_ARG0 + FILE_SUFFIX_EXE + "'\"" + gl(1)
+    + "wql=\"select * from win32_process where name='" + PH_ARG0 + EXT_EXE + "'\"" + gl(1)
     + CMD_VBS_WATCH_TERMINATE;
     String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARG0 + gl(1)
-    + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG1 + FILE_SUFFIX_EXE + "'\")" + gl(1)
+    + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG1 + EXT_EXE + "'\")" + gl(1)
     + "Wend" + gl(1)
     + "dim names,paths,wql" + gl(1)
     + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_CMD + "\")" + gl(1)
@@ -87,7 +83,7 @@ public interface IMain extends ICommon{
     + CMD_VBS_WATCH_TERMINATE + gl(1)
     + "end if";
     String CMD_VBS_SC_INIT = CMD_VBS_PROC_RUN + gl(1) + "dim shortcut";
-    String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + FILE_SUFFIX_LNK + "\")";
+    String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + EXT_LNK + "\")";
     String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
@@ -128,7 +124,7 @@ public interface IMain extends ICommon{
     + gs(4) + "Game::name" + gs(18) + "游戏快捷方式名称，一般使用游戏中文名称。\n"
     + gs(4) + "Game::id" + gs(20) + "游戏唯一标识。\n"
     + gs(4) + "Game::path" + gs(18) + "游戏可执行文件路径，也是Game::icon的路径。\n"
-    + gs(4) + "Game::exe" + gs(19) + "游戏可执行文件名称，不包含文件扩展名" + FILE_SUFFIX_EXE + "；若Game::agentExecutablePath非空且有效，则优先使用代理启动游戏。\n"
+    + gs(4) + "Game::exe" + gs(19) + "游戏可执行文件名称，不包含文件扩展名" + EXT_EXE + "；若Game::agentExecutablePath非空且有效，则优先使用代理启动游戏。\n"
     + gs(4) + "Game::args" + gs(18) + "Game::exe的命令行参数。\n"
     + gs(4) + "Game::priority" + gs(14) + "游戏进程的优先级，默认值为128；可选值为：32（标准），64（低），128（高），256（实时），16384（低于标准），32768（高于标准）。\n"
     + gs(4) + "Game::icon" + gs(18) + "游戏快捷方式的图标文件完整名称（包含文件扩展名）；若为空则使用游戏可执行文件中图标。\n"
@@ -144,7 +140,7 @@ public interface IMain extends ICommon{
     + "run -c|-a|-d|-v|-k|-x|-l|-la id path exe name [comment]" + gl(2)
     + "id" + gs(6) + "游戏标识，在" + RUN_FILE_CONFIG + "文件中唯一标识一个游戏配置节点。" + gl(2)
     + "path" + gs(4) + "游戏可执行文件路径。" + gl(2)
-    + "exe" + gs(5) + "游戏可执行文件名称（不包含扩展名" + FILE_SUFFIX_EXE + "）。" + gl(2)
+    + "exe" + gs(5) + "游戏可执行文件名称（不包含扩展名" + EXT_EXE + "）。" + gl(2)
     + "name" + gs(4) + "游戏中文名称。" + gl(2)
     + "comment" + gs(1) + "游戏快捷方式说明。" + gl(2)
     + "-c id path exe name [comment] 新建游戏配置文件" + RUN_FILE_CONFIG + "，并生成一个游戏配置节点。" + gl(2)

@@ -1,7 +1,3 @@
-/**
- * @author liyun
- *
- */
 @XmlAccessorType(XmlAccessType.FIELD)
 package legend.game.run.entity;
 

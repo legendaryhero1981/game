@@ -241,7 +241,7 @@ public final class Main implements IMain{
     private static void cacheLinkScript(Game game){
         script.append(glph(CMD_VBS_SC_CRT,1,game.getName()));
         script.append(glph(CMD_VBS_SC_ARG,1,game.getId()));
-        script.append(glph(CMD_VBS_SC_IL,1,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + FILE_SUFFIX_EXE));
+        script.append(glph(CMD_VBS_SC_IL,1,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + EXT_EXE));
         script.append(glph(CMD_VBS_SC_DESC,1,game.getComment()));
         script.append(glph(CMD_VBS_SC_WD,1,game.getPath()));
         script.append(gl(CMD_VBS_SC_TP,1));
@@ -303,7 +303,7 @@ public final class Main implements IMain{
 
     private static void writeScript(String[] cmds, int index) throws IOException{
         if(nonEmpty(cmds[0])){
-            File batFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_BAT);
+            File batFile = createTempFile(FILE_PREFIX,EXT_BAT);
             script.append(gl(CMD_BAT_CHCP_UTF8,1));
             for(String cmd : cmds)
                 script.append(gl(cmd.trim(),1));
@@ -322,7 +322,7 @@ public final class Main implements IMain{
     }
 
     private static void createVbsFile() throws IOException{
-        vbsFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_VBS);
+        vbsFile = createTempFile(FILE_PREFIX,EXT_VBS);
         caches[0] = vbsFile.getCanonicalPath();
         script.append(gl(CMD_VBS_SH_INIT,1));
     }

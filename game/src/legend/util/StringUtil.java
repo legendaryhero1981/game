@@ -1,21 +1,71 @@
 package legend.util;
 
+import static java.nio.file.Paths.get;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
+import static legend.util.ConsoleUtil.CS;
+import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
-import legend.intf.ICommon;
 import legend.intf.IValue;
+import legend.util.intf.IStringUtil;
 import legend.util.param.SingleValue;
 
-public final class StringUtil implements ICommon{
+public final class StringUtil implements IStringUtil{
     private StringUtil(){}
+
+    /**
+     * 返回当前程序可执行文件所在的绝对路径名
+     * 
+     * @return 返回当前程序可执行文件所在的绝对路径名
+     */
+    public static String getAppPath(){
+        return get(S_EMPTY).toAbsolutePath().toString().replace(SPRT_FILE,SPRT_FILE_ZIP);
+    }
+
+    /**
+     * getClassPath需要一个当前程序使用的Java类的class属性参数，它可以返回打包过的
+     * Java可执行文件（jar，war）所处的系统目录名或非打包Java程序所处的目录
+     * 
+     * @param clazz
+     *            Class类型
+     * @return 返回值为该类所在的Java程序运行的目录
+     */
+    public static String getClassPath(Class<?> clazz){
+        ClassLoader loader = clazz.getClassLoader();
+        if(isEmpty(loader)) return S_EMPTY;
+        // 获得类的全限定名
+        String name = clazz.getName() + EXT_CLASS;
+        // 获得传入参数所在的包
+        Package pack = clazz.getPackage();
+        String path = S_EMPTY;
+        // 如果不是匿名包，将包名转化为路径
+        if(nonEmpty(pack)){
+            name = name.substring(pack.getName().length() + 1);
+            path = pack.getName().replaceAll(SPRT_PKG,SPRT_FILE_ZIP) + SPRT_FILE_ZIP;
+        }
+        // 调用ClassLoader的getResource方法，传入包含路径信息的类文件名
+        URL url = loader.getResource(path + name);
+        // 从URL对象中获取路径信息
+        path = url.getPath();
+        // 去掉路径信息中的文件协议名前缀和jar文件协议路径
+        path = path.replaceFirst(REG_PATH_URL,REP_PATH_URL).replaceFirst(REG_PATH_JAR,REP_PATH_URL);
+        try{
+            // 解码以还原路径中的所有中文和空格等字符
+            path = URLDecoder.decode(path,CHARSET_UTF8);
+        }catch(Exception e){
+            CS.sl(gsph(ERR_EXEC_CMD,e.toString()));
+        }
+        return path;
+    }
 
     public static byte[] fillBytes(int n, int size){
         return fillBytes((byte)n,size);

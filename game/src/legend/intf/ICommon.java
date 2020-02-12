@@ -16,6 +16,7 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
+    String SPRT_PKG = "\\.";
     String AUTHOR = "作者：李允";
     String VERSION = "版本：V5.3";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
@@ -25,12 +26,17 @@ public interface ICommon extends Cloneable{
     String CHARSET_UTF8_BOM = "UTF-8";
     String CHARSET_UTF16LE = "UTF-16LE";
     String CHARSET_UTF16BE = "UTF-16BE";
+    String EXT_BAT = ".bat";
+    String EXT_VBS = ".vbs";
+    String EXT_EXE = ".exe";
+    String EXT_LNK = ".lnk";
     String EXT_IL = ".il";
     String EXT_PAK = ".pak";
     String EXT_SPK = ".spk";
     String EXT_STC = ".stc";
     String EXT_XML = ".xml";
     String EXT_ZIP = ".zip";
+    String EXT_CLASS = ".class";
     String S_EMPTY = "";
     String S_SPACE = " ";
     String S_SQM = "'";
