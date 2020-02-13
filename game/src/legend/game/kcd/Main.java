@@ -603,6 +603,7 @@ public final class Main implements IMain,IFileUtil{
     private static void dealConflict(IProgress progress, float scale){
         if(mergeMap.isEmpty()) return;
         String mergeExecutablePath = config.getMergeExecutablePath();
+        CS.showError(ERR_EXEC_FILE_MERGE,new String[]{ERR_KDIFF3_EXEC_NON},()->!existsPath(get(mergeExecutablePath)));
         if(!merges.isEmpty()) mergeSet = kcd.refreshMergeSet(merges);
         int size = mergeMap.values().size();
         mergeMap.values().stream().forEach(merge->{
@@ -621,16 +622,16 @@ public final class Main implements IMain,IFileUtil{
                 for(int i = 0,j = 0,l = mappings.size();i < l;j = i++){
                     if(existsPath(path)){
                         md5[0] = getMD5L16(path);
-                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()),ERR_FILE_MERGE);
-                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()),ERR_FILE_MERGE);
+                        if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()),ERR_EXEC_FILE_MERGE);
+                        else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()),ERR_EXEC_FILE_MERGE);
                         md5[1] = getMD5L16(path);
                         if(md5[0].equals(md5[1])){
                             i = j;
                             continue;
                         }
                     }else{
-                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_FILE_MERGE);
-                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_FILE_MERGE);
+                        if(2 == l) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_EXEC_FILE_MERGE);
+                        else if(2 < l) exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString()),ERR_EXEC_FILE_MERGE);
                         if(!existsPath(path)) break;
                     }
                 }

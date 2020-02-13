@@ -55,21 +55,22 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private int level;
     private int zipLevel;
     private ZipOutputStream zipOutputStream;
+    private AtomicLong filesSize;
+    private AtomicInteger filesCount;
+    private AtomicInteger dirsCount;
     private ConcurrentMap<BasicFileAttributes,Path> pathMap;
     private ConcurrentMap<Path,Path> rePathMap;
     private ConcurrentMap<Path,List<Path>> pathsMap;
     private ConcurrentMap<Path,Long> sizeMap;
     private BlockingDeque<Path> pathDeque;
-    private List<Path> pathList;
-    private AtomicLong filesSize;
-    private AtomicInteger filesCount;
-    private AtomicInteger dirsCount;
-    private long cacheFileSize;
-    private int cacheFilesCount;
-    private int cacheDirsCount;
+    private List<Path> dirCaches;
+    private List<Path> pathCaches;
     private Optional<Long> detailOptional;
     private Optional<Long> cmdOptional;
     private Optional<Long> progressOptional;
+    private long cacheFileSize;
+    private int cacheFilesCount;
+    private int cacheDirsCount;
 
     public FileParam(){
         zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
@@ -83,7 +84,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         pathsMap = new ConcurrentHashMap<>();
         sizeMap = new ConcurrentHashMap<>();
         pathDeque = new LinkedBlockingDeque<>();
-        pathList = new ArrayList<>();
+        dirCaches = new ArrayList<>();
+        pathCaches = new ArrayList<>();
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();
@@ -249,8 +251,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             srcPath = cache.srcPath;
         }
         if(REG_ANY.equals(pattern.pattern())) condition |= IGNORE_REGEX;
-        if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
+        if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
         if(opt.contains(OPT_EXCLUDE_ROOT)){
             condition |= EXCLUDE_ROOT;
@@ -291,7 +293,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.setPathsMap(pathsMap);
             cache.setSizeMap(sizeMap);
             cache.setPathDeque(pathDeque);
-            cache.setPathList(pathList);
+            cache.setDirCaches(dirCaches);
             cache.setPattern(pattern);
             cache.setSrcPath(srcPath);
             cache.setCacheFileSize(filesSize.get());
@@ -308,7 +310,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             pathsMap = cache.getPathsMap();
             sizeMap = cache.getSizeMap();
             pathDeque = cache.getPathDeque();
-            pathList = cache.getPathList();
+            dirCaches = cache.getDirCaches();
             return true;
         }else return false;
     }
@@ -319,7 +321,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         pathsMap.clear();
         sizeMap.clear();
         pathDeque.clear();
-        pathList.clear();
+        dirCaches.clear();
     }
 
     public static List<FileParam> analyzeParam(String[] args){
@@ -848,6 +850,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return zipOutputStream;
     }
 
+    public AtomicLong getFilesSize(){
+        return filesSize;
+    }
+
+    public AtomicInteger getFilesCount(){
+        return filesCount;
+    }
+
+    public AtomicInteger getDirsCount(){
+        return dirsCount;
+    }
+
     public ConcurrentMap<BasicFileAttributes,Path> getPathMap(){
         return pathMap;
     }
@@ -888,24 +902,32 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.pathDeque = pathDeque;
     }
 
-    public List<Path> getPathList(){
-        return pathList;
+    public List<Path> getDirCaches(){
+        return dirCaches;
     }
 
-    private void setPathList(List<Path> pathList){
-        this.pathList = pathList;
+    private void setDirCaches(List<Path> dirCaches){
+        this.dirCaches = dirCaches;
     }
 
-    public AtomicLong getFilesSize(){
-        return filesSize;
+    public List<Path> getPathCaches(){
+        return pathCaches;
     }
 
-    public AtomicInteger getFilesCount(){
-        return filesCount;
+    public void setPathCaches(List<Path> pathCaches){
+        this.pathCaches = pathCaches;
     }
 
-    public AtomicInteger getDirsCount(){
-        return dirsCount;
+    public Optional<Long> getDetailOptional(){
+        return detailOptional;
+    }
+
+    public Optional<Long> getCmdOptional(){
+        return cmdOptional;
+    }
+
+    public Optional<Long> getProgressOptional(){
+        return progressOptional;
     }
 
     public long getCacheFileSize(){
@@ -930,17 +952,5 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     private void setCacheDirsCount(int cacheDirsCount){
         this.cacheDirsCount = cacheDirsCount;
-    }
-
-    public Optional<Long> getDetailOptional(){
-        return detailOptional;
-    }
-
-    public Optional<Long> getCmdOptional(){
-        return cmdOptional;
-    }
-
-    public Optional<Long> getProgressOptional(){
-        return progressOptional;
     }
 }

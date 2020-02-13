@@ -130,7 +130,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         if(nonEmpty(headerSize)){
             Matcher matcher = sizePattern.matcher(headerSize);
             if(!matcher.matches()){
-                errorInfo = gsph(ERR_SPKH_EXPR_DESC,"headerSize");
+                errorInfo = gsph(ERR_SPKH_EXPR_FMT,"headerSize");
                 value.setValue(false);
             }else headerSizeData.size = Integer.parseInt(headerSize);
         }
@@ -151,7 +151,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             String size = matcher.group(3);
             metaData.size = nonEmpty(size) ? Integer.parseInt(size) : 1;
         }else{
-            errorInfo = gsph(ERR_SPKH_EXPR_DESC,field);
+            errorInfo = gsph(ERR_SPKH_EXPR_FMT,field);
             value.setValue(false);
         }
     }

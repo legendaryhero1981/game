@@ -1,5 +1,7 @@
 package legend.util.entity;
 
+import static java.nio.file.Paths.get;
+import static legend.util.FileUtil.existsPath;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -45,7 +47,11 @@ public class FileMerge extends BaseEntity<FileMerge> implements IFileMerge{
         if(isEmpty(path) || isEmpty(path2) || isEmpty(path3) || isEmpty(mergeExecutablePath) || isEmpty((queryRegex))){
             errorInfo = ERR_MEG_NODE_NON;
             return false;
-        }else return true;
+        }else if(!existsPath(get(mergeExecutablePath))){
+            errorInfo = ERR_KDIFF3_EXEC_NON;
+            return false;
+        }
+        return true;
     }
 
     @Override

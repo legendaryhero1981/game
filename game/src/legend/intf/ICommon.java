@@ -141,6 +141,8 @@ public interface ICommon extends Cloneable{
     String MODE_NATIVE = "0";
     String MODE_REPL = "1";
     String MODE_ADD = "2";
+    String MODE_ZIP = "0";
+    String MODE_UNZIP = "1";
     String FLAG_DEBUG = "#";
     String FLAG_MOD = "*";
     String FLAG_ADD = "+";
@@ -198,8 +200,11 @@ public interface ICommon extends Cloneable{
     String ST_PRG_START = V_START + V_EXEC + N_PRG + S_ELLIPSIS;
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
     String ERR_INFO = N_ERR_INFO + PH_ARG0;
-    String ERR_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
     String ERR_EXEC_CMD = V_EXEC + N_CMD + V_FAIL + ERR_INFO;
+    String ERR_EXEC_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
+    String ERR_EXEC_CMD_SPEC = V_EXEC + N_CMD + PH_ARG0 + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_KDIFF3_EXEC_NON = "文件整合工具KDiff3的可执行文件路径名无效或不存在！";
+    String ERR_7ZIP_EXEC_NON = "文件压缩解压工具7-Zip的可执行文件路径名无效或不存在！";
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + ERR_INFO;
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + ERR_INFO;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;

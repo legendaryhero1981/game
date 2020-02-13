@@ -46,9 +46,9 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
         fp3.setSrcPath(get(fileMerge.getPath3()));
         asList(fp,fp2,fp3).parallelStream().forEach(p->dealFiles(p));
         final Path root = fp.getRootPath(), root2 = fp2.getRootPath(), root3 = fp3.getRootPath();
-        Set<Path> pathSet = new HashSet<>(fp.getPathMap().values());
-        Set<Path> pathSet2 = new HashSet<>(fp2.getPathMap().values());
-        Set<Path> pathSet3 = new HashSet<>(fp3.getPathMap().values());
+        Set<Path> pathSet = new HashSet<>(fp.getPathCaches());
+        Set<Path> pathSet2 = new HashSet<>(fp2.getPathCaches());
+        Set<Path> pathSet3 = new HashSet<>(fp3.getPathCaches());
         List<Merge> merges = new ArrayList<>();
         ConcurrentMap<String,Merge> mergeMap = fileMerge.refreshMergeMap();
         pathSet.parallelStream().forEach(p->{
@@ -78,7 +78,7 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
             String ps2 = root2.resolve(m.getPath()).toString();
             String ps3 = root3.resolve(m.getPath()).toString();
             String md5 = getMD5L16(p);
-            exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,ps,ps2,ps3,ps),ERR_FILE_MERGE);
+            exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,ps,ps2,ps3,ps),ERR_EXEC_FILE_MERGE);
             if(md5.equals(getMD5L16(p))) mergeMap.remove(m.getPath().toLowerCase());
             param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(amount,1,scale),PROGRESS_SCALE));
         });

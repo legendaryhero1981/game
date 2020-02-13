@@ -4,9 +4,8 @@ import static java.lang.System.exit;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
-import static legend.util.ValueUtil.isNull;
+import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
-import static legend.util.ValueUtil.nonNull;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -192,19 +191,19 @@ public final class ConsoleUtil implements IConsoleUtil{
 
     private ConsoleUtil print(boolean flag, String s){
         if(flag) OUT.print(s);
-        if(nonNull(stream)) stream.print(s);
+        if(nonEmpty(stream)) stream.print(s);
         return this;
     }
 
     private ConsoleUtil print(boolean flag, String s, int n){
         if(flag) OUT.print(gs(s,n));
-        if(nonNull(stream)) stream.print(gs(s,n));
+        if(nonEmpty(stream)) stream.print(gs(s,n));
         return this;
     }
 
     private ConsoleUtil format(boolean flag, String format, Object... args){
         if(flag) OUT.format(format,args);
-        if(nonNull(stream)) stream.format(format,args);
+        if(nonEmpty(stream)) stream.format(format,args);
         return this;
     }
 
@@ -212,7 +211,7 @@ public final class ConsoleUtil implements IConsoleUtil{
         private FileSizeUtil(){}
 
         public UnitType matchType(String type){
-            if(isNull(type)) return UnitType.NON;
+            if(isEmpty(type)) return UnitType.NON;
             switch(type.toUpperCase()){
                 case SIZE_B:
                 return UnitType.B;

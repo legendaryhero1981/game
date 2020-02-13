@@ -20,7 +20,7 @@ public interface IFileSPK extends IFileUtil{
     String ERR_SPKC_NODE_NON = "SPKCode节点下的unpackPath或repackPath或filePath或fileName或queryRegex子节点值" + V_BY_NUL;
     String ERR_SPKC_PATH_SAME = "repackPath与filePath不能为同一路径" + S_BANG;
     String ERR_SPKH_NODE_NON = PH_ARG0 + V_BY_NUL;
-    String ERR_SPKH_EXPR_DESC = PH_ARG0 + "节点值对应的正则表达式描述" + V_ERR;
+    String ERR_SPKH_EXPR_FMT = PH_ARG0 + "节点值对应的正则表达式格式" + V_ERR;
     String FILE_SPK_COMMENT = "\n" + gs(4) + "FileSPK配置节点结构说明：\n"
     + gs(4) + "FileSPK节点由comment、SPKCode节点按顺序组成，comment节点必须在最前面，SPKCode节点可以有多个。\n"
     + gs(4) + "FileSPK::comment" + gs(24) + "FileSPK配置节点结构说明，对文件重新打包无影响，仅此说明而已。\n"

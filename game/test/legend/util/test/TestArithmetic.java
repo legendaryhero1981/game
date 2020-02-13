@@ -1,7 +1,6 @@
 package legend.util.test;
 
 import static java.util.regex.Pattern.compile;
-import static legend.intf.IValue.newInstance;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.getClassPath;
@@ -17,16 +16,13 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 import legend.intf.ICommon;
-import legend.util.entity.Zip7;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-        // testClassPath();
-        // testAppPath();
-        Zip7 zip7 = newInstance(Zip7.class);
-        CS.sl(zip7.getZip7ExecutablePath());
+         testClassPath();
+         testAppPath();
     }
 
     // @Test

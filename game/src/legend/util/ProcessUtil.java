@@ -22,11 +22,11 @@ public class ProcessUtil implements IProcessUtil{
 
     private ProcessUtil(){}
 
-    public void handleProcess(String... cmds){
+    public static void handleProcess(String... cmds){
         handleProcess(PH,cmds);
     }
 
-    public void handleProcess(Consumer<Process> handler, String... cmds){
+    public static void handleProcess(Consumer<Process> handler, String... cmds){
         ProcessBuilder builder = new ProcessBuilder(cmds);
         builder.redirectErrorStream(true);
         try{
