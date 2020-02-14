@@ -92,8 +92,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         }else volumeSize = ZIP7_ARG_VOL_DEF;
         if(nonEmpty(password)) password = ZIP7_ARG_PW + password;
         cmd.clear();
-        if(ZIP7_ARG_ZIP.equals(mode)) cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,moreArgs,filePath,ZIP7_ARG_LIST_FILE + listFilePath));
-        else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL,moreArgs));
+        if(ZIP7_ARG_ZIP.equals(mode)) cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs));
+        else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL));
         return true;
     }
 

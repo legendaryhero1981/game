@@ -5,6 +5,8 @@ import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.ProcessUtil.handleProcess;
 import static legend.util.StringUtil.concat;
 import static legend.util.StringUtil.gsph;
+import static legend.util.TimeUtil.countDuration;
+import static legend.util.TimeUtil.getDurationString;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,14 +31,14 @@ public class FileHandleZip7Logic extends BaseFileLogic implements IZip7{
             final String[] cmdArray = cmd.toArray(new String[0]);
             final String cmdString = concat(cmdArray,S_SPACE);
             param.getDetailOptional().ifPresent(c->CS.l(1).sl(gsph(ST_PRG_EXTN_START,cmdString)));
-            handleProcess(process->{
+            countDuration(t->handleProcess(process->{
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),CHARSET_GBK))){
                     reader.lines().forEach(line->CS.sl(line));
                 }catch(Exception e){
                     CS.sl(gsph(ERR_EXEC_CMD_SPEC,concat(cmdArray,S_SPACE),e.toString()));
                 }
-            },cmdArray);
-            param.getDetailOptional().ifPresent(c->CS.l(1).sl(gsph(ST_PRG_EXTN_DONE,cmdString)));
+            },cmdArray));
+            param.getDetailOptional().ifPresent(c->CS.l(1).sl(gsph(ST_PRG_EXTN_DONE,cmdString) + N_TIME + S_COLON + getDurationString() + S_PERIOD));
             param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(amount,1,scale),PROGRESS_SCALE));
         });
     }

@@ -61,6 +61,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             errorInfo = ERR_7ZIP_EXEC_NON;
             return false;
         }
+        cmds.clear();
         if(tasks.stream().anyMatch(t->{
             if(!t.validate()){
                 errorInfo = t.errorInfo;
@@ -75,7 +76,6 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             fp.setSrcPath(get(t.getQueryPath()));
             fp.setDestPath(get(t.getListFilePath()));
             dealFiles(fp);
-            cmds.clear();
             t.cmd.addFirst(zip7ExecutablePath);
             if(isZipMode) cmds.add(t.cmd);
             else{
@@ -86,6 +86,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
                     Deque<String> cmd = new ArrayDeque<>(t.cmd);
                     cmd.add(ZIP7_ARG_OUT + get(t.getFilePath()).resolve(md5).toString());
                     cmd.add(p.toString());
+                    cmd.add(t.getMoreArgs());
                     cmds.add(cmd);
                 });
                 writeFile(fp.getDestPath(),caches);
