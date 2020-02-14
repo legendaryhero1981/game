@@ -22,7 +22,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 输入 game 可以看到命令帮助信息如下：
 
 作者：李允
-版本：V5.2
+版本：V5.4
 
 
 参数说明：
@@ -102,7 +102,7 @@ regex       文件名正则查询表达式，.匹配任意文件名和目录名�
 
 src         文件输入目录；可使用特殊字符占位符表达式（见regex参数）。
 
-dest        文件输入输出目录或输入文件路径名；可使用特殊字符占位符表达式（见regex参数）。
+dest        文件输入输出目录或输入输出文件路径名；可使用特殊字符占位符表达式（见regex参数）。
 
 backup      文件备份输出目录；可使用特殊字符占位符表达式（见regex参数）。
 
@@ -160,9 +160,9 @@ REGENROW(rstring)          根据rstring重新生成每一行数据，匹配的�
 
 file -cd*@::*::* .::*::* g:/games::*::* d:/::e:/::f:/
 
-file -zdd+::-c+@?::* .::\.zip$::* g:/games::g:/file::* g:/file::*/1::*/2 games::?::? 0::?::? ?::1::*
+file -zdd+::-c+@?::* .::`.zip`$::* g:/games::g:/file::* g:/file::*/1::*/2 games::?::? 0::?::? ?::1::*
 
-file -zi*::-cd@*::* \.zip$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?
+file -zi*::-cd@*::* `.zip`$::.::* g:/file::g:/games::* g:/::e:/::f:/ 1::?::?
 
 
 单条命令：
@@ -201,22 +201,22 @@ file -fdodf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。
 
 file -fpa[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件，显示文件的绝对路径名。
+根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。
 
 file -fpr[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件，显示文件的相对路径名。
+根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。
 
-file -fpda[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名。
+file -fpda[~+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。
 
-file -fpdr[~+*!@?] regex src [limit] [level]
-根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名。
+file -fpdr[~+*!@?] regex src dest [limit] [level]
+根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名并将查询结果写入到文件dest。
 
 file -fpdoa[~+*!@?] regex src [limit] [level]
-根据regex查找src中的目录（同-fdo），显示目录的绝对路径名。
+根据regex查找src中的目录（同-fdo），显示目录的绝对路径名并将查询结果写入到文件dest。
 
 file -fpdor[~+*!@?] regex src [limit] [level]
-根据regex查找src中的目录（同-fdo），显示目录的相对路径名。
+根据regex查找src中的目录（同-fdo），显示目录的相对路径名并将查询结果写入到文件dest。
 
 file -fsa[~+*!@?] regex src [sizeExpr] [limit] [level]
 根据regex和sizeExpr查找src中的文件，按文件大小递增排序。
@@ -284,15 +284,6 @@ file -rfbt[~+*!@?] regex src replacement [split] [level]
 file -rfil[~+*!@?] regex src [dest] [level]
 根据配置文件dest自动替换src中所有文件名匹配regex的文件内容；若不指定dest，则根据配置文件./file-il.xml自动替换src中所有文件名匹配regex的文件内容，若配置文件./file-il.xml不存在，则会自动生成一个与该文件同名且同格式的模版文件。
 
-file -rfgbk[~+*!@?] regex src dest [level]
-根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
-
-file -rfbig5[~+*!@?] regex src dest [level]
-根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
-
-file -rfcs[~+*!@?] regex src replacement [level]
-根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：GBK，BIG5，UTF8（不带BOM），UTF-8（带BOM），UTF-16LE（带BOM），UTF-16BE（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。
-
 file -rfsn[~+*!@?] regex src dest [limit] [level]
 根据regex获得src中所有匹配文件，再使用这些文件替换dest中的所有同名文件；limit为dest的最大查询层数，level为src的最大查询层数。
 
@@ -301,6 +292,15 @@ file -rfmeg[~+*!@?] regex src [level]
 
 file -rfspk[~+*!@?] regex src [level]
 根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成.spk文件和其相对应的同名.stc文件的修改。
+
+file -rfgbk[~+*!@?] regex src dest [level]
+根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。
+
+file -rfbig5[~+*!@?] regex src dest [level]
+根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。
+
+file -rfcs[~+*!@?] regex src replacement [level]
+根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：GBK，BIG5，UTF8（不带BOM），UTF-8（带BOM），UTF-16LE（带BOM），UTF-16BE（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。
 
 file -c[~+*!@?] regex src dest [level]
 根据regex复制src中文件到dest中。
@@ -368,6 +368,9 @@ file -pdd[~+*!@?] regex src dest zipName [zipLevel] [level]
 file -pi[~+*!@?] regex src [level]
 根据regex将src中所有匹配文件解包到该文件所在目录中。
 
+file -7zip[~+*!@?] regex src [level]
+根据regex将src中所有匹配的配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。
+
 file -gl32[~+*!@?] regex src [level]
 根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。
 
@@ -434,23 +437,23 @@ file -fddf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data
 file -fdodf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
 查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录。
 
-file -fpa+ . "F:/games/DARK SOULS REMASTERED" 20
-查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录。
+file -fpa+ . "F:/games/DARK SOULS REMASTERED" file-list.txt 20
+查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录，并将查询结果写入到文件file-list.txt。
 
-file -fpr+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有文件，显示文件的相对路径名。
+file -fpr+ . "F:/games/DARK SOULS REMASTERED" file-list.txt
+查询该目录中的所有文件，显示文件的相对路径名并将查询结果写入到文件file-list.txt。
 
-file -fpda+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名。
+file -fpda+ . "F:/games/DARK SOULS REMASTERED" file-list.txt
+查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名并将查询结果写入到文件file-list.txt。
 
-file -fpdr+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名。
+file -fpdr+ . "F:/games/DARK SOULS REMASTERED" file-list.txt
+查询该目录中的文件和目录及其中所有文件，显示文件或目录的相对路径名并将查询结果写入到文件file-list.txt。
 
-file -fpdoa+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有目录，显示目录的绝对路径名。
+file -fpdoa+ . "F:/games/DARK SOULS REMASTERED" file-list.txt
+查询该目录中的所有目录，显示目录的绝对路径名并将查询结果写入到文件file-list.txt。
 
-file -fpdor+ . "F:/games/DARK SOULS REMASTERED"
-查询该目录中的所有目录，显示目录的相对路径名。
+file -fpdor+ . "F:/games/DARK SOULS REMASTERED" file-list.txt
+查询该目录中的所有目录，显示目录的相对路径名并将查询结果写入到文件file-list.txt。
 
 file -fsa+ . "F:/games/FINAL FANTASY XV" 1MB,1GB
 查询该目录中大小介于1兆字节到1千兆字节之间的所有文件，再按文件大小递增排序。
@@ -531,15 +534,6 @@ file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm
 file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
 根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
 
-file -rfgbk* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
-提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件 .../font_schinese.txt。
-
-file -rfbig5* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
-提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
-
-file -rfcs* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk
-先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
-
 file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2
 先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。
 
@@ -548,6 +542,15 @@ file -rfmeg* (?i)`file-merge.xml`$ . 1
 
 file -rfspk* (?i)`file-spk.xml`$ . 1
 先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成.spk文件和其相对应的同名.stc文件的修改。
+
+file -rfgbk* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
+提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件 .../font_schinese.txt。
+
+file -rfbig5* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
+提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
+
+file -rfcs* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk
+先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
 先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
@@ -603,7 +606,7 @@ file -zd (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/F
 file -zdd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份" strings 1
 先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
 
-file -zi (?i)\.zip$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
+file -zi (?i)`.zip`$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
 先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
 
 file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
@@ -612,8 +615,11 @@ file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/Kingdom
 file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
 先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
 
-file -pi (?i)\.pak$ "F:/games/KingdomComeDeliverance/修改/Mods"
+file -pi (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
+
+file -7zip+ (?i)`file-7zip.xml`$ . 1
+先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。
 
 file -gl32+ (?i)`assembly-csharp.dll` "F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed"
 显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。
