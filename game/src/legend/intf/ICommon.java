@@ -18,7 +18,7 @@ public interface ICommon extends Cloneable{
     String SPRT_FILE_ZIP = "/";
     String SPRT_PKG = "\\.";
     String AUTHOR = "作者：李允";
-    String VERSION = "版本：V5.3";
+    String VERSION = "版本：V5.4";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
@@ -66,6 +66,7 @@ public interface ICommon extends Cloneable{
     String N_SIZE = "大小";
     String N_TIME = "耗时";
     String N_CMD = "命令";
+    String N_EXTN = "外部";
     String N_PRG = "程序";
     String N_PROC = "进程";
     String N_NUM = "个数";
@@ -199,10 +200,12 @@ public interface ICommon extends Cloneable{
     String ST_CMD_DONE = N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ST_PRG_START = V_START + V_EXEC + N_PRG + S_ELLIPSIS;
     String ST_PRG_DONE = N_PRG + V_EXEC + V_DONE + S_PERIOD;
+    String ST_PRG_EXTN_START = V_START + V_EXEC + N_EXTN + N_PRG + S_DQM_L + PH_ARG0 + S_DQM_R + S_ELLIPSIS;
+    String ST_PRG_EXTN_DONE = N_EXTN + N_PRG + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ERR_INFO = N_ERR_INFO + PH_ARG0;
     String ERR_EXEC_CMD = V_EXEC + N_CMD + V_FAIL + ERR_INFO;
     String ERR_EXEC_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
-    String ERR_EXEC_CMD_SPEC = V_EXEC + N_CMD + PH_ARG0 + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_EXEC_CMD_SPEC = V_EXEC + N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_FAIL + N_ERR_INFO + PH_ARG1;
     String ERR_KDIFF3_EXEC_NON = "文件整合工具KDiff3的可执行文件路径名无效或不存在！";
     String ERR_7ZIP_EXEC_NON = "文件压缩解压工具7-Zip的可执行文件路径名无效或不存在！";
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + ERR_INFO;

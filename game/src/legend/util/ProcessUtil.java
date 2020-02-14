@@ -1,8 +1,8 @@
 package legend.util;
 
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.StringUtil.concat;
 import static legend.util.StringUtil.gsph;
-import static legend.util.ValueUtil.nonEmpty;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,9 +33,9 @@ public class ProcessUtil implements IProcessUtil{
             Process process = builder.start();
             ES.execute(()->handler.accept(process));
             process.waitFor();
-            process.destroy();
+            process.destroyForcibly();
         }catch(Exception e){
-            CS.sl(gsph(ERR_EXEC_PROC,e.toString()));
+            CS.sl(gsph(ERR_EXEC_CMD_SPEC,concat(cmds,S_SPACE),gsph(ERR_EXEC_PROC,e.toString())));
         }
     }
 
@@ -43,7 +43,7 @@ public class ProcessUtil implements IProcessUtil{
         @Override
         public void accept(Process process){
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
-                for(String line;nonEmpty(line = reader.readLine());CS.sl(line));
+                reader.lines().forEach(line->CS.sl(line));
             }catch(Exception e){
                 CS.sl(gsph(ERR_DEAL_PROC,e.toString()));
             }

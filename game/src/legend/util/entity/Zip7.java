@@ -4,6 +4,10 @@ import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.FileUtil.dealFiles;
 import static legend.util.FileUtil.existsPath;
+import static legend.util.FileUtil.makeDirs;
+import static legend.util.FileUtil.writeFile;
+import static legend.util.MD5Util.getMD5L8;
+import static legend.util.StringUtil.gs;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.param.FileParam.convertParam;
 
@@ -57,11 +61,12 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             errorInfo = ERR_7ZIP_EXEC_NON;
             return false;
         }
-        if(tasks.parallelStream().anyMatch(t->{
+        if(tasks.stream().anyMatch(t->{
             if(!t.validate()){
                 errorInfo = t.errorInfo;
                 return true;
             }
+            makeDirs(get(t.getFilePath()));
             final boolean isZipMode = ZIP7_ARG_ZIP.equals(t.getMode());
             FileParam fp = new FileParam();
             fp.setCmd(isZipMode ? CMD_FND_PTH_DIR_ABS : CMD_FND_PTH_ABS);
@@ -70,13 +75,21 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             fp.setSrcPath(get(t.getQueryPath()));
             fp.setDestPath(get(t.getListFilePath()));
             dealFiles(fp);
+            cmds.clear();
             t.cmd.addFirst(zip7ExecutablePath);
             if(isZipMode) cmds.add(t.cmd);
-            else fp.getPathCaches().parallelStream().forEach(p->{
-                Deque<String> cmd = new ArrayDeque<>(t.cmd);
-                cmd.add(p.toString());
-                cmds.add(cmd);
-            });
+            else{
+                Queue<String> caches = new ConcurrentLinkedQueue<>();
+                fp.getPathCaches().parallelStream().forEach(p->{
+                    final String md5 = getMD5L8(p);
+                    caches.add(md5 + gs(4) + p.toString());
+                    Deque<String> cmd = new ArrayDeque<>(t.cmd);
+                    cmd.add(ZIP7_ARG_OUT + get(t.getFilePath()).resolve(md5).toString());
+                    cmd.add(p.toString());
+                    cmds.add(cmd);
+                });
+                writeFile(fp.getDestPath(),caches);
+            }
             return false;
         })) return false;
         return true;

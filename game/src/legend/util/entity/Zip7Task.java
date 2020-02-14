@@ -19,18 +19,18 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IZip7;
 
 @XmlRootElement(name = "Zip7Task")
-@XmlType(propOrder = {"queryRegex","queryPath","mode","filePath","listFilePath","password","compression","volumeSize","sfxModule","moreArgs"})
+@XmlType(propOrder = {"queryRegex","queryPath","listFilePath","mode","filePath","password","compression","volumeSize","sfxModule","moreArgs"})
 public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlElement
     private String queryRegex = REG_ANY;
     @XmlElement
     private String queryPath = S_EMPTY;
     @XmlElement
+    private String listFilePath = S_EMPTY;
+    @XmlElement
     private String mode = MODE_ZIP;
     @XmlElement
     private String filePath = S_EMPTY;
-    @XmlElement
-    private String listFilePath = S_EMPTY;
     @XmlElement
     private String password = S_EMPTY;
     @XmlElement
@@ -59,9 +59,9 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     public Zip7Task trim(){
         queryRegex = queryRegex.trim();
         queryPath = queryPath.trim();
+        listFilePath = listFilePath.trim();
         mode = mode.trim();
         filePath = filePath.trim();
-        listFilePath = listFilePath.trim();
         password = password.trim();
         compression = compression.trim();
         volumeSize = volumeSize.trim();
@@ -72,7 +72,7 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
 
     @Override
     public boolean validate(){
-        if(isEmpty(queryRegex) || isEmpty(queryPath) || isEmpty(mode)){
+        if(isEmpty(queryRegex) || isEmpty(queryPath) || isEmpty(listFilePath) || isEmpty(mode) || isEmpty(filePath)){
             errorInfo = ERR_ZIP7_TASK_NON;
             return false;
         }
@@ -93,7 +93,7 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         if(nonEmpty(password)) password = ZIP7_ARG_PW + password;
         cmd.clear();
         if(ZIP7_ARG_ZIP.equals(mode)) cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,moreArgs,filePath,ZIP7_ARG_LIST_FILE + listFilePath));
-        else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL,moreArgs,ZIP7_ARG_OUT + filePath));
+        else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL,moreArgs));
         return true;
     }
 
@@ -105,16 +105,16 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         return queryPath;
     }
 
+    public String getListFilePath(){
+        return listFilePath;
+    }
+
     public String getMode(){
         return mode;
     }
 
     public String getFilePath(){
         return filePath;
-    }
-
-    public String getListFilePath(){
-        return listFilePath;
     }
 
     public String getPassword(){
