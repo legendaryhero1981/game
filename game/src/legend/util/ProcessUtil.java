@@ -27,13 +27,12 @@ public class ProcessUtil implements IProcessUtil{
     }
 
     public static void handleProcess(Consumer<Process> handler, String... cmds){
-        ProcessBuilder builder = new ProcessBuilder(cmds);
-        builder.redirectErrorStream(true);
         try{
+            ProcessBuilder builder = new ProcessBuilder(cmds);
+            builder.redirectErrorStream(true);
             Process process = builder.start();
             ES.execute(()->handler.accept(process));
             process.waitFor();
-            process.destroyForcibly();
         }catch(Exception e){
             CS.sl(gsph(ERR_EXEC_CMD_SPEC,concat(cmds,S_SPACE),gsph(ERR_EXEC_PROC,e.toString())));
         }

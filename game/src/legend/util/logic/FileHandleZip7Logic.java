@@ -33,7 +33,9 @@ public class FileHandleZip7Logic extends BaseFileLogic implements IZip7{
             param.getDetailOptional().ifPresent(c->CS.l(1).sl(gsph(ST_PRG_EXTN_START,cmdString)));
             countDuration(t->handleProcess(process->{
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),CHARSET_GBK))){
-                    reader.lines().forEach(line->CS.sl(line));
+                    StringBuilder builder = new StringBuilder();
+                    reader.lines().forEach(line->builder.append(line + SPRT_LINE));
+                    CS.s(builder.toString());
                 }catch(Exception e){
                     CS.sl(gsph(ERR_EXEC_CMD_SPEC,concat(cmdArray,S_SPACE),e.toString()));
                 }
