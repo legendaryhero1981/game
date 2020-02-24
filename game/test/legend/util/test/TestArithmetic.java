@@ -4,6 +4,7 @@ import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.getClassPath;
+import static legend.util.TimeUtil.getDurationString;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -21,8 +22,31 @@ import legend.util.test.model.GCDModel;
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-         testClassPath();
-         testAppPath();
+        // testClassPath();
+        // testAppPath();
+        CS.sl(getDurationString(t->testC2Error()));
+    }
+
+    // @Test
+    /**
+     * Oracle 的标准Java HotSpot VM的默认设置-XX:TieredStopAtLevel=4，
+     * 会导致后面打印出/而不是-1，而字符/是字符0的ascii码-1；
+     * 手动设置为0到3可以正常打印，取0最慢，取1最快。
+     * <p>
+     * 这是C2编译器处理int类型转字符类型的错误，自java8起一直未修复。
+     */
+    public void testC2Error(){
+        C2Error hello = new C2Error();
+        for(int i = 0;i < 50_000;i++)
+            hello.test();
+    }
+
+    private class C2Error{
+        public void test(){
+            int i = 8;
+            while((i -= 3) > 0);
+            CS.sl("i = " + i);
+        }
     }
 
     // @Test
