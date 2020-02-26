@@ -17,9 +17,11 @@ public class TestFileUtil extends TestBase{
     @Override
     public void monkParam(){
         String s = "";
-        s = "-7zip+  `file-7zip.xml`$  .  1";
+//        s = "-7zip+  `file-7zip.xml`$  .  1";
+//        s = "-zimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  D:/360安全浏览器下载/7zip/unzip  1";
+//        s = "-pimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  1";
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
-//        s = "-fpr!+  `.java`$  D:/games/src  ./run.log";
+//        s = "-fpr!+  `.java`$  D:/games/src  ";
 //        s = "-fpr!+  `.class`$  D:/games/classes/11  ./run.log";
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
@@ -35,7 +37,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-rfcs+  \\Atemp2\\.txt$  E:/Decompile/DLL-ildasm  utf8";
 //        s = "-rfsn*  (?i)\\A`JetBrains.Platform.Shell.dll`$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
 //        s = "-rfsn*  (?i)\\.dll$  E:/Decompile/ReSharper  C:/Users/liyun/AppData/Local/JetBrains/Installations  2";
-//        s = "-rfmeg+  (?i)`file-merge.xml`$  .  1";
+//        s = "-rfmeg+  (?i)`bot.xml`$  D:/360安全浏览器下载/PKM/源代码  1";
 //        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm";
 //        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
 //        s = "-ml8+  (?i)`assembly-csharp.dll`$  F:/games/Pathfinder Kingmaker Beneath the Stolen Lands";

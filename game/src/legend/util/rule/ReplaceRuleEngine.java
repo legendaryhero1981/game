@@ -62,11 +62,11 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         while(mbq.find())
             quotesCache.add(mbq.group(1));
         String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELD);
-        CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
+        CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
             colNumber = s[0];
             Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
-            CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_COL_NUM},()->!matcher.find());
+            CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_COL_NUM},()->!matcher.find());
             rule = s[1];
         }else{
             colNumber = S_EMPTY;
@@ -119,7 +119,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             complexesCache.put(i,complexes);
         }
         final int size = atomsCache.get(0).length;
-        if(CS.showException(ERR_DATA_ANLS,new String[]{ERR_DATA_COL_NUM},()->atomsCache.values().parallelStream().anyMatch(v->size != v.length))) return false;
+        if(CS.checkException(ERR_DATA_ANLS,new String[]{ERR_DATA_COL_NUM},()->atomsCache.values().parallelStream().anyMatch(v->size != v.length))) return false;
         if(nonEmpty(colNumber)){
             Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
             while(matcher.find()){
@@ -194,7 +194,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     }
 
     private void validateRule(ReplaceRule replaceRule, int index, int length){
-        CS.showError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
-        CS.showError(ERR_RULE_ANLS,new String[]{ERR_RULE_TMNT},()->RULE_REGENROW.equals(replaceRule.name) && index < length);
+        CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
+        CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_TMNT},()->RULE_REGENROW.equals(replaceRule.name) && index < length);
     }
 }

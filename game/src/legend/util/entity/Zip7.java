@@ -6,7 +6,8 @@ import static legend.util.FileUtil.dealFiles;
 import static legend.util.FileUtil.existsPath;
 import static legend.util.FileUtil.makeDirs;
 import static legend.util.FileUtil.writeFile;
-import static legend.util.MD5Util.getMD5L8;
+import static legend.util.MD5Util.getMD5L32;
+import static legend.util.StringUtil.getFileNameWithoutSuffix;
 import static legend.util.StringUtil.gs;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.param.FileParam.convertParam;
@@ -37,7 +38,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
     @XmlElementRef
     private List<Zip7Task> tasks;
     @XmlTransient
-    private Queue<Deque<String>> cmds;
+    private Queue<String[]> cmds;
 
     public Zip7(){
         tasks = new ArrayList<>();
@@ -77,17 +78,20 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             fp.setDestPath(get(t.getListFilePath()));
             dealFiles(fp);
             t.cmd.addFirst(zip7ExecutablePath);
-            if(isZipMode) cmds.add(t.cmd);
+            if(isZipMode) cmds.add(t.cmd.toArray(new String[t.cmd.size()]));
             else{
                 Queue<String> caches = new ConcurrentLinkedQueue<>();
                 fp.getPathCaches().parallelStream().forEach(p->{
-                    final String md5 = getMD5L8(p);
-                    caches.add(md5 + gs(4) + p.toString());
                     Deque<String> cmd = new ArrayDeque<>(t.cmd);
-                    cmd.add(ZIP7_ARG_OUT + get(t.getFilePath()).resolve(md5).toString());
+                    String name = t.getUnzipMode();
+                    if(MODE_UNZIP_MD5.equals(name)) name = p.getFileName().toString() + REG_ANY + getMD5L32(p);
+                    else if(MODE_UNZIP_DIR.equals(name)) name = getFileNameWithoutSuffix(p.toString());
+                    else name = S_EMPTY;
+                    cmd.add(ZIP7_ARG_OUT + get(t.getFilePath()).resolve(name));
+                    caches.add(name + gs(4) + p.toString());
                     cmd.add(p.toString());
                     cmd.add(t.getMoreArgs());
-                    cmds.add(cmd);
+                    cmds.add(cmd.toArray(new String[cmd.size()]));
                 });
                 writeFile(fp.getDestPath(),caches);
             }
@@ -104,7 +108,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
         return tasks;
     }
 
-    public Queue<Deque<String>> getCmds(){
+    public Queue<String[]> getCmds(){
         return cmds;
     }
 }

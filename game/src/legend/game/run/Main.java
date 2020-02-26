@@ -111,11 +111,11 @@ public final class Main implements IMain{
                 else game.setComment(game.getName());
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+                CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
             game.trim();
         }catch(Exception e){
-            CS.showError(ERR_EXEC_CMD,new String[]{e.toString()});
+            CS.checkError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
     }
 
@@ -130,7 +130,7 @@ public final class Main implements IMain{
             // 执行启动游戏进程的VBS主脚本文件
             runVbsScript(false,t->writeMainScript());
         }catch(Exception e){
-            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_CREATE_FILE,new String[]{e.toString()});
         }
     }
 
@@ -141,16 +141,16 @@ public final class Main implements IMain{
             // 执行终止游戏进程的VBS主脚本文件
             runVbsScript(false,t->script.append(glph(CMD_VBS_GAME_KILL,1,game.getExe())));
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
     private static void linkAll(){
         // 数据验证
         List<Game> games = loadModel().getGames();
-        games.parallelStream().forEach(g->CS.showError(ERR_INVALIDATE,new String[]{RUN_FILE_CONFIG},()->!g.trim().validate()));
+        games.parallelStream().forEach(g->CS.checkError(ERR_INVALIDATE,new String[]{RUN_FILE_CONFIG},()->!g.trim().validate()));
         // 执行脚本批量生成游戏快捷方式
         try{
             runVbsScript(true,t->{
@@ -159,9 +159,9 @@ public final class Main implements IMain{
             });
             sleep(SLEEP_TIME);
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
@@ -174,9 +174,9 @@ public final class Main implements IMain{
             });
             sleep(SLEEP_TIME);
         }catch(IOException e){
-            CS.showError(ERR_CREATE_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
-            CS.showError(ERR_RUN_FILE,new String[]{e.toString()});
+            CS.checkError(ERR_RUN_FILE,new String[]{e.toString()});
         }
     }
 
@@ -192,7 +192,7 @@ public final class Main implements IMain{
 
     private static void add(){
         Games games = loadModel();
-        CS.showError(ERR_ID_EXISTS,new String[]{RUN_FILE_CONFIG,game.getId()},()->games.getGameMap().containsKey(game.getId()));
+        CS.checkError(ERR_ID_EXISTS,new String[]{RUN_FILE_CONFIG,game.getId()},()->games.getGameMap().containsKey(game.getId()));
         games.getGames().add(game);
         games.sortGames();
         saveModel(games);
@@ -218,8 +218,8 @@ public final class Main implements IMain{
             CS.l(1);
         }else game = gameMap.get(id);
         // 数据验证
-        CS.showError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
-        CS.showError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->!game.trim().validate());
+        CS.checkError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
+        CS.checkError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->!game.trim().validate());
         return games;
     }
 
@@ -228,13 +228,13 @@ public final class Main implements IMain{
     }
 
     private static Games loadModel(){
-        CS.showError(ERR_CONF_NON,(String[])null,()->!config.toFile().isFile());
+        CS.checkError(ERR_CONF_NON,(String[])null,()->!config.toFile().isFile());
         Games games = convertToObject(config,Games.class);
-        CS.showError(ERR_CONF_NUL,(String[])null,()->isEmpty(games.getGames()));
+        CS.checkError(ERR_CONF_NUL,(String[])null,()->isEmpty(games.getGames()));
         ConcurrentMap<String,AtomicInteger> gameMap = new ConcurrentHashMap<>();
         games.getGames().parallelStream().forEach(g->gameMap.computeIfAbsent(g.getId(),k->new AtomicInteger()).addAndGet(1));
         gameMap.entrySet().parallelStream().filter(entry->entry.getValue().get() > 1).forEach(entry->CS.s(glph(ST_REPEAT_ID,2,entry.getKey())));
-        CS.showError(ERR_CONF_REPEAT,(String[])null,()->gameMap.values().parallelStream().anyMatch(v->v.get() > 1));
+        CS.checkError(ERR_CONF_REPEAT,(String[])null,()->gameMap.values().parallelStream().anyMatch(v->v.get() > 1));
         return games;
     }
 

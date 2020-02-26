@@ -203,8 +203,22 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_UGD_DIR:
             condition |= NEED_REPATH;
             break;
+            case CMD_ZIP_INF_MD5:
+            condition |= ZIP_UNZIP_MD5;
+            case CMD_ZIP_INF_DIR:
+            condition |= ZIP_UNZIP_DIR;
             case CMD_ZIP_INF:
-            condition |= ZIP_UNZIP | MATCH_FILE_ONLY;
+            condition |= ZIP_UNZIP;
+            case CMD_ZIP_DEF:
+            case CMD_PAK_DEF:
+            case CMD_PAK_INF:
+            case CMD_7ZIP:
+            condition |= MATCH_FILE_ONLY;
+            break;
+            case CMD_PAK_INF_MD5:
+            condition |= ZIP_UNZIP_MD5;
+            case CMD_PAK_INF_DIR:
+            condition |= ZIP_UNZIP_DIR | MATCH_FILE_ONLY;
             break;
             case CMD_ITCHG_UGD:
             condition |= INTERCHANGE_UPGRADE;
@@ -220,10 +234,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
             case CMD_UPGRADE:
-            case CMD_ZIP_DEF:
-            case CMD_PAK_DEF:
-            case CMD_PAK_INF:
-            case CMD_7ZIP:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
             case CMD_MD5_L8:
@@ -326,15 +336,15 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public static List<FileParam> analyzeParam(String[] args){
         // 验证参数格式
-        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
+        CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa1 = new String[args.length][], aa2 = new String[args.length][];
         aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMD);
         Matcher mrpt = compile(REG_RPT_ARG).matcher(aa1[0][0]);
-        CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
+        CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
         Matcher mph = compile(REG_OPT_ASK).matcher(S_EMPTY);
         for(int i = 0;i < aa1[0].length;i++){
             mph.reset(aa1[0][i]);
-            CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
+            CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
         // 将参数格式字符串解析成参数数组
         Deque<String> quotes1 = new ArrayDeque<>(), quotes2 = new ArrayDeque<>();
@@ -354,7 +364,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMD);
             aa2[i] = s.split(REG_SPRT_CMD);
             mrpt.reset(aa1[i][0]);
-            if(aa1[0].length != aa1[i].length || mrpt.matches()) CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            if(aa1[0].length != aa1[i].length || mrpt.matches()) CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
         Matcher mnul = compile(SPC_NUL).matcher(S_EMPTY);
         StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
@@ -420,9 +430,15 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_FND_PTH_DIR_RLT:
                     case CMD_FND_PTH_DIR_OLY_ABS:
                     case CMD_FND_PTH_DIR_OLY_RLT:
-                    param.setDestPath(get(s1[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                    optional.filter(s->s.length > 3 && s[3].matches(REG_NUM)).ifPresent(s->{
+                        param.setLimit(Integer.parseInt(s[3]));
+                        if(s.length > 4) param.setLevel(Integer.parseInt(s[4]));
+                    });
+                    optional.filter(s->s.length > 3 && !s[3].matches(REG_NUM)).ifPresent(s->{
+                        param.setDestPath(get(s[3]));
+                        if(s.length > 4) param.setLimit(Integer.parseInt(s[4]));
+                        if(s.length > 5) param.setLevel(Integer.parseInt(s[5]));
+                    });
                     break;
                     case CMD_FND_SIZ_ASC:
                     case CMD_FND_SIZ_DSC:
@@ -502,6 +518,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_DEL_DIR_NUL:
                     case CMD_DEL_DIR_OLY_NUL:
                     case CMD_PAK_INF:
+                    case CMD_PAK_INF_DIR:
+                    case CMD_PAK_INF_MD5:
                     case CMD_7ZIP:
                     case CMD_GUID_L32:
                     case CMD_GUID_U32:
@@ -524,6 +542,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     case CMD_MOV_DIR:
                     case CMD_MOV_DIR_OLY:
                     case CMD_ZIP_INF:
+                    case CMD_ZIP_INF_DIR:
+                    case CMD_ZIP_INF_MD5:
                     case CMD_REG_FLE_GBK:
                     case CMD_REG_FLE_BIG5:
                     param.setDestPath(get(s1[3]));
@@ -552,11 +572,11 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                     optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
                     break;
                     default:
-                    CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+                    CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
                 }
                 fileParams.add(param);
             }catch(Exception e){
-                CS.showError(ERR_ARG_ANLS,new String[]{e.toString()});
+                CS.checkError(ERR_ARG_ANLS,new String[]{e.toString()});
             }
         return fileParams;
     }
@@ -666,6 +686,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_DEL_DIR_NUL:
             case CMD_DEL_DIR_OLY_NUL:
             case CMD_PAK_INF:
+            case CMD_PAK_INF_DIR:
+            case CMD_PAK_INF_MD5:
             case CMD_7ZIP:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
@@ -688,6 +710,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_MOV_DIR:
             case CMD_MOV_DIR_OLY:
             case CMD_ZIP_INF:
+            case CMD_ZIP_INF_DIR:
+            case CMD_ZIP_INF_MD5:
             case CMD_REP_FLE_IL:
             case CMD_REG_FLE_GBK:
             case CMD_REG_FLE_BIG5:

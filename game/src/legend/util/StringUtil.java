@@ -67,6 +67,21 @@ public final class StringUtil implements IStringUtil{
         return path;
     }
 
+    public static String getFileNameWithSuffix(String path){
+        String result = S_EMPTY;
+        Matcher matcher = PTRN_PATH_NAME.matcher(path);
+        if(matcher.find()) result = matcher.group(2);
+        return isEmpty(result) ? S_EMPTY : path;
+    }
+
+    public static String getFileNameWithoutSuffix(String path){
+        String result = S_EMPTY;
+        Matcher matcher = PTRN_PATH_NAME.matcher(path);
+        if(matcher.find()) result = matcher.group(2);
+        else result = path;
+        return isEmpty(result) ? S_EMPTY : result.replaceFirst(REG_FILE_SUFFIX,S_EMPTY);
+    }
+
     public static byte[] fillBytes(int n, int size){
         return fillBytes((byte)n,size);
     }
@@ -125,36 +140,36 @@ public final class StringUtil implements IStringUtil{
         return new String(hexToBytes(hex));
     }
 
-    public static String concat(Object[] objects, String join){
-        if(0 == objects.length) return "";
-        String r = "";
+    public static <T> String concat(T[] objects, String join){
+        if(0 == objects.length) return S_EMPTY;
+        String r = S_EMPTY;
         for(int i = 0;i < objects.length - 1;i++)
             r = r.concat(objects[i].toString()).concat(join);
         return r.concat(objects[objects.length - 1].toString());
     }
 
-    public static String concat(Object[] objects){
-        return concat(objects,"");
+    public static <T> String concat(T[] objects){
+        return concat(objects,S_EMPTY);
     }
 
-    public static String concat(Collection<Object> collection, String join){
+    public static <T> String concat(Collection<T> collection, String join){
         return concat(collection.toArray(new Object[0]),join);
     }
 
-    public static String concat(Collection<Object> collection){
-        return concat(collection,"");
+    public static <T> String concat(Collection<T> collection){
+        return concat(collection,S_EMPTY);
     }
 
     public static String concat(String[] s, String join){
-        if(0 == s.length) return "";
-        String r = "";
+        if(0 == s.length) return S_EMPTY;
+        String r = S_EMPTY;
         for(int i = 0;i < s.length - 1;i++)
             r = r.concat(s[i]).concat(join);
         return r.concat(s[s.length - 1]);
     }
 
     public static String concat(String[] s){
-        return concat(s,"");
+        return concat(s,S_EMPTY);
     }
 
     public static String brph(String s, Map<String,String> map){

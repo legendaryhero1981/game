@@ -81,10 +81,10 @@ public class Main implements IMain{
                 srcParam.setReplacement(args[1]);
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+                CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
         }catch(Exception e){
-            CS.showError(ERR_EXEC_CMD,new String[]{e.toString()});
+            CS.checkError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
     }
 }

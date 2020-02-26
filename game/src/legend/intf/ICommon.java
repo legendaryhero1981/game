@@ -3,6 +3,7 @@ package legend.intf;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.gs;
 
 import java.io.File;
 import java.util.Map;
@@ -18,7 +19,7 @@ public interface ICommon extends Cloneable{
     String SPRT_FILE_ZIP = "/";
     String SPRT_PKG = "\\.";
     String AUTHOR = "作者：李允";
-    String VERSION = "版本：V5.4";
+    String VERSION = "版本：V5.5";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
@@ -144,6 +145,9 @@ public interface ICommon extends Cloneable{
     String MODE_ADD = "2";
     String MODE_ZIP = "0";
     String MODE_UNZIP = "1";
+    String MODE_UNZIP_MD5 = "0";
+    String MODE_UNZIP_DIR = "1";
+    String MODE_UNZIP_MEG = "2";
     String FLAG_DEBUG = "#";
     String FLAG_MOD = "*";
     String FLAG_ADD = "+";
@@ -179,6 +183,9 @@ public interface ICommon extends Cloneable{
     String REG_SPRT_RULE = SPRT_RULE + "+";
     String REG_SPRT_ARG = SPRT_ARG + "+";
     String REG_SPRT_COL = "[ \\t]+";
+    String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
+    String REG_PATH_NAME = "(.*" + REG_SPRT_PATH + ")(.*)";
+    String REG_FILE_SUFFIX = "\\..*$";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
@@ -204,8 +211,8 @@ public interface ICommon extends Cloneable{
     String ST_PRG_EXTN_DONE = N_EXTN + N_PRG + S_DQM_L + PH_ARG0 + S_DQM_R + V_EXEC + V_DONE + S_PERIOD;
     String ERR_INFO = N_ERR_INFO + PH_ARG0;
     String ERR_EXEC_CMD = V_EXEC + N_CMD + V_FAIL + ERR_INFO;
-    String ERR_EXEC_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
     String ERR_EXEC_CMD_SPEC = V_EXEC + N_CMD + S_DQM_L + PH_ARG0 + S_DQM_R + V_FAIL + N_ERR_INFO + PH_ARG1;
+    String ERR_EXEC_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + ERR_INFO;
     String ERR_KDIFF3_EXEC_NON = "文件整合工具KDiff3的可执行文件路径名无效或不存在！";
     String ERR_7ZIP_EXEC_NON = "文件压缩解压工具7-Zip的可执行文件路径名无效或不存在！";
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + ERR_INFO;

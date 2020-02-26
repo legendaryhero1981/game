@@ -3,6 +3,7 @@ package legend.util.entity;
 import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.FS;
+import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -19,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IZip7;
 
 @XmlRootElement(name = "Zip7Task")
-@XmlType(propOrder = {"queryRegex","queryPath","listFilePath","mode","filePath","password","compression","volumeSize","sfxModule","moreArgs"})
+@XmlType(propOrder = {"queryRegex","queryPath","listFilePath","mode","filePath","unzipMode","password","compression","volumeSize","sfxModule","moreArgs"})
 public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlElement
     private String queryRegex = REG_ANY;
@@ -31,6 +32,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     private String mode = MODE_ZIP;
     @XmlElement
     private String filePath = S_EMPTY;
+    @XmlElement
+    private String unzipMode = MODE_UNZIP_MD5;
     @XmlElement
     private String password = S_EMPTY;
     @XmlElement
@@ -46,11 +49,14 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlTransient
     protected static final Pattern modePattern;
     @XmlTransient
+    protected static final Pattern unzipModePattern;
+    @XmlTransient
     protected static final Pattern compPattern;
     @XmlTransient
     protected static final Pattern volumePattern;
     static{
         modePattern = compile(REG_ZIP7_MODE);
+        unzipModePattern = compile(REG_ZIP7_MODE_UNZIP);
         compPattern = compile(REG_ZIP7_COMP);
         volumePattern = compile(REG_ZIP7_VOL);
     }
@@ -79,6 +85,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         Matcher matcher = modePattern.matcher(mode);
         if(!matcher.matches() || MODE_ZIP.equals(mode)) mode = ZIP7_ARG_ZIP;
         else mode = ZIP7_ARG_UNZIP;
+        matcher = unzipModePattern.matcher(unzipMode);
+        if(isEmpty(unzipMode) || !matcher.matches()) unzipMode = MODE_UNZIP_MD5;
         if(nonEmpty(sfxModule)) if(!matcher.reset(sfxModule).matches() || MODE_ZIP.equals(sfxModule)) sfxModule = ZIP7_ARG_SFX_GUI;
         else sfxModule = ZIP7_ARG_SFX_CON;
         matcher = compPattern.matcher(compression);
@@ -95,6 +103,11 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         if(ZIP7_ARG_ZIP.equals(mode)) cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs));
         else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL));
         return true;
+    }
+
+    @Override
+    public String toString(){
+        return concat(cmd,S_SPACE);
     }
 
     public String getQueryRegex(){
@@ -117,20 +130,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         return filePath;
     }
 
-    public String getPassword(){
-        return password;
-    }
-
-    public String getCompression(){
-        return compression;
-    }
-
-    public String getVolumeSize(){
-        return volumeSize;
-    }
-
-    public String getSfxModule(){
-        return sfxModule;
+    public String getUnzipMode(){
+        return unzipMode;
     }
 
     public String getMoreArgs(){

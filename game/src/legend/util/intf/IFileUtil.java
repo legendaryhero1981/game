@@ -33,12 +33,14 @@ public interface IFileUtil extends ICommon{
     long COMPARE_SAME = 1l << 9;
     long PATH_RELATIVE = 1l << 10;
     long INTERCHANGE_UPGRADE = 1l << 11;
-    long ZIP_UNZIP = 1l << 12;
-    long IGNORE_REGEX = 1l << 13;
-    long ENABLE_CACHE = 1l << 50;
-    long CAN_USE_CACHE = 1l << 51;
-    long CAN_SAVE_CACHE = 1l << 52;
-    long NEED_CLEAR_CACHE = 1l << 53;
+    long IGNORE_REGEX = 1l << 12;
+    long ZIP_UNZIP = 1l << 13;
+    long ZIP_UNZIP_DIR = 1l << 14;
+    long ZIP_UNZIP_MD5 = 1l << 15;
+    long ENABLE_CACHE = 1l << 59;
+    long CAN_USE_CACHE = 1l << 60;
+    long CAN_SAVE_CACHE = 1l << 61;
+    long NEED_CLEAR_CACHE = 1l << 62;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
     String CMD = "file ";
@@ -106,9 +108,13 @@ public interface IFileUtil extends ICommon{
     String CMD_ZIP_DEF = "-zd";
     String CMD_ZIP_DIR_DEF = "-zdd";
     String CMD_ZIP_INF = "-zi";
+    String CMD_ZIP_INF_DIR = "-zidir";
+    String CMD_ZIP_INF_MD5 = "-zimd5";
     String CMD_PAK_DEF = "-pd";
     String CMD_PAK_DIR_DEF = "-pdd";
     String CMD_PAK_INF = "-pi";
+    String CMD_PAK_INF_DIR = "-pidir";
+    String CMD_PAK_INF_MD5 = "-pimd5";
     String CMD_7ZIP = "-7zip";
     String CMD_GUID_L32 = "-gl32";
     String CMD_GUID_U32 = "-gu32";
@@ -170,12 +176,12 @@ public interface IFileUtil extends ICommon{
     + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_ATOM + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
     + "#n-m1.m2#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_COMP + "；n为列号，m1为复合规则执行顺序号，m2为m1中原子规则的执行顺序号；m1的最小值为1，最大值为复合规则执行总数；m2的最小值为1，最大值为m1中原子规则执行总数，m2不指定则取最大值（即#n-m1#与#n-m1.max(m2)#等效）；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）；#1-1.1#（提取对第1列执行了第1条复合规则中的第1条原子规则后得到的数据）。" + gl(3)
     + "命令选项：" + gl(2)
-    + "~ 可添加在命令选项末尾，表示显示最简明的信息，也不会显示进度条；优先级低于+和*；若未指定且+和*也未指定则默认显示进度条；可与!或@或?连用；例如：-fd~!@?。" + gl(2)
-    + "+ 可添加在命令选项末尾，表示输出详细信息；优先级高于~和*；可与!或@或?连用；例如：-fd!+@?。" + gl(2)
-    + "* 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；优先级低于+但高于~；可与!或@或?连用；例如：-fd*?@!。" + gl(2)
-    + "! 可添加在命令选项末尾，表示不匹配查询的根目录，可与~或+或*或@或?连用；例如：file -fd!+ . d:/games 不匹配games目录，只匹配该目录中的任意文件和子目录名称。" + gl(2)
-    + "@ 可添加在命令选项末尾，表示缓存该命令的查询结果，供后面的命令复用；某些命令不能缓存或复用查询结果，程序将智能忽略掉；复用查询结果的命令将忽略与查询相关的命令参数regex和src；当后面某个命令使用了@时，则重新缓存查询结果；可与~或!或+或*或?连用；例如：-fd!@*?。" + gl(2)
-    + "? 可添加在命令选项末尾，表示命令开始执行前启用询问模式（" + ST_ASK_CONT + "）；可与~或!或+或*或@连用；例如：-fd!+@?。" + gl(3)
+    + OPT_INSIDE + " 可添加在命令选项末尾，表示显示最简明的信息，也不会显示进度条；优先级低于+和*；若未指定且+和*也未指定则默认显示进度条；可与!或@或?连用；例如：-fd~!@?。" + gl(2)
+    + OPT_DETAIL + " 可添加在命令选项末尾，表示输出详细信息；优先级高于~和*；可与!或@或?连用；例如：-fd!+@?。" + gl(2)
+    + OPT_SIMULATE + " 可添加在命令选项末尾，表示模拟执行命令，不进行实际操作，仅输出详细信息；优先级低于+但高于~；可与!或@或?连用；例如：-fd*?@!。" + gl(2)
+    + OPT_EXCLUDE_ROOT + " 可添加在命令选项末尾，表示不匹配查询的根目录，可与~或+或*或@或?连用；例如：file -fd!+ . d:/games 不匹配games目录，只匹配该目录中的任意文件和子目录名称。" + gl(2)
+    + OPT_CACHE + " 可添加在命令选项末尾，表示缓存该命令的查询结果，供后面的命令复用；某些命令不能缓存或复用查询结果，程序将智能忽略掉；复用查询结果的命令将忽略与查询相关的命令参数regex和src；当后面某个命令使用了@时，则重新缓存查询结果；可与~或!或+或*或?连用；例如：-fd!@*?。" + gl(2)
+    + OPT_ASK + " 可添加在命令选项末尾，表示命令开始执行前启用询问模式（" + ST_ASK_CONT + "）；可与~或!或+或*或@连用；例如：-fd!+@?。" + gl(3)
     + "组合命令：" + gl(2)
     + "可以组合多个命令选项和命令参数，一次连续执行多条命令；命令选项与各命令参数的个数必须相等；各命令选项及各命令参数使用" + SPRT_CMD + "分隔；可使用" + OPT_SIMULATE  + "复用最近一个明确的命令选项或命令参数，将其当作该命令的前缀使用，例如：-f::*d::*dsa等价于-f::-fd::-fdsa，g:/games::*/1::*/2等价于g:/games::g:/games/1::g:/games/2；单条命令未用到的命令参数使用" + OPT_ASK + "占位。" + gl(2)
     + "组合命令示例：" + gl(2)
@@ -194,12 +200,12 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FND_DIF_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
     + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。" + gl(2)
-    + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。" + gl(2)
-    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_ABS + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
-    + CMD + CMD_FND_PTH_DIR_OLY_RLT + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_RLT + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_ABS + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
+    + CMD + CMD_FND_PTH_DIR_OLY_RLT + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的目录（同-fdo），显示目录的相对路径名并将查询结果写入到文件dest。" + gl(2)
     + CMD + CMD_FND_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递增排序。" + gl(2)
     + CMD + CMD_FND_SIZ_DSC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件，按文件大小递减排序。" + gl(2)
     + CMD + CMD_FND_DIR_SIZ_ASC + OPTIONS + "regex src [sizeExpr] [limit] [level]" + gl(1) + "根据regex和sizeExpr查找src中的文件和目录，按文件大小递增排序。" + gl(2)
@@ -244,12 +250,16 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_ITCHG_RST + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex获得src中所有匹配文件，检查这些文件在dest中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将dest中匹配的文件移动到backup中，再将该文件移动到dest中。" + gl(2)
     + CMD + CMD_UPGRADE + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
     + CMD + CMD_UGD_DIR + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
-    + CMD + CMD_ZIP_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
+    + CMD + CMD_ZIP_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件压缩到“dest/zipName" + EXT_ZIP + "”文件中。" + gl(2)
     + CMD + CMD_ZIP_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
-    + CMD + CMD_ZIP_INF + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配文件解压缩到dest中。" + gl(2)
-    + CMD + CMD_PAK_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
-    + CMD + CMD_PAK_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName" + EXT_PAK + "文件中。" + gl(2)
-    + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件解包到该文件所在目录中。" + gl(2)
+    + CMD + CMD_ZIP_INF + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中。" + gl(2)
+    + CMD + CMD_ZIP_INF_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名”（不包含扩展名）。" + gl(2)
+    + CMD + CMD_ZIP_INF_MD5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名.md5码”。" + gl(2)
+    + CMD + CMD_PAK_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件打包到“dest/zipName" + EXT_PAK + "”文件中。" + gl(2)
+    + CMD + CMD_PAK_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件打包到“dest/zipName" + EXT_PAK + "”文件中。" + gl(2)
+    + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中。" + gl(2)
+    + CMD + CMD_PAK_INF_DIR + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名”（不包含扩展名）。" + gl(2)
+    + CMD + CMD_PAK_INF_MD5 + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。" + gl(2)
     + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
     + CMD + CMD_GUID_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
@@ -265,14 +275,14 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FIND + "+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
     + CMD + CMD_FND_DIR + "+ (?i)strings$ \"F:/games/Fallout 4\"" + gl(1) + "查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY + "+ . \"F:/games/KingdomComeDeliverance/修改/Mods\" 0 1" + gl(1) + "查询该目录中的第一级目录。" + gl(2)
-    + CMD + CMD_FND_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名文件。" + gl(2)
-    + CMD + CMD_FND_SAM_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录。" + gl(2)
-    + CMD + CMD_FND_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的文件。" + gl(2)
-    + CMD + CMD_FND_DIF_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录。" + gl(2)
+    + CMD + CMD_FND_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名文件。" + gl(2)
+    + CMD + CMD_FND_SAM_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录。" + gl(2)
+    + CMD + CMD_FND_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的文件。" + gl(2)
+    + CMD + CMD_FND_DIF_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录，并将查询结果写入到文件file-list.txt。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
@@ -310,36 +320,40 @@ public interface IFileUtil extends ICommon{
     + "1、对每行的第1列数据执行复合规则：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。" + gl(2)
-    + CMD + CMD_REP_FLE_SN + "* (?i)\\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2" + gl(1) + "先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm" + gl(1) + "根据配置文件" + CONF_FILE_IL + "自动替换“E:/Decompile/DLL-ildasm”目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REP_FLE_IL + "* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml" + gl(1) + "根据配置文件il.xml自动替换“E:/Decompile/DLL-ildasm”目录中所有文件扩展名为.il的文件内容。" + gl(2)
+    + CMD + CMD_REP_FLE_SN + "* (?i)\\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2" + gl(1) + "先查询获得“.../ReSharper”目录中所有匹配文件，再使用这些文件替换“.../Installations”目录及其第一层子目录中的所有同名文件。" + gl(2)
     + CMD + CMD_REP_FLE_MEG + "* (?i)`file-merge.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。" + gl(2)
     + CMD + CMD_REP_FLE_SPK + "* (?i)`file-spk.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)
-    + CMD + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_schinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件 .../font_tchinese.txt。" + gl(2)
-    + CMD + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
-    + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。" + gl(2)
+    + CMD + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件“.../font_schinese.txt”。" + gl(2)
+    + CMD + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件“.../font_tchinese.txt”。" + gl(2)
+    + CMD + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将“E:/Decompile/DLL-ildasm”目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
+    + CMD + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Strings”目录中所有匹配文件复制到“.../备份”目录中。" + gl(2)
+    + CMD + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件复制到“.../备份”目录中。" + gl(2)
+    + CMD + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配的目录及其中所有文件复制到“.../备份”目录中。" + gl(2)
     + CMD + CMD_DELETE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "先查询再删除该目录中所有匹配文件。" + gl(2)
     + CMD + CMD_DEL_DIR + " \"\\Ade$|\\Afr$|\\Aru$|\\Aus$\" \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询再删除该目录中所有匹配文件和目录及其中所有文件。" + gl(2)
     + CMD + CMD_DEL_DIR_OLY + " \"\\Ade$|\\Afr$|\\Aru$|\\Aus$\" \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询再删除该目录中所有匹配的目录及其中所有文件。" + gl(2)
     + CMD + CMD_DEL_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询再删除该目录中所有匹配的空文件。" + gl(2)
     + CMD + CMD_DEL_DIR_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询再删除该目录中所有匹配的空文件和空目录。" + gl(2)
     + CMD + CMD_DEL_DIR_OLY_NUL + " . \"F:/games/FINAL FANTASY XV\"" + gl(1) + "先查询再删除该目录中所有匹配的空目录。" + gl(2)
-    + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。" + gl(2)
-    + CMD + CMD_ITCHG_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
-    + CMD + CMD_ITCHG_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。" + gl(2)
-    + CMD + CMD_UPGRADE + " \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
-    + CMD + CMD_UGD_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。" + gl(2)
-    + CMD + CMD_ZIP_DEF + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
-    + CMD + CMD_ZIP_DIR_DEF + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings" + EXT_ZIP + " 文件中。" + gl(2)
-    + CMD + CMD_ZIP_INF + " (?i)`.zip`$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。" + gl(2)
-    + CMD + CMD_PAK_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
-    + CMD + CMD_PAK_DIR_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge" + EXT_PAK + " 文件中。" + gl(2)
-    + CMD + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
+    + CMD + CMD_MOVE + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Strings”目录中所有匹配文件移动到“.../备份”目录中。" + gl(2)
+    + CMD + CMD_MOV_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件移动到“.../备份”目录中。" + gl(2)
+    + CMD + CMD_MOV_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配的目录及其中所有文件移动到“.../备份”目录中。" + gl(2)
+    + CMD + CMD_ITCHG_UGD + " . \"F:/games/Resident Evil 4/修改/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/备份/BIO4\"" + gl(1) + "先查询获得“F:/games/Resident Evil 4/修改/BIO4”目录中所有匹配文件，检查这些文件在“F:/games/Resident Evil 4/BIO4”目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将“F:/games/Resident Evil 4/BIO4”目录中匹配的文件移动到“F:/games/Resident Evil 4/备份/BIO4”目录中，再将该文件移动到“F:/games/Resident Evil 4/BIO4”目录中。" + gl(2)
+    + CMD + CMD_ITCHG_RST + " . \"F:/games/Resident Evil 4/备份/BIO4\" \"F:/games/Resident Evil 4/BIO4\" \"F:/games/Resident Evil 4/修改/BIO4\"" + gl(1) + "先查询获得“F:/games/Resident Evil 4/备份/BIO4”目录中所有匹配文件，检查这些文件在“F:/games/Resident Evil 4/BIO4”目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将“F:/games/Resident Evil 4/BIO4”目录中匹配的文件移动到“F:/games/Resident Evil 4/修改/BIO4”目录中，再将该文件移动到“F:/games/Resident Evil 4/BIO4”目录中。" + gl(2)
+    + CMD + CMD_UPGRADE + " \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询再将“F:/games/FINAL FANTASY XV”目录中所有匹配文件更新到“F:/迅雷下载/FINAL FANTASY XV”中，若存在同名文件则先将该文件备份到“F:/备份”目录中，再更新之。" + gl(2)
+    + CMD + CMD_UGD_DIR + " \\Adatas$ \"F:/games/FINAL FANTASY XV\" \"F:/迅雷下载/FINAL FANTASY XV\" \"F:/备份\"" + gl(1) + "先查询再将“F:/games/FINAL FANTASY XV”目录中所有匹配文件和目录及其中所有文件更新到“F:/迅雷下载/FINAL FANTASY XV”中，若存在同名文件则先将该文件备份到“F:/备份”目录中，再更新之。" + gl(2)
+    + CMD + CMD_ZIP_DEF + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将“.../Strings”目录中所有匹配文件按压缩级别1压缩到“.../备份/strings" + EXT_ZIP + "”文件中。" + gl(2)
+    + CMD + CMD_ZIP_DIR_DEF + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\" strings 1" + gl(1) + "先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到“.../备份/strings" + EXT_ZIP + "”文件中。" + gl(2)
+    + CMD + CMD_ZIP_INF + " (?i)`.zip`$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将“.../备份”目录中所有匹配文件解压缩到“.../Data”目录中。" + gl(2)
+    + CMD + CMD_ZIP_INF_DIR + " (?i)`.zip`$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将“.../备份”目录中所有匹配文件解压缩到“ .../Data/压缩文件名”（不包含扩展名）目录中。" + gl(2)
+    + CMD + CMD_ZIP_INF_MD5 + " (?i)`.zip`$ \"F:/games/Fallout 4/备份\" \"F:/games/Fallout 4/Data\"" + gl(1) + "先查询再将“.../备份”目录中所有匹配文件解压缩到“.../Data/压缩文件名.md5码”目录中。" + gl(2)
+    + CMD + CMD_PAK_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将“.../修改/Merge/Data”目录中所有匹配文件打包到“.../Mods/Merge/Data/merge" + EXT_PAK + "”文件中。" + gl(2)
+    + CMD + CMD_PAK_DIR_DEF + " . \"F:/games/KingdomComeDeliverance/修改/Merge/Data\" \"F:/games/KingdomComeDeliverance/Mods/Merge/Data\" merge 1" + gl(1) + "先查询再将“.../修改/Merge/Data”目录中所有匹配文件和目录及其中所有文件打包到“.../Mods/Merge/Data/merge" + EXT_PAK + "”文件中。" + gl(2)
+    + CMD + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
+    + CMD + CMD_PAK_INF_DIR + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“ .../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名”（不包含扩展名）中。" + gl(2)   
+    + CMD + CMD_PAK_INF_MD5 + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。" + gl(2)   
     + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
     + CMD + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)

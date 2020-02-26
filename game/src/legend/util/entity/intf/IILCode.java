@@ -10,7 +10,7 @@ public interface IILCode extends IFileUtil{
     int SIZE_IL_PARTITION = 10000;
     int SIZE_IL_PARTITION_MIN = 100;
     String SPRT_LINE_NUMBER = "-";
-    String REG_LINE_NUMBER = "([1-9]\\d*)(" + SPRT_LINE_NUMBER + "([1-9]\\d*))?";
+    String REG_LINE_NUMBER = "(" + REG_NUM_NATURAL + ")(" + SPRT_LINE_NUMBER + "(" + REG_NUM_NATURAL + "))?";
     String N_IL_CONF = EXT_IL + "编码文件的配置文件";
     String ST_FILE_IL_MISMATCH = "IL配置文件与IL源文件内容不匹配！";
     String ST_FILE_IL_CONF = V_GNRT + N_IL_CONF + S_DQM + CONF_FILE_IL + S_DQM + S_BANG;

@@ -13,7 +13,7 @@ import static legend.util.FileUtil.nonEmptyDir;
 import static legend.util.FileUtil.writeFile;
 import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
-import static legend.util.MD5Util.getMD5L16;
+import static legend.util.MD5Util.getMD5L32;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.getDateTime;
@@ -168,16 +168,16 @@ public final class Main implements IMain,IFileUtil{
                 case KCD_MOD_MRG_U:
                 break;
                 default:
-                CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+                CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
         }catch(Exception e){
-            CS.showError(ERR_EXEC_CMD,new String[]{e.toString()});
+            CS.checkError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
     }
 
     private static void loadKcd(){
         if(nonEmpty(kcd)) return;
-        CS.showError(ERR_KCD_NON,(String[])null,()->!kcdPath.toFile().isFile());
+        CS.checkError(ERR_KCD_NON,(String[])null,()->!kcdPath.toFile().isFile());
         kcd = convertToObject(kcdPath,Kcd.class);
         config = kcd.getConfig();
         gamePath = get(config.getGamePath());
@@ -193,9 +193,9 @@ public final class Main implements IMain,IFileUtil{
         uniqueMap = kcd.getUniqueMap();
         mergeMap = kcd.getMergeMap();
         conflictMap = kcd.getConflictMap();
-        CS.showError(ERR_KCD_NUL_CFG,(String[])null,()->!config.trim().validate());
-        CS.showError(ERR_KCD_MOD_PATH,(String[])null,()->!existsPath(modPath));
-        CS.showError(ERR_KCD_NUL_MOD,(String[])null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
+        CS.checkError(ERR_KCD_NUL_CFG,(String[])null,()->!config.trim().validate());
+        CS.checkError(ERR_KCD_MOD_PATH,(String[])null,()->!existsPath(modPath));
+        CS.checkError(ERR_KCD_NUL_MOD,(String[])null,()->mods.parallelStream().anyMatch(mod->!mod.trim().validate()));
     }
 
     private static void saveKcd(){
@@ -270,7 +270,7 @@ public final class Main implements IMain,IFileUtil{
             kcd.clearCache();
             return;
         }
-        CS.showError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
+        CS.checkError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
         srcParam.setCmd(CMD_DELETE);
         srcParam.setPattern(compile(REG_MOD_NOT_PAK));
         paths.parallelStream().forEach(p->{
@@ -361,7 +361,7 @@ public final class Main implements IMain,IFileUtil{
         int size = uniques.size();
         uniques.parallelStream().forEach(mapping->{
             Path path = getModPath(mapping);
-            mapping.setMd5(getMD5L16(path));
+            mapping.setMd5(getMD5L32(path));
             copyFile(path,getMergePath(mapping));
             progress.update(progress.countUpdate(size,1),0.95f);
         });
@@ -374,7 +374,7 @@ public final class Main implements IMain,IFileUtil{
         dealFiles(destParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         IValue<Boolean> find = new SingleValue<>(false);
@@ -424,7 +424,7 @@ public final class Main implements IMain,IFileUtil{
             });
             progress.update(1,PROGRESS_SCALE);
         });
-        CS.showError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
     }
 
     private static void compareLocalization(IProgress progress){
@@ -432,7 +432,7 @@ public final class Main implements IMain,IFileUtil{
         dealFiles(destParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         ConcurrentMap<BasicFileAttributes,Path> dests = destParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs) || isEmpty(dests));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Optional<String> optional = Optional.of(srcParam.getOpt());
         IValue<Boolean> find = new SingleValue<>(false);
@@ -484,13 +484,13 @@ public final class Main implements IMain,IFileUtil{
             });
             progress.update(1,PROGRESS_SCALE);
         });
-        CS.showError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->!find.getValue());
     }
 
     private static void debugLocalization(IProgress progress){
         dealFiles(srcParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
@@ -509,7 +509,7 @@ public final class Main implements IMain,IFileUtil{
     private static void releaseLocalization(IProgress progress){
         dealFiles(srcParam);
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
-        CS.showError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
+        CS.checkError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
         progress.reset(srcs.size(),PROGRESS_POSITION);
         Pattern pattern = Pattern.compile(REG_RELEASE);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
@@ -603,7 +603,7 @@ public final class Main implements IMain,IFileUtil{
     private static void dealConflict(IProgress progress, float scale){
         if(mergeMap.isEmpty()) return;
         String mergeExecutablePath = config.getMergeExecutablePath();
-        CS.showError(ERR_EXEC_FILE_MERGE,new String[]{ERR_KDIFF3_EXEC_NON},()->!existsPath(get(mergeExecutablePath)));
+        CS.checkError(ERR_EXEC_FILE_MERGE,new String[]{ERR_KDIFF3_EXEC_NON},()->!existsPath(get(mergeExecutablePath)));
         if(!merges.isEmpty()) mergeSet = kcd.refreshMergeSet(merges);
         int size = mergeMap.values().size();
         mergeMap.values().stream().forEach(merge->{
@@ -621,10 +621,10 @@ public final class Main implements IMain,IFileUtil{
                 String[] md5 = new String[]{"",""};
                 for(int i = 0,j = 0,l = mappings.size();i < l;j = i++){
                     if(existsPath(path)){
-                        md5[0] = getMD5L16(path);
+                        md5[0] = getMD5L32(path);
                         if(1 == (l - i) % 2) exec(gsph(EXEC_KDIFF_F2,mergeExecutablePath,getModPath(mappings.get(i)).toString(),path.toString(),path.toString()),ERR_EXEC_FILE_MERGE);
                         else exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,getModPath(mappings.get(i)).toString(),getModPath(mappings.get(++i)).toString(),path.toString(),path.toString()),ERR_EXEC_FILE_MERGE);
-                        md5[1] = getMD5L16(path);
+                        md5[1] = getMD5L32(path);
                         if(md5[0].equals(md5[1])){
                             i = j;
                             continue;
@@ -670,7 +670,7 @@ public final class Main implements IMain,IFileUtil{
         Mapping mapping = new Mapping();
         mapping.setMod(path.getName(0).toString());
         mapping.setPath(path.getName(0).relativize(path).toString().toLowerCase());
-        mapping.setMd5(getMD5L16(modPath.resolve(path)));
+        mapping.setMd5(getMD5L32(modPath.resolve(path)));
         return mapping;
     }
 

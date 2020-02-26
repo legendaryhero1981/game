@@ -31,7 +31,7 @@ public final class Main implements IMain{
             legend.game.poe2.Main.main(s);
             break;
             default:
-            CS.showError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
     }
 }

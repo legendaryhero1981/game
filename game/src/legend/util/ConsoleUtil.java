@@ -39,7 +39,7 @@ public final class ConsoleUtil implements IConsoleUtil{
             if(waitFor) Runtime.getRuntime().exec(cmd).waitFor();
             else Runtime.getRuntime().exec(cmd);
         }catch(InterruptedException | IOException e){
-            CS.showError(error,new String[]{e.toString()});
+            CS.checkError(error,new String[]{e.toString()});
         }
     }
 
@@ -50,22 +50,22 @@ public final class ConsoleUtil implements IConsoleUtil{
         }
     }
 
-    public void showError(String error, String[] args, BooleanSupplier... suppliers){
-        if(showException(error,args,suppliers)) exit(0);
+    public void checkError(String error, String[] args, BooleanSupplier... suppliers){
+        if(checkException(error,args,suppliers)) exit(0);
     }
 
-    public void showError(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
-        if(showException(error,args,suppliers)) exit(0);
+    public void checkError(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
+        if(checkException(error,args,suppliers)) exit(0);
     }
 
-    public boolean showException(String error, String[] args, BooleanSupplier... suppliers){
+    public boolean checkException(String error, String[] args, BooleanSupplier... suppliers){
         if(meetCondition(suppliers)){
             sl(gsph(error,args));
             return true;
         }else return false;
     }
 
-    public boolean showException(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
+    public boolean checkException(String error, List<Supplier<String>> args, BooleanSupplier... suppliers){
         if(meetCondition(suppliers)){
             sl(gsph(error,args));
             return true;

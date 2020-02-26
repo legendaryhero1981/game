@@ -27,6 +27,7 @@ import static legend.util.MD5Util.getMD5L8;
 import static legend.util.MD5Util.getMD5U16;
 import static legend.util.MD5Util.getMD5U32;
 import static legend.util.MD5Util.getMD5U8;
+import static legend.util.StringUtil.getFileNameWithoutSuffix;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.countDuration;
@@ -113,7 +114,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         dealFiles(args);
     }
 
-    public static void dealFiles(List<FileParam> fileParams){
+    public static void dealFiles(Collection<FileParam> fileParams){
         fileParams.stream().forEach(param->{
             param.refreshConditions(CACHE);
             FP = param;
@@ -263,7 +264,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 zipFiles(param);
                 break;
                 case CMD_ZIP_INF:
+                case CMD_ZIP_INF_DIR:
+                case CMD_ZIP_INF_MD5:
                 case CMD_PAK_INF:
+                case CMD_PAK_INF_DIR:
+                case CMD_PAK_INF_MD5:
                 unzipFiles(param);
                 break;
                 case CMD_7ZIP:
@@ -301,7 +306,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             }
             param.saveCache(CACHE);
         }catch(Exception e){
-            CS.sl(gsph(ERR_EXEC_CMD,e.toString()));
+            CS.sl(gsph(ERR_EXEC_CMD_SPEC,param.toString(),e.toString()));
+            e.printStackTrace();
         }finally{
             param.getDetailOptional().ifPresent(s->CS.l(1));
         }
@@ -483,8 +489,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         if(nonEmpty(files)) pathCaches.addAll(concat(dirs,files).collect(toList()));
         else pathCaches.addAll(dirs.collect(toList()));
         param.getDetailOptional().ifPresent(c->pathCaches.stream().forEach(p->CS.sl(p.toString())));
-        param.getCmdOptional().ifPresent(c->writeFile(param.getDestPath(),pathCaches.stream().map(p->p.toString()).collect(toList())));
-        param.getDetailOptional().ifPresent(c->CS.l(1).sl(V_WRITE + N_FILE + gs(4) + param.getDestPath()));
+        if(nonEmpty(param.getDestPath())){
+            param.getCmdOptional().ifPresent(c->writeFile(param.getDestPath(),pathCaches.stream().map(p->p.toString()).collect(toList())));
+            param.getDetailOptional().ifPresent(c->CS.l(1).sl(V_WRITE + N_FILE + gs(4) + param.getDestPath()));
+        }
     }
 
     private static void findSortedFileSizes(FileParam param){
@@ -839,7 +847,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void zipFiles(FileParam param){
         Path path = param.getDestPath().resolve(param.getZipName());
-        CS.showError(ERR_ZIP_FLE_CRT,new String[]{path.toString(),gsph(ERR_ZIP_FILE_SAME,path.toString())},()->param.getPathMap().containsValue(path));
+        CS.checkError(ERR_ZIP_FLE_CRT,new String[]{path.toString(),gsph(ERR_ZIP_FILE_SAME,path.toString())},()->param.getPathMap().containsValue(path));
         param.getCmdOptional().ifPresent(c->createZipFile(param));
         param.getDirCaches().stream().sorted(new PathListComparator(true)).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_CPRS + N_DIR_NUL + gs(2) + p));
@@ -855,22 +863,29 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void unzipFiles(FileParam param){
         final boolean unzip = param.meetCondition(ZIP_UNZIP);
-        param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
+        final boolean unzipDir = param.meetCondition(ZIP_UNZIP_DIR);
+        final boolean unzipMd5 = param.meetCondition(ZIP_UNZIP_MD5);
+        param.getPathMap().entrySet().stream().flatMap(e->of(e.getValue())).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
             IValue<ZipEntry> value = new SingleValue<>(null);
             File file = p.toFile();
             try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
-                CS.showError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
+                if(!unzipDir) CS.checkError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) return false;
                     if(unzip) return p.equals(param.getDestPath().resolve(entry.getName()));
                     else return p.equals(p.getParent().resolve(entry.getName()));
                 }));
-                int size = zipFile.size();
+                final int size = zipFile.size();
                 for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
                     ZipEntry entry = value.getValue();
                     IValue<Path> dest = new SingleValue<>(null);
-                    if(unzip) dest.setValue(param.getDestPath().resolve(entry.getName()));
-                    else dest.setValue(p.getParent().resolve(entry.getName()));
+                    Path path = null;
+                    if(unzip) path = param.getDestPath();
+                    else path = p.getParent();
+                    if(!unzipDir) path = path.resolve(entry.getName());
+                    else if(unzipMd5) path = path.resolve(p.getFileName() + REG_ANY + getMD5L32(p) + SPRT_FILE + entry.getName());
+                    else path = path.resolve(getFileNameWithoutSuffix(p.toString()) + SPRT_FILE + entry.getName());
+                    dest.setValue(path);
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
                         param.getDirsCount().incrementAndGet();
                         param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_DIR_NUL + gs(2) + dest));

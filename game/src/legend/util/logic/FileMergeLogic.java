@@ -4,10 +4,9 @@ import static java.nio.file.Paths.get;
 import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.exec;
-import static legend.util.FileUtil.dealFiles;
 import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.JaxbUtil.convertToXml;
-import static legend.util.MD5Util.getMD5L16;
+import static legend.util.MD5Util.getMD5L32;
 import static legend.util.StringUtil.gsph;
 import static legend.util.param.FileParam.convertParam;
 
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import legend.util.FileUtil;
 import legend.util.entity.FileMerge;
 import legend.util.entity.Merge;
 import legend.util.entity.intf.IFileMerge;
@@ -32,8 +32,8 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
     @Override
     public void execute(Path path){
         FileMerge fileMerge = convertToObject(path,FileMerge.class);
-        CS.showError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileMerge.getErrorInfo()),()->!fileMerge.trim().validate());
-        String pathMd5 = getMD5L16(fileMerge.getPath() + fileMerge.getPath2() + fileMerge.getPath3());
+        CS.checkError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileMerge.getErrorInfo()),()->!fileMerge.trim().validate());
+        String pathMd5 = getMD5L32(fileMerge.getPath() + fileMerge.getPath2() + fileMerge.getPath3());
         if(!pathMd5.equals(fileMerge.getPathMd5())) fileMerge.refreshMerges();
         fileMerge.setPathMd5(pathMd5);
         FileParam fp = new FileParam();
@@ -44,7 +44,7 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
         FileParam fp2 = fp.cloneValue(), fp3 = fp.cloneValue();
         fp2.setSrcPath(get(fileMerge.getPath2()));
         fp3.setSrcPath(get(fileMerge.getPath3()));
-        asList(fp,fp2,fp3).parallelStream().forEach(p->dealFiles(p));
+        asList(fp,fp2,fp3).parallelStream().forEach(FileUtil::dealFiles);
         final Path root = fp.getRootPath(), root2 = fp2.getRootPath(), root3 = fp3.getRootPath();
         Set<Path> pathSet = new HashSet<>(fp.getPathCaches());
         Set<Path> pathSet2 = new HashSet<>(fp2.getPathCaches());
@@ -53,10 +53,10 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
         ConcurrentMap<String,Merge> mergeMap = fileMerge.refreshMergeMap();
         pathSet.parallelStream().forEach(p->{
             if(!pathSet2.contains(p) || !pathSet3.contains(p)) return;
-            String md2 = getMD5L16(root2.resolve(p));
-            String md3 = getMD5L16(root3.resolve(p));
+            String md2 = getMD5L32(root2.resolve(p));
+            String md3 = getMD5L32(root3.resolve(p));
             if(md2.equals(md3)) return;
-            String md1 = getMD5L16(md2 + md3);
+            String md1 = getMD5L32(md2 + md3);
             String p1 = p.toString(), key = p1.toLowerCase();
             Merge merge1 = new Merge();
             merge1.setPath(p1);
@@ -77,9 +77,9 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
             String ps = p.toString();
             String ps2 = root2.resolve(m.getPath()).toString();
             String ps3 = root3.resolve(m.getPath()).toString();
-            String md5 = getMD5L16(p);
+            String md5 = getMD5L32(p);
             exec(gsph(EXEC_KDIFF_F3,mergeExecutablePath,ps,ps2,ps3,ps),ERR_EXEC_FILE_MERGE);
-            if(md5.equals(getMD5L16(p))) mergeMap.remove(m.getPath().toLowerCase());
+            if(md5.equals(getMD5L32(p))) mergeMap.remove(m.getPath().toLowerCase());
             param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(amount,1,scale),PROGRESS_SCALE));
         });
         fileMerge.refreshMerges();

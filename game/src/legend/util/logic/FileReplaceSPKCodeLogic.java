@@ -36,12 +36,12 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
     @Override
     public void execute(Path path){
         FileSPK fileSPK = convertToObject(path,FileSPK.class);
-        CS.showError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileSPK.getErrorInfo()),()->!fileSPK.trim().validate());
+        CS.checkError(ERR_FLE_ANLS,asList(()->path.toString(),()->fileSPK.getErrorInfo()),()->!fileSPK.trim().validate());
         fileSPK.getCodes().parallelStream().forEach(spkCode->{
             try(FileParam fp = new FileParam()){
                 Path stcPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_STC);
                 Path spkPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK);
-                CS.showError(ERR_SPK_NON,new String[]{stcPath.toString(),spkPath.toString()},()->!existsPath(stcPath) || !existsPath(spkPath));
+                CS.checkError(ERR_SPK_NON,new String[]{stcPath.toString(),spkPath.toString()},()->!existsPath(stcPath) || !existsPath(spkPath));
                 // 正则查询所有匹配的已修改文件
                 fp.setCmd(CMD_FIND);
                 fp.setPattern(compile(spkCode.getQueryRegex()));
