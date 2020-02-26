@@ -22,7 +22,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 输入 game 可以看到命令帮助信息如下：
 
 作者：李允
-版本：V5.4
+版本：V5.5
 
 
 参数说明：
@@ -200,22 +200,22 @@ file -fddf[~+*!@?] regex src dest [limit] [level]
 file -fdodf[~+*!@?] regex src dest [limit] [level]
 根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。
 
-file -fpa[~+*!@?] regex src [limit] [level]
+file -fpa[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。
 
-file -fpr[~+*!@?] regex src [limit] [level]
+file -fpr[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。
 
-file -fpda[~+*!@?] regex src dest [limit] [level]
+file -fpda[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。
 
-file -fpdr[~+*!@?] regex src dest [limit] [level]
+file -fpdr[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的相对路径名并将查询结果写入到文件dest。
 
-file -fpdoa[~+*!@?] regex src [limit] [level]
+file -fpdoa[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的目录（同-fdo），显示目录的绝对路径名并将查询结果写入到文件dest。
 
-file -fpdor[~+*!@?] regex src [limit] [level]
+file -fpdor[~+*!@?] regex src [dest] [limit] [level]
 根据regex查找src中的目录（同-fdo），显示目录的相对路径名并将查询结果写入到文件dest。
 
 file -fsa[~+*!@?] regex src [sizeExpr] [limit] [level]
@@ -351,22 +351,34 @@ file -ud[~+*!@?] regex src dest backup [level]
 根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。
 
 file -zd[~+*!@?] regex src dest zipName [zipLevel] [level]
-根据regex将src中所有匹配文件压缩到dest/zipName.zip文件中。
+根据regex将src中所有匹配文件压缩到“dest/zipName.zip”文件中。
 
 file -zdd[~+*!@?] regex src dest zipName [zipLevel] [level]
 根据regex将src中所有匹配文件和目录及其中所有文件压缩到dest/zipName.zip文件中。
 
 file -zi[~+*!@?] regex src dest [level]
-根据regex将src中所有匹配文件解压缩到dest中。
+根据regex将src中所有匹配的压缩文件解压缩到dest中。
+
+file -zidir[~+*!@?] regex src dest [level]
+根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名”（不包含扩展名）。
+
+file -zimd5[~+*!@?] regex src dest [level]
+根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名.md5码”。
 
 file -pd[~+*!@?] regex src dest zipName [zipLevel] [level]
-根据regex将src中所有匹配文件打包到dest/zipName.pak文件中。
+根据regex将src中所有匹配文件打包到“dest/zipName.pak”文件中。
 
 file -pdd[~+*!@?] regex src dest zipName [zipLevel] [level]
-根据regex将src中所有匹配文件和目录及其中所有文件打包到dest/zipName.pak文件中。
+根据regex将src中所有匹配文件和目录及其中所有文件打包到“dest/zipName.pak”文件中。
 
 file -pi[~+*!@?] regex src [level]
-根据regex将src中所有匹配文件解包到该文件所在目录中。
+根据regex将src中所有匹配的压缩文件解包到该文件所在目录中。
+
+file -pidir[~+*!@?] regex src [level]
+根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名”（不包含扩展名）。
+
+file -pimd5[~+*!@?] regex src [level]
+根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。
 
 file -7zip[~+*!@?] regex src [level]
 根据regex将src中所有匹配的配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。
@@ -414,28 +426,28 @@ file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
 查询该目录中的第一级目录。
 
 file -fs+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名文件。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名文件。
 
 file -fsmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
-查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容相同的同名文件。
+查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容相同的同名文件。
 
 file -fds+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录和文件。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录和文件。
 
 file -fdos+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中存在的同名目录。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录。
 
 file -fdf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的文件。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的文件。
 
 file -fdfmd5+ (?i)\.param$ "D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd" "G:/games/DSParamEditor/gameparam-parambnd"
-查询 D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd 目录中的所有文件；且只选取在 G:/games/DSParamEditor/gameparam-parambnd 目录的同一相对路径中存在且文件内容不同的同名文件。
+查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容不同的同名文件。
 
 file -fddf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录和文件。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录和文件。
 
 file -fdodf+ . "F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data" "D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data"
-查询 F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录中的所有文件；且只选取在 D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data 目录的同一相对路径中不存在的目录。
+查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录。
 
 file -fpa+ . "F:/games/DARK SOULS REMASTERED" file-list.txt 20
 查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录，并将查询结果写入到文件file-list.txt。
@@ -529,13 +541,13 @@ file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_)
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,"如果两个值相等，则将控制转移到目标指令（短格式）。","");”。
 
 file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm
-根据配置文件./file-il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
+根据配置文件./file-il.xml自动替换“E:/Decompile/DLL-ildasm”目录中所有文件扩展名为.il的文件内容。
 
 file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm E:/Decompile/DLL-ildasm/il.xml
-根据配置文件il.xml自动替换E:/Decompile/DLL-ildasm目录中所有文件扩展名为.il的文件内容。
+根据配置文件il.xml自动替换“E:/Decompile/DLL-ildasm”目录中所有文件扩展名为.il的文件内容。
 
 file -rfsn* (?i)\A`JetBrains.Platform.Shell.dll`$ E:/Decompile/ReSharper C:/Users/liyun/AppData/Local/JetBrains/Installations 2
-先查询获得 .../ReSharper 目录中所有匹配文件，再使用这些文件替换 .../Installations 目录及其第一层子目录中的所有同名文件。
+先查询获得“.../ReSharper”目录中所有匹配文件，再使用这些文件替换“.../Installations”目录及其第一层子目录中的所有同名文件。
 
 file -rfmeg* (?i)`file-merge.xml`$ . 1
 先查询获得当前目录中（不包含子目录）文件名以file-merge.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成三方文件内容的整合。
@@ -544,22 +556,22 @@ file -rfspk* (?i)`file-spk.xml`$ . 1
 先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成.spk文件和其相对应的同名.stc文件的修改。
 
 file -rfgbk* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_schinese.txt
-提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件 .../font_schinese.txt。
+提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以UTF-16LE编码格式保存到文件“.../font_schinese.txt”。
 
 file -rfbig5* (?i)`.json`$ "E:/Decompile/Code/IL/Pathfinder Kingmaker" D:/games/font_tchinese.txt
-提取 .../Pathfinder Kingmaker 目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件 .../font_tchinese.txt。
+提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以UTF-16LE编码格式保存到文件“.../font_tchinese.txt”。
 
 file -rfcs* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk
-先查询再将E:/Decompile/DLL-ildasm目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
+先查询再将“E:/Decompile/DLL-ildasm”目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。
 
 file -c (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询再将 .../Strings 目录中所有匹配文件复制到 .../备份 目录中。
+先查询再将“.../Strings”目录中所有匹配文件复制到“.../备份”目录中。
 
 file -cd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件复制到 .../备份 目录中。
+先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件复制到“.../备份”目录中。
 
 file -cdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询再将 .../Data 目录中所有匹配的目录及其中所有文件复制到 .../备份 目录中。
+先查询再将“.../Data”目录中所有匹配的目录及其中所有文件复制到“.../备份”目录中。
 
 file -d (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 先查询再删除该目录中所有匹配文件。
@@ -580,43 +592,55 @@ file -ddon . "F:/games/FINAL FANTASY XV"
 先查询再删除该目录中所有匹配的空目录。
 
 file -m (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份"
-先查询再将 .../Strings 目录中所有匹配文件移动到 .../备份 目录中。
+先查询再将“.../Strings”目录中所有匹配文件移动到“.../备份”目录中。
 
 file -md (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件移动到 .../备份 目录中。
+先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件移动到“.../备份”目录中。
 
 file -mdo (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份"
-先查询再将 .../Data 目录中所有匹配的目录及其中所有文件移动到 .../备份 目录中。
+先查询再将“.../Data”目录中所有匹配的目录及其中所有文件移动到“.../备份”目录中。
 
 file -iu . "F:/games/Resident Evil 4/修改/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/备份/BIO4"
-先查询获得 F:/games/Resident Evil 4/修改/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/备份/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
+先查询获得“F:/games/Resident Evil 4/修改/BIO4”目录中所有匹配文件，检查这些文件在“F:/games/Resident Evil 4/BIO4”目录中是否能找到文件名称是以该文件名称为前缀的文件，若存在则先将“F:/games/Resident Evil 4/BIO4”目录中匹配的文件移动到“F:/games/Resident Evil 4/备份/BIO4”目录中，再将该文件移动到“F:/games/Resident Evil 4/BIO4”目录中。
 
 file -ir . "F:/games/Resident Evil 4/备份/BIO4" "F:/games/Resident Evil 4/BIO4" "F:/games/Resident Evil 4/修改/BIO4"
-先查询获得 F:/games/Resident Evil 4/备份/BIO4 目录中所有匹配文件，检查这些文件在 F:/games/Resident Evil 4/BIO4 目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将 F:/games/Resident Evil 4/BIO4 目录中匹配的文件移动到 F:/games/Resident Evil 4/修改/BIO4 目录中，再将该文件移动到 F:/games/Resident Evil 4/BIO4 目录中。
+先查询获得“F:/games/Resident Evil 4/备份/BIO4”目录中所有匹配文件，检查这些文件在“F:/games/Resident Evil 4/BIO4”目录中是否能找到文件名称是该文件名称的前缀的文件，若存在则先将“F:/games/Resident Evil 4/BIO4”目录中匹配的文件移动到“F:/games/Resident Evil 4/修改/BIO4”目录中，再将该文件移动到“F:/games/Resident Evil 4/BIO4”目录中。
 
 file -u "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
+先查询再将“F:/games/FINAL FANTASY XV”目录中所有匹配文件更新到“F:/迅雷下载/FINAL FANTASY XV”中，若存在同名文件则先将该文件备份到“F:/备份”目录中，再更新之。
 
 file -ud \Adatas$ "F:/games/FINAL FANTASY XV" "F:/迅雷下载/FINAL FANTASY XV" "F:/备份"
-先查询再将 F:/games/FINAL FANTASY XV 目录中所有匹配文件和目录及其中所有文件更新到 F:/迅雷下载/FINAL FANTASY XV 中，若存在同名文件则先将该文件备份到 F:/备份 目录中，再更新之。
+先查询再将“F:/games/FINAL FANTASY XV”目录中所有匹配文件和目录及其中所有文件更新到“F:/迅雷下载/FINAL FANTASY XV”中，若存在同名文件则先将该文件备份到“F:/备份”目录中，再更新之。
 
 file -zd (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings" "F:/games/Fallout 4/备份" strings 1
-先查询再将 .../Strings 目录中所有匹配文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
+先查询再将“.../Strings”目录中所有匹配文件按压缩级别1压缩到“.../备份/strings.zip”文件中。
 
 file -zdd (?i).{0,2}strings$ "F:/games/Fallout 4/Data" "F:/games/Fallout 4/备份" strings 1
-先查询再将 .../Data 目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到 .../备份/strings.zip 文件中。
+先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件按压缩级别1压缩到“.../备份/strings.zip”文件中。
 
 file -zi (?i)`.zip`$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
-先查询再将 .../备份 目录中所有匹配文件解压缩到 .../Data 目录中。
+先查询再将“.../备份”目录中所有匹配文件解压缩到“.../Data”目录中。
+
+file -zidir (?i)`.zip`$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
+先查询再将“.../备份”目录中所有匹配文件解压缩到“ .../Data/压缩文件名”（不包含扩展名）目录中。
+
+file -zimd5 (?i)`.zip`$ "F:/games/Fallout 4/备份" "F:/games/Fallout 4/Data"
+先查询再将“.../备份”目录中所有匹配文件解压缩到“.../Data/压缩文件名.md5码”目录中。
 
 file -pd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
-先查询再将 .../修改/Merge/Data 目录中所有匹配文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
+先查询再将“.../修改/Merge/Data”目录中所有匹配文件打包到“.../Mods/Merge/Data/merge.pak”文件中。
 
 file -pdd . "F:/games/KingdomComeDeliverance/修改/Merge/Data" "F:/games/KingdomComeDeliverance/Mods/Merge/Data" merge 1
-先查询再将 .../修改/Merge/Data 目录中所有匹配文件和目录及其中所有文件打包到 .../Mods/Merge/Data/merge.pak 文件中。
+先查询再将“.../修改/Merge/Data”目录中所有匹配文件和目录及其中所有文件打包到“.../Mods/Merge/Data/merge.pak”文件中。
 
 file -pi (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
-先查询再将 .../Mods 目录中所有匹配文件解包到该文件所在目录中。
+先查询再将“.../Mods”目录中所有匹配文件解包到该文件所在目录中。
+
+file -pidir (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
+先查询再将“ .../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名”（不包含扩展名）中。
+
+file -pimd5 (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
+先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。
 
 file -7zip+ (?i)`file-7zip.xml`$ . 1
 先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。
