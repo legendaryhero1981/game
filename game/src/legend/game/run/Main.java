@@ -139,7 +139,7 @@ public final class Main implements IMain{
             // 根据ID获得需要被终止的游戏
             loadAndValidate();
             // 执行终止游戏进程的VBS主脚本文件
-            runVbsScript(false,t->script.append(glph(CMD_VBS_GAME_KILL,1,game.getExe())));
+            runVbsScript(false,t->script.append(glph(CMD_VBS_GAME_KILL,game.getExe())));
         }catch(IOException e){
             CS.checkError(ERR_CREATE_FILE,new String[]{e.toString()});
         }catch(Exception e){
@@ -154,7 +154,7 @@ public final class Main implements IMain{
         // 执行脚本批量生成游戏快捷方式
         try{
             runVbsScript(true,t->{
-                script.append(gl(CMD_VBS_SC_INIT,1));
+                script.append(gl(CMD_VBS_SC_INIT));
                 games.stream().forEach(g->cacheLinkScript(g));
             });
             sleep(SLEEP_TIME);
@@ -169,7 +169,7 @@ public final class Main implements IMain{
         try{
             loadAndValidate();
             runVbsScript(true,t->{
-                script.append(gl(CMD_VBS_SC_INIT,1));
+                script.append(gl(CMD_VBS_SC_INIT));
                 cacheLinkScript(game);
             });
             sleep(SLEEP_TIME);
@@ -239,14 +239,14 @@ public final class Main implements IMain{
     }
 
     private static void cacheLinkScript(Game game){
-        script.append(glph(CMD_VBS_SC_CRT,1,game.getName()));
-        script.append(glph(CMD_VBS_SC_ARG,1,game.getId()));
-        script.append(glph(CMD_VBS_SC_IL,1,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + EXT_EXE));
-        script.append(glph(CMD_VBS_SC_DESC,1,game.getComment()));
-        script.append(glph(CMD_VBS_SC_WD,1,game.getPath()));
-        script.append(gl(CMD_VBS_SC_TP,1));
-        script.append(gl(CMD_VBS_SC_WS,1));
-        script.append(gl(CMD_VBS_SC_SAVE,1));
+        script.append(glph(CMD_VBS_SC_CRT,game.getName()));
+        script.append(glph(CMD_VBS_SC_ARG,game.getId()));
+        script.append(glph(CMD_VBS_SC_IL,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + EXT_EXE));
+        script.append(glph(CMD_VBS_SC_DESC,game.getComment()));
+        script.append(glph(CMD_VBS_SC_WD,game.getPath()));
+        script.append(gl(CMD_VBS_SC_TP));
+        script.append(gl(CMD_VBS_SC_WS));
+        script.append(gl(CMD_VBS_SC_SAVE));
     }
 
     private static void runVbsScript(boolean waitFor, Consumer<Object> consumer) throws Exception{
@@ -257,15 +257,15 @@ public final class Main implements IMain{
     }
 
     private static void writeMainScript(){
-        if(nonEmpty(caches[1])) script.append(glph(CMD_VBS_RUN,1,caches[1])).append(glph(CMD_VBS_RUN_DEL,1,caches[1])).append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getBeforeWait())));
+        if(nonEmpty(caches[1])) script.append(glph(CMD_VBS_RUN,caches[1])).append(glph(CMD_VBS_RUN_DEL,caches[1])).append(glph(CMD_VBS_SLEEP,countWaitTime(game.getBeforeWait())));
         Matcher matcher = compile(REG_PATH_NAME).matcher(game.getAgentExecutablePath());
-        if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,1,matcher.group(1),matcher.group(2),game.getAgentArgs()));
-        else script.append(glph(CMD_VBS_RUN_GAME,1,game.getPath(),game.getExe(),game.getArgs()));
-        if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_GAME_PRIORITY,1,game.getExe(),game.getPriority()));
-        if(nonEmpty(caches[2])) script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,1,caches[2])).append(glph(CMD_VBS_RUN_DEL,1,caches[2]));
+        if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
+        else script.append(glph(CMD_VBS_RUN_GAME,game.getPath(),game.getExe(),game.getArgs()));
+        if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));
+        if(nonEmpty(caches[2])) script.append(glph(CMD_VBS_SLEEP,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,caches[2])).append(glph(CMD_VBS_RUN_DEL,caches[2]));
         // BAT脚本方式实现进程监控
         // if(nonEmpty(caches[3]))
-        // script.append(glph(CMD_VBS_SLEEP,1,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN,1,caches[3])).append(glph(CMD_VBS_RUN_DEL,1,caches[3]));
+        // script.append(glph(CMD_VBS_SLEEP,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN,caches[3])).append(glph(CMD_VBS_RUN_DEL,caches[3]));
         // VBS脚本方式实现进程监控
         if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){
             StringBuilder names = new StringBuilder(), paths = new StringBuilder();
@@ -274,7 +274,7 @@ public final class Main implements IMain{
                 if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_CMD);
                 else names.append(watch + SPRT_CMD);
             });
-            script.append(glph(CMD_VBS_GAME_WATCH,1,countWaitTime(game.getWatchWait()),game.getExe(),names.toString(),paths.toString()));
+            script.append(glph(CMD_VBS_GAME_WATCH,countWaitTime(game.getWatchWait()),game.getExe(),names.toString(),paths.toString()));
         }
     }
 
@@ -304,9 +304,9 @@ public final class Main implements IMain{
     private static void writeScript(String[] cmds, int index) throws IOException{
         if(nonEmpty(cmds[0])){
             File batFile = createTempFile(FILE_PREFIX,EXT_BAT);
-            script.append(gl(CMD_BAT_CHCP_UTF8,1));
+            script.append(gl(CMD_BAT_CHCP_UTF8));
             for(String cmd : cmds)
-                script.append(gl(cmd.trim(),1));
+                script.append(gl(cmd.trim()));
             caches[index] = batFile.getCanonicalPath();
             caches[caches.length - 1] = script.toString();
             CS.sl(caches[index]).sl(caches[caches.length - 1]);
@@ -324,11 +324,11 @@ public final class Main implements IMain{
     private static void createVbsFile() throws IOException{
         vbsFile = createTempFile(FILE_PREFIX,EXT_VBS);
         caches[0] = vbsFile.getCanonicalPath();
-        script.append(gl(CMD_VBS_SH_INIT,1));
+        script.append(gl(CMD_VBS_SH_INIT));
     }
 
     private static void writeVbsFile() throws IOException{
-        script.append(glph(CMD_VBS_RUN_DEL,1,caches[0]));
+        script.append(glph(CMD_VBS_RUN_DEL,caches[0]));
         caches[caches.length - 1] = script.toString();
         CS.sl(caches[0]).sl(caches[caches.length - 1]);
         write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(vbsFile),CHARSET_GBK)),caches[caches.length - 1]);

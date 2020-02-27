@@ -28,6 +28,8 @@ import static legend.util.MD5Util.getMD5U16;
 import static legend.util.MD5Util.getMD5U32;
 import static legend.util.MD5Util.getMD5U8;
 import static legend.util.StringUtil.getFileNameWithoutSuffix;
+import static legend.util.StringUtil.gl;
+import static legend.util.StringUtil.glph;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
 import static legend.util.TimeUtil.countDuration;
@@ -865,16 +867,19 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         final boolean unzip = param.meetCondition(ZIP_UNZIP);
         final boolean unzipDir = param.meetCondition(ZIP_UNZIP_DIR);
         final boolean unzipMd5 = param.meetCondition(ZIP_UNZIP_MD5);
-        param.getPathMap().entrySet().stream().flatMap(e->of(e.getValue())).forEach(p->{
-            param.getDetailOptional().ifPresent(c->CS.s(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS).l(2));
-            IValue<ZipEntry> value = new SingleValue<>(null);
-            File file = p.toFile();
+        param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
+            final StringBuilder builder = new StringBuilder(gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS,2));
+            final IValue<Boolean> check = new SingleValue<>(true);
+            final IValue<ZipEntry> value = new SingleValue<>(null);
+            final File file = p.toFile();
             try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
-                if(!unzipDir) CS.checkError(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
-                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) return false;
-                    if(unzip) return p.equals(param.getDestPath().resolve(entry.getName()));
-                    else return p.equals(p.getParent().resolve(entry.getName()));
+                if(!unzipDir) CS.checkException(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
+                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) check.setValue(true);
+                    if(unzip) check.setValue(p.equals(param.getDestPath().resolve(entry.getName())));
+                    else check.setValue(p.equals(p.getParent().resolve(entry.getName())));
+                    return check.getValue();
                 }));
+                if(!check.getValue()) return;
                 final int size = zipFile.size();
                 for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
                     ZipEntry entry = value.getValue();
@@ -888,7 +893,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     dest.setValue(path);
                     if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
                         param.getDirsCount().incrementAndGet();
-                        param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_DIR_NUL + gs(2) + dest));
+                        builder.append(gl(V_EXTR + N_DIR_NUL + gs(2) + dest));
                         param.getCmdOptional().ifPresent(c->dest.getValue().toFile().mkdirs());
                     }else{
                         param.getFilesCount().incrementAndGet();
@@ -898,19 +903,21 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                                 dest.getValue().toFile().setWritable(true,true);
                                 if(nonEmpty(inputStream)) copy(inputStream,dest.getValue(),StandardCopyOption.REPLACE_EXISTING);
                             }catch(Exception ex){
-                                CS.sl(gsph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
+                                builder.append(glph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
                             }
                         });
                         zipInputStream.closeEntry();
-                        if(0 == entry.getSize()) param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_FILE_NUL + gs(2) + dest));
-                        else param.getDetailOptional().ifPresent(c->CS.sl(V_EXTR + N_FILE + gs(4) + dest));
+                        if(0 == entry.getSize()) builder.append(gl(V_EXTR + N_FILE_NUL + gs(2) + dest));
+                        else builder.append(gl(V_EXTR + N_FILE + gs(4) + dest));
                     }
                     param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(size,1),PROGRESS_SCALE));
                 }
             }catch(Exception ex){
-                CS.sl(gsph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString()));
+                param.getProgressOptional().ifPresent(c->builder.append(glph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString())));
+            }finally{
+                builder.append(gl(1) + gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_DONE + S_PERIOD));
+                param.getDetailOptional().ifPresent(c->CS.sl(builder.toString()));
             }
-            param.getDetailOptional().ifPresent(c->CS.l(1).s(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_DONE + S_PERIOD).l(2));
         });
     }
 

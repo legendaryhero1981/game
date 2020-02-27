@@ -20,10 +20,12 @@ import javax.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IZip7;
 
 @XmlRootElement(name = "Zip7Task")
-@XmlType(propOrder = {"queryRegex","queryPath","listFilePath","mode","filePath","unzipMode","password","compression","volumeSize","sfxModule","moreArgs"})
+@XmlType(propOrder = {"queryRegex","queryLevel","queryPath","listFilePath","mode","filePath","unzipMode","password","compression","volumeSize","sfxModule","moreArgs"})
 public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlElement
     private String queryRegex = REG_ANY;
+    @XmlElement
+    private String queryLevel = S_EMPTY;
     @XmlElement
     private String queryPath = S_EMPTY;
     @XmlElement
@@ -45,7 +47,11 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlElement
     private String moreArgs = S_EMPTY;
     @XmlTransient
+    private int level = Integer.MAX_VALUE;
+    @XmlTransient
     protected Deque<String> cmd = new ArrayDeque<>();
+    @XmlTransient
+    protected static final Pattern levelPattern;
     @XmlTransient
     protected static final Pattern modePattern;
     @XmlTransient
@@ -55,6 +61,7 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlTransient
     protected static final Pattern volumePattern;
     static{
+        levelPattern = compile(REG_NUM_NATURAL);
         modePattern = compile(REG_ZIP7_MODE);
         unzipModePattern = compile(REG_ZIP7_MODE_UNZIP);
         compPattern = compile(REG_ZIP7_COMP);
@@ -82,7 +89,10 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
             errorInfo = ERR_ZIP7_TASK_NON;
             return false;
         }
-        Matcher matcher = modePattern.matcher(mode);
+        Matcher matcher = levelPattern.matcher(queryLevel);
+        if(isEmpty(queryLevel) || !matcher.matches()) level = Integer.MAX_VALUE;
+        else level = Integer.valueOf(queryLevel);
+        matcher = modePattern.matcher(mode);
         if(!matcher.matches() || MODE_ZIP.equals(mode)) mode = ZIP7_ARG_ZIP;
         else mode = ZIP7_ARG_UNZIP;
         matcher = unzipModePattern.matcher(unzipMode);
@@ -136,5 +146,9 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
 
     public String getMoreArgs(){
         return moreArgs;
+    }
+
+    public int getLevel(){
+        return level;
     }
 }

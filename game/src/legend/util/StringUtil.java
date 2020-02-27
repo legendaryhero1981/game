@@ -204,6 +204,10 @@ public final class StringUtil implements IStringUtil{
         return rph(s,ph,repl,1);
     }
 
+    public static String gl(String s){
+        return gl(s,1);
+    }
+
     public static String gl(String s, int n){
         String r = nonEmpty(s) ? s : S_EMPTY;
         for(int i = 0;i < n;i++)
@@ -237,11 +241,19 @@ public final class StringUtil implements IStringUtil{
         return gs(ss,S_SPACE);
     }
 
+    public static String glph(String s, String... ph){
+        return glph(s,1,ph);
+    }
+
     public static String glph(String s, int n, String... ph){
         String r = gl(s,n);
         if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++)
             r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
         return r;
+    }
+
+    public static String glph(String s, List<Supplier<String>> suppliers){
+        return glph(s,1,suppliers);
     }
 
     public static String glph(String s, int n, List<Supplier<String>> suppliers){

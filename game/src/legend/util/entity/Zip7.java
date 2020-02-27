@@ -76,6 +76,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             fp.setPattern(compile(convertParam(t.getQueryRegex(),true)));
             fp.setSrcPath(get(t.getQueryPath()));
             fp.setDestPath(get(t.getListFilePath()));
+            fp.setLevel(t.getLevel());
             dealFiles(fp);
             t.cmd.addFirst(zip7ExecutablePath);
             if(isZipMode) cmds.add(t.cmd.toArray(new String[t.cmd.size()]));
@@ -88,7 +89,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
                     else if(MODE_UNZIP_DIR.equals(name)) name = getFileNameWithoutSuffix(p.toString());
                     else name = S_EMPTY;
                     cmd.add(ZIP7_ARG_OUT + get(t.getFilePath()).resolve(name));
-                    caches.add(name + gs(4) + p.toString());
+                    caches.add(S_EMPTY.equals(name) ? p.toString() : name + gs(4) + p.toString());
                     cmd.add(p.toString());
                     cmd.add(t.getMoreArgs());
                     cmds.add(cmd.toArray(new String[cmd.size()]));

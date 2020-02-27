@@ -122,7 +122,6 @@ public interface ICommon extends Cloneable{
     String V_IS = "是";
     String V_TO = " 到 ";
     String V_BY = " 为 ";
-    String OPT_NONE = S_EMPTY;
     String OPT_INSIDE = "~";
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";

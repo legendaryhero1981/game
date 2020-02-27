@@ -73,7 +73,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private int cacheDirsCount;
 
     public FileParam(){
-        zipName = replacement = sizeExpr = cmd = opt = OPT_NONE;
+        zipName = replacement = sizeExpr = cmd = opt = S_EMPTY;
         split = REG_SPRT_COL;
         minSize = 0l;
         maxSize = Long.MAX_VALUE;
