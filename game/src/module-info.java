@@ -1,8 +1,7 @@
 open module legend{
-    requires java.xml;
-    requires java.xml.bind;
+    requires transitive java.xml.bind;
     requires static org.junit.jupiter.api;
-
+    
     exports legend;
     exports legend.game.dos2;
     exports legend.game.dos2.entity;

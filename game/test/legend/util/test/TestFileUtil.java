@@ -17,6 +17,7 @@ public class TestFileUtil extends TestBase{
     @Override
     public void monkParam(){
         String s = "";
+//        s = "-ddo*  `2.3.3-b02`$  E:/Java/apache-maven-3.6.3/repository/org/glassfish/jaxb";
         s = "-7zip+  `file-7zip.xml`$  .  1";
 //        s = "-zimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  D:/360安全浏览器下载/7zip/unzip  1";
 //        s = "-pimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  1";

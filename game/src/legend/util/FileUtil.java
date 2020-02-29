@@ -1075,8 +1075,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         public boolean test(Path p, BasicFileAttributes a){
             boolean find = false;
             if(a.isRegularFile()){
-                if(matchDirOnly) return false;
-                find = ignoreRegex ? ignoreRegex : param.getPattern().matcher(p.getFileName().toString()).find();
+                if(matchDirOnly && !(find = matchPath(p))) return false;
+                find = find || ignoreRegex ? true : param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_DEL_NUL:
                     case CMD_DEL_DIR_NUL:
@@ -1090,15 +1090,29 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 if(matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
                 find = ignoreRegex ? ignoreRegex : param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
+                    case CMD_FND_DIR:
+                    case CMD_FND_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_SIZ_DSC:
                     case CMD_FND_DIR_SAM:
                     case CMD_FND_DIR_DIF:
                     case CMD_FND_DIR_OLY_SAM:
                     case CMD_FND_DIR_OLY_DIF:
-                    if(find = find || matchPath(p)){
-                        param.getPathMap().put(a,p);
-                        param.getPathDeque().push(p);
-                    }
-                    break;
+                    case CMD_FND_PTH_DIR_ABS:
+                    case CMD_FND_PTH_DIR_RLT:
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
+                    case CMD_CPY_DIR:
+                    case CMD_CPY_DIR_OLY:
+                    case CMD_DEL_DIR:
+                    case CMD_DEL_DIR_OLY:
+                    case CMD_DEL_DIR_NUL:
+                    case CMD_DEL_DIR_OLY_NUL:
+                    case CMD_MOV_DIR:
+                    case CMD_MOV_DIR_OLY:
+                    case CMD_UGD_DIR:
+                    case CMD_ZIP_DIR_DEF:
+                    case CMD_PAK_DIR_DEF:
+                    if(find = find || matchPath(p)) param.getPathDeque().push(p);
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_DIR_OLY_SIZ_ASC:
                     case CMD_FND_DIR_OLY_SIZ_DSC:
@@ -1115,30 +1129,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find){
                         param.getPathMap().put(a,p);
                         param.getDirCaches().add(p);
-                    }
-                    break;
-                    case CMD_FND_DIR:
-                    case CMD_FND_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_SIZ_DSC:
-                    case CMD_FND_PTH_DIR_ABS:
-                    case CMD_FND_PTH_DIR_RLT:
-                    case CMD_FND_DIR_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_DIR_SIZ_DSC:
-                    case CMD_CPY_DIR:
-                    case CMD_CPY_DIR_OLY:
-                    case CMD_DEL_DIR:
-                    case CMD_DEL_DIR_OLY:
-                    case CMD_DEL_DIR_NUL:
-                    case CMD_DEL_DIR_OLY_NUL:
-                    case CMD_MOV_DIR:
-                    case CMD_MOV_DIR_OLY:
-                    case CMD_UGD_DIR:
-                    case CMD_ZIP_DIR_DEF:
-                    case CMD_PAK_DIR_DEF:
-                    if(find = find || matchPath(p)){
-                        param.getPathMap().put(a,p);
-                        param.getDirCaches().add(p);
-                        param.getPathDeque().push(p);
                     }
                 }
             }
