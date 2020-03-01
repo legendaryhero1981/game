@@ -58,25 +58,24 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 String[] filePaths = new String(stcCache,deviation,stcCache.length - deviation - 1,CHARSET_UTF8).split(SPC_NUL);
                 MetaData[] metaDatas = new MetaData[filePaths.length];
                 fp.getPathMap().entrySet().parallelStream().forEach(e->{
-                    for(int i = 0,offset,size;i < filePaths.length;i++)
-                        if(e.getValue().endsWith(get(filePaths[i]))){
-                            MetaData metaData = new SPKHeader.MetaData();
-                            offset = stcHeader.getSizeData().getSize() + i * stcBody.getSizeData().getSize();
-                            size = (int)e.getKey().size();
-                            metaData.setOffset(offset);
-                            metaData.setSize(size);
-                            size -= stcBuffer.getInt(offset + stcBody.getFileSizeData().getOffset() - 1);
-                            if(0 != size){
-                                stcBuffer.putInt(offset + stcBody.getFileSizeData().getOffset() - 1,metaData.getSize());
-                                metaData.setDeviation(size);
-                                if(0 > size) metaData.setNulbytes(fillBytes(0,-size));
-                            }
-                            metaData.setPosition(stcBuffer.getInt(offset + stcBody.getFileStartPosData().getOffset() - 1));
-                            if(filePaths.length > i + 1) metaData.setNextPosition(stcBuffer.getInt(offset + stcBody.getSizeData().getSize() + stcBody.getFileStartPosData().getOffset() - 1));
-                            metaData.setBytes(readBinaryFormFile(e.getValue()));
-                            metaDatas[i] = metaData;
-                            return;
+                    for(int i = 0,offset,size;i < filePaths.length;i++) if(e.getValue().endsWith(get(filePaths[i]))){
+                        MetaData metaData = new SPKHeader.MetaData();
+                        offset = stcHeader.getSizeData().getSize() + i * stcBody.getSizeData().getSize();
+                        size = (int)e.getKey().size();
+                        metaData.setOffset(offset);
+                        metaData.setSize(size);
+                        size -= stcBuffer.getInt(offset + stcBody.getFileSizeData().getOffset() - 1);
+                        if(0 != size){
+                            stcBuffer.putInt(offset + stcBody.getFileSizeData().getOffset() - 1,metaData.getSize());
+                            metaData.setDeviation(size);
+                            if(0 > size) metaData.setNulbytes(fillBytes(0,-size));
                         }
+                        metaData.setPosition(stcBuffer.getInt(offset + stcBody.getFileStartPosData().getOffset() - 1));
+                        if(filePaths.length > i + 1) metaData.setNextPosition(stcBuffer.getInt(offset + stcBody.getSizeData().getSize() + stcBody.getFileStartPosData().getOffset() - 1));
+                        metaData.setBytes(readBinaryFormFile(e.getValue()));
+                        metaDatas[i] = metaData;
+                        return;
+                    }
                 });
                 writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
                 // 处理.spk编码文件
@@ -97,8 +96,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                     if(nonEmpty(metaDatas[i])){
                         k = spkBody.getFileSizeData().getOffset() - 1;
                         spkBuffer.put(spkOriginal,j,k);
-                        for(k += j,j = 0;j < spkBody.getFileSizeData().getSize();j++)
-                            spkBuffer.putInt(metaDatas[i].getSize());
+                        for(k += j,j = 0;j < spkBody.getFileSizeData().getSize();j++) spkBuffer.putInt(metaDatas[i].getSize());
                         j = k + 4 * j;
                         k = metaDatas[i].getPosition() - j;
                         if(isEmpty(metaData)) spkBuffer.put(spkOriginal,j,k);
@@ -124,8 +122,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                     if(nonEmpty(metaDatas[i])){
                         k = spkList.getFileSizeData().getOffset() - 1;
                         spkBuffer.put(spkOriginal,j,k);
-                        for(k += j,j = 0;j < spkList.getFileSizeData().getSize();j++)
-                            spkBuffer.putInt(metaDatas[i].getSize());
+                        for(k += j,j = 0;j < spkList.getFileSizeData().getSize();j++) spkBuffer.putInt(metaDatas[i].getSize());
                         j = k + 4 * j;
                     }
                     spkBuffer.put(spkOriginal,j,deviation - j);

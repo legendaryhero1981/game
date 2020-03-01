@@ -24,7 +24,7 @@ public interface IMain extends ICommon{
     String N_EXE = "对应的name或path或exe节点";
     String N_GAME_REPEAT = "id相同的game节点！";
     String N_GAME_INVALIDATE = "id或name或path或exe为空的game节点！";
-    String ST_REPEAT_ID = "找到重复的游戏ID：" + PH_ARG0;
+    String ST_REPEAT_ID = "找到重复的游戏ID：" + PH_ARGS0;
     String ST_CHOICE_ID = "请输入一个游戏ID（按回车键确认）：";
     String FILE_PREFIX = "run";
     String CMD_CREATE = "-c";
@@ -35,14 +35,14 @@ public interface IMain extends ICommon{
     String CMD_KILL = "-k";
     String CMD_LINK = "-l";
     String CMD_LINK_ALL = "-la";
-    String CMD_CS_RUN = "wscript \"" + PH_ARG0 + "\"";
+    String CMD_CS_RUN = "wscript \"" + PH_ARGS0 + "\"";
     String CMD_VBS_SH_INIT = "dim sh" + gl(1) + "set sh=WScript.CreateObject(\"WScript.Shell\")";
-    String CMD_VBS_SLEEP = "WScript.Sleep " + PH_ARG0;
-    String CMD_VBS_RUN = "sh.Run \"" + PH_ARG0 + "\",0,true";
-    String CMD_VBS_RUN_DEL = "sh.Run \"cmd /c del /q \"\"" + PH_ARG0 + "\"\">nul 2>nul\",0,true";
-    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + EXT_EXE + "\"\" " + PH_ARG2 + "\",0,true";
-    String CMD_VBS_RUN_AGENT = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARG0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARG1 + "\"\" " + PH_ARG2 + "\",0,true";
-    String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARG0 + EXT_EXE + "'\"\" call SetPriority " + PH_ARG1 + "\",0,true";
+    String CMD_VBS_SLEEP = "WScript.Sleep " + PH_ARGS0;
+    String CMD_VBS_RUN = "sh.Run \"" + PH_ARGS0 + "\",0,true";
+    String CMD_VBS_RUN_DEL = "sh.Run \"cmd /c del /q \"\"" + PH_ARGS0 + "\"\">nul 2>nul\",0,true";
+    String CMD_VBS_RUN_GAME = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARGS0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARGS1 + EXT_EXE + "\"\" " + PH_ARGS2 + "\",0,true";
+    String CMD_VBS_RUN_AGENT = "sh.Run \"cmd /c start /high /D \"\"" + PH_ARGS0 + "\"\" " + gs("\"",4) + " \"\"" + PH_ARGS1 + "\"\" " + PH_ARGS2 + "\",0,true";
+    String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARGS0 + EXT_EXE + "'\"\" call SetPriority " + PH_ARGS1 + "\",0,true";
     String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
     String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
     + "dim processes,target" + gl(1)
@@ -57,19 +57,19 @@ public interface IMain extends ICommon{
     + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
     + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
     + "end if";
-    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG0 + EXT_EXE + "'\")";
+    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARGS0 + EXT_EXE + "'\")";
     String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
-    + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARG1;
+    + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARGS1;
     String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.ExecQuery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
     String CMD_VBS_GAME_KILL = CMD_VBS_WMI_INIT + gl(1)
-    + "wql=\"select * from win32_process where name='" + PH_ARG0 + EXT_EXE + "'\"" + gl(1)
+    + "wql=\"select * from win32_process where name='" + PH_ARGS0 + EXT_EXE + "'\"" + gl(1)
     + CMD_VBS_WATCH_TERMINATE;
-    String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARG0 + gl(1)
-    + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARG1 + EXT_EXE + "'\")" + gl(1)
+    String CMD_VBS_GAME_WATCH = "while games.Count>0" + gl(1) + "WScript.Sleep " + PH_ARGS0 + gl(1)
+    + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARGS1 + EXT_EXE + "'\")" + gl(1)
     + "Wend" + gl(1)
     + "dim names,paths,wql" + gl(1)
-    + "names=Split(\"" + PH_ARG2 + "\",\"" + SPRT_CMD + "\")" + gl(1)
-    + "paths=Split(\"" + PH_ARG3 + "\",\"" + SPRT_CMD + "\")" + gl(1)
+    + "names=Split(\"" + PH_ARGS2 + "\",\"" + SPRT_CMD + "\")" + gl(1)
+    + "paths=Split(\"" + PH_ARGS3 + "\",\"" + SPRT_CMD + "\")" + gl(1)
     + "if Ubound(names)>0 then" + gl(1)
     + "wql=\"select * from win32_process where name='\"&names(0)&\"'\"" + gl(1)
     + "for i=1 to Ubound(names)" + gl(1) + "wql=wql&\" or name='\"&names(i)&\"'\"" + gl(1) + "next" + gl(1)
@@ -81,38 +81,38 @@ public interface IMain extends ICommon{
     + CMD_VBS_WATCH_TERMINATE + gl(1)
     + "end if";
     String CMD_VBS_SC_INIT = CMD_VBS_PROC_RUN + gl(1) + "dim shortcut";
-    String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARG0 + EXT_LNK + "\")";
-    String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARG0 + "\"";
-    String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARG0 + SPRT_FILE + PH_ARG1 + ",0\"";
-    String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARG0 + "\"";
-    String CMD_VBS_SC_WD = "shortcut.WorkingDirectory=\"" + PH_ARG0 + "\"";
+    String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARGS0 + EXT_LNK + "\")";
+    String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARGS0 + "\"";
+    String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARGS0 + SPRT_FILE + PH_ARGS1 + ",0\"";
+    String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARGS0 + "\"";
+    String CMD_VBS_SC_WD = "shortcut.WorkingDirectory=\"" + PH_ARGS0 + "\"";
     String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
     String CMD_VBS_SC_WS = "shortcut.WindowStyle=7";
     String CMD_VBS_SC_SAVE = "shortcut.Save";
     String CMD_BAT_CHCP_UTF8 = "chcp 65001";
-    String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARG0 + "'\" delete";
-    String CMD_BAT_PROC_DEL_BY_PATH = "wmic process where \"executablepath='" + PH_ARG0 + "'\" delete";
+    String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARGS0 + "'\" delete";
+    String CMD_BAT_PROC_DEL_BY_PATH = "wmic process where \"executablepath='" + PH_ARGS0 + "'\" delete";
     String CMD_BAT_GAME_WATCH = CMD_BAT_CHCP_UTF8 + gl(1)
     + "setlocal enableextensions" + gl(1) + "setlocal enabledelayedexpansion" + gl(1)
     + ":watch" + gl(1)
     + "set pid=" + gl(1)
-    + "for /f \"usebackq skip=1\" %%i in (`wmic process where \"name='" + PH_ARG0 + "'\" get processid`) do if \"!pid!\"==\"\" set pid=%%i" + gl(1)
+    + "for /f \"usebackq skip=1\" %%i in (`wmic process where \"name='" + PH_ARGS0 + "'\" get processid`) do if \"!pid!\"==\"\" set pid=%%i" + gl(1)
     + "if not \"%pid%\"==\"\" (" + gl(1)
-    + "choice /c y /d y /t " + PH_ARG1 + " >nul 2>nul" + gl(1)
+    + "choice /c y /d y /t " + PH_ARGS1 + " >nul 2>nul" + gl(1)
     + "goto watch ) else (" + gl(1)
-    + PH_ARG2
+    + PH_ARGS2
     + "goto quit )" + gl(1)
     + ":quit" + gl(1)
     + "exit /b 0";
     String ERR_CONF_NON = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_NON_EXISTS;
     String ERR_CONF_NUL = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_BY_NUL;
     String ERR_CONF_REPEAT = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_EXISTS + N_GAME_REPEAT;
-    String ERR_ID_NON = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + V_NON_EXISTS;
-    String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + V_ARD_EXISTS;
-    String ERR_INVALIDATE = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
-    String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARG0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARG1 + S_DQM_R + N_EXE + V_BY_NUL;
-    String ERR_CREATE_FILE = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
-    String ERR_RUN_FILE = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARG0;
+    String ERR_ID_NON = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_NON_EXISTS;
+    String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_ARD_EXISTS;
+    String ERR_INVALIDATE = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
+    String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + N_EXE + V_BY_NUL;
+    String ERR_CREATE_FILE = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARGS0;
+    String ERR_RUN_FILE = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARGS0;
     String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"
     + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "Games::comment" + gs(14) + "游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。\n"

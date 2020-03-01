@@ -4,7 +4,8 @@ import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.getClassPath;
-import static legend.util.TimeUtil.getDurationString;
+import static legend.util.StringUtil.getFileNameWithSuffix;
+import static legend.util.StringUtil.getFileNameWithoutSuffix;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -22,31 +23,15 @@ import legend.util.test.model.GCDModel;
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-        // testClassPath();
-        // testAppPath();
-        CS.sl(getDurationString(t->testC2Error()));
+//        testClassPath();
+//        testAppPath();
+        testFileName();
     }
 
     // @Test
-    /**
-     * Oracle 的标准Java HotSpot VM的默认设置-XX:TieredStopAtLevel=4，
-     * 会导致后面打印出/而不是-1，而字符/是字符0的ascii码-1；
-     * 手动设置为0到3可以正常打印，取0最慢，取1最快。
-     * <p>
-     * 这是C2编译器处理int类型转字符类型的错误，自java8起一直未修复。
-     */
-    public void testC2Error(){
-        C2Error hello = new C2Error();
-        for(int i = 0;i < 50_000;i++)
-            hello.test();
-    }
-
-    private class C2Error{
-        public void test(){
-            int i = 8;
-            while((i -= 3) > 0);
-            CS.sl("i = " + i);
-        }
+    public void testFileName(){
+        String s = "d:/abc/1.2.3/javax.inject_1.0.0.v20091030.jar";
+        CS.sl(getFileNameWithSuffix(s)).sl(getFileNameWithoutSuffix(s));
     }
 
     // @Test
@@ -157,11 +142,9 @@ public class TestArithmetic implements ICommon{
         int n = matcher.group().charAt(0) - c, l = n, r = n;
         for(int i = 0,j;i <= n;i++,l--,r++){
             // 打印该层的空格字符串
-            for(j = 0;j < l;j++)
-                CS.s(1);
+            for(j = 0;j < l;j++) CS.s(1);
             // 打印该层的英文字符串
-            for(;j <= r;j++)
-                CS.s(String.valueOf((char)(c + i)));
+            for(;j <= r;j++) CS.s(String.valueOf((char)(c + i)));
             // 打印换行
             CS.l(1);
         }
@@ -190,6 +173,27 @@ public class TestArithmetic implements ICommon{
         model.gcd();
         // 打印计算结果
         CS.sl("最大公约数为：" + model.getMax() + "\n最小公倍数为：" + model.getMin());
+    }
+
+    // @Test
+    /**
+     * Oracle 的标准Java HotSpot VM的默认设置-XX:TieredStopAtLevel=4，
+     * 会导致后面打印出/而不是-1，而字符/是字符0的ascii码-1；
+     * 手动设置为0到3可以正常打印，取0最慢，取1最快。
+     * <p>
+     * 这是C2编译器处理int类型转字符类型的错误，自java8起一直未修复。
+     */
+    public void testC2Error(){
+        C2Error hello = new C2Error();
+        for(int i = 0;i < 50_000;i++) hello.test();
+    }
+
+    private class C2Error{
+        public void test(){
+            int i = 8;
+            while((i -= 3) > 0);
+            CS.sl("i = " + i);
+        }
     }
 
     // @Test

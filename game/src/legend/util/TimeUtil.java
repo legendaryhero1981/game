@@ -50,12 +50,16 @@ public final class TimeUtil implements ITimeUtil{
         LocalTime start = LocalTime.now();
         consumer.accept(null);
         LocalTime end = LocalTime.now();
-        time.set(start.until(end,ChronoUnit.MILLIS));
-        return getDurationString();
+        long duration = start.until(end,ChronoUnit.MILLIS);
+        time.set(duration);
+        return getDurationString(duration);
     }
 
     public static String getDurationString(){
-        long time = TimeUtil.time.get();
+        return getDurationString(time.get());
+    }
+
+    public static String getDurationString(long time){
         long hour = time / UNIT_MILLI / UNIT_SECOND / UNIT_MINUTE;
         long minute = time / UNIT_MILLI / UNIT_SECOND % UNIT_MINUTE;
         long second = time / UNIT_MILLI % UNIT_SECOND;
@@ -101,12 +105,16 @@ public final class TimeUtil implements ITimeUtil{
         LocalTime start = LocalTime.now();
         consumer.accept(null);
         LocalTime end = LocalTime.now();
-        totalTime.set(start.until(end,ChronoUnit.MILLIS));
-        return getTotalDurationString();
+        long duration = start.until(end,ChronoUnit.MILLIS);
+        totalTime.set(duration);
+        return getTotalDurationString(duration);
     }
 
     public static String getTotalDurationString(){
-        long totalTime = TimeUtil.totalTime.get();
+        return getTotalDurationString(totalTime.get());
+    }
+
+    public static String getTotalDurationString(long totalTime){
         long hour = totalTime / UNIT_MILLI / UNIT_SECOND / UNIT_MINUTE;
         long minute = totalTime / UNIT_MILLI / UNIT_SECOND % UNIT_MINUTE;
         long second = totalTime / UNIT_MILLI % UNIT_SECOND;

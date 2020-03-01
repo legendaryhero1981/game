@@ -24,7 +24,7 @@ public class CDataAdapter extends XmlAdapter<String,String> implements ICommon{
 
     @Override
     public String marshal(String s) throws Exception{
-        if(nonEmpty(s)) return StringUtil.rph(XML_CDATA,PH_ARG0,s);
+        if(nonEmpty(s)) return StringUtil.rph(XML_CDATA,PH_ARGS0,s);
         return s;
     }
 }

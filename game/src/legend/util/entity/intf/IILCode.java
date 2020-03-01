@@ -18,12 +18,12 @@ public interface IILCode extends IFileUtil{
     String ERR_QUERY_REGEX = "当ILCodes::mode为" + MODE_NATIVE + "且ILCode::processingMode非" + MODE_NATIVE + "时，ILCode::queryRegex不能为空！";
     String ERR_CODE_REGEX = "当ILCodes::mode为" + MODE_NATIVE + "且ILCode::processingMode为" + MODE_REPL + "时，ILCode::codeRegex不能为空且最多只能指定2个正则表达式！";
     String ERR_LINE_NUM_FORMAT = "ILCode::lineNumber为空或格式错误！";
-    String ERR_LINE_NUM_VAL_LESS = "ILCode::lineNumber=" + PH_ARG0 + "中的起始行号必须小于等于终止行号！";
-    String ERR_LINE_NUM_VAL_EQUAL = "ILCode::lineNumber=" + PH_ARG0 + "中的起始行号必须等于终止行号！";
-    String ERR_LINE_NUM_VAL_MIN = "ILCode::lineNumber=" + PH_ARG0 + "，行号最小值必须为1！";
-    String ERR_LINE_NUM_VAL_MAX = "ILCode::lineNumber=" + PH_ARG0 + "，行号最大值必须等于IL源文件中的最大行号" + PH_ARG1 + "！";
-    String ERR_LINE_NUM_ADJION_ADD = "当前ILCode::lineNumber=" + PH_ARG0 + "中的起始行号必须与上一个ILCode::lineNumber=" + PH_ARG1 + "中的终止行号相等！";
-    String ERR_LINE_NUM_ADJION_OTHER = "当前ILCode::lineNumber=" + PH_ARG0 + "中的起始行号必须与上一个ILCode::lineNumber=" + PH_ARG1 + "中的终止行号+1相等！";
+    String ERR_LINE_NUM_VAL_LESS = "ILCode::lineNumber=" + PH_ARGS0 + "中的起始行号必须小于等于终止行号！";
+    String ERR_LINE_NUM_VAL_EQUAL = "ILCode::lineNumber=" + PH_ARGS0 + "中的起始行号必须等于终止行号！";
+    String ERR_LINE_NUM_VAL_MIN = "ILCode::lineNumber=" + PH_ARGS0 + "，行号最小值必须为1！";
+    String ERR_LINE_NUM_VAL_MAX = "ILCode::lineNumber=" + PH_ARGS0 + "，行号最大值必须等于IL源文件中的最大行号" + PH_ARGS1 + "！";
+    String ERR_LINE_NUM_ADJION_ADD = "当前ILCode::lineNumber=" + PH_ARGS0 + "中的起始行号必须与上一个ILCode::lineNumber=" + PH_ARGS1 + "中的终止行号相等！";
+    String ERR_LINE_NUM_ADJION_OTHER = "当前ILCode::lineNumber=" + PH_ARGS0 + "中的起始行号必须与上一个ILCode::lineNumber=" + PH_ARGS1 + "中的终止行号+1相等！";
     String ILCODES_COMMENT = "\n" + gs(4) + "ILCodes配置集节点结构说明：\n"
     + gs(4) + "ILCodes节点由节点comment、mode、header、tail、partition和多个ILCode节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "ILCodes::comment" + gs(12) + "ILCodes配置集节点结构说明，对IL文件的修改无影响，仅此说明而已。\n"

@@ -29,8 +29,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
         }),entry(RULE_REGENROW,(rule, data)->{
             Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
             Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
-            final int size = atomsCache.size(), colSize = atomsCache.get(0).length,
-                            dataSize = data.length();
+            final int size = atomsCache.size(), colSize = atomsCache.get(0).length, dataSize = data.length();
             String[] results = new String[size];
             Matcher matcher = compile(REG_COL_REPL).matcher(data);
             if(!matcher.find()) for(int i = 0;i < results.length;results[i++] = data);

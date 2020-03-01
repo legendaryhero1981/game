@@ -71,15 +71,15 @@ public final class StringUtil implements IStringUtil{
         String result = S_EMPTY;
         Matcher matcher = PTRN_PATH_NAME.matcher(path);
         if(matcher.find()) result = matcher.group(2);
-        return isEmpty(result) ? S_EMPTY : path;
+        else result = path;
+        return isEmpty(result) ? S_EMPTY : result;
     }
 
     public static String getFileNameWithoutSuffix(String path){
-        String result = S_EMPTY;
-        Matcher matcher = PTRN_PATH_NAME.matcher(path);
-        if(matcher.find()) result = matcher.group(2);
-        else result = path;
-        return isEmpty(result) ? S_EMPTY : result.replaceFirst(REG_FILE_SUFFIX,S_EMPTY);
+        String result = getFileNameWithSuffix(path);
+        Matcher matcher = PTRN_FILE_NAME.matcher(result);
+        if(matcher.find()) result = matcher.group(1);
+        return result;
     }
 
     public static byte[] fillBytes(int n, int size){
@@ -88,8 +88,7 @@ public final class StringUtil implements IStringUtil{
 
     public static byte[] fillBytes(byte b, int size){
         byte[] bytes = new byte[size];
-        for(int i = 0;i < size;i++)
-            bytes[i] = b;
+        for(int i = 0;i < size;i++) bytes[i] = b;
         return bytes;
     }
 
@@ -143,8 +142,7 @@ public final class StringUtil implements IStringUtil{
     public static <T> String concat(T[] objects, String join){
         if(0 == objects.length) return S_EMPTY;
         String r = S_EMPTY;
-        for(int i = 0;i < objects.length - 1;i++)
-            r = r.concat(objects[i].toString()).concat(join);
+        for(int i = 0;i < objects.length - 1;i++) r = r.concat(objects[i].toString()).concat(join);
         return r.concat(objects[objects.length - 1].toString());
     }
 
@@ -163,8 +161,7 @@ public final class StringUtil implements IStringUtil{
     public static String concat(String[] s, String join){
         if(0 == s.length) return S_EMPTY;
         String r = S_EMPTY;
-        for(int i = 0;i < s.length - 1;i++)
-            r = r.concat(s[i]).concat(join);
+        for(int i = 0;i < s.length - 1;i++) r = r.concat(s[i]).concat(join);
         return r.concat(s[s.length - 1]);
     }
 
@@ -185,8 +182,7 @@ public final class StringUtil implements IStringUtil{
             String r = repl;
             String match = matcher.group(1);
             if(nonEmpty(match)){
-                for(int i = 1,n = Integer.valueOf(match);i < n;i++)
-                    r += repl;
+                for(int i = 1,n = Integer.valueOf(match);i < n;i++) r += repl;
             }
             matcher.appendReplacement(builder,r);
         }
@@ -195,8 +191,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String rph(String s, String ph, String repl, int n){
         String r = repl;
-        for(int i = 1;i < n;i++)
-            r += repl;
+        for(int i = 1;i < n;i++) r += repl;
         return s.replaceAll(ph,quoteReplacement(r));
     }
 
@@ -210,8 +205,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String gl(String s, int n){
         String r = nonEmpty(s) ? s : S_EMPTY;
-        for(int i = 0;i < n;i++)
-            r += SPRT_LINE;
+        for(int i = 0;i < n;i++) r += SPRT_LINE;
         return r;
     }
 
@@ -221,8 +215,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String gs(String s, int n){
         String r = S_EMPTY;
-        if(nonEmpty(s)) for(int i = 0;i < n;i++)
-            r += s;
+        if(nonEmpty(s)) for(int i = 0;i < n;i++) r += s;
         return r;
     }
 
@@ -232,8 +225,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String gs(String[] ss, String sprt){
         String r = S_EMPTY;
-        for(String s : ss)
-            r += s + sprt;
+        for(String s : ss) r += s + sprt;
         return r.isEmpty() ? r : r.substring(0,r.length() - sprt.length());
     }
 
@@ -247,8 +239,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String glph(String s, int n, String... ph){
         String r = gl(s,n);
-        if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++)
-            r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
+        if(nonEmpty(ph)) for(int i = 0;i < ph.length;i++) r = r.replaceAll(gph(i),quoteReplacement(ph[i]));
         return r;
     }
 
@@ -258,8 +249,7 @@ public final class StringUtil implements IStringUtil{
 
     public static String glph(String s, int n, List<Supplier<String>> suppliers){
         String r = gl(s,n);
-        if(nonEmpty(suppliers)) for(int i = 0;i < suppliers.size();i++)
-            r = r.replaceAll(gph(i),quoteReplacement(suppliers.get(i).get()));
+        if(nonEmpty(suppliers)) for(int i = 0;i < suppliers.size();i++) r = r.replaceAll(gph(i),quoteReplacement(suppliers.get(i).get()));
         return r;
     }
 
@@ -272,6 +262,6 @@ public final class StringUtil implements IStringUtil{
     }
 
     public static String gph(int n){
-        return PLACE_HOLDER + String.valueOf(n) + PLACE_HOLDER;
+        return PH_ARGS + String.valueOf(n) + PH_ARGS;
     }
 }

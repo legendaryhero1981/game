@@ -373,7 +373,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static void writeFileWithUTF8Bom(Path path, String data){
-        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF8))){
+        try(OutputStream outputStream = newOutputStream(path);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF8))){
             outputStream.write(BOM_UTF8);
             bufferedWriter.write(data);
         }catch(IOException e){
@@ -382,7 +383,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static void writeFileWithUTF16LEBom(Path path, String data){
-        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16LE))){
+        try(OutputStream outputStream = newOutputStream(path);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16LE))){
             outputStream.write(BOM_UTF16LE);
             bufferedWriter.write(data);
         }catch(IOException e){
@@ -391,7 +393,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static void writeFileWithUTF16BEBom(Path path, String data){
-        try(OutputStream outputStream = newOutputStream(path);BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16BE))){
+        try(OutputStream outputStream = newOutputStream(path);
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,CHARSET_UTF16BE))){
             outputStream.write(BOM_UTF16BE);
             bufferedWriter.write(data);
         }catch(IOException e){
@@ -625,8 +628,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }else{
             Set<String> caches = new HashSet<>();
             char[] ca = buffer.toString().toCharArray();
-            for(int i = 0;i < ca.length;i++)
-                caches.add(ca[i] + S_EMPTY);
+            for(int i = 0;i < ca.length;i++) caches.add(ca[i] + S_EMPTY);
             buffer.delete(0,buffer.length());
             caches.parallelStream().forEach(cache->buffer.append(cache));
         }
@@ -652,8 +654,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }else{
             Set<String> caches = new HashSet<>();
             char[] ca = buffer.toString().toCharArray();
-            for(int i = 0;i < ca.length;i++)
-                caches.add(ca[i] + S_EMPTY);
+            for(int i = 0;i < ca.length;i++) caches.add(ca[i] + S_EMPTY);
             buffer.delete(0,buffer.length());
             caches.parallelStream().forEach(cache->buffer.append(cache));
         }
@@ -872,52 +873,54 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             final IValue<Boolean> check = new SingleValue<>(true);
             final IValue<ZipEntry> value = new SingleValue<>(null);
             final File file = p.toFile();
-            try(ZipFile zipFile = new ZipFile(file);ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
-                if(!unzipDir) CS.checkException(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
-                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) check.setValue(true);
-                    if(unzip) check.setValue(p.equals(param.getDestPath().resolve(entry.getName())));
-                    else check.setValue(p.equals(p.getParent().resolve(entry.getName())));
-                    return check.getValue();
-                }));
-                if(!check.getValue()) return;
-                final int size = zipFile.size();
-                for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
-                    ZipEntry entry = value.getValue();
-                    IValue<Path> dest = new SingleValue<>(null);
-                    Path path = null;
-                    if(unzip) path = param.getDestPath();
-                    else path = p.getParent();
-                    if(!unzipDir) path = path.resolve(entry.getName());
-                    else if(unzipMd5) path = path.resolve(p.getFileName() + REG_ANY + getMD5L32(p) + SPRT_FILE + entry.getName());
-                    else path = path.resolve(getFileNameWithoutSuffix(p.toString()) + SPRT_FILE + entry.getName());
-                    dest.setValue(path);
-                    if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
-                        param.getDirsCount().incrementAndGet();
-                        builder.append(gl(V_EXTR + N_DIR_NUL + gs(2) + dest));
-                        param.getCmdOptional().ifPresent(c->dest.getValue().toFile().mkdirs());
-                    }else{
-                        param.getFilesCount().incrementAndGet();
-                        param.getCmdOptional().ifPresent(c->{
-                            try(InputStream inputStream = zipFile.getInputStream(entry)){
-                                dest.getValue().getParent().toFile().mkdirs();
-                                dest.getValue().toFile().setWritable(true,true);
-                                if(nonEmpty(inputStream)) copy(inputStream,dest.getValue(),StandardCopyOption.REPLACE_EXISTING);
-                            }catch(Exception ex){
-                                builder.append(glph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
-                            }
-                        });
-                        zipInputStream.closeEntry();
-                        if(0 == entry.getSize()) builder.append(gl(V_EXTR + N_FILE_NUL + gs(2) + dest));
-                        else builder.append(gl(V_EXTR + N_FILE + gs(4) + dest));
+            final String duration = getDurationString(t->{
+                try(ZipFile zipFile = new ZipFile(file);
+                    ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
+                    if(!unzipDir) CS.checkException(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
+                        if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) check.setValue(true);
+                        if(unzip) check.setValue(p.equals(param.getDestPath().resolve(entry.getName())));
+                        else check.setValue(p.equals(p.getParent().resolve(entry.getName())));
+                        return check.getValue();
+                    }));
+                    if(!check.getValue()) return;
+                    final int size = zipFile.size();
+                    for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
+                        ZipEntry entry = value.getValue();
+                        IValue<Path> dest = new SingleValue<>(null);
+                        Path path = null;
+                        if(unzip) path = param.getDestPath();
+                        else path = p.getParent();
+                        if(!unzipDir) path = path.resolve(entry.getName());
+                        else if(unzipMd5) path = path.resolve(p.getFileName() + REG_ANY + getMD5L32(p) + SPRT_FILE + entry.getName());
+                        else path = path.resolve(getFileNameWithoutSuffix(p.toString()) + SPRT_FILE + entry.getName());
+                        dest.setValue(path);
+                        if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)){
+                            param.getDirsCount().incrementAndGet();
+                            builder.append(gl(V_EXTR + N_DIR_NUL + gs(2) + dest));
+                            param.getCmdOptional().ifPresent(c->dest.getValue().toFile().mkdirs());
+                        }else{
+                            param.getFilesCount().incrementAndGet();
+                            param.getCmdOptional().ifPresent(c->{
+                                try(InputStream inputStream = zipFile.getInputStream(entry)){
+                                    dest.getValue().getParent().toFile().mkdirs();
+                                    dest.getValue().toFile().setWritable(true,true);
+                                    if(nonEmpty(inputStream)) copy(inputStream,dest.getValue(),StandardCopyOption.REPLACE_EXISTING);
+                                }catch(Exception ex){
+                                    builder.append(glph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
+                                }
+                            });
+                            zipInputStream.closeEntry();
+                            if(0 == entry.getSize()) builder.append(gl(V_EXTR + N_FILE_NUL + gs(2) + dest));
+                            else builder.append(gl(V_EXTR + N_FILE + gs(4) + dest));
+                        }
+                        param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(size,1),PROGRESS_SCALE));
                     }
-                    param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(size,1),PROGRESS_SCALE));
+                }catch(Exception ex){
+                    param.getProgressOptional().ifPresent(c->builder.append(glph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString())));
                 }
-            }catch(Exception ex){
-                param.getProgressOptional().ifPresent(c->builder.append(glph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString())));
-            }finally{
-                builder.append(gl(1) + gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_DONE + S_PERIOD));
-                param.getDetailOptional().ifPresent(c->CS.sl(builder.toString()));
-            }
+            });
+            builder.append(gl(1) + gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_DONE + S_PERIOD + N_TIME + S_COLON + duration + S_PERIOD));
+            param.getDetailOptional().ifPresent(c->CS.sl(builder.toString()));
         });
     }
 
@@ -1139,11 +1142,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
         private boolean matchPath(Path path){
             BlockingDeque<Path> deque = param.getPathDeque();
-            for(Path p = deque.poll();nonEmpty(p);p = deque.poll())
-                if(path.startsWith(p)){
-                    deque.push(p);
-                    return true;
-                }
+            for(Path p = deque.poll();nonEmpty(p);p = deque.poll()) if(path.startsWith(p)){
+                deque.push(p);
+                return true;
+            }
             return false;
         }
     }

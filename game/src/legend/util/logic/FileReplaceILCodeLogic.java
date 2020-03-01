@@ -41,8 +41,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
             final int partitionSize = ilCodes.getPartitionSize();
             final int r = (dataSize - headerSize - tailSize) % partitionSize;
             List<Integer> partitions = new ArrayList<>();
-            for(int i = partitionSize + headerSize + r - 1;i < dataSize - tailSize;i += partitionSize)
-                partitions.add(i);
+            for(int i = partitionSize + headerSize + r - 1;i < dataSize - tailSize;i += partitionSize) partitions.add(i);
             if(1 < r) partitions.add(headerSize + r - 1);
             List<ILCode> codes = new ArrayList<>();
             Collection<ILCode> caches = new ConcurrentLinkedQueue<>(ilCodes.getCodes().stream().filter(c->!MODE_NATIVE.equals(c.getProcessingMode())).collect(toList()));
@@ -64,11 +63,10 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
                     j += l;
                     if(MODE_REPL.equals(code.getProcessingMode())){
                         List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
-                        for(l = 0,i = codeRegexCache.size() - 1;0 <= i && headerSize <= j && partitionSize * 2 > p - j;j--)
-                            if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
-                                if(0 == l) l = j + 1;
-                                i--;
-                            }
+                        for(l = 0,i = codeRegexCache.size() - 1;0 <= i && headerSize <= j && partitionSize * 2 > p - j;j--) if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
+                            if(0 == l) l = j + 1;
+                            i--;
+                        }
                         if(-1 != i) return;
                         code.setLineNumer(j + 2,l);
                     }else{
@@ -86,8 +84,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
         List<String> results = new ArrayList<>();
         ilCodes.getCodes().stream().forEach(code->{
             int start = code.getStartLine(), end = code.getEndLine();
-            if(MODE_NATIVE.equals(code.getProcessingMode())) for(int i = start - 1;i < end;i++)
-                results.add(datas.get(i));
+            if(MODE_NATIVE.equals(code.getProcessingMode())) for(int i = start - 1;i < end;i++) results.add(datas.get(i));
             else results.addAll(code.refreshCodeFragmentCache(false));
         });
         param.getCmdOptional().ifPresent(c->{
