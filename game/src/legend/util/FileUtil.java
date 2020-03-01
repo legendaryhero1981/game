@@ -554,7 +554,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             fp.setSrcPath(p);
             cachePaths(fp);
             fp.clearCache();
-            long size = fp.getFilesSize().get();
+            final long size = fp.getFilesSize().get();
             if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
         });
         param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
@@ -870,22 +870,21 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         final boolean unzipMd5 = param.meetCondition(ZIP_UNZIP_MD5);
         param.getPathMap().entrySet().parallelStream().flatMap(e->of(e.getValue())).forEach(p->{
             final StringBuilder builder = new StringBuilder(gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_START + S_ELLIPSIS,2));
-            final IValue<Boolean> check = new SingleValue<>(true);
-            final IValue<ZipEntry> value = new SingleValue<>(null);
+            final IValue<Boolean> check = new SingleValue<>(false);
             final File file = p.toFile();
             final String duration = getDurationString(t->{
                 try(ZipFile zipFile = new ZipFile(file);
                     ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))){
                     if(!unzipDir) CS.checkException(ERR_ZIP_FLE_DCPRS,new String[]{p.toString(),gsph(ERR_ZIP_FILE_SAME,p.toString())},()->zipFile.stream().parallel().anyMatch(entry->{
-                        if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) check.setValue(true);
+                        if(entry.isDirectory() || entry.getName().endsWith(SPRT_FILE)) check.setValue(false);
                         if(unzip) check.setValue(p.equals(param.getDestPath().resolve(entry.getName())));
                         else check.setValue(p.equals(p.getParent().resolve(entry.getName())));
                         return check.getValue();
                     }));
-                    if(!check.getValue()) return;
+                    if(check.getValue()) return;
+                    if(unzipDir) param.getDirsCount().incrementAndGet();
                     final int size = zipFile.size();
-                    for(value.setValue(zipInputStream.getNextEntry());nonEmpty(value.getValue());value.setValue(zipInputStream.getNextEntry())){
-                        ZipEntry entry = value.getValue();
+                    zipFile.stream().parallel().forEach(entry->{
                         IValue<Path> dest = new SingleValue<>(null);
                         Path path = null;
                         if(unzip) path = param.getDestPath();
@@ -909,14 +908,13 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                                     builder.append(glph(ERR_ZIP_FLE_EXTR,entry.getName(),ex.toString()));
                                 }
                             });
-                            zipInputStream.closeEntry();
                             if(0 == entry.getSize()) builder.append(gl(V_EXTR + N_FILE_NUL + gs(2) + dest));
                             else builder.append(gl(V_EXTR + N_FILE + gs(4) + dest));
                         }
                         param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(size,1),PROGRESS_SCALE));
-                    }
+                    });
                 }catch(Exception ex){
-                    param.getProgressOptional().ifPresent(c->builder.append(glph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString())));
+                    builder.append(glph(ERR_ZIP_FLE_DCPRS,p.toString(),ex.toString()));
                 }
             });
             builder.append(gl(1) + gl(V_DCPRS + N_FILE + gs(2) + p + gs(1) + V_DONE + S_PERIOD + N_TIME + S_COLON + duration + S_PERIOD));
@@ -1096,14 +1094,14 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_DIR:
                     case CMD_FND_DIR_SIZ_ASC:
                     case CMD_FND_DIR_SIZ_DSC:
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
+                    case CMD_FND_PTH_DIR_ABS:
+                    case CMD_FND_PTH_DIR_RLT:
                     case CMD_FND_DIR_SAM:
                     case CMD_FND_DIR_DIF:
                     case CMD_FND_DIR_OLY_SAM:
                     case CMD_FND_DIR_OLY_DIF:
-                    case CMD_FND_PTH_DIR_ABS:
-                    case CMD_FND_PTH_DIR_RLT:
-                    case CMD_FND_DIR_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_DIR_SIZ_DSC:
                     case CMD_CPY_DIR:
                     case CMD_CPY_DIR_OLY:
                     case CMD_DEL_DIR:

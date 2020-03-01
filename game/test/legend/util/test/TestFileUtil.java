@@ -18,9 +18,9 @@ public class TestFileUtil extends TestBase{
     public void monkParam(){
         String s = "";
 //        s = "-ddo*  `2.3.3-b02`$  E:/Java/apache-maven-3.6.3/repository/org/glassfish/jaxb";
-        s = "-7zip+  `file-7zip.xml`$  .  1";
-//        s = "-zimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  D:/360安全浏览器下载/7zip/unzip  1";
-//        s = "-pimd5+  `.zip`$  D:/360安全浏览器下载/7zip/temp  1";
+//        s = "-7zip+  `file-7zip.xml`$  .  1";
+        s = "-zimd5+  `.jar`$  G:/cache/temp/7zip/cache  G:/cache/temp/7zip/unzip  1";
+//        s = "-pimd5+  `.jar`$  G:/cache/temp/7zip/cache  1";
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
 //        s = "-fpr!+  `.java`$  D:/games/src  ";
 //        s = "-fpr!+  `.class`$  D:/games/classes/11  ./run.log";
