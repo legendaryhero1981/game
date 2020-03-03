@@ -1,7 +1,9 @@
 package legend.util.test;
 
+import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
+import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.getClassPath;
 import static legend.util.StringUtil.getFileNameWithSuffix;
@@ -18,14 +20,19 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 import legend.intf.ICommon;
+import legend.util.entity.Zip7;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-//        testClassPath();
-//        testAppPath();
-        testFileName();
+        testJaxbUtil();
+    }
+
+    // @Test
+    public void testJaxbUtil(){
+        Zip7 zip7 = convertToObject(get("file-7zip.xml"),Zip7.class);
+        CS.sl(zip7.toString());
     }
 
     // @Test
@@ -52,7 +59,7 @@ public class TestArithmetic implements ICommon{
             by[0] = (byte)b1;
             for(int b2 = 0xa1;b2 <= 0xfe;b2++){
                 by[1] = (byte)b2;
-                String str = "";
+                String str = S_EMPTY;
                 try{
                     str = new String(by,CHARSET_GBK);
                 }catch(UnsupportedEncodingException e){
@@ -65,7 +72,7 @@ public class TestArithmetic implements ICommon{
             by[0] = (byte)b1;
             for(int b2 = 0xa1;b2 <= 0xfe;b2++){
                 by[1] = (byte)b2;
-                String str = "";
+                String str = S_EMPTY;
                 try{
                     str = new String(by,CHARSET_GBK);
                 }catch(UnsupportedEncodingException e){
@@ -74,9 +81,9 @@ public class TestArithmetic implements ICommon{
                 sb.append(str);
             }
         }
-        String s = sb.toString().replaceAll(REG_UC_MC_GBK,"");
+        String s = sb.toString().replaceAll(REG_UC_MC_GBK,S_EMPTY);
         Matcher matcher = compile(REG_UC_NON_CHS).matcher(s);
-        CS.s(matcher.replaceAll(""));
+        CS.s(matcher.replaceAll(S_EMPTY));
     }
 
     // @Test
@@ -87,7 +94,7 @@ public class TestArithmetic implements ICommon{
             by[0] = (byte)b1;
             for(int b2 = 0x40;b2 <= 0xbf;b2++){
                 by[1] = (byte)b2;
-                String str = "";
+                String str = S_EMPTY;
                 try{
                     str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
@@ -100,7 +107,7 @@ public class TestArithmetic implements ICommon{
             by[0] = (byte)b1;
             for(int b2 = 0x40;b2 <= 0x7e;b2++){
                 by[1] = (byte)b2;
-                String str = "";
+                String str = S_EMPTY;
                 try{
                     str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
@@ -113,7 +120,7 @@ public class TestArithmetic implements ICommon{
             by[0] = (byte)b1;
             for(int b2 = 0x40;b2 <= 0xd5;b2++){
                 by[1] = (byte)b2;
-                String str = "";
+                String str = S_EMPTY;
                 try{
                     str = new String(by,CHARSET_BIG5);
                 }catch(UnsupportedEncodingException e){
@@ -122,9 +129,9 @@ public class TestArithmetic implements ICommon{
                 sb.append(str);
             }
         }
-        String s = sb.toString().replaceAll(REG_UC_MC_BIG5,"");
+        String s = sb.toString().replaceAll(REG_UC_MC_BIG5,S_EMPTY);
         Matcher matcher = compile(REG_UC_NON_CHS).matcher(s);
-        CS.s(matcher.replaceAll(""));
+        CS.s(matcher.replaceAll(S_EMPTY));
     }
 
     // @Test
@@ -198,7 +205,7 @@ public class TestArithmetic implements ICommon{
 
     // @Test
     public void testClassVersion(){
-        ClassVersionChecker.checkClassVersion("");
+        ClassVersionChecker.checkClassVersion(S_EMPTY);
     }
 
     private static class ClassVersionChecker{

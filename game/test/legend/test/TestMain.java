@@ -13,17 +13,17 @@ public class TestMain extends TestBase{
 
     @BeforeAll
     @Override
-    public void monkParam(){
+    public String monk(){
         String cmd = "";
-//        cmd = "il";
-//        cmd += "file";
+        // cmd = "il";
+        // cmd += "file";
         cmd += "run";
-//        cmd += "eoc";
-//        cmd += "kcd";
-//        cmd += "poe";
+        // cmd += "eoc";
+        // cmd += "kcd";
+        // cmd += "poe";
         String arg = "";
         arg = "  -k  ew";
         cmd += arg;
-        super.monkParam(cmd);
+        return cmd;
     }
 }

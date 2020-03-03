@@ -1,4 +1,5 @@
 open module legend{
+    requires transitive jdk.unsupported;
     requires transitive java.xml.bind;
     requires static org.junit.jupiter.api;
     

@@ -63,7 +63,6 @@ public class Main implements IMain{
     }
 
     private static void loadData(IProgress progress){
-        progress.reset(1,1,1);
         dealFiles(srcParam);
         progress.reset(srcParam.getPathMap().size());
     }

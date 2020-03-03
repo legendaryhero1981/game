@@ -2,7 +2,6 @@ package legend.game.test;
 
 import static legend.game.kcd.Main.main;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import legend.test.TestBase;
@@ -13,9 +12,8 @@ public class TestKCD extends TestBase{
         main(args);
     }
 
-    @BeforeAll
     @Override
-    public void monkParam(){
+    public String monk(){
         String s = "";
         s = "-lm  text_ui_soul\\.xml$  F:/games/KingdomComeDeliverance/修改/Mods/UltimateRealismOverhaul/Localization/Chineses  F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses  F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses/merge";
 //        s = "-lc  text_ui_soul\\.xml$  F:/games/KingdomComeDeliverance/修改/Mods/UltimateRealismOverhaul/Localization/Chineses  F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses  F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses/diff";
@@ -30,6 +28,6 @@ public class TestKCD extends TestBase{
 //        s = "-mmo";
 //        s = "-mmu";
 //        s = "-mma";
-        super.monkParam(s);
+        return s;
     }
 }
