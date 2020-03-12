@@ -1,6 +1,9 @@
 package legend.util.entity.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gs;
+
+import java.util.regex.Pattern;
 
 import legend.util.intf.IFileUtil;
 
@@ -63,4 +66,7 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "SPKFormat::TailInfo节点由节点headerSize、headerFlag按顺序组成。\n"
     + gs(4) + "SPKFormat::TailInfo::headerSize" + gs(9) + "文件尾部的头部大小。\n"
     + gs(4) + "SPKFormat::TailInfo::headerFlag" + gs(9) + "文件尾部的头部起始标志。\n" + gs(4);
+    Pattern PTRN_SPK_SIZE = compile(REG_SPK_SIZE);
+    Pattern PTRN_SPK_SIZE_EXPR = compile(REG_SPK_SIZE_EXPR);
+    Pattern PTRN_SPK_FLAG_HEX = compile(REG_SPK_FLAG_HEX);
 }

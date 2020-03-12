@@ -50,7 +50,7 @@ public final class StringUtil implements IStringUtil{
         // 如果不是匿名包，将包名转化为路径
         if(nonEmpty(pack)){
             name = name.substring(pack.getName().length() + 1);
-            path = pack.getName().replaceAll(SPRT_PKG,SPRT_FILE_ZIP) + SPRT_FILE_ZIP;
+            path = pack.getName().replaceAll(REP_SPRT_PKG,SPRT_FILE_ZIP) + SPRT_FILE_ZIP;
         }
         // 调用ClassLoader的getResource方法，传入包含路径信息的类文件名
         URL url = loader.getResource(path + name);

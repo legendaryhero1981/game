@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
 
 import legend.game.kcd.entity.Value;
 import legend.game.kcd.entity.local.Row;
@@ -213,7 +212,7 @@ public final class Main implements IMain,IFileUtil{
         Path gameMergePath = gameModPath.resolve(MOD_MERGE);
         Path conflictPath = mergePath.resolve(MOD_CONFLICT);
         srcParam.setCmd(CMD_DEL_DIR);
-        srcParam.setPattern(compile(REG_ANY));
+        srcParam.setPattern(PTRN_ANY);
         srcParam.setSrcPath(gameModPath);
         dealFile(srcParam);
         if(mods.isEmpty()){
@@ -259,7 +258,7 @@ public final class Main implements IMain,IFileUtil{
         loadKcd();
         // 获得MOD目录列表
         srcParam.setCmd(CMD_FND_DIR_OLY);
-        srcParam.setPattern(compile(REG_ANY));
+        srcParam.setPattern(PTRN_ANY);
         srcParam.setSrcPath(modPath);
         srcParam.setLevel(1);
         dealFiles(srcParam);
@@ -272,7 +271,7 @@ public final class Main implements IMain,IFileUtil{
         }
         CS.checkError(ERR_EXISTS_MERGE,new String[]{modPath.toString()},()->paths.parallelStream().anyMatch(path->MOD_MERGE.equalsIgnoreCase(path.getFileName().toString())));
         srcParam.setCmd(CMD_DELETE);
-        srcParam.setPattern(compile(REG_MOD_NOT_PAK));
+        srcParam.setPattern(PTRN_MOD_NOT_PAK);
         paths.parallelStream().forEach(p->{
             // 删除MOD目录中所有非.PAK文件
             FileParam param = srcParam.cloneValue();
@@ -280,7 +279,7 @@ public final class Main implements IMain,IFileUtil{
             dealFile(param);
             // 自动将.PAK文件移动到规定的MOD目录中
             param.setCmd(CMD_FIND);
-            param.setPattern(compile(REG_MOD_PAK));
+            param.setPattern(PTRN_MOD_PAK);
             dealFiles(param);
             param.getPathMap().values().parallelStream().forEach(p1->{
                 final String name = p1.getFileName().toString();
@@ -293,7 +292,7 @@ public final class Main implements IMain,IFileUtil{
             param.clearCache();
             // 删除MOD目录中所有空目录
             param.setCmd(CMD_DEL_DIR_NUL);
-            param.setPattern(compile(REG_ANY));
+            param.setPattern(PTRN_ANY);
             dealFiles(param);
             if(existsPath(p)){
                 Mod mod = new Mod();
@@ -305,7 +304,7 @@ public final class Main implements IMain,IFileUtil{
         // 解包MOD目录中所有.PAK文件
         srcParam.clearCache();
         srcParam.setCmd(CMD_PAK_INF);
-        srcParam.setPattern(compile(REG_MOD_PAK));
+        srcParam.setPattern(PTRN_MOD_PAK);
         dealFile(srcParam);
         progress.update(60);
     }
@@ -339,7 +338,7 @@ public final class Main implements IMain,IFileUtil{
         loadKcd();
         Path conflictPath = mergePath.resolve(MOD_CONFLICT);
         srcParam.setCmd(CMD_DEL_DIR);
-        srcParam.setPattern(compile(REG_ANY));
+        srcParam.setPattern(PTRN_ANY);
         srcParam.setSrcPath(conflictPath);
         dealFile(srcParam);
         progress.update(5);
@@ -511,14 +510,13 @@ public final class Main implements IMain,IFileUtil{
         ConcurrentMap<BasicFileAttributes,Path> srcs = srcParam.getPathMap();
         CS.checkError(ERR_NOT_FIND,(String[])null,()->isEmpty(srcs));
         progress.reset(srcs.size(),PROGRESS_POSITION);
-        Pattern pattern = Pattern.compile(REG_RELEASE);
         srcs.entrySet().parallelStream().forEach(srcEntry->{
             Path src = srcEntry.getValue();
             Table srcTable = convertToObject(src,Table.class,true);
             srcTable.getRowMap().values().parallelStream().forEach(row->{
                 Value cell = row.getCells().get(2);
                 String value = cell.getText();
-                cell.setText(pattern.matcher(value).replaceFirst(""));
+                cell.setText(PTRN_LOCAL_RELEASE.matcher(value).replaceFirst(""));
             });
             convertToXml(makeDirs(srcParam.getDestPath().resolve(src.getFileName())),srcTable,true);
             progress.update(1,PROGRESS_SCALE);
@@ -551,14 +549,14 @@ public final class Main implements IMain,IFileUtil{
     private static void dealUnique(IProgress progress, float scale){
         if(mods.isEmpty()){
             srcParam.setCmd(CMD_DEL_DIR);
-            srcParam.setPattern(compile(REG_ANY));
+            srcParam.setPattern(PTRN_ANY);
             srcParam.setSrcPath(mergePath);
             dealFile(srcParam);
             if(modMap.isEmpty()) return;
         }
         progress.update(10,scale);
         srcParam.setCmd(CMD_FIND);
-        srcParam.setPattern(compile(REG_MOD_NOT_PAK));
+        srcParam.setPattern(PTRN_MOD_NOT_PAK);
         modMap.keySet().stream().forEach(mod->{
             FileParam param = srcParam.cloneValue();
             param.setSrcPath(modPath.resolve(mod));
@@ -657,7 +655,7 @@ public final class Main implements IMain,IFileUtil{
             }
         });
         srcParam.setCmd(CMD_DEL_DIR);
-        srcParam.setPattern(compile(REG_ANY));
+        srcParam.setPattern(PTRN_ANY);
         srcParam.setSrcPath(mergePath.resolve(MOD_CONFLICT));
         dealFile(srcParam);
         conflicts.clear();

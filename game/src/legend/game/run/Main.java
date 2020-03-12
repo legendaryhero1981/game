@@ -3,7 +3,6 @@ package legend.game.run;
 import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.nio.file.Paths.get;
-import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ConsoleUtil.IN;
 import static legend.util.ConsoleUtil.exec;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import legend.game.run.entity.Game;
 import legend.game.run.entity.Games;
@@ -258,7 +256,7 @@ public final class Main implements IMain{
 
     private static void writeMainScript(){
         if(nonEmpty(caches[1])) script.append(glph(CMD_VBS_RUN,caches[1])).append(glph(CMD_VBS_RUN_DEL,caches[1])).append(glph(CMD_VBS_SLEEP,countWaitTime(game.getBeforeWait())));
-        Matcher matcher = compile(REG_PATH_NAME).matcher(game.getAgentExecutablePath());
+        Matcher matcher = PTRN_PATH_NAME.matcher(game.getAgentExecutablePath());
         if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
         else script.append(glph(CMD_VBS_RUN_GAME,game.getPath(),game.getExe(),game.getArgs()));
         if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));
@@ -279,9 +277,8 @@ public final class Main implements IMain{
     }
 
     private static void writeOtherScript() throws IOException{
-        Pattern pattern = compile(REG_SPRT_CODE);
-        writeScript(pattern.split(game.getBefore()),1);
-        writeScript(pattern.split(game.getAfter()),2);
+        writeScript(PTRN_SPRT_CODE.split(game.getBefore()),1);
+        writeScript(PTRN_SPRT_CODE.split(game.getAfter()),2);
         // BAT脚本方式实现进程监控
         // if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){
         // File batFile = createTempFile(FILE_PREFIX,FILE_SUFFIX_BAT);
@@ -305,8 +302,7 @@ public final class Main implements IMain{
         if(nonEmpty(cmds[0])){
             File batFile = createTempFile(FILE_PREFIX,EXT_BAT);
             script.append(gl(CMD_BAT_CHCP_UTF8));
-            for(String cmd : cmds)
-                script.append(gl(cmd.trim()));
+            for(String cmd : cmds) script.append(gl(cmd.trim()));
             caches[index] = batFile.getCanonicalPath();
             caches[caches.length - 1] = script.toString();
             CS.sl(caches[index]).sl(caches[caches.length - 1]);
@@ -341,9 +337,9 @@ public final class Main implements IMain{
     }
 
     private static void dealIntegerValues(){
-        Matcher matcher = compile(REG_PRIORITY).matcher(game.getPriority());
+        Matcher matcher = PTRN_PRIORITY.matcher(game.getPriority());
         if(!matcher.matches()) game.setPriority(PRIORITY_HIGH);
-        matcher = compile(REG_TIME).matcher(game.getBeforeWait());
+        matcher = PTRN_TIME.matcher(game.getBeforeWait());
         if(!matcher.matches()) game.setBeforeWait(WAIT_TIME);
         if(!matcher.reset(game.getAfterWait()).matches()) game.setAfterWait(WAIT_TIME);
         if(!matcher.reset(game.getWatchWait()).matches()) game.setWatchWait(WAIT_TIME);

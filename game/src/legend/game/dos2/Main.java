@@ -2,7 +2,6 @@ package legend.game.dos2;
 
 import static java.nio.file.Paths.get;
 import static java.util.Optional.of;
-import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.FileUtil.makeDirs;
 import static legend.util.JaxbUtil.convertToObject;
@@ -12,7 +11,6 @@ import static legend.util.TimeUtil.runWithConsole;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import legend.game.dos2.entity.Content;
 import legend.game.dos2.entity.ContentList;
@@ -66,10 +64,9 @@ public final class Main implements IMain{
         ContentList contentList = convertToObject(param.getSrcPath(),ContentList.class);
         of(contentList.getContents()).ifPresent(contents->{
             progress.reset(contents.size(),0,90);
-            Pattern pattern = Pattern.compile(REG_RELEASE);
             contents.parallelStream().forEach((content)->{
                 String value = content.getValue();
-                content.setValue(pattern.matcher(value).replaceFirst(""));
+                content.setValue(PTRN_LOCAL_RELEASE.matcher(value).replaceFirst(""));
                 progress.update(1);
             });
         });
@@ -82,9 +79,6 @@ public final class Main implements IMain{
         of(resultList.getContents()).ifPresent(resultContents->{
             progress.reset(updateList.getContentMap().size(),0,90);
             AtomicInteger i = new AtomicInteger(resultContents.size());
-            Pattern pattern = compile(REG_DEBUG);
-            Pattern modPattern = compile(REG_MOD);
-            Pattern addPattern = compile(REG_ADD);
             ConcurrentMap<String,Content> resultMap = resultList.getContentMap();
             updateList.getContentMap().entrySet().parallelStream().forEach((entry)->{
                 String key = entry.getKey();
@@ -93,9 +87,9 @@ public final class Main implements IMain{
                 if(resultMap.containsKey(key)){
                     Content resultContent = resultMap.get(key);
                     String resultValue = resultContent.getValue();
-                    if(!modPattern.matcher(resultValue).find()){
-                        Matcher matcher = pattern.matcher(resultValue);
-                        Matcher addMatcher = addPattern.matcher(resultValue);
+                    if(!PTRN_LOCAL_MOD.matcher(resultValue).find()){
+                        Matcher matcher = PTRN_LOCAL_DEBUG.matcher(resultValue);
+                        Matcher addMatcher = PTRN_LOCAL_ADD.matcher(resultValue);
                         if(matcher.find()) resultContent.setValue(matcher.group() + modValue);
                         else if(addMatcher.find()) resultContent.setValue(addMatcher.replaceFirst(REP_ADD) + modValue);
                         else resultContent.setValue(modValue);

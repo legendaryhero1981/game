@@ -339,16 +339,16 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa1 = new String[args.length][], aa2 = new String[args.length][];
         aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMD);
-        Matcher mrpt = compile(REG_RPT_ARG).matcher(aa1[0][0]);
+        Matcher mrpt = PTRN_RPT_ARG.matcher(aa1[0][0]);
         CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
-        Matcher mph = compile(REG_OPT_ASK).matcher(S_EMPTY);
+        Matcher mph = PTRN_OPT_ASK.matcher(S_EMPTY);
         for(int i = 0;i < aa1[0].length;i++){
             mph.reset(aa1[0][i]);
             CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mph.matches());
         }
         // 将参数格式字符串解析成参数数组
         Deque<String> quotes1 = new ArrayDeque<>(), quotes2 = new ArrayDeque<>();
-        Matcher mbq = compile(REG_QUOTE_BQ).matcher(S_EMPTY);
+        Matcher mbq = PTRN_QUOTE_BQ.matcher(S_EMPTY);
         for(int i = 1;i < args.length;i++){
             mbq.reset(args[i]);
             while(mbq.find()){
@@ -366,25 +366,22 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             mrpt.reset(aa1[i][0]);
             if(aa1[0].length != aa1[i].length || mrpt.matches()) CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }
-        Matcher mnul = compile(SPC_NUL).matcher(S_EMPTY);
+        Matcher mnul = PTRN_SPC_NUL.matcher(S_EMPTY);
         StringBuilder sb1 = new StringBuilder(), sb2 = new StringBuilder();
-        for(int i = 0;i < aa1.length;i++)
-            for(int j = 0;j < aa1[i].length;j++){
-                if(0 < i){
-                    sb1.delete(0,sb1.length());
-                    mnul.reset(aa1[i][j]);
-                    while(mnul.find() && !quotes1.isEmpty())
-                        mnul.appendReplacement(sb1,quoteReplacement(quotes1.remove()));
-                    aa1[i][j] = mnul.appendTail(sb1).toString();
-                    sb2.delete(0,sb2.length());
-                    mnul.reset(aa2[i][j]);
-                    while(mnul.find() && !quotes2.isEmpty())
-                        mnul.appendReplacement(sb2,quoteReplacement(quotes2.remove()));
-                    aa2[i][j] = mnul.appendTail(sb2).toString();
-                }
-                if(0 < j && mrpt.reset(aa1[i][j]).find()) aa1[i][j] = aa1[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
-                if(0 < j && mrpt.reset(aa2[i][j]).find()) aa2[i][j] = aa2[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+        for(int i = 0;i < aa1.length;i++) for(int j = 0;j < aa1[i].length;j++){
+            if(0 < i){
+                sb1.delete(0,sb1.length());
+                mnul.reset(aa1[i][j]);
+                while(mnul.find() && !quotes1.isEmpty()) mnul.appendReplacement(sb1,quoteReplacement(quotes1.remove()));
+                aa1[i][j] = mnul.appendTail(sb1).toString();
+                sb2.delete(0,sb2.length());
+                mnul.reset(aa2[i][j]);
+                while(mnul.find() && !quotes2.isEmpty()) mnul.appendReplacement(sb2,quoteReplacement(quotes2.remove()));
+                aa2[i][j] = mnul.appendTail(sb2).toString();
             }
+            if(0 < j && mrpt.reset(aa1[i][j]).find()) aa1[i][j] = aa1[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+            if(0 < j && mrpt.reset(aa2[i][j]).find()) aa2[i][j] = aa2[i][j - 1].replaceAll(OPT_CACHE,S_EMPTY) + mrpt.group(1);
+        }
         // 去除所有占位符参数，重新生成每条子命令的有效参数数组。
         String[][] ss1 = new String[aa1[0].length][], ss2 = new String[aa2[0].length][];
         for(int i = 0,j,k;i < aa1[0].length;i++){
@@ -400,199 +397,193 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         }
         // 生成所有子命令的参数对象集合，子命令与参数对象一一对应。
         List<FileParam> fileParams = new ArrayList<>(ss1.length);
-        for(int i = 0;i < ss1.length;i++)
-            try{
-                FileParam param = new FileParam();
-                String[] s1 = ss1[i], s2 = ss2[i];
-                Optional<String[]> optional = of(s1);
-                param.setCmd(s1[0]);
-                if(s1[0].length() > 2){
-                    Matcher matcher = compile(REG_OPT).matcher(s1[0]);
-                    if(matcher.find()){
-                        param.setCmd(matcher.group(1));
-                        param.setOpt(matcher.group(2));
-                        while(matcher.find())
-                            param.setOpt(param.getOpt() + matcher.group(2));
-                    }
+        for(int i = 0;i < ss1.length;i++) try{
+            FileParam param = new FileParam();
+            String[] s1 = ss1[i], s2 = ss2[i];
+            Optional<String[]> optional = of(s1);
+            param.setCmd(s1[0]);
+            if(s1[0].length() > 2){
+                Matcher matcher = PTRN_OPT.matcher(s1[0]);
+                if(matcher.find()){
+                    param.setCmd(matcher.group(1));
+                    param.setOpt(matcher.group(2));
+                    while(matcher.find()) param.setOpt(param.getOpt() + matcher.group(2));
                 }
-                param.setPattern(compile(s1[1]));
-                param.setSrcPath(get(s1[2]));
-                switch(param.getCmd()){
-                    case CMD_FIND:
-                    case CMD_FND_DIR:
-                    case CMD_FND_DIR_OLY:
-                    optional.filter(s->s.length > 3).ifPresent(s->param.setLimit(Integer.parseInt(s[3])));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
-                    break;
-                    case CMD_FND_PTH_ABS:
-                    case CMD_FND_PTH_RLT:
-                    case CMD_FND_PTH_DIR_ABS:
-                    case CMD_FND_PTH_DIR_RLT:
-                    case CMD_FND_PTH_DIR_OLY_ABS:
-                    case CMD_FND_PTH_DIR_OLY_RLT:
-                    optional.filter(s->s.length > 3 && s[3].matches(REG_NUM)).ifPresent(s->{
-                        param.setLimit(Integer.parseInt(s[3]));
-                        if(s.length > 4) param.setLevel(Integer.parseInt(s[4]));
-                    });
-                    optional.filter(s->s.length > 3 && !s[3].matches(REG_NUM)).ifPresent(s->{
-                        param.setDestPath(get(s[3]));
-                        if(s.length > 4) param.setLimit(Integer.parseInt(s[4]));
-                        if(s.length > 5) param.setLevel(Integer.parseInt(s[5]));
-                    });
-                    break;
-                    case CMD_FND_SIZ_ASC:
-                    case CMD_FND_SIZ_DSC:
-                    case CMD_FND_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_SIZ_DSC:
-                    optional.filter(s->s.length > 3).ifPresent(s->{
-                        param.setSizeExpr(s[3]);
-                        matchSizes(param,s[3]);
-                    });
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
-                    break;
-                    case CMD_FND_DIR_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_DIR_SIZ_DSC:
-                    case CMD_FND_DIR_OLY_SIZ_ASC:
-                    case CMD_FND_DIR_OLY_SIZ_DSC:
-                    optional.filter(s->s.length > 3).ifPresent(s->{
-                        param.setSizeExpr(s[3]);
-                        matchSizes(param,s[3]);
-                    });
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
-                    param.setLevel(1);
-                    break;
-                    case CMD_FND_SAM:
-                    case CMD_FND_DIF:
-                    case CMD_FND_SAM_MD5:
-                    case CMD_FND_DIF_MD5:
-                    case CMD_FND_DIR_SAM:
-                    case CMD_FND_DIR_DIF:
-                    case CMD_FND_DIR_OLY_SAM:
-                    case CMD_FND_DIR_OLY_DIF:
-                    case CMD_REP_FLE_SN:
-                    param.setDestPath(get(s1[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
-                    break;
-                    case CMD_REP_FLE_BT:
-                    param.setReplacement(s2[3]);
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
-                    break;
-                    case CMD_REP_FLE_IL:
-                    optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONF_FILE_IL)));
-                    optional.filter(s->s.length > 3).ifPresent(s->{
-                        if(s[3].matches(REG_NUM)){
-                            param.setDestPath(get(CONF_FILE_IL));
-                            param.setLevel(Integer.parseInt(s[3]));
-                        }else param.setDestPath(get(s[3]));
-                    });
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
-                    break;
-                    case CMD_RENAME:
-                    case CMD_REN_DIR:
-                    case CMD_REN_DIR_OLY:
-                    case CMD_REG_FLE_CS:
-                    sb1.delete(0,sb1.length());
-                    mbq.reset(s2[3]);
-                    while(mbq.find())
-                        mbq.appendReplacement(sb1,quoteReplacement(quoteReplacement(mbq.group(1))));
-                    s2[3] = mbq.appendTail(sb1).toString();
-                    param.setReplacement(s2[3]);
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
-                    break;
-                    case CMD_REN_LOW:
-                    case CMD_REN_UP:
-                    case CMD_REN_UP_FST:
-                    case CMD_REN_DIR_LOW:
-                    case CMD_REN_DIR_UP:
-                    case CMD_REN_DIR_UP_FST:
-                    case CMD_REN_DIR_OLY_LOW:
-                    case CMD_REN_DIR_OLY_UP:
-                    case CMD_REN_DIR_OLY_UP_FST:
-                    case CMD_DELETE:
-                    case CMD_DEL_DIR:
-                    case CMD_DEL_DIR_OLY:
-                    case CMD_DEL_NUL:
-                    case CMD_DEL_DIR_NUL:
-                    case CMD_DEL_DIR_OLY_NUL:
-                    case CMD_PAK_INF:
-                    case CMD_PAK_INF_DIR:
-                    case CMD_PAK_INF_MD5:
-                    case CMD_7ZIP:
-                    case CMD_GUID_L32:
-                    case CMD_GUID_U32:
-                    case CMD_MD5_L8:
-                    case CMD_MD5_U8:
-                    case CMD_MD5_L16:
-                    case CMD_MD5_U16:
-                    case CMD_MD5_L32:
-                    case CMD_MD5_U32:
-                    case CMD_JSON_ENC:
-                    case CMD_JSON_DEC:
-                    case CMD_REP_FLE_MEG:
-                    case CMD_REP_FLE_SPK:
-                    optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
-                    break;
-                    case CMD_COPY:
-                    case CMD_CPY_DIR:
-                    case CMD_CPY_DIR_OLY:
-                    case CMD_MOVE:
-                    case CMD_MOV_DIR:
-                    case CMD_MOV_DIR_OLY:
-                    case CMD_ZIP_INF:
-                    case CMD_ZIP_INF_DIR:
-                    case CMD_ZIP_INF_MD5:
-                    case CMD_REG_FLE_GBK:
-                    case CMD_REG_FLE_BIG5:
-                    param.setDestPath(get(s1[3]));
-                    optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
-                    break;
-                    case CMD_ITCHG_UGD:
-                    case CMD_ITCHG_RST:
-                    case CMD_UPGRADE:
-                    case CMD_UGD_DIR:
-                    param.setDestPath(get(s1[3]));
-                    param.setBackupPath(get(s1[4]));
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
-                    break;
-                    case CMD_ZIP_DEF:
-                    case CMD_ZIP_DIR_DEF:
-                    param.setDestPath(get(s1[3]));
-                    param.setZipName(s1[4] + EXT_ZIP);
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
-                    optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
-                    break;
-                    case CMD_PAK_DEF:
-                    case CMD_PAK_DIR_DEF:
-                    param.setDestPath(get(s1[3]));
-                    param.setZipName(s1[4] + EXT_PAK);
-                    optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
-                    optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
-                    break;
-                    default:
-                    CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
-                }
-                fileParams.add(param);
-            }catch(Exception e){
-                CS.checkError(ERR_ARG_ANLS,new String[]{e.toString()});
             }
+            param.setPattern(compile(s1[1]));
+            param.setSrcPath(get(s1[2]));
+            switch(param.getCmd()){
+                case CMD_FIND:
+                case CMD_FND_DIR:
+                case CMD_FND_DIR_OLY:
+                optional.filter(s->s.length > 3).ifPresent(s->param.setLimit(Integer.parseInt(s[3])));
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                break;
+                case CMD_FND_PTH_ABS:
+                case CMD_FND_PTH_RLT:
+                case CMD_FND_PTH_DIR_ABS:
+                case CMD_FND_PTH_DIR_RLT:
+                case CMD_FND_PTH_DIR_OLY_ABS:
+                case CMD_FND_PTH_DIR_OLY_RLT:
+                optional.filter(s->s.length > 3 && s[3].matches(REG_NUM)).ifPresent(s->{
+                    param.setLimit(Integer.parseInt(s[3]));
+                    if(s.length > 4) param.setLevel(Integer.parseInt(s[4]));
+                });
+                optional.filter(s->s.length > 3 && !s[3].matches(REG_NUM)).ifPresent(s->{
+                    param.setDestPath(get(s[3]));
+                    if(s.length > 4) param.setLimit(Integer.parseInt(s[4]));
+                    if(s.length > 5) param.setLevel(Integer.parseInt(s[5]));
+                });
+                break;
+                case CMD_FND_SIZ_ASC:
+                case CMD_FND_SIZ_DSC:
+                case CMD_FND_DIR_SIZ_ASC:
+                case CMD_FND_DIR_SIZ_DSC:
+                optional.filter(s->s.length > 3).ifPresent(s->{
+                    param.setSizeExpr(s[3]);
+                    matchSizes(param,s[3]);
+                });
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
+                optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                break;
+                case CMD_FND_DIR_DIR_SIZ_ASC:
+                case CMD_FND_DIR_DIR_SIZ_DSC:
+                case CMD_FND_DIR_OLY_SIZ_ASC:
+                case CMD_FND_DIR_OLY_SIZ_DSC:
+                optional.filter(s->s.length > 3).ifPresent(s->{
+                    param.setSizeExpr(s[3]);
+                    matchSizes(param,s[3]);
+                });
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
+                param.setLevel(1);
+                break;
+                case CMD_FND_SAM:
+                case CMD_FND_DIF:
+                case CMD_FND_SAM_MD5:
+                case CMD_FND_DIF_MD5:
+                case CMD_FND_DIR_SAM:
+                case CMD_FND_DIR_DIF:
+                case CMD_FND_DIR_OLY_SAM:
+                case CMD_FND_DIR_OLY_DIF:
+                case CMD_REP_FLE_SN:
+                param.setDestPath(get(s1[3]));
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLimit(Integer.parseInt(s[4])));
+                optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                break;
+                case CMD_REP_FLE_BT:
+                param.setReplacement(s2[3]);
+                optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
+                optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                break;
+                case CMD_REP_FLE_IL:
+                optional.filter(s->s.length == 3).ifPresent(s->param.setDestPath(get(CONF_FILE_IL)));
+                optional.filter(s->s.length > 3).ifPresent(s->{
+                    if(s[3].matches(REG_NUM)){
+                        param.setDestPath(get(CONF_FILE_IL));
+                        param.setLevel(Integer.parseInt(s[3]));
+                    }else param.setDestPath(get(s[3]));
+                });
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                break;
+                case CMD_RENAME:
+                case CMD_REN_DIR:
+                case CMD_REN_DIR_OLY:
+                case CMD_REG_FLE_CS:
+                sb1.delete(0,sb1.length());
+                mbq.reset(s2[3]);
+                while(mbq.find()) mbq.appendReplacement(sb1,quoteReplacement(quoteReplacement(mbq.group(1))));
+                s2[3] = mbq.appendTail(sb1).toString();
+                param.setReplacement(s2[3]);
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                break;
+                case CMD_REN_LOW:
+                case CMD_REN_UP:
+                case CMD_REN_UP_FST:
+                case CMD_REN_DIR_LOW:
+                case CMD_REN_DIR_UP:
+                case CMD_REN_DIR_UP_FST:
+                case CMD_REN_DIR_OLY_LOW:
+                case CMD_REN_DIR_OLY_UP:
+                case CMD_REN_DIR_OLY_UP_FST:
+                case CMD_DELETE:
+                case CMD_DEL_DIR:
+                case CMD_DEL_DIR_OLY:
+                case CMD_DEL_NUL:
+                case CMD_DEL_DIR_NUL:
+                case CMD_DEL_DIR_OLY_NUL:
+                case CMD_PAK_INF:
+                case CMD_PAK_INF_DIR:
+                case CMD_PAK_INF_MD5:
+                case CMD_7ZIP:
+                case CMD_GUID_L32:
+                case CMD_GUID_U32:
+                case CMD_MD5_L8:
+                case CMD_MD5_U8:
+                case CMD_MD5_L16:
+                case CMD_MD5_U16:
+                case CMD_MD5_L32:
+                case CMD_MD5_U32:
+                case CMD_JSON_ENC:
+                case CMD_JSON_DEC:
+                case CMD_REP_FLE_MEG:
+                case CMD_REP_FLE_SPK:
+                optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
+                break;
+                case CMD_COPY:
+                case CMD_CPY_DIR:
+                case CMD_CPY_DIR_OLY:
+                case CMD_MOVE:
+                case CMD_MOV_DIR:
+                case CMD_MOV_DIR_OLY:
+                case CMD_ZIP_INF:
+                case CMD_ZIP_INF_DIR:
+                case CMD_ZIP_INF_MD5:
+                case CMD_REG_FLE_GBK:
+                case CMD_REG_FLE_BIG5:
+                param.setDestPath(get(s1[3]));
+                optional.filter(s->s.length > 4).ifPresent(s->param.setLevel(Integer.parseInt(s[4])));
+                break;
+                case CMD_ITCHG_UGD:
+                case CMD_ITCHG_RST:
+                case CMD_UPGRADE:
+                case CMD_UGD_DIR:
+                param.setDestPath(get(s1[3]));
+                param.setBackupPath(get(s1[4]));
+                optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                break;
+                case CMD_ZIP_DEF:
+                case CMD_ZIP_DIR_DEF:
+                param.setDestPath(get(s1[3]));
+                param.setZipName(s1[4] + EXT_ZIP);
+                optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
+                optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
+                break;
+                case CMD_PAK_DEF:
+                case CMD_PAK_DIR_DEF:
+                param.setDestPath(get(s1[3]));
+                param.setZipName(s1[4] + EXT_PAK);
+                optional.filter(s->s.length > 5).ifPresent(s->param.setZipLevel(Integer.parseInt(s[5])));
+                optional.filter(s->s.length > 6).ifPresent(s->param.setLevel(Integer.parseInt(s[6])));
+                break;
+                default:
+                CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
+            }
+            fileParams.add(param);
+        }catch(Exception e){
+            CS.checkError(ERR_ARG_ANLS,new String[]{e.toString()});
+        }
         return fileParams;
     }
 
     public static String convertParam(String param, boolean regex){
         Deque<String> quotes = new ArrayDeque<>();
-        Matcher matcher = compile(REG_QUOTE_BQ).matcher(param);
-        if(regex) while(matcher.find())
-            quotes.add(quoteReplacement(quote(matcher.group(1))));
-        else while(matcher.find())
-            quotes.add(matcher.group(1));
+        Matcher matcher = PTRN_QUOTE_BQ.matcher(param);
+        if(regex) while(matcher.find()) quotes.add(quoteReplacement(quote(matcher.group(1))));
+        else while(matcher.find()) quotes.add(matcher.group(1));
         StringBuilder builder = new StringBuilder(brph(matcher.replaceAll(SPC_NUL),SPH_MAP));
-        matcher = compile(SPC_NUL).matcher(builder.toString());
+        matcher = PTRN_SPC_NUL.matcher(builder.toString());
         builder.delete(0,builder.length());
-        while(matcher.find() && !quotes.isEmpty())
-            matcher.appendReplacement(builder,quotes.remove());
+        while(matcher.find() && !quotes.isEmpty()) matcher.appendReplacement(builder,quotes.remove());
         return matcher.appendTail(builder).toString();
     }
 
@@ -601,7 +592,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         long maxSize = param.getMaxSize();
         UnitType minType = UnitType.NON;
         UnitType maxType = UnitType.NON;
-        Matcher matcher = compile(REG_FLE_SIZ).matcher(size);
+        Matcher matcher = PTRN_FLE_SIZ.matcher(size);
         if(matcher.find()){
             minType = FS.matchType(matcher.group(2));
             minSize = Long.parseLong(matcher.group(1));

@@ -1,6 +1,9 @@
 package legend.game.kcd.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gl;
+
+import java.util.regex.Pattern;
 
 import legend.intf.ICommon;
 
@@ -105,4 +108,6 @@ public interface IMain extends ICommon{
     + "kcd -ld (?i)\\.xml$ F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses/debug" + gl(2)
     + "kcd -lr (?i)\\.xml$ F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses/debug F:/games/KingdomComeDeliverance/修改/Game/Localization/Chineses" + gl(2)
     + "kcd -mc F:/games/KingdomComeDeliverance F:/games/KingdomComeDeliverance/修改/Mods F:/games/KingdomComeDeliverance/修改/Merge F:/tools/KDiff3/kdiff3.exe";
+    Pattern PTRN_MOD_PAK = compile(REG_MOD_PAK);
+    Pattern PTRN_MOD_NOT_PAK = compile(REG_MOD_NOT_PAK);
 }

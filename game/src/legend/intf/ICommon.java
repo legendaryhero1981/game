@@ -1,5 +1,6 @@
 package legend.intf;
 
+import static java.util.regex.Pattern.compile;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static legend.util.StringUtil.gl;
@@ -7,17 +8,17 @@ import static legend.util.StringUtil.gs;
 
 import java.io.File;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public interface ICommon extends Cloneable{
     int BLOCK_SIZE_FILE = 1 << 20;
-    byte[] BOM_UTF16LE = new byte[]{(byte)0xff,(byte)0xfe};
-    byte[] BOM_UTF16BE = new byte[]{(byte)0xfe,(byte)0xff};
-    byte[] BOM_UTF8 = new byte[]{(byte)0xef,(byte)0xbb,(byte)0xbf};
+    byte[] BOM_UTF16LE = {(byte)0xff,(byte)0xfe};
+    byte[] BOM_UTF16BE = {(byte)0xfe,(byte)0xff};
+    byte[] BOM_UTF8 = {(byte)0xef,(byte)0xbb,(byte)0xbf};
     char[] CHAR_HEX = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String SPRT_PKG = "\\.";
     String AUTHOR = "作者：李允";
     String VERSION = "版本：V5.5";
     String APP_INFO = AUTHOR + gl(1) + VERSION + gl(3);
@@ -170,6 +171,7 @@ public interface ICommon extends Cloneable{
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
     String SPC_BQ = "BQ";
+    String SPC_EMPTY = "EMPTY";
     String EXEC_KDIFF_F2 = "\"" + PH_ARGS0 + "\" \"" + PH_ARGS1 + "\" \"" + PH_ARGS2 + "\" -o \"" + PH_ARGS3 + "\"";
     String EXEC_KDIFF_F3 = "\"" + PH_ARGS0 + "\" \"" + PH_ARGS1 + "\" \"" + PH_ARGS2 + "\" \"" + PH_ARGS3 + "\" -o \"" + PH_ARGS4 + "\"";
     String XML_NOTE_START = "<!--";
@@ -187,6 +189,7 @@ public interface ICommon extends Cloneable{
     String REG_SPC_SQM = "(?i)" + PH_ARGS + SPC_SQM + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_DQM = "(?i)" + PH_ARGS + SPC_DQM + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_BQ = "(?i)" + PH_ARGS + SPC_BQ + "=?([1-9]?)" + PH_ARGS;
+    String REG_SPC_EMPTY = "(?i)" + PH_ARGS + SPC_EMPTY + PH_ARGS;
     String REG_QUOTE_BQ = S_BQ + "(.*?)" + S_BQ;
     String REG_SPRT_CMD = SPRT_CMD + "+";
     String REG_SPRT_FIELD = SPRT_FIELD + "+";
@@ -196,21 +199,16 @@ public interface ICommon extends Cloneable{
     String REG_SPRT_PATH = "[/" + gs(SPRT_FILE,2) + "]";
     String REG_PATH_NAME = "(.*" + REG_SPRT_PATH + ")(.*)";
     String REG_FILE_NAME = "(.*)(\\..*)";
-    String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
-    String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
-    String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
-    String REG_OPT_ASK = "\\A[" + OPT_ASK + "]+$";
-    String REG_ASK_NO = "\\A[nN]$";
     String REG_SPRT_CODE = "(?m)\n+";
     String REG_NUM = "\\d+";
     String REG_NUM_NATURAL = "[1-9]\\d*";
     String REG_ANY = ".";
     String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
     String REG_XML_CDATA = XML_CDATA_START + "(.*)" + XML_CDATA_END;
-    String REG_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
-    String REG_DEBUG = FLAG_DEBUG + REG_NUM + FLAG_DEBUG;
-    String REG_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + REG_NUM + FLAG_DEBUG;
-    String REG_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(" + REG_NUM + ")" + FLAG_DEBUG + ".*";
+    String REG_LOCAL_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
+    String REG_LOCAL_DEBUG = FLAG_DEBUG + REG_NUM + FLAG_DEBUG;
+    String REG_LOCAL_MOD = FLAG_DEBUG + "\\" + FLAG_MOD + REG_NUM + FLAG_DEBUG;
+    String REG_LOCAL_ADD = FLAG_DEBUG + "\\" + FLAG_ADD + "(" + REG_NUM + ")" + FLAG_DEBUG + ".*";
     String ST_ARG_START = V_START + V_ANLS + N_CMD + N_ARG + S_DQM_L + PH_ARGS0 + S_DQM_R + S_ELLIPSIS;
     String ST_ARG_DONE = N_CMD + N_ARG + S_DQM_L + PH_ARGS0 + S_DQM_R + V_ANLS + V_DONE + S_PERIOD;
     String ST_CMD_START = V_START + V_EXEC + N_CMD + S_DQM_L + PH_ARGS0 + S_DQM_R + S_ELLIPSIS;
@@ -229,5 +227,19 @@ public interface ICommon extends Cloneable{
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + ERR_INFO;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR;
     String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FILE + S_SPACE + PH_ARGS0 + S_SPACE + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    Map<String,String> SPH_MAP = ofEntries(entry(REG_SPC_SQM,S_SQM),entry(REG_SPC_DQM,S_DQM),entry(REG_SPC_BQ,S_BQ));
+    Pattern PTRN_SPC_NUL = compile(SPC_NUL);
+    Pattern PTRN_QUOTE_BQ = compile(REG_QUOTE_BQ);
+    Pattern PTRN_PATH_NAME = compile(REG_PATH_NAME);
+    Pattern PTRN_FILE_NAME = compile(REG_FILE_NAME);
+    Pattern PTRN_SPRT_CODE = compile(REG_SPRT_CODE);
+    Pattern PTRN_ANY = compile(REG_ANY);
+    Pattern PTRN_UC_NON_CHS = compile(REG_UC_NON_CHS);
+    Pattern PTRN_NUM = compile(REG_NUM);
+    Pattern PTRN_NUM_NATURAL = compile(REG_NUM_NATURAL);
+    Pattern PTRN_XML_CDATA = compile(REG_XML_CDATA);
+    Pattern PTRN_LOCAL_DEBUG = compile(REG_LOCAL_DEBUG);
+    Pattern PTRN_LOCAL_RELEASE = compile(REG_LOCAL_RELEASE);
+    Pattern PTRN_LOCAL_MOD = compile(REG_LOCAL_MOD);
+    Pattern PTRN_LOCAL_ADD = compile(REG_LOCAL_ADD);
+    Map<String,String> SPH_MAP = ofEntries(entry(REG_SPC_SQM,S_SQM),entry(REG_SPC_DQM,S_DQM),entry(REG_SPC_BQ,S_BQ),entry(REG_SPC_EMPTY,S_EMPTY));
 }

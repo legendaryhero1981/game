@@ -1,7 +1,10 @@
 package legend.util.entity.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.gs;
+
+import java.util.regex.Pattern;
 
 import legend.util.intf.IFileUtil;
 
@@ -50,4 +53,8 @@ public interface IZip7 extends IFileUtil{
     + gs(4) + "Zip7Task::sfxModule" + gs(9) + "自解压可执行文件的生成模式，取值范围为：0,1，取0表示生成GUI应用程序，取1表示生成控制台应用程序；若指定的值超过取值范围程序会取默认值0；仅当Zip7Task::mode值为0时有效。\n"
     + gs(4) + "Zip7Task::moreArgs" + gs(10) + "执行7z命令所需的其他原生参数，可以指定用空格字符间隔的多个参数；具体的参数详情可查看7z命令的帮助文件7-zip.chm。\n"
     + gs(4) + "特别说明：基于实用性考虑，程序只支持压缩（a）和解压缩（x）这两条原生命令的参数；Zip7Task节点中各子节点相对于7z原生命令参数的映射关系为：mode＝＞(0＝＞a),(1＝＞x)，filePath＝＞-o{dir_path}或base_archive_name，listFilePath＝＞@listfile，password＝＞-p{password}，compression＝＞-mx=[ 0 | 1 | 3 | 5 | 7 | 9 ]，volumeSize＝＞-v{Size}[ b | k | m | g]，sfxModule＝＞(0＝＞-sfx7z.sfx),(1＝＞-sfx7zCon.sfx)。\n" + gs(4);
+    Pattern PTRN_ZIP7_MODE = compile(REG_ZIP7_MODE);
+    Pattern PTRN_ZIP7_MODE_UNZIP = compile(REG_ZIP7_MODE_UNZIP);
+    Pattern PTRN_ZIP7_COMP = compile(REG_ZIP7_COMP);
+    Pattern PTRN_ZIP7_VOL = compile(REG_ZIP7_VOL);
 }

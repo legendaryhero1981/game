@@ -1,13 +1,11 @@
 package legend.util.entity;
 
-import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gsph;
 import static legend.util.StringUtil.hexToBytes;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.convertParam;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -37,17 +35,6 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     protected MetaData fileStartPosData = new MetaData();
     @XmlTransient
     protected MetaData fileSizeData = new MetaData();
-    @XmlTransient
-    protected static final Pattern sizePattern;
-    @XmlTransient
-    protected static final Pattern sizeExprPattern;
-    @XmlTransient
-    protected static final Pattern flagHexPattern;
-    static{
-        sizePattern = compile(REG_SPK_SIZE);
-        sizeExprPattern = compile(REG_SPK_SIZE_EXPR);
-        flagHexPattern = compile(REG_SPK_FLAG_HEX);
-    }
 
     public static final class MetaData{
         protected int offset;
@@ -128,14 +115,14 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     public boolean validate(){
         IValue<Boolean> value = new SingleValue<>(true);
         if(nonEmpty(headerSize)){
-            Matcher matcher = sizePattern.matcher(headerSize);
+            Matcher matcher = PTRN_SPK_SIZE.matcher(headerSize);
             if(!matcher.matches()){
                 errorInfo = gsph(ERR_SPKH_EXPR_FMT,"headerSize");
                 value.setValue(false);
             }else headerSizeData.size = Integer.parseInt(headerSize);
         }
         if(nonEmpty(headerFlag) && value.getValue()){
-            Matcher matcher = flagHexPattern.matcher(headerFlag);
+            Matcher matcher = PTRN_SPK_FLAG_HEX.matcher(headerFlag);
             if(matcher.matches()) headerFlagData.bytes = hexToBytes(matcher.group(1));
             else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
         }
@@ -145,7 +132,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     }
 
     private void validateSizeExpr(IValue<Boolean> value, MetaData metaData, String expr, String field){
-        Matcher matcher = sizeExprPattern.matcher(expr);
+        Matcher matcher = PTRN_SPK_SIZE_EXPR.matcher(expr);
         if(matcher.matches()){
             metaData.offset = Integer.parseInt(matcher.group(1));
             String size = matcher.group(3);

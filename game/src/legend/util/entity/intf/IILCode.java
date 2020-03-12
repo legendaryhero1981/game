@@ -1,6 +1,9 @@
 package legend.util.entity.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gs;
+
+import java.util.regex.Pattern;
 
 import legend.util.intf.IFileUtil;
 
@@ -40,4 +43,5 @@ public interface IILCode extends IFileUtil{
     + gs(4) + "ILCode::queryRegex" + gs(10) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；数据格式为每行一个表达式，忽略表达式首尾的空白字符和所有的空白行；仅当ILCode::processingMode不为" + MODE_NATIVE + "时有效；若ILCode::processingMode为" + MODE_REPL + "，将继续向上回溯查询ILCode::codeRegex以正确定位。\n"
     + gs(4) + "ILCode::codeRegex" + gs(11) + "在IL源文件中查询定位要修改的IL代码片段时所需的正则查询表达式；数据格式为每行一个表达式，忽略表达式首尾的空白字符和所有的空白行，最多只能指定2个表达式以匹配起始和终止IL代码行；仅当ILCode::processingMode为" + MODE_REPL + "时有效。\n"
     + gs(4) + "ILCode::codeFragment" + gs(8) + "在IL源文件中ILCode::lineNumber位置处需要被替换或新增的IL代码片段；忽略IL代码片段中所有的空白行。\n" + gs(4);
+    Pattern PTRN_LINE_NUMBER = compile(REG_LINE_NUMBER);
 }

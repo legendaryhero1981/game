@@ -25,9 +25,9 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     protected Map<Integer,String[][]> atomsCache = new ConcurrentHashMap<>();
     protected Map<Integer,String[][][]> complexesCache = new ConcurrentHashMap<>();
     protected Deque<String> quotesCache = new ArrayDeque<>();
-    private Matcher mbq = compile(REG_QUOTE_BQ).matcher(S_EMPTY);
     private Set<Integer> colIndexesCache = new HashSet<>();
     private ReplaceRule[] rules;
+    private Matcher mbq = PTRN_QUOTE_BQ.matcher(S_EMPTY);
     private String colSplit;
     private String colNumber;
     private String rule;
@@ -64,7 +64,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
             colNumber = s[0];
-            Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
+            Matcher matcher = PTRN_COL_NUM.matcher(colNumber);
             CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_COL_NUM},()->!matcher.find());
             rule = s[1];
         }else{
@@ -87,7 +87,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             validateRule(rules[i],i + 1,r.length);
         }
         rule = concat(rules,SPRT_RULE);
-        hasTerminationRule = RULE_REGENROW.equals(rules[rules.length - 1].name);
+        hasTerminationRule = TMNT_RULE_SET.contains(rules[rules.length - 1].name);
     }
 
     @Override
@@ -119,7 +119,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         final int size = atomsCache.get(0).length;
         if(CS.checkException(ERR_DATA_ANLS,new String[]{ERR_DATA_COL_NUM},()->atomsCache.values().parallelStream().anyMatch(v->size != v.length))) return false;
         if(nonEmpty(colNumber)){
-            Matcher matcher = compile(REG_COL_NUM).matcher(colNumber);
+            Matcher matcher = PTRN_COL_NUM.matcher(colNumber);
             while(matcher.find()){
                 int start = Integer.parseInt(matcher.group(1));
                 String s = matcher.group(3);
@@ -171,15 +171,15 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             final int length = atomsCache.get(0).length;
             if(replaceRule instanceof AtomRule){
                 atomsCache.values().stream().forEach(atoms->{
-                    String data = S_EMPTY;
-                    for(int i = 0;i < length;i++) data = data.concat(atoms[i][atomsSize]).concat(colSplit);
-                    results.add(data.substring(0,data.length() - colSplit.length()));
+                    String data = atoms[0][atomsSize];
+                    for(int i = 1;i < length;i++) data += colSplit + atoms[i][atomsSize];
+                    results.add(data);
                 });
             }else{
                 complexesCache.values().stream().forEach(complexes->{
-                    String data = S_EMPTY;
-                    for(int i = 0;i < length;i++) data = data.concat(complexes[i][complexesSize - 1][complexes[i][complexesSize - 1].length - 1]).concat(colSplit);
-                    results.add(data.substring(0,data.length() - colSplit.length()));
+                    String data = complexes[0][complexesSize - 1][complexes[0][complexesSize - 1].length - 1];
+                    for(int i = 1;i < length;i++) data += colSplit + complexes[i][complexesSize - 1][complexes[i][complexesSize - 1].length - 1];
+                    results.add(data);
                 });
             }
         }
@@ -188,6 +188,6 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
 
     private void validateRule(ReplaceRule replaceRule, int index, int length){
         CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
-        CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_TMNT},()->RULE_REGENROW.equals(replaceRule.name) && index < length);
+        CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_TMNT,replaceRule.name)},()->TMNT_RULE_SET.contains(replaceRule.name) && index < length);
     }
 }

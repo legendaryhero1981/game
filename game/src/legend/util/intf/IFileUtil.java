@@ -1,24 +1,16 @@
 package legend.util.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_NUM;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_ATOM;
-import static legend.util.rule.intf.IReplaceRule.REG_COL_REPL_COMP;
-import static legend.util.rule.intf.IReplaceRule.REG_RULE_LOWER;
-import static legend.util.rule.intf.IReplaceRule.REG_RULE_REGENROW;
-import static legend.util.rule.intf.IReplaceRule.REG_RULE_REPLACE;
-import static legend.util.rule.intf.IReplaceRule.REG_RULE_UPPER;
-import static legend.util.rule.intf.IReplaceRule.RULE_LOWER;
-import static legend.util.rule.intf.IReplaceRule.RULE_REGENROW;
-import static legend.util.rule.intf.IReplaceRule.RULE_REPLACE;
-import static legend.util.rule.intf.IReplaceRule.RULE_UPPER;
 
-import legend.intf.ICommon;
+import java.util.regex.Pattern;
+
 import legend.util.ConsoleUtil;
 import legend.util.ProgressUtil;
+import legend.util.rule.intf.IReplaceRule;
 
-public interface IFileUtil extends ICommon{
+public interface IFileUtil extends IReplaceRule{
     ConsoleUtil CS = new ConsoleUtil();
     IProgress PG = ProgressUtil.ConsoleProgress();
     long EXEC_CMD = 1l;
@@ -132,6 +124,11 @@ public interface IFileUtil extends ICommon{
     String CONF_FILE_MERGE = "./file-merge.xml";
     String CONF_FILE_SPK = "./file-spk.xml";
     String CONF_FILE_7ZIP = "./file-7zip.xml";
+    String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
+    String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
+    String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
+    String REG_OPT_ASK = "\\A[" + OPT_ASK + "]+$";
+    String REG_ASK_NO = "\\A[nN]$";
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
@@ -157,6 +154,7 @@ public interface IFileUtil extends ICommon{
     + "#BQ=n#" + gs(1) + "英文反引号（`）占位符表达式，匹配的正则表达式为：" + REG_SPC_BQ + "；BQ表示反引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个反引号；例如：#BQ#（替换为1个反引号）,#BQ1#（替换为1个反引号）,#BQ=2#（替换为2个反引号）。" + gl(2)
     + "#SQM=n#" + gs(1) + "英文单引号（'）占位符表达式，匹配的正则表达式为：" + REG_SPC_SQM + "；SQM表示单引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个单引号；例如：#SQM#（替换为1个单引号）,#SQM1#（替换为1个单引号）,#SQM=2#（替换为2个单引号）。" + gl(2)
     + "#DQM=n#" + gs(1) + "英文双引号（\"）占位符表达式，匹配的正则表达式为：" + REG_SPC_DQM + "；DQM表示双引号，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个双引号；例如：#DQM#（替换为1个双引号）,#DQM1#（替换为1个双引号）,#DQM=2#（替换为2个双引号）。" + gl(2)
+    + "#EMPTY#" + gs(1) + "空字符串占位符表达式，匹配的正则表达式为：" + REG_SPC_EMPTY + "；表示一个空字符串，一般为命令参数占位所用；例如：#EMPTY#（程序将自动替换为空字符串）。" + gl(2)
     + "src" + gs(9) + "文件输入目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "dest" + gs(8) + "文件输入输出目录或输入输出文件路径名；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
     + "backup" + gs(6) + "文件备份输出目录；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
@@ -166,12 +164,13 @@ public interface IFileUtil extends ICommon{
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~" + Long.MAX_VALUE + "B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)" + SPRT_RULE + "[规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + RULE_REGENROW + "；各事务性规则通过" + SPRT_RULE + "分隔，复合规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
+    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELD + "]规则1(参数列表)[" + SPRT_RULE + "规则2(参数列表) ... " + SPRT_RULE + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + RULE_REGENROW + "；各事务性规则通过" + SPRT_RULE + "分隔，复合规则中各原子规则通过" + SPRT_ATOM + "分隔，各参数通过" + SPRT_ARG + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
     + "目前支持的所有原子规则（英文字母不区分大小写）如下：" + gl(2)
     + RULE_LOWER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数qstring，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_UPPER + "(qstring)" + gs(12) + "将匹配qstring的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数qstring，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；qstring为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_REPLACE + "(qstring" + SPRT_ARG + "rstring)" + gs(1) + "将匹配qstring的列字符串的子串替换为rstring，匹配的正则表达式为：" + REG_RULE_REPLACE + "；qstring为正则查询表达式，rstring为正则替换表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_REGENROW + "(rstring)" + gs(10) + "根据rstring重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；rstring为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；" + gl(2)
+    + RULE_GENFINALROW + "(rstring[" + SPRT_ARG + "joinString" + SPRT_ARG + "prefixString" + SPRT_ARG + "suffixString" + "])" + gs(10) + "先根据rstring重新生成每一行数据（同规则" + RULE_REGENROW + "），再使用jionString把所有行数据连接成一行，最后在这行数据的首尾分别加上prefixString、suffixString；rstring必须指定，jionString、prefixString、suffixString可以不指定，若不指定jionString则使用空字符串连接每一行数据；匹配的正则表达式为：" + REG_RULE_GENFINALROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；rstring为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jionString为行数据连接字符串，prefixString为前缀字符串，suffixString为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + "目前支持的所有列数据占位符表达式如下：" + gl(2)
     + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_ATOM + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
     + "#n-m1.m2#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_COMP + "；n为列号，m1为复合规则执行顺序号，m2为m1中原子规则的执行顺序号；m1的最小值为1，最大值为复合规则执行总数；m2的最小值为1，最大值为m1中原子规则执行总数，m2不指定则取最大值（即#n-m1#与#n-m1.max(m2)#等效）；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）；#1-1.1#（提取对第1列执行了第1条复合规则中的第1条原子规则后得到的数据）。" + gl(3)
@@ -183,7 +182,7 @@ public interface IFileUtil extends ICommon{
     + OPT_CACHE + " 可添加在命令选项末尾，表示缓存该命令的查询结果，供后面的命令复用；某些命令不能缓存或复用查询结果，程序将智能忽略掉；复用查询结果的命令将忽略与查询相关的命令参数regex和src；当后面某个命令使用了@时，则重新缓存查询结果；可与~或!或+或*或?连用；例如：-fd!@*?。" + gl(2)
     + OPT_ASK + " 可添加在命令选项末尾，表示命令开始执行前启用询问模式（" + ST_ASK_CONT + "）；可与~或!或+或*或@连用；例如：-fd!+@?。" + gl(3)
     + "组合命令：" + gl(2)
-    + "可以组合多个命令选项和命令参数，一次连续执行多条命令；命令选项与各命令参数的个数必须相等；各命令选项及各命令参数使用" + SPRT_CMD + "分隔；可使用" + OPT_SIMULATE  + "复用最近一个明确的命令选项或命令参数，将其当作该命令的前缀使用，例如：-f::*d::*dsa等价于-f::-fd::-fdsa，g:/games::*/1::*/2等价于g:/games::g:/games/1::g:/games/2；单条命令未用到的命令参数使用" + OPT_ASK + "占位。" + gl(2)
+    + "可以组合多个命令选项和命令参数，一次连续执行多条命令；命令选项与各命令参数的个数必须相等；命令选项及各命令参数使用" + SPRT_CMD + "分隔；可使用" + OPT_SIMULATE  + "复用最近一个明确的命令选项或命令参数，将其当作该命令的前缀使用，例如：-f::*d::*dsa等价于-f::-fd::-fdsa，g:/games::*/1::*/2等价于g:/games::g:/games/1::g:/games/2；单条命令未用到的命令参数使用" + OPT_ASK + "占位。" + gl(2)
     + "组合命令示例：" + gl(2)
     + CMD + "-cd*@::*::* .::*::* g:/games::*::* d:/::e:/::f:/" + gl(2)
     + CMD + "-zdd+::-c+@?::* .::`.zip`$::* g:/games::g:/file::* g:/file::*/1::*/2 games::?::? 0::?::? ?::1::*" + gl(2)
@@ -192,14 +191,14 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FIND + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件。" + gl(2)
     + CMD + CMD_FND_DIR + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配。" + gl(2)
     + CMD + CMD_FND_DIR_OLY + OPTIONS + "regex src [limit] [level]" + gl(1) + "根据regex查找src中的目录。" + gl(2)
-    + CMD + CMD_FND_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在的同名文件。" + gl(2)
-    + CMD + CMD_FND_SAM_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中存在的同名目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中存在的同名目录。" + gl(2)
-    + CMD + CMD_FND_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中不存在的文件。" + gl(2)
-    + CMD + CMD_FND_DIF_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只选取在desc目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只选取在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只选取在desc目录的同一相对路径中不存在的目录。" + gl(2)
+    + CMD + CMD_FND_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只匹配在desc目录的同一相对路径中存在的同名文件。" + gl(2)
+    + CMD + CMD_FND_SAM_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只匹配在desc目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只匹配在desc目录的同一相对路径中存在的同名目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_SAM + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只匹配在desc目录的同一相对路径中存在的同名目录。" + gl(2)
+    + CMD + CMD_FND_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只匹配在desc目录的同一相对路径中不存在的文件。" + gl(2)
+    + CMD + CMD_FND_DIF_MD5 + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件，且只匹配在desc目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件，相对-f增加了目录名匹配，若目录名匹配，则该目录中所有文件和目录都自动被匹配；且只匹配在desc目录的同一相对路径中不存在的目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_DIF + OPTIONS + "regex src dest [limit] [level]" + gl(1) + "根据regex查找src中的目录，且只匹配在desc目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的绝对路径名并将查询结果写入到文件dest。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件，显示文件的相对路径名并将查询结果写入到文件dest。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_ABS + OPTIONS + "regex src [dest] [limit] [level]" + gl(1) + "根据regex查找src中的文件和目录及其中所有文件（同-fd），显示文件或目录的绝对路径名并将查询结果写入到文件dest。" + gl(2)
@@ -219,7 +218,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_REN_UP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名中英文单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex和replacement重命名src中的文件和目录。" + gl(2)
-    + CMD + CMD_REN_DIR_LOW + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*\\.)txt$ 表示只替换文件名，不会替换扩展名txt；.*\\.txt$则文件名和扩展名都会被替换；也适用于-rdu和-rduf。" + gl(2)
+    + CMD + CMD_REN_DIR_LOW + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文字母替换为小写；regex可最多指定9个捕获组，最左边为第1个捕获组，程序只会替换捕获组中的子串，如：(.*)`.txt`$ 表示只替换文件名，不会替换扩展名.txt；.*`.txt`$则文件名和扩展名都会被替换；也适用于-rdu和-rduf。" + gl(2)
     + CMD + CMD_REN_DIR_UP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_UP_FST + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配文件名和目录名中英文单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY + OPTIONS + "regex src replacement [level]" + gl(1) + "根据regex和replacement重命名src中的目录。" + gl(2)
@@ -251,7 +250,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_UPGRADE + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
     + CMD + CMD_UGD_DIR + OPTIONS + "regex src dest backup [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件更新到dest中，更新时会先检查dest中是否已存在该文件，若存在则先将该文件备份到backup中，再更新之。" + gl(2)
     + CMD + CMD_ZIP_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件压缩到“dest/zipName" + EXT_ZIP + "”文件中。" + gl(2)
-    + CMD + CMD_ZIP_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件压缩到dest/zipName" + EXT_ZIP + "文件中。" + gl(2)
+    + CMD + CMD_ZIP_DIR_DEF + OPTIONS + "regex src dest zipName [zipLevel] [level]" + gl(1) + "根据regex将src中所有匹配文件和目录及其中所有文件压缩到“dest/zipName" + EXT_ZIP + "”文件中。" + gl(2)
     + CMD + CMD_ZIP_INF + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中。" + gl(2)
     + CMD + CMD_ZIP_INF_DIR + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名”（不包含扩展名）。" + gl(2)
     + CMD + CMD_ZIP_INF_MD5 + OPTIONS + "regex src dest [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解压缩到dest中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“解压缩路径/压缩文件名.md5码”。" + gl(2)
@@ -260,7 +259,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中。" + gl(2)
     + CMD + CMD_PAK_INF_DIR + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名”（不包含扩展名）。" + gl(2)
     + CMD + CMD_PAK_INF_MD5 + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。" + gl(2)
-    + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
+    + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件并并行调用7-Zip控制台程序执行压缩或解压缩命令。" + gl(2)
     + CMD + CMD_GUID_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全小写）。" + gl(2)
@@ -275,14 +274,14 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_FIND + "+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
     + CMD + CMD_FND_DIR + "+ (?i)strings$ \"F:/games/Fallout 4\"" + gl(1) + "查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。" + gl(2)
     + CMD + CMD_FND_DIR_OLY + "+ . \"F:/games/KingdomComeDeliverance/修改/Mods\" 0 1" + gl(1) + "查询该目录中的第一级目录。" + gl(2)
-    + CMD + CMD_FND_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名文件。" + gl(2)
-    + CMD + CMD_FND_SAM_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录。" + gl(2)
-    + CMD + CMD_FND_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的文件。" + gl(2)
-    + CMD + CMD_FND_DIF_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只选取在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
-    + CMD + CMD_FND_DIR_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录和文件。" + gl(2)
-    + CMD + CMD_FND_DIR_OLY_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只选取在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录。" + gl(2)
+    + CMD + CMD_FND_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名文件。" + gl(2)
+    + CMD + CMD_FND_SAM_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只匹配在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名目录。" + gl(2)
+    + CMD + CMD_FND_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的文件。" + gl(2)
+    + CMD + CMD_FND_DIF_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只匹配在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容不同的同名文件。" + gl(2)
+    + CMD + CMD_FND_DIR_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录和文件。" + gl(2)
+    + CMD + CMD_FND_DIR_OLY_DIF + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中不存在的目录。" + gl(2)
     + CMD + CMD_FND_PTH_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt 20" + gl(1) + "查询该目录中的所有文件；显示文件的绝对路径名，且只显示前20条记录，并将查询结果写入到文件file-list.txt。" + gl(2)
     + CMD + CMD_FND_PTH_RLT + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的所有文件，显示文件的相对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
     + CMD + CMD_FND_PTH_DIR_ABS + "+ . \"F:/games/DARK SOULS REMASTERED\" file-list.txt" + gl(1) + "查询该目录中的文件和目录及其中所有文件，显示文件或目录的绝对路径名并将查询结果写入到文件file-list.txt。" + gl(2)
@@ -354,7 +353,7 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
     + CMD + CMD_PAK_INF_DIR + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“ .../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名”（不包含扩展名）中。" + gl(2)   
     + CMD + CMD_PAK_INF_MD5 + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。" + gl(2)   
-    + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
+    + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并并行调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
     + CMD + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全小写）。" + gl(2)
@@ -365,4 +364,10 @@ public interface IFileUtil extends ICommon{
     + CMD + CMD_MD5_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的32位MD5（英文字母全大写）。" + gl(2)
     + CMD + CMD_JSON_ENC + " (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，编码（即压缩为一行）JSON格式文件。" + gl(2)
     + CMD + CMD_JSON_DEC + " (?i)\\..*bundle$ \"g:/games/Pillars of Eternity II\"" + gl(1) + "查询该目录中名称以.bundle结尾（.与bundle之间可以包含0或多个字符）的所有文件，解码（即格式化）JSON格式文件。";
+    Pattern PTRN_REN_UP_FST = compile(REG_REN_UP_FST);
+    Pattern PTRN_FLE_SIZ = compile(REG_FLE_SIZ);
+    Pattern PTRN_RPT_ARG = compile(REG_RPT_ARG);
+    Pattern PTRN_ASK_NO = compile(REG_ASK_NO);
+    Pattern PTRN_OPT = compile(REG_OPT);
+    Pattern PTRN_OPT_ASK = compile(REG_OPT_ASK);
 }

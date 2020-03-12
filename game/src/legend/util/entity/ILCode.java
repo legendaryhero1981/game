@@ -39,8 +39,6 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
     @XmlTransient
     protected int endLine = 1;
     @XmlTransient
-    private Pattern pattern = compile(REG_SPRT_CODE);
-    @XmlTransient
     private List<Pattern> queryRegexCache = new ArrayList<>();
     @XmlTransient
     private List<Pattern> codeRegexCache = new ArrayList<>();
@@ -66,7 +64,7 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
     public boolean validate(){
         if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD.equals(processingMode)) processingMode = MODE_NATIVE;
         if(!MODE_NATIVE.equals(quoteMode) && !MODE_REPL.equals(quoteMode)) quoteMode = MODE_NATIVE;
-        Matcher matcher = compile(REG_LINE_NUMBER).matcher(lineNumber);
+        Matcher matcher = PTRN_LINE_NUMBER.matcher(lineNumber);
         if(!matcher.matches()){
             errorInfo = ERR_LINE_NUM_FORMAT;
             return false;
@@ -121,9 +119,8 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
         if(force || codeFragmentCache.isEmpty()){
             codeFragmentCache.clear();
             if(nonEmpty(codeFragment)){
-                String[] codes = pattern.split(codeFragment);
-                for(int i = 0;i < codes.length;i++)
-                    if(nonEmpty(codes[i].trim())) codeFragmentCache.add(codes[i]);
+                String[] codes = PTRN_SPRT_CODE.split(codeFragment);
+                for(int i = 0;i < codes.length;i++) if(nonEmpty(codes[i].trim())) codeFragmentCache.add(codes[i]);
             }
         }
         return codeFragmentCache;
@@ -131,7 +128,7 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
 
     private List<String> generateRegexCaches(String regex){
         List<String> caches = new ArrayList<>();
-        String[] regexes = pattern.split(regex);
+        String[] regexes = PTRN_SPRT_CODE.split(regex);
         for(int i = 0;i < regexes.length;i++){
             regex = regexes[i].trim();
             if(nonEmpty(regex)){

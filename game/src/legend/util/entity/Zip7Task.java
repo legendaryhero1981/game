@@ -1,7 +1,6 @@
 package legend.util.entity;
 
 import static java.util.Arrays.asList;
-import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.isEmpty;
@@ -10,7 +9,6 @@ import static legend.util.ValueUtil.nonEmpty;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -50,23 +48,6 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     private int level = Integer.MAX_VALUE;
     @XmlTransient
     protected Deque<String> cmd = new ArrayDeque<>();
-    @XmlTransient
-    protected static final Pattern levelPattern;
-    @XmlTransient
-    protected static final Pattern modePattern;
-    @XmlTransient
-    protected static final Pattern unzipModePattern;
-    @XmlTransient
-    protected static final Pattern compPattern;
-    @XmlTransient
-    protected static final Pattern volumePattern;
-    static{
-        levelPattern = compile(REG_NUM_NATURAL);
-        modePattern = compile(REG_ZIP7_MODE);
-        unzipModePattern = compile(REG_ZIP7_MODE_UNZIP);
-        compPattern = compile(REG_ZIP7_COMP);
-        volumePattern = compile(REG_ZIP7_VOL);
-    }
 
     @Override
     public Zip7Task trim(){
@@ -89,20 +70,20 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
             errorInfo = ERR_ZIP7_TASK_NON;
             return false;
         }
-        Matcher matcher = levelPattern.matcher(queryLevel);
+        Matcher matcher = PTRN_NUM_NATURAL.matcher(queryLevel);
         if(isEmpty(queryLevel) || !matcher.matches()) level = Integer.MAX_VALUE;
         else level = Integer.valueOf(queryLevel);
-        matcher = modePattern.matcher(mode);
+        matcher = PTRN_ZIP7_MODE.matcher(mode);
         if(!matcher.matches() || MODE_ZIP.equals(mode)) mode = ZIP7_ARG_ZIP;
         else mode = ZIP7_ARG_UNZIP;
-        matcher = unzipModePattern.matcher(unzipMode);
+        matcher = PTRN_ZIP7_MODE_UNZIP.matcher(unzipMode);
         if(isEmpty(unzipMode) || !matcher.matches()) unzipMode = MODE_UNZIP_MD5;
         if(nonEmpty(sfxModule)) if(!matcher.reset(sfxModule).matches() || MODE_ZIP.equals(sfxModule)) sfxModule = ZIP7_ARG_SFX_GUI;
         else sfxModule = ZIP7_ARG_SFX_CON;
-        matcher = compPattern.matcher(compression);
+        matcher = PTRN_ZIP7_COMP.matcher(compression);
         if(!matcher.matches()) compression = ZIP7_ARG_COMP_DEF;
         else compression = ZIP7_ARG_COMP + compression;
-        matcher = volumePattern.matcher(volumeSize);
+        matcher = PTRN_ZIP7_VOL.matcher(volumeSize);
         if(nonEmpty(volumeSize)) if(matcher.matches()){
             long size = FS.matchSize(Long.parseLong(matcher.group(1)),FS.matchType(matcher.group(2)));
             if(ZIP7_VOL_SIZE_DEF > size) volumeSize = ZIP7_ARG_VOL_DEF;

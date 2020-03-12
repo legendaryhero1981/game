@@ -1,7 +1,10 @@
 package legend.game.run.intf;
 
+import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
+
+import java.util.regex.Pattern;
 
 import legend.intf.ICommon;
 
@@ -167,4 +170,6 @@ public interface IMain extends ICommon{
     + "run -l" + gl(2)
     + "run -l ew" + gl(2)
     + "run -la";
+    Pattern PTRN_PRIORITY = compile(REG_PRIORITY);
+    Pattern PTRN_TIME = compile(REG_TIME);
 }

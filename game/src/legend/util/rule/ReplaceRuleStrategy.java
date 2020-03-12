@@ -3,6 +3,7 @@ package legend.util.rule;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
+import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
@@ -26,66 +27,20 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 data = results[i];
             }
             return results;
-        }),entry(RULE_REGENROW,(rule, data)->{
-            Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
-            Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
-            final int size = atomsCache.size(), colSize = atomsCache.get(0).length, dataSize = data.length();
-            String[] results = new String[size];
-            Matcher matcher = compile(REG_COL_REPL).matcher(data);
-            if(!matcher.find()) for(int i = 0;i < results.length;results[i++] = data);
-            else{
-                List<String> matchList = new ArrayList<>();
-                List<Integer[]> indexList = new ArrayList<>();
-                int start = 0, end = 0, index = 0;
-                do{
-                    end = matcher.start();
-                    if(start < end){
-                        matchList.add(data.substring(start,end));
-                        indexList.add(new Integer[]{index++});
-                    }
-                    start = matcher.end();
-                    matchList.add(S_EMPTY);
-                    String match = matcher.group();
-                    if(match.contains(FLAG_COL_REPL_COMP)){
-                        int x = limitValue(Integer.parseInt(matcher.group(3)),1,colSize) - 1;
-                        int y = Integer.parseInt(matcher.group(4));
-                        int z = nonEmpty(matcher.group(5)) ? Integer.parseInt(matcher.group(5)) : Integer.MAX_VALUE;
-                        indexList.add(new Integer[]{x,y,z});
-                    }else{
-                        int x = limitValue(Integer.parseInt(matcher.group(1)),1,colSize) - 1;
-                        int y = Integer.parseInt(matcher.group(2));
-                        indexList.add(new Integer[]{x,y});
-                    }
-                    index++;
-                }while(matcher.find());
-                if(start < dataSize){
-                    matchList.add(data.substring(start,dataSize));
-                    indexList.add(new Integer[]{index});
-                }
-                String[] matches = matchList.toArray(new String[matchList.size()]);
-                Integer[][] indexes = indexList.toArray(new Integer[indexList.size()][]);
-                atomsCache.entrySet().parallelStream().forEach(entry->{
-                    int i = entry.getKey();
-                    String[][] atoms = entry.getValue();
-                    String[][][] complexes = complexesCache.get(i);
-                    results[i] = S_EMPTY;
-                    for(int j = 0;j < indexes.length;j++){
-                        int x = indexes[j][0];
-                        switch(indexes[j].length){
-                            case 3:
-                            int y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
-                            int z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
-                            results[i] += complexes[x][y][z];
-                            break;
-                            case 2:
-                            y = limitValue(indexes[j][1],0,atoms[x].length - 1);
-                            results[i] += atoms[x][y];
-                            break;
-                            default:
-                            results[i] += matches[x];
-                        }
-                    }
-                });
+        }),entry(RULE_REGENROW,ReplaceRuleStrategy::regenRow),entry(RULE_GENFINALROW,(rule, data)->{
+            String[] results = new String[1], args = rule.args, rows = regenRow(rule,data);
+            switch(args.length){
+                case 1:
+                results[0] = concat(rows,S_EMPTY);
+                break;
+                case 2:
+                results[0] = concat(rows,args[1]);
+                break;
+                case 3:
+                results[0] = args[2] + concat(rows,args[1]);
+                break;
+                default:
+                results[0] = args[2] + concat(rows,args[1]) + args[3];
             }
             return results;
         }),entry(RULE_LOWER,(rule, data)->{
@@ -114,5 +69,69 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
 
     protected static BiFunction<ReplaceRule,String,String[]> provideStrategy(String name){
         return strategiesCache.get(name);
+    }
+
+    private static String[] regenRow(ReplaceRule rule, String data){
+        Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
+        Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
+        final int size = atomsCache.size(), colSize = atomsCache.get(0).length, dataSize = data.length();
+        String[] results = new String[size];
+        Matcher matcher = PTRN_COL_REPL.matcher(data);
+        if(!matcher.find()) for(int i = 0;i < results.length;results[i++] = data);
+        else{
+            List<String> matchList = new ArrayList<>();
+            List<Integer[]> indexList = new ArrayList<>();
+            int start = 0, end = 0, index = 0;
+            do{
+                end = matcher.start();
+                if(start < end){
+                    matchList.add(data.substring(start,end));
+                    indexList.add(new Integer[]{index++});
+                }
+                start = matcher.end();
+                matchList.add(S_EMPTY);
+                String match = matcher.group();
+                if(match.contains(FLAG_COL_REPL_COMP)){
+                    int x = limitValue(Integer.parseInt(matcher.group(3)),1,colSize) - 1;
+                    int y = Integer.parseInt(matcher.group(4));
+                    int z = nonEmpty(matcher.group(5)) ? Integer.parseInt(matcher.group(5)) : Integer.MAX_VALUE;
+                    indexList.add(new Integer[]{x,y,z});
+                }else{
+                    int x = limitValue(Integer.parseInt(matcher.group(1)),1,colSize) - 1;
+                    int y = Integer.parseInt(matcher.group(2));
+                    indexList.add(new Integer[]{x,y});
+                }
+                index++;
+            }while(matcher.find());
+            if(start < dataSize){
+                matchList.add(data.substring(start,dataSize));
+                indexList.add(new Integer[]{index});
+            }
+            String[] matches = matchList.toArray(new String[matchList.size()]);
+            Integer[][] indexes = indexList.toArray(new Integer[indexList.size()][]);
+            atomsCache.entrySet().parallelStream().forEach(entry->{
+                int i = entry.getKey();
+                String[][] atoms = entry.getValue();
+                String[][][] complexes = complexesCache.get(i);
+                results[i] = S_EMPTY;
+                for(int j = 0;j < indexes.length;j++){
+                    int x = indexes[j][0];
+                    switch(indexes[j].length){
+                        case 3:
+                        int y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
+                        int z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
+                        results[i] += complexes[x][y][z];
+                        break;
+                        case 2:
+                        y = limitValue(indexes[j][1],0,atoms[x].length - 1);
+                        results[i] += atoms[x][y];
+                        break;
+                        default:
+                        results[i] += matches[x];
+                    }
+                }
+            });
+        }
+        return results;
     }
 }

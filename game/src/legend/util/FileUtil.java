@@ -11,7 +11,6 @@ import static java.nio.file.Files.readAllBytes;
 import static java.nio.file.Files.readAllLines;
 import static java.nio.file.Files.write;
 import static java.nio.file.Files.writeString;
-import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -77,7 +76,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -100,14 +98,10 @@ import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static final FileParam CACHE;
-    private static final Pattern RPTN;
-    private static final Pattern APTN;
     private static FileParam FP;
     private static PrintStream PS;
     static{
         CACHE = new FileParam();
-        RPTN = compile(REG_REN_UP_FST);
-        APTN = compile(REG_ASK_NO);
     }
 
     private FileUtil(){}
@@ -129,7 +123,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 CS.s(ST_ASK_CONT);
                 String line = decTotalDuration(()->IN.nextLine());
                 CS.sl(false,line).l(1);
-                if(!APTN.matcher(line).find()){
+                if(!PTRN_ASK_NO.matcher(line).find()){
                     if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
                     else countDuration(t->dealFiles(FP));
                 }else resetTime();
@@ -550,7 +544,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         param.getDirCaches().parallelStream().forEach(p->{
             FileParam fp = new FileParam();
             fp.setCmd(CMD_FND_SIZ_ASC);
-            fp.setPattern(compile(REG_ANY));
+            fp.setPattern(PTRN_ANY);
             fp.setSrcPath(p);
             cachePaths(fp);
             fp.clearCache();
@@ -613,13 +607,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void regenFileWithGBK(FileParam param){
-        Pattern pattern = compile(REG_UC_NON_CHS);
         StringBuffer buffer = new StringBuffer();
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
             List<String> datas = readFile(path,detectorFileCharset(path,Language.SIMPLIFIED_CHINESE));
-            datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
+            datas.parallelStream().distinct().forEach(data->buffer.append(PTRN_UC_NON_CHS.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         if(0 == buffer.length()){
@@ -632,19 +625,18 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             buffer.delete(0,buffer.length());
             caches.parallelStream().forEach(cache->buffer.append(cache));
         }
-        String result = pattern.matcher(buffer.toString().replaceAll(REG_UC_MC_GBK,S_EMPTY)).replaceAll(S_EMPTY);
+        String result = PTRN_UC_NON_CHS.matcher(buffer.toString().replaceAll(REG_UC_MC_GBK,S_EMPTY)).replaceAll(S_EMPTY);
         param.getDetailOptional().ifPresent(c->CS.sl(result,1));
         param.getCmdOptional().ifPresent(c->writeFileWithUTF16LEBom(param.getDestPath(),result));
     }
 
     private static void regenFileWithBIG5(FileParam param){
-        Pattern pattern = compile(REG_UC_NON_CHS);
         StringBuffer buffer = new StringBuffer();
         param.getPathMap().entrySet().parallelStream().forEach(entry->{
             Path path = entry.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_EXTR},new FileSizeMatcher(entry.getKey()),path));
             List<String> datas = readFile(path,detectorFileCharset(path,Language.TRADITIONAL_CHINESE));
-            datas.parallelStream().distinct().forEach(data->buffer.append(pattern.matcher(data).replaceAll(S_EMPTY)));
+            datas.parallelStream().distinct().forEach(data->buffer.append(PTRN_UC_NON_CHS.matcher(data).replaceAll(S_EMPTY)));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         if(0 == buffer.length()){
@@ -658,7 +650,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             buffer.delete(0,buffer.length());
             caches.parallelStream().forEach(cache->buffer.append(cache));
         }
-        String result = pattern.matcher(buffer.toString().replaceAll(REG_UC_MC_BIG5,S_EMPTY)).replaceAll(S_EMPTY);
+        String result = PTRN_UC_NON_CHS.matcher(buffer.toString().replaceAll(REG_UC_MC_BIG5,S_EMPTY)).replaceAll(S_EMPTY);
         param.getDetailOptional().ifPresent(c->CS.sl(result,1));
         param.getCmdOptional().ifPresent(c->writeFileWithUTF16LEBom(param.getDestPath(),result));
     }
@@ -695,7 +687,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     private static void renUpFstFiles(FileParam param){
         renameFile(param,name->{
             StringBuffer stringBuffer = new StringBuffer();
-            Matcher matcher = RPTN.matcher(name);
+            Matcher matcher = PTRN_REN_UP_FST.matcher(name);
             while(matcher.find()){
                 char[] s = matcher.group().toCharArray();
                 s[0] -= (s[0] >= 97 && s[0] <= 122 ? 32 : 0);
