@@ -21,12 +21,26 @@ import org.junit.jupiter.api.Test;
 
 import legend.intf.ICommon;
 import legend.util.entity.Zip7;
+import legend.util.rule.intf.IReplaceRule;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-        testJaxbUtil();
+        testRegex();
+    }
+
+    // @Test
+    public void testRegex(){
+        String s = "1-3,5-7,9";
+        Matcher matcher = IReplaceRule.PTRN_COL_NUM.matcher(s);
+        while(matcher.find()) CS.sl(matcher.group(1) + " " + matcher.group(2));
+        s = "#1-2.3#";
+        matcher = IReplaceRule.PTRN_COL_REPL.matcher(s);
+        while(matcher.find()) CS.sl(matcher.group(1) + " " + matcher.group(2) + " " + matcher.group(3) + " " + matcher.group(4) + " " + matcher.group(5));
+        s = ".*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#";
+        matcher = IReplaceRule.PTRN_CMD_ARGS.matcher(s);
+        while(matcher.find()) CS.sl(matcher.group(1));
     }
 
     // @Test

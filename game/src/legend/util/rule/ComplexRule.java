@@ -10,7 +10,7 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
 
     protected ComplexRule(ReplaceRuleEngine engine, String rule){
         super(engine,rule);
-        name = SPRT_ATOM;
+        name = SPRT_ATOMS;
         strategy = provideStrategy(name);
     }
 
@@ -21,13 +21,13 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
 
     @Override
     protected void refreshRule(String rule){
-        String[] rules = rule.split(SPRT_ATOM);
+        String[] rules = rule.split(SPRT_ATOMS);
         atomRules = new AtomRule[rules.length];
         for(int i = 0;i < rules.length;i++){
             AtomRule atomRule = new AtomRule(engine,rules[i]);
             atomRules[i] = atomRule;
         }
-        this.rule = concat(atomRules,SPRT_ATOM);
+        this.rule = concat(atomRules,SPRT_ATOMS);
     }
 
     @Override

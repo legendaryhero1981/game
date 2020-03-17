@@ -74,7 +74,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
 
     public FileParam(){
         zipName = replacement = sizeExpr = cmd = opt = S_EMPTY;
-        split = REG_SPRT_COL;
+        split = REG_SPRT_COLS;
         minSize = 0l;
         maxSize = Long.MAX_VALUE;
         limit = level = Integer.MAX_VALUE;
@@ -338,7 +338,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         // 验证参数格式
         CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->args.length < 3);
         String[][] aa1 = new String[args.length][], aa2 = new String[args.length][];
-        aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMD);
+        aa1[0] = aa2[0] = args[0].split(REG_SPRT_CMDS);
         Matcher mrpt = PTRN_RPT_ARG.matcher(aa1[0][0]);
         CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT},()->mrpt.matches());
         Matcher mph = PTRN_OPT_ASK.matcher(S_EMPTY);
@@ -361,8 +361,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                 }
             }
             String s = mbq.replaceAll(SPC_NUL);
-            aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMD);
-            aa2[i] = s.split(REG_SPRT_CMD);
+            aa1[i] = brph(s,SPH_MAP).split(REG_SPRT_CMDS);
+            aa2[i] = s.split(REG_SPRT_CMDS);
             mrpt.reset(aa1[i][0]);
             if(aa1[0].length != aa1[i].length || mrpt.matches()) CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
         }

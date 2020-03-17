@@ -39,10 +39,6 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         return new ReplaceRuleEngine(rule);
     }
 
-    protected ReplaceRuleEngine(String rule){
-        refreshRule(rule);
-    }
-
     @Override
     public ReplaceRuleEngine cloneValue(){
         return new ReplaceRuleEngine(rule);
@@ -60,7 +56,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         quotesCache.clear();
         mbq.reset(replaceRule);
         while(mbq.find()) quotesCache.add(mbq.group(1));
-        String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELD);
+        String[] s = brph(mbq.replaceAll(SPC_NUL),SPH_MAP).split(REG_SPRT_FIELDS);
         CS.checkError(ERR_RULE_ANLS,new String[]{ERR_RULE_FMT},()->s.length > 2 || isEmpty(s[s.length - 1]));
         if(s.length == 2){
             colNumber = s[0];
@@ -71,11 +67,11 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             colNumber = S_EMPTY;
             rule = s[0];
         }
-        String[] r = rule.split(REG_SPRT_RULE);
+        String[] r = rule.split(REG_SPRT_RULES);
         rules = new ReplaceRule[r.length];
         atomsSize = complexesSize = 0;
         for(int i = 0;i < r.length;i++){
-            if(r[i].contains(SPRT_ATOM)){
+            if(r[i].contains(SPRT_ATOMS)){
                 ComplexRule complexRule = new ComplexRule(this,r[i]);
                 for(int j = 0;j < complexRule.atomRules.length;j++) validateRule(complexRule.atomRules[j],j,complexRule.atomRules.length);
                 rules[i] = complexRule;
@@ -86,7 +82,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             }
             validateRule(rules[i],i + 1,r.length);
         }
-        rule = concat(rules,SPRT_RULE);
+        rule = concat(rules,SPRT_RULES);
         hasTerminationRule = TMNT_RULE_SET.contains(rules[rules.length - 1].name);
     }
 
@@ -95,7 +91,11 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         return rule;
     }
 
-    private boolean refreshData(List<String> datas, String colSplitRegex){
+    private ReplaceRuleEngine(String rule){
+        refreshRule(rule);
+    }
+
+    private boolean refreshData(List<String> datas, String colSplit){
         atomsCache.clear();
         complexesCache.clear();
         colIndexesCache.clear();
@@ -103,7 +103,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         final int datasSize = datas.size();
         String[] data = datas.toArray(new String[datasSize]);
         for(int i = 0,j,k,l;i < datasSize;i++){
-            String[] s = data[i].split(colSplitRegex);
+            String[] s = data[i].split(colSplit);
             String[][] atoms = new String[s.length][atomsSize + 1];
             String[][][] complexes = new String[s.length][complexesSize][];
             for(j = 0;j < s.length;j++){
@@ -122,20 +122,20 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             Matcher matcher = PTRN_COL_NUM.matcher(colNumber);
             while(matcher.find()){
                 int start = Integer.parseInt(matcher.group(1));
-                String s = matcher.group(3);
-                int end = nonEmpty(s) ? Integer.parseInt(s) : start;
+                if(start > size) start = size;
+                int end = nonEmpty(matcher.group(2)) ? Integer.parseInt(matcher.group(2)) : start;
+                if(end > size) end = size;
                 if(start > end){
                     start += end;
                     end = start - end;
                     start -= end;
                 }
-                if(end > size) end = size;
                 for(int i = start - 1;i < end;i++) colIndexesCache.add(i);
             }
         }else for(int i = 0;i < size;i++) colIndexesCache.add(i);
-        Matcher matcher = compile(colSplitRegex).matcher(data[0]);
-        if(matcher.find()) colSplit = matcher.group();
-        else colSplit = S_EMPTY;
+        Matcher matcher = compile(colSplit).matcher(data[0]);
+        if(matcher.find()) this.colSplit = matcher.group();
+        else this.colSplit = S_EMPTY;
         return true;
     }
 

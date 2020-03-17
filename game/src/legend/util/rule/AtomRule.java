@@ -22,16 +22,17 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
 
     @Override
     protected void refreshRule(String rule){
-        Matcher matom = PTRN_RULE_ATOM.matcher(rule);
-        if(matom.matches()){
-            name = matom.group(1).toUpperCase();
+        Matcher matcher = PTRN_RULE_ATOM.matcher(rule);
+        if(matcher.matches()){
+            name = matcher.group(1).toUpperCase();
             strategy = provideStrategy(name);
-            String s = matom.group(3);
+            String s = matcher.group(2);
             if(nonEmpty(s)){
-                args = s.split(REG_SPRT_ARG);
                 StringBuilder sb = new StringBuilder();
                 Matcher mnul = PTRN_SPC_NUL.matcher(S_EMPTY);
+                args = s.split(REG_SPRT_ARGS);
                 for(int i = 0;i < args.length;i++){
+                    args[i] = PTRN_SPC_EMPTY.matcher(args[i]).replaceAll(S_EMPTY);
                     mnul.reset(args[i]);
                     while(mnul.find() && !engine.quotesCache.isEmpty()) if(TMNT_RULE_SET.contains(name)) mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
                     else if(0 == i) mnul.appendReplacement(sb,quoteReplacement(quote(engine.quotesCache.remove())));
@@ -39,8 +40,8 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
                     args[i] = mnul.appendTail(sb).toString();
                     sb.delete(0,sb.length());
                 }
-                Matcher maq = PTRN_RULE_ATOM_QUOTE.matcher(rule);
-                if(maq.matches()) rule = maq.group(1).concat(concat(args,SPRT_ARG)).concat(maq.group(2));
+                matcher = PTRN_RULE_ATOM_QUOTE.matcher(rule);
+                if(matcher.matches()) rule = matcher.group(1).concat(concat(args,SPRT_ARGS)).concat(matcher.group(2));
             }
         }
         this.rule = rule;

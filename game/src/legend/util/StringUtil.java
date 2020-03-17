@@ -139,34 +139,38 @@ public final class StringUtil implements IStringUtil{
         return new String(hexToBytes(hex));
     }
 
-    public static <T> String concat(T[] objects, String join){
-        if(0 == objects.length) return S_EMPTY;
-        String r = S_EMPTY;
-        for(int i = 0;i < objects.length - 1;i++) r = r.concat(objects[i].toString()).concat(join);
-        return r.concat(objects[objects.length - 1].toString());
+    public static <T> String concat(T[] t, String join, boolean skipEmpty){
+        if(0 == t.length) return S_EMPTY;
+        int i = 0;
+        for(;i < t.length && isEmpty(t[i]);i++);
+        if(t.length <= i) return S_EMPTY;
+        StringBuilder builder = new StringBuilder(t[i++].toString());
+        if(skipEmpty) for(;i < t.length;i++){
+            String s = t[i].toString();
+            if(nonEmpty(s)) builder.append(join + s);
+        }
+        else for(;i < t.length;i++) builder.append(join + t[i].toString());
+        return builder.toString();
     }
 
-    public static <T> String concat(T[] objects){
-        return concat(objects,S_EMPTY);
+    public static <T> String concat(T[] t, String join){
+        return concat(t,join,false);
+    }
+
+    public static <T> String concat(T[] t){
+        return concat(t,S_EMPTY);
+    }
+
+    public static <T> String concat(Collection<T> collection, String join, boolean skipEmpty){
+        return concat(collection.toArray(new Object[0]),join,skipEmpty);
     }
 
     public static <T> String concat(Collection<T> collection, String join){
-        return concat(collection.toArray(new Object[0]),join);
+        return concat(collection,join,false);
     }
 
     public static <T> String concat(Collection<T> collection){
         return concat(collection,S_EMPTY);
-    }
-
-    public static String concat(String[] s, String join){
-        if(0 == s.length) return S_EMPTY;
-        String r = S_EMPTY;
-        for(int i = 0;i < s.length - 1;i++) r = r.concat(s[i]).concat(join);
-        return r.concat(s[s.length - 1]);
-    }
-
-    public static String concat(String[] s){
-        return concat(s,S_EMPTY);
     }
 
     public static String brph(String s, Map<String,String> map){
@@ -180,9 +184,11 @@ public final class StringUtil implements IStringUtil{
         Matcher matcher = compile(regex).matcher(s);
         while(matcher.find()){
             String r = repl;
-            String match = matcher.group(1);
-            if(nonEmpty(match)){
-                for(int i = 1,n = Integer.valueOf(match);i < n;i++) r += repl;
+            if(1 < matcher.groupCount()){
+                String match = matcher.group(1);
+                if(nonEmpty(match)){
+                    for(int i = 1,n = Integer.valueOf(match);i < n;i++) r += repl;
+                }
             }
             matcher.appendReplacement(builder,r);
         }

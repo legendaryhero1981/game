@@ -102,7 +102,7 @@ public final class Main implements IMain{
                 case CMD_ADD:
                 case CMD_CREATE:
                 game.setId(args[1]);
-                game.setPath(args[2].replaceAll(REG_SPRT_PATH,SPRT_FILE_ZIP));
+                game.setPath(args[2].replaceAll(REG_SPRT_PATHS,SPRT_FILE_ZIP));
                 game.setExe(args[3]);
                 game.setName(args[4]);
                 if(args.length > 5) game.setComment(args[5]);
@@ -268,9 +268,9 @@ public final class Main implements IMain{
         if(nonEmpty(game.getWatches()) && nonEmpty(game.getWatches().get(0))){
             StringBuilder names = new StringBuilder(), paths = new StringBuilder();
             game.getWatches().stream().forEach(watch->{
-                watch = watch.replaceAll(REG_SPRT_PATH,gs(SPRT_FILE,4));
-                if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_CMD);
-                else names.append(watch + SPRT_CMD);
+                watch = watch.replaceAll(REG_SPRT_PATHS,gs(SPRT_FILE,4));
+                if(watch.contains(SPRT_FILE)) paths.append(watch + SPRT_CMDS);
+                else names.append(watch + SPRT_CMDS);
             });
             script.append(glph(CMD_VBS_GAME_WATCH,countWaitTime(game.getWatchWait()),game.getExe(),names.toString(),paths.toString()));
         }

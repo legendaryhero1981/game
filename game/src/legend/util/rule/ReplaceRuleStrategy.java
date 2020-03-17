@@ -19,7 +19,7 @@ import legend.util.rule.intf.IReplaceRule;
 public final class ReplaceRuleStrategy implements IReplaceRule{
     private static final Map<String,BiFunction<ReplaceRule,String,String[]>> strategiesCache;
     static{
-        strategiesCache = ofEntries(entry(SPRT_ATOM,(rule, data)->{
+        strategiesCache = ofEntries(entry(SPRT_ATOMS,(rule, data)->{
             AtomRule[] atomRules = ((ComplexRule)rule).atomRules;
             String[] results = new String[atomRules.length];
             for(int i = 0;i < atomRules.length;i++){
@@ -30,17 +30,16 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
         }),entry(RULE_REGENROW,ReplaceRuleStrategy::regenRow),entry(RULE_GENFINALROW,(rule, data)->{
             String[] results = new String[1], args = rule.args, rows = regenRow(rule,data);
             switch(args.length){
-                case 1:
-                results[0] = concat(rows,S_EMPTY);
-                break;
                 case 2:
-                results[0] = concat(rows,args[1]);
+                results[0] = concat(rows,args[1],true);
                 break;
                 case 3:
-                results[0] = args[2] + concat(rows,args[1]);
+                results[0] = args[2] + concat(rows,args[1],true);
                 break;
+                case 4:
+                results[0] = args[2] + concat(rows,args[1],true) + args[3];
                 default:
-                results[0] = args[2] + concat(rows,args[1]) + args[3];
+                results[0] = concat(rows,S_EMPTY);
             }
             return results;
         }),entry(RULE_LOWER,(rule, data)->{
@@ -60,10 +59,20 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             }
             return new String[]{data};
         }),entry(RULE_REPLACE,(rule, data)->{
-            String[] args = rule.args;
-            if(isEmpty(args)) return new String[]{data};
-            else if(1 == args.length) return new String[]{data.replaceAll(args[0],S_EMPTY)};
-            else return new String[]{data.replaceAll(args[0],args[1])};
+            String[] results = new String[1], args = rule.args;
+            switch(args.length){
+                case 2:
+                results[0] = data.replaceAll(args[0],args[1]);
+                break;
+                case 3:
+                Matcher matcher = compile(args[0]).matcher(data);
+                if(matcher.find()) results[0] = matcher.replaceAll(args[1]);
+                else results[0] = args[2];
+                break;
+                default:
+                results[0] = data;
+            }
+            return results;
         }));
     }
 
@@ -115,16 +124,20 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 String[][][] complexes = complexesCache.get(i);
                 results[i] = S_EMPTY;
                 for(int j = 0;j < indexes.length;j++){
-                    int x = indexes[j][0];
+                    int x = indexes[j][0], y, z;
                     switch(indexes[j].length){
                         case 3:
-                        int y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
-                        int z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
-                        results[i] += complexes[x][y][z];
+                        if(0 < complexes[x].length){
+                            y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
+                            z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
+                            results[i] += complexes[x][y][z];
+                        }else results[i] += S_EMPTY;
                         break;
                         case 2:
-                        y = limitValue(indexes[j][1],0,atoms[x].length - 1);
-                        results[i] += atoms[x][y];
+                        if(0 < atoms[x].length){
+                            y = limitValue(indexes[j][1],0,atoms[x].length - 1);
+                            results[i] += atoms[x][y];
+                        }else results[i] += S_EMPTY;
                         break;
                         default:
                         results[i] += matches[x];
