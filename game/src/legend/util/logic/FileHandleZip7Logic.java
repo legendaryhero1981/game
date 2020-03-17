@@ -29,7 +29,7 @@ public class FileHandleZip7Logic extends BaseFileLogic implements IZip7{
         CS.checkError(ERR_FLE_ANLS,asList(()->path.toString(),()->zip7.getErrorInfo()),()->!zip7.trim().validate());
         final float amount = zip7.getCmds().size(), scale = 1 / param.getPathMap().size();
         zip7.getCmds().parallelStream().forEach(cmd->{
-            final String cmdString = concat(cmd,S_SPACE);
+            final String cmdString = concat(cmd,S_SPACE,true);
             final StringBuilder builder = new StringBuilder(gl(1) + glph(ST_PRG_EXTN_START,cmdString));
             final String duration = getDurationString(t->handleProcess(process->{
                 try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),CHARSET_GBK))){
