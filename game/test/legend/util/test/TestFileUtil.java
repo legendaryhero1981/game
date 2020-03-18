@@ -25,9 +25,9 @@ public class TestFileUtil extends TestBase{
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
 //        s = "-r*  file  d:/games  `$$$`$0`$$$`  1";
-//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1##LOWER;;UPPER=>REPLACE(`.`,,`_$\\`);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;#SQM3#$1\\2#BQ#)  \\t+  1";
-//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)  \\t+  1";
-        s = "-rfbt*  (?i)`native.log`$  d:/games  1##REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
+//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@LOWER;;UPPER=>REPLACE(`.`,,`_$\\`);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;#SQM3#$1\\2#BQ#)  \\t+  1";
+//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)  \\t+  1";
+        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
 //        s = "-rfgbk*  mod  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
 //        s = "-rfbig5*  .  D:/games/jaot  D:/games/font_tchinese.txt";
 //        s = "-rfbig5*  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";

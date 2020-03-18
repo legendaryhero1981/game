@@ -670,32 +670,32 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void renLowFiles(FileParam param){
         renameFile(param,name->{
-            StringBuffer stringBuffer = new StringBuffer(name.toLowerCase());
-            dealMismatch(param,stringBuffer,name);
-            return stringBuffer.toString();
+            StringBuilder builder = new StringBuilder(name.toLowerCase());
+            dealMismatch(param,builder,name);
+            return builder.toString();
         });
     }
 
     private static void renUpFiles(FileParam param){
         renameFile(param,name->{
-            StringBuffer stringBuffer = new StringBuffer(name.toUpperCase());
-            dealMismatch(param,stringBuffer,name);
-            return stringBuffer.toString();
+            StringBuilder builder = new StringBuilder(name.toUpperCase());
+            dealMismatch(param,builder,name);
+            return builder.toString();
         });
     }
 
     private static void renUpFstFiles(FileParam param){
         renameFile(param,name->{
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder builder = new StringBuilder();
             Matcher matcher = PTRN_REN_UP_FST.matcher(name);
             while(matcher.find()){
                 char[] s = matcher.group().toCharArray();
                 s[0] -= (s[0] >= 97 && s[0] <= 122 ? 32 : 0);
-                matcher.appendReplacement(stringBuffer,String.valueOf(s));
+                matcher.appendReplacement(builder,String.valueOf(s));
             }
-            matcher.appendTail(stringBuffer);
-            dealMismatch(param,stringBuffer,name);
-            return stringBuffer.toString();
+            matcher.appendTail(builder);
+            dealMismatch(param,builder,name);
+            return builder.toString();
         });
     }
 
@@ -937,7 +937,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
-    private static void dealMismatch(FileParam param, StringBuffer stringBuffer, String string){
+    private static void dealMismatch(FileParam param, StringBuilder builder, String string){
         Matcher matcher = param.getPattern().matcher(string);
         final int count = matcher.groupCount();
         if(0 == count) return;
@@ -958,7 +958,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
         while(!starts.isEmpty()){
             int start = starts.remove(), end = ends.remove();
-            stringBuffer.replace(start,end,string.substring(start,end));
+            builder.replace(start,end,string.substring(start,end));
         }
     }
 

@@ -130,7 +130,7 @@ public interface IFileUtil extends IReplaceRule{
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
     String REG_OPT_ASK = "\\A[" + OPT_ASK + "]+$";
     String REG_ASK_NO = "\\A[nN]$";
-    String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?+";
+    String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
     String ERR_DIR_VST = V_VST + N_DIR + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
@@ -165,13 +165,13 @@ public interface IFileUtil extends IReplaceRule{
     + "level" + gs(7) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "。" + gl(2)
     + "sizeExpr" + gs(4) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~" + Long.MAX_VALUE + "B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(7) + "二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELDS + "]规则1(参数列表)[" + SPRT_RULES + "规则2(参数列表) ... " + SPRT_RULES + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + concat(TMNT_RULE_SET,S_PAUSE) + "；各事务性规则通过" + SPRT_RULES + "分隔，复合规则中各原子规则通过" + SPRT_ATOMS + "分隔，各参数通过" + SPRT_ARGS + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；" + gl(2)
+    + "replacement" + gs(1) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELDS + "]规则1(参数列表)[" + SPRT_RULES + "规则2(参数列表) ... " + SPRT_RULES + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则" + concat(TMNT_RULE_SET,S_PAUSE) + "；各事务性规则通过" + SPRT_RULES + "分隔，复合规则中各原子规则通过" + SPRT_ATOMS + "分隔，各参数通过" + SPRT_ARGS + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。" + gl(2)
     + "目前支持的所有原子规则（英文字母不区分大小写）如下：" + gl(2)
     + RULE_LOWER + "(query)" + gs(12) + "将匹配query的列字符串中英文字母替换为小写，匹配的正则表达式为：" + REG_RULE_LOWER + "；可以不传参数query，即" + RULE_LOWER + "与" + RULE_LOWER + "(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + RULE_UPPER + "(query)" + gs(12) + "将匹配query的列字符串中英文字母替换为大写，匹配的正则表达式为：" + REG_RULE_UPPER + "；可以不传参数query，即" + RULE_UPPER + "与" + RULE_UPPER + "(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
-    + RULE_REPLACE + "(query" + SPRT_ARGS + "replacement[" + SPRT_ARGS + "misMatch])" + gs(1) + "将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串串替换为misMatch；匹配的正则表达式为：" + REG_RULE_REPLACE + "；query为正则查询表达式，replacement为正则替换表达式，misMatch为不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
-    + RULE_REGENROW + "(replacement)" + gs(10) + "根据replacement重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；" + gl(2)
-    + RULE_GENFINALROW + "(replacement[" + SPRT_ARGS + "join" + SPRT_ARGS + "prefix" + SPRT_ARGS + "suffix])" + gs(10) + "先根据replacement重新生成每一行数据（同规则" + RULE_REGENROW + "），再使用jionString把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：" + REG_RULE_GENFINALROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
+    + RULE_REPLACE + "(query" + SPRT_ARGS + "replacement[" + SPRT_ARGS + "mismatch])" + gs(1) + "将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：" + REG_RULE_REPLACE + "；query为正则查询表达式，replacement为正则替换表达式，mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
+    + RULE_REGENROW + "(replacement)" + gs(10) + "根据replacement重新生成每一行数据，匹配的正则表达式为：" + REG_RULE_REGENROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式。" + gl(2)
+    + RULE_GENFINALROW + "(replacement[" + SPRT_ARGS + "join" + SPRT_ARGS + "prefix" + SPRT_ARGS + "suffix])" + gs(10) + "先根据replacement重新生成每一行数据（同规则" + RULE_REGENROW + "），再使用jion把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：" + REG_RULE_GENFINALROW + "；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；" + gl(2)
     + "目前支持的所有列数据占位符表达式如下：" + gl(2)
     + "#n.m#" + gs(1) + "提取通过执行原子规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_ATOM + "；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；" + gl(2)
     + "#n-m1.m2#" + gs(1) + "提取通过执行复合规则获得的列数据，匹配的正则表达式为：" + REG_COL_REPL_COMP + "；n为列号，m1为复合规则执行顺序号，m2为m1中原子规则的执行顺序号；m1的最小值为1，最大值为复合规则执行总数；m2的最小值为1，最大值为m1中原子规则执行总数，m2不指定则取最大值（即#n-m1#与#n-m1.max(m2)#等效）；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）；#1-1.1#（提取对第1列执行了第1条复合规则中的第1条原子规则后得到的数据）。" + gl(3)
@@ -309,13 +309,13 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + CMD_REN_DIR_OLY_LOW + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英文字母替换为小写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。" + gl(2)
-    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1##LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1@@LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
     + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行原子规则LOWER：将英文字母全部替换为小写；" + gl(1)
     + "2、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行原子规则REGENROW：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
-    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1##UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
+    + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1@@UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
     + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
     + "1、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则REGENROW：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)

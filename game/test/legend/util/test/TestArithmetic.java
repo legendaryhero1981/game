@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import legend.intf.ICommon;
 import legend.util.entity.Zip7;
+import legend.util.intf.IFileUtil;
 import legend.util.rule.intf.IReplaceRule;
 import legend.util.test.model.GCDModel;
 
@@ -38,9 +39,9 @@ public class TestArithmetic implements ICommon{
         s = "#1-2.3#";
         matcher = IReplaceRule.PTRN_COL_REPL.matcher(s);
         while(matcher.find()) CS.sl(matcher.group(1) + " " + matcher.group(2) + " " + matcher.group(3) + " " + matcher.group(4) + " " + matcher.group(5));
-        s = ".*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#";
-        matcher = IReplaceRule.PTRN_CMD_ARGS.matcher(s);
-        while(matcher.find()) CS.sl(matcher.group(1));
+        s = "666b-999kb";
+        matcher = IFileUtil.PTRN_FLE_SIZ.matcher(s);
+        while(matcher.find()) CS.sl(matcher.group(1) + " " + matcher.group(2));
     }
 
     // @Test

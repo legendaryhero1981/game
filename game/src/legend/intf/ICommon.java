@@ -164,7 +164,7 @@ public interface ICommon extends Cloneable{
     String FLAG_MOD = "*";
     String FLAG_ADD = "+";
     String SPRT_CMDS = "::";
-    String SPRT_FIELDS = "##";
+    String SPRT_FIELDS = "@@";
     String SPRT_RULES = ";;";
     String SPRT_ATOMS = "=>";
     String SPRT_ARGS = ",,";

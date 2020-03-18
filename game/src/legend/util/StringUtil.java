@@ -184,7 +184,7 @@ public final class StringUtil implements IStringUtil{
         Matcher matcher = compile(regex).matcher(s);
         while(matcher.find()){
             String r = repl;
-            if(1 < matcher.groupCount()){
+            if(0 < matcher.groupCount()){
                 String match = matcher.group(1);
                 if(nonEmpty(match)){
                     for(int i = 1,n = Integer.valueOf(match);i < n;i++) r += repl;

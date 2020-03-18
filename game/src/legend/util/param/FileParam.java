@@ -271,9 +271,9 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         if(nonEmpty(backupPath)) outPath = backupPath;
         else if(nonEmpty(destPath)) outPath = destPath;
         else outPath = rootPath;
-        cmdOptional = of(condition).filter(c->EXEC_CMD == (EXEC_CMD & c));
-        progressOptional = of(condition).filter(c->SHOW_PROGRESS == (SHOW_PROGRESS & c));
-        detailOptional = of(condition).filter(c->SHOW_DETAIL == (SHOW_DETAIL & c));
+        cmdOptional = of(EXEC_CMD).filter(this::meetCondition);
+        progressOptional = of(SHOW_PROGRESS).filter(this::meetCondition);
+        detailOptional = of(SHOW_DETAIL).filter(this::meetCondition);
     }
 
     public boolean meetCondition(long condition){

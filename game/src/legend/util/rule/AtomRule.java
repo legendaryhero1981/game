@@ -36,7 +36,7 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
                     mnul.reset(args[i]);
                     while(mnul.find() && !engine.quotesCache.isEmpty()) if(TMNT_RULE_SET.contains(name)) mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
                     else if(0 == i) mnul.appendReplacement(sb,quoteReplacement(quote(engine.quotesCache.remove())));
-                    else mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
+                    else mnul.appendReplacement(sb,quoteReplacement(quoteReplacement(engine.quotesCache.remove())));
                     args[i] = mnul.appendTail(sb).toString();
                     sb.delete(0,sb.length());
                 }
