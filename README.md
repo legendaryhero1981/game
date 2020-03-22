@@ -116,11 +116,11 @@ limit       查询类命令（即命令选项以-f开头的命令）的查询结
 
 level       文件目录最大查询层数；取值范围为：1~2147483647，不指定或超过取值范围则取默认值2147483647。
 
-sizeExpr    文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?+；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。
+sizeExpr    文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([TGMKtgmk]?[Bb])?[,;-]?；取值范围为：0~9223372036854775807B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。
 
 split       二维表格式文件中的列分隔符正则表达式，例如：[,;| \t]+；不指定则取默认值[ \t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。
 
-replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项-rfcs）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式##]规则1(参数列表)[;;规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则GENFINALROW、REGENROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(?:-([1-9]\d*))?,?+；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）；
+replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项-rfcs）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式@@]规则1(参数列表)[;;规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则REGENROW、GENFINALROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(?:-([1-9]\d*))?,?；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。
 
 目前支持的所有原子规则（英文字母不区分大小写）如下：
 
@@ -128,11 +128,11 @@ LOWER(query)            将匹配query的列字符串中英文字母替换为小
 
 UPPER(query)            将匹配query的列字符串中英文字母替换为大写，匹配的正则表达式为：(?i)(UPPER)(\((.*)\))?；可以不传参数query，即UPPER与UPPER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；
 
-REPLACE(query,,replacement[,,misMatch]) 将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串串替换为misMatch；匹配的正则表达式为：(?i)(REPLACE)\(([^,]+)(?:,,+)?\)；query为正则查询表达式，replacement为正则替换表达式，misMatch为不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）；
+REPLACE(query,,replacement[,,mismatch]) 将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：(?i)(REPLACE)\((.+)\)；query为正则查询表达式，replacement为正则替换表达式，mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）；
 
-REGENROW(replacement)          根据replacement重新生成每一行数据，匹配的正则表达式为：(?i)(REGENROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；
+REGENROW(replacement)          根据replacement重新生成每一行数据，匹配的正则表达式为：(?i)(REGENROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式。
 
-GENFINALROW(replacement[,,join,,prefix,,suffix])          先根据replacement重新生成每一行数据（同规则REGENROW），再使用jionString把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：(?i)(GENFINALROW)\(([^,]+)(?:,,+)?\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；
+GENFINALROW(replacement[,,join,,prefix,,suffix])          先根据replacement重新生成每一行数据（同规则REGENROW），再使用jion把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：(?i)(GENFINALROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；
 
 目前支持的所有列数据占位符表达式如下：
 
@@ -531,21 +531,21 @@ file -rdou (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 file -rdouf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。
 
-file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1##LOWER;;UPPER=>REPLACE(\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
-先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
+file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1@@LOWER;;UPPER=>REPLACE(\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
+先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：
 1、对每行的第1列数据执行原子规则LOWER：将英文字母全部替换为小写；
 2、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；
 3、对每行数据执行原子规则REGENROW：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = "beq.s"”。
 
-file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1##UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
-先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：
+file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1@@UPPER=>REPLACE(\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)" "\t+" 1
+先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：
 1、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；
 2、对每行数据执行原子规则REGENROW：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；
 例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,"如果两个值相等，则将控制转移到目标指令（短格式）。","");”。
 
 file -rfbt* (?i)`native.log`$ d:/games  "REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)" "\n" 1
-先查询再对该目录中名称（忽略大小写）为native.log的文件数据执行一系列有序的规则替换：
+先查询再对该目录中名称（忽略大小写）为native.log的文件数据执行一系列有序的替换规则：
 1、对每行的第1列数据执行原子规则REPLACE：将所有匹配的列字符串替换为捕获组1，且将所有不匹配的列字符串替换为空字符串；
 2、对每行数据执行原子规则GENFINALROW：将数据替换为--initialize-at-run-time=concat(#1.1#,',')；
 例如：native.log文件中有3行数据为：“Detailed message:

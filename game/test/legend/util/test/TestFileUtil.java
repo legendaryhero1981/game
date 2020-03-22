@@ -16,7 +16,7 @@ public class TestFileUtil extends TestBase{
     public String monk(){
         String s = "";
 //        s = "-ddo*  `2.3.3-b02`$  E:/Java/apache-maven-3.6.3/repository/org/glassfish/jaxb";
-//        s = "-7zip+  `file-7zip.xml`$  .  1";
+        s = "-d~::*::-7zip+  games?`.7z`$::*::`file-7zip.xml`$  D:/360安全浏览器下载/7zip/zip::G:/cache/截图/game::D:/games  1::*::*";
 //        s = "-zimd5+  `.jar`$  G:/cache/temp/7zip/cache  G:/cache/temp/7zip/unzip  1";
 //        s = "-pimd5+  `.jar`$  G:/cache/temp/7zip/cache  1";
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";
@@ -27,7 +27,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-r*  file  d:/games  `$$$`$0`$$$`  1";
 //        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@LOWER;;UPPER=>REPLACE(`.`,,`_$\\`);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;#SQM3#$1\\2#BQ#)  \\t+  1";
 //        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)  \\t+  1";
-        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
+//        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
 //        s = "-rfgbk*  mod  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
 //        s = "-rfbig5*  .  D:/games/jaot  D:/games/font_tchinese.txt";
 //        s = "-rfbig5*  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";
