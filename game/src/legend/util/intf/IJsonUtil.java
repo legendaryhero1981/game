@@ -11,6 +11,6 @@ public interface IJsonUtil extends ICommon{
     char C_SQUARE_L = '[';
     char C_SQUARE_R = ']';
     String N_JSON = "JSON字符串";
-    String ERR_JSON_PARSE = V_ANLS + N_JSON + V_FAIL + N_ERR_INFO + PH_ARGS0;
-    String ERR_JSON_FMT = V_ANLS + N_JSON + V_FAIL + N_ERR_INFO + N_JSON + N_FMT + V_ERR;
+    String ERR_JSON_PARSE = V_ANLS + N_JSON + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS0;
+    String ERR_JSON_FMT = V_ANLS + N_JSON + V_FAIL + S_BANG + N_ERR_INFO + N_JSON + N_FMT + V_ERR + S_BANG;
 }

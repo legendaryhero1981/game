@@ -8,7 +8,7 @@ public interface IFileMerge extends IFileUtil{
     String N_MEG_CONF = "文件整合配置文件";
     String N_MEG_NON = "path或path2或path3或mergeExecutablePath或queryRegex节点";
     String ST_FILE_MERGE_CONF = V_GNRT + N_MEG_CONF + S_DQM + CONF_FILE_MERGE + S_DQM + S_BANG;
-    String ERR_MEG_NODE_NON = N_MEG_CONF + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_MEG_NON + V_BY_NUL;
+    String ERR_MEG_NODE_NON = N_MEG_CONF + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_MEG_NON + V_BY_NUL + S_BANG;
     String FILE_MERGE_COMMENT = "\n" + gs(4) + "FileMerge配置节点结构说明：\n"
     + gs(4) + "FileMerge节点由comment、path、path2、path3、mergeExecutablePath、queryRegex、pathMd5、Merges节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "FileMerge::comment" + gs(18) + "FileMerge配置节点结构说明，对文件整合无影响，仅此说明而已。\n"

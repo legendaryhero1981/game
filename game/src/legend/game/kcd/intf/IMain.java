@@ -54,10 +54,10 @@ public interface IMain extends ICommon{
     String KCD_MOD_MRG_U = "-mmu";
     String ERR_NOT_FIND = "没找到任何匹配的文件！";
     String ERR_EXISTS_MERGE = "Mod目录 " + PH_ARGS0 + " 中存在名称为 " + MOD_MERGE + " 的子目录！";
-    String ERR_KCD_NON = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + V_NON_EXISTS;
-    String ERR_KCD_NUL_CFG = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_CFG + V_BY_NUL;
-    String ERR_KCD_MOD_PATH = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD_PATH + V_NON_EXISTS;
-    String ERR_KCD_NUL_MOD = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD + V_BY_NUL;
+    String ERR_KCD_NON = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + V_NON_EXISTS + S_BANG;
+    String ERR_KCD_NUL_CFG = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_CFG + V_BY_NUL + S_BANG;
+    String ERR_KCD_MOD_PATH = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD_PATH + V_NON_EXISTS + S_BANG;
+    String ERR_KCD_NUL_MOD = N_KCD_CONFIG + "\"" + KCD_FILE_CONFIG + "\"" + N_IN + N_KCD_MOD + V_BY_NUL + S_BANG;
     String HELP_KCD = APP_INFO + "参数说明：" + gl(2)
     + "kcd -lm|-lma|-lmu|-lc|-lca|-lcu|-ld|-lr|-mc|-mp|-mu|-mma|-mmf|-mmc|-mmo|-mmu regex src dest merge gamePath modPath mergePath mergeExecutablePath" + gl(2)
     + "-lm\t\t\t全量合并翻译文件，合并所有；包含原有的、新增的和更新的记录。" + gl(2)

@@ -133,22 +133,22 @@ public interface IFileUtil extends IReplaceRule{
     String REG_FLE_SIZ = "(0|[1-9]\\d*)([TGMKtgmk]?[Bb])?[,;-]?";
     String REG_REN_UP_FST = "[a-zA-Z]\\w*";
     String ST_ASK_CONT = "输入n或N跳过，否则继续，按回车键确认：";
-    String ERR_DIR_VST = V_VST + N_DIR + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_VST = V_VST + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_DEL = V_DEL + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_CPY = V_CPY + N_FILE + S_DQM + PH_ARGS0 + V_TO + PH_ARGS1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS2;
-    String ERR_FLE_MOV = V_MOV + N_FILE + S_DQM + PH_ARGS0 + V_TO + PH_ARGS1 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS2;
-    String ERR_FLE_WRT = V_WRITE + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_READ = V_READ + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_REPL = V_REPL + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_FLE_ANLS = V_ANLS + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FLE_EXTR = V_EXTR + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FLE_CPY = V_CPRS + N_FILE + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FILE_NUL + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_DQM + PH_ARGS0 + S_DQM + V_FAIL + N_ERR_INFO + PH_ARGS1;
-    String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FILE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FILE + N_PATH_NAME + S_DQM + PH_ARGS0 + S_DQM + V_SAME + N_A + N_FILE + S_BANG;
+    String ERR_DIR_VST = V_VST + N_DIR + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_VST = V_VST + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_DEL = V_DEL + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_CPY = V_CPY + N_FILE + S_DQM_L + PH_ARGS0 + V_TO + PH_ARGS1 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS2;
+    String ERR_FLE_MOV = V_MOV + N_FILE + S_DQM_L + PH_ARGS0 + V_TO + PH_ARGS1 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS2;
+    String ERR_FLE_WRT = V_WRITE + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_READ = V_READ + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_REPL = V_REPL + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_FLE_ANLS = V_ANLS + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FLE_EXTR = V_EXTR + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FLE_DCPRS = V_DCPRS + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FLE_CRT = V_CRT + V_CPRS + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FLE_CPY = V_CPRS + N_FILE + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FLE_NUL_CPY = V_CPRS + N_FILE_NUL + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_DIR_NUL_CPY = V_CPRS + N_DIR_NUL + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
+    String ERR_ZIP_FILE_SAME = V_CPRS + N_OR + V_DCPRS + N_A + N_FILE + N_IN + V_EXISTS + N_AND + V_CPRS + N_FILE + N_PATH_NAME + S_DQM_L + PH_ARGS0 + S_DQM_R + V_SAME + N_A + N_FILE + S_BANG;
     String HELP_FILE = APP_INFO + "命令参数：" + gl(2)
     + "regex" + gs(7) + "文件名正则查询表达式，.匹配任意文件名和目录名；引号等特殊字符可使用占位符表达式；各命令参数均可使用一对反引号来表示一个引用子字符串，程序会将引用字符串当成无特殊含义的普通字符串对待（即特殊字符占位符表达式和参数分隔符字符串等都将被当成普通字符串对待）；引用字符串匹配的正则表达式为：" + REG_QUOTE_BQ + "。" + gl(2)
     + "目前支持的所有特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
@@ -310,18 +310,18 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + CMD_REN_DIR_OLY_UP + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英文字母替换为大写。" + gl(2)
     + CMD + CMD_REN_DIR_OLY_UP_FST + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4\"" + gl(1) + "先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。" + gl(2)
     + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1@@LOWER;;UPPER=>REPLACE(\\.,,_);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;)\" \"\\t+\" 1" + gl(1)
-    + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
+    + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：" + gl(1)
     + "1、对每行的第1列数据执行原子规则LOWER：将英文字母全部替换为小写；" + gl(1)
     + "2、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "3、对每行数据执行原子规则REGENROW：将数据替换为String INST_#1-1# = #DQM##1.1##DQM#;；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“String INST_BEQ_S = \"beq.s\"”。" + gl(2)
     + CMD + CMD_REP_FLE_BT + "* (?i)\\A`temp1.txt`$ E:/Decompile/DLL-ildasm \"1@@UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)\" \"\\t+\" 1" + gl(1)
-    + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的规则替换：" + gl(1)
+    + "先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：" + gl(1)
     + "1、对每行的第1列数据执行复合规则UPPER=>REPLACE：先将英文字母替换为大写，再将.替换为_；" + gl(1)
     + "2、对每行数据执行原子规则REGENROW：将数据替换为addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);；" + gl(1)
     + "例如：temp1.txt文件中有1行数据为：“Beq.S	如果两个值相等，则将控制转移到目标指令（短格式）。”，则执行命令后该文件数据变为：“addInstruction(INST_BEQ_S,\"如果两个值相等，则将控制转移到目标指令（短格式）。\",\"\");”。" + gl(2)
     + CMD + CMD_REP_FLE_BT + "* (?i)`native.log`$ d:/games  \"REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)\" \"\\n\" 1" + gl(1)
-    + "先查询再对该目录中名称（忽略大小写）为native.log的文件数据执行一系列有序的规则替换：" + gl(1)
+    + "先查询再对该目录中名称（忽略大小写）为native.log的文件数据执行一系列有序的替换规则：" + gl(1)
     + "1、对每行的第1列数据执行原子规则REPLACE：将所有匹配的列字符串替换为捕获组1，且将所有不匹配的列字符串替换为空字符串；" + gl(1)
     + "2、对每行数据执行原子规则GENFINALROW：将数据替换为--initialize-at-run-time=concat(#1.1#,',')；" + gl(1)
     + "例如：native.log文件中有3行数据为：“Detailed message:" + gl(1)

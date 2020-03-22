@@ -13,5 +13,5 @@ public interface IJaxbUtil extends ICommon{
     String ESCAPE_QUOTE_D = "&apos;";
     String ESCAPE_CUSP_L = "&lt;";
     String ESCAPE_CUSP_R = "&gt;";
-    String ERR_ANLS_XML = "XML" + N_FILE + V_ANLS + V_FAIL + N_ERR_INFO + PH_ARGS0;
+    String ERR_ANLS_XML = "XML" + N_FILE + V_ANLS + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS0;
 }

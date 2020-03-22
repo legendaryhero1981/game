@@ -107,15 +107,15 @@ public interface IMain extends ICommon{
     + "goto quit )" + gl(1)
     + ":quit" + gl(1)
     + "exit /b 0";
-    String ERR_CONF_NON = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_NON_EXISTS;
-    String ERR_CONF_NUL = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_BY_NUL;
+    String ERR_CONF_NON = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_NON_EXISTS + S_BANG;
+    String ERR_CONF_NUL = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_BY_NUL + S_BANG;
     String ERR_CONF_REPEAT = N_GAME_CONFIG + S_DQM_L + RUN_FILE_CONFIG + S_DQM_R + V_EXISTS + N_GAME_REPEAT;
-    String ERR_ID_NON = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_NON_EXISTS;
-    String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_ARD_EXISTS;
+    String ERR_ID_NON = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_NON_EXISTS + S_BANG;
+    String ERR_ID_EXISTS = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + V_ARD_EXISTS + S_BANG;
     String ERR_INVALIDATE = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + V_EXISTS + N_GAME_INVALIDATE;
-    String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + N_EXE + V_BY_NUL;
-    String ERR_CREATE_FILE = V_CRT + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARGS0;
-    String ERR_RUN_FILE = V_EXEC + N_FILE_SCRIPT + V_FAIL + N_ERR_INFO + PH_ARGS0;
+    String ERR_EXE_NUL = N_GAME_CONFIG + S_DQM_L + PH_ARGS0 + S_DQM_R + N_IN + N_SPEC_ID + S_DQM_L + PH_ARGS1 + S_DQM_R + N_EXE + V_BY_NUL + S_BANG;
+    String ERR_CREATE_FILE = V_CRT + N_FILE_SCRIPT + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS0;
+    String ERR_RUN_FILE = V_EXEC + N_FILE_SCRIPT + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS0;
     String GAMES_COMMENT = "\n" + gs(4) + "游戏配置集节点结构说明：\n"
     + gs(4) + "Games节点由一个唯一节点comment和多个Game节点按顺序组成，comment节点必须在最前面。\n"
     + gs(4) + "Games::comment" + gs(14) + "游戏配置集节点结构说明，对执行游戏无影响，仅此说明而已。\n"
