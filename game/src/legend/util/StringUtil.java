@@ -173,6 +173,20 @@ public final class StringUtil implements IStringUtil{
         return concat(collection,S_EMPTY);
     }
 
+    public static <T> String concat(T t, String join, boolean skipEmpty){
+        if(t instanceof Collection<?>) return concat((Collection<?>)t,join,skipEmpty);
+        else if(t instanceof Object[]) return concat((Object[])t,join,skipEmpty);
+        else return S_EMPTY;
+    }
+
+    public static <T> String concat(T t, String join){
+        return concat(t,join,false);
+    }
+
+    public static <T> String concat(T t){
+        return concat(t,S_EMPTY);
+    }
+
     public static String brph(String s, Map<String,String> map){
         IValue<String> value = new SingleValue<>(s);
         if(nonEmpty(map)) map.entrySet().stream().forEach(entry->value.setValue(brph(value.getValue(),entry.getKey(),entry.getValue())));

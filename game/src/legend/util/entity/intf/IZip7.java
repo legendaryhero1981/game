@@ -44,13 +44,13 @@ public interface IZip7 extends IFileUtil{
     + gs(4) + "Zip7Task::queryLevel" + gs(8) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "；供程序内部使用file命令生成清单文件Zip7Task::listFilePath。\n"
     + gs(4) + "Zip7Task::queryPath" + gs(9) + "文件查询目录，供程序内部使用file命令生成清单文件Zip7Task::listFilePath。\n"
     + gs(4) + "Zip7Task::listFilePath" + gs(6) + "程序内部使用file命令生成的清单文件路径名，为联合执行的7z命令提供参数。\n"
-    + gs(4) + "Zip7Task::mode" + gs(14) + "文件压缩解压模式，取值范围为：0,1，取0表示压缩，取1表示解压缩；若指定的值超过取值范围程序会取默认值0。\n"
+    + gs(4) + "Zip7Task::mode" + gs(14) + "文件压缩解压模式，取值范围为：0,1；取0表示压缩，取1表示解压缩；若指定的值超过取值范围程序会取默认值0。\n"
     + gs(4) + "Zip7Task::filePath" + gs(10) + "当Zip7Task::mode值为0时表示执行7z命令生成的压缩文件路径名；而Zip7Task::mode值为1时表示执行7z命令生成的解压缩文件的输出目录。\n"
     + gs(4) + "Zip7Task::unzipMode" + gs(9) + "压缩文件的解压缩路径处理模式，取值范围为：0,1,2；取0表示按照压缩文件内容对应的32位md5码分类，即该压缩文件的解压缩路径为Zip7Task::filePath/压缩文件名.md5码；取1表示按照压缩文件名分类，即该压缩文件的解压缩路径为Zip7Task::filePath/压缩文件名（不包含扩展名）；取2表示不分类，直接将所有压缩文件解压缩到Zip7Task::filePath目录中；若指定的值超过取值范围程序会取默认值0；仅当Zip7Task::mode值为1时有效。\n"
     + gs(4) + "Zip7Task::password" + gs(10) + "执行7z命令时需要提供的密码参数，即创建压缩文件时指定的密码或解压缩加密压缩文件时需要提供的密码。\n"
-    + gs(4) + "Zip7Task::compression" + gs(7) + "文件压缩率，取值范围为：0,1,3,5,7,9，取0表示仅存储不压缩，取1表示最低压缩率，取9表示最高压缩率；若指定的值超过取值范围程序会取默认值9；仅当Zip7Task::mode值为0时有效。\n"
+    + gs(4) + "Zip7Task::compression" + gs(7) + "文件压缩率，取值范围为：0,1,3,5,7,9；取0表示仅存储不压缩，取1表示最低压缩率，取9表示最高压缩率；若指定的值超过取值范围程序会取默认值9；仅当Zip7Task::mode值为0时有效。\n"
     + gs(4) + "Zip7Task::volumeSize" + gs(8) + "分卷压缩文件大小，对应的正则表达式为" + REG_ZIP7_VOL + "；基于性能考虑，若指定的值小于1g程序会取默认值1g；仅当Zip7Task::mode值为0时有效。\n"
-    + gs(4) + "Zip7Task::sfxModule" + gs(9) + "自解压可执行文件的生成模式，取值范围为：0,1，取0表示生成GUI应用程序，取1表示生成控制台应用程序；若指定的值超过取值范围程序会取默认值0；仅当Zip7Task::mode值为0时有效。\n"
+    + gs(4) + "Zip7Task::sfxModule" + gs(9) + "自解压可执行文件的生成模式，取值范围为：0,1；取0表示生成GUI应用程序，取1表示生成控制台应用程序；若指定的值超过取值范围程序会取默认值0；仅当Zip7Task::mode值为0时有效。\n"
     + gs(4) + "Zip7Task::moreArgs" + gs(10) + "执行7z命令所需的其他原生参数，可以指定用空格字符间隔的多个参数；具体的参数详情可查看7z命令的帮助文件7-zip.chm。\n"
     + gs(4) + "特别说明：基于实用性考虑，程序只支持压缩（a）和解压缩（x）这两条原生命令的参数；Zip7Task节点中各子节点相对于7z原生命令参数的映射关系为：mode＝＞(0＝＞a),(1＝＞x)，filePath＝＞-o{dir_path}或base_archive_name，listFilePath＝＞@listfile，password＝＞-p{password}，compression＝＞-mx=[ 0 | 1 | 3 | 5 | 7 | 9 ]，volumeSize＝＞-v{Size}[ b | k | m | g]，sfxModule＝＞(0＝＞-sfx7z.sfx),(1＝＞-sfx7zCon.sfx)。\n" + gs(4);
     Pattern PTRN_ZIP7_MODE = compile(REG_ZIP7_MODE);

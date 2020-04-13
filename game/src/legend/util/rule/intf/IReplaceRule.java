@@ -14,6 +14,7 @@ public interface IReplaceRule extends ICommon{
     String RULE_REPLACE = "REPLACE";
     String RULE_REGENROW = "REGENROW";
     String RULE_GENFINALROW = "GENFINALROW";
+    String RULE_DISTFINALROW = "DISTFINALROW";
     String REG_RULE_LOWER = "(?i)(" + RULE_LOWER + ")(\\((.*)\\))?";
     String REG_RULE_UPPER = "(?i)(" + RULE_UPPER + ")(\\((.*)\\))?";
     String REG_RULE_REPLACE = "(?i)(" + RULE_REPLACE + ")\\((.+)\\)";
@@ -36,5 +37,5 @@ public interface IReplaceRule extends ICommon{
     Pattern PTRN_RULE_ATOM_QUOTE = compile(REG_RULE_ATOM_QUOTE);
     Pattern PTRN_COL_NUM = compile(REG_COL_NUM);
     Pattern PTRN_COL_REPL = compile(REG_COL_REPL);
-    Set<String> TMNT_RULE_SET = Set.of(RULE_REGENROW,RULE_GENFINALROW);
+    Set<String> TMNT_RULE_SET = Set.of(RULE_REGENROW,RULE_GENFINALROW,RULE_DISTFINALROW);
 }

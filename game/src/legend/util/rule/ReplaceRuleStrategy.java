@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.concat;
+import static legend.util.ValueUtil.arrayToSet;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import legend.util.rule.intf.IReplaceRule;
@@ -25,21 +27,6 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             for(int i = 0;i < atomRules.length;i++){
                 results[i] = atomRules[i].execute(data)[0];
                 data = results[i];
-            }
-            return results;
-        }),entry(RULE_REGENROW,ReplaceRuleStrategy::regenRow),entry(RULE_GENFINALROW,(rule, data)->{
-            String[] results = new String[1], args = rule.args, rows = regenRow(rule,data);
-            switch(args.length){
-                case 2:
-                results[0] = concat(rows,args[1],true);
-                break;
-                case 3:
-                results[0] = args[2] + concat(rows,args[1],true);
-                break;
-                case 4:
-                results[0] = args[2] + concat(rows,args[1],true) + args[3];
-                default:
-                results[0] = concat(rows,S_EMPTY);
             }
             return results;
         }),entry(RULE_LOWER,(rule, data)->{
@@ -73,11 +60,33 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 results[0] = data;
             }
             return results;
-        }));
+        }),entry(RULE_GENFINALROW,(rule, data)->{
+            return genFinalRow(rule,()->regenRow(rule,data));
+        }),entry(RULE_DISTFINALROW,(rule, data)->{
+            return genFinalRow(rule,()->arrayToSet(regenRow(rule,data)));
+        }),entry(RULE_REGENROW,ReplaceRuleStrategy::regenRow));
     }
 
     protected static BiFunction<ReplaceRule,String,String[]> provideStrategy(String name){
         return strategiesCache.get(name);
+    }
+
+    private static <T> String[] genFinalRow(ReplaceRule rule, Supplier<T> supplier){
+        String[] results = new String[1], args = rule.args;
+        T rows = supplier.get();
+        switch(args.length){
+            case 2:
+            results[0] = concat(rows,args[1],true);
+            break;
+            case 3:
+            results[0] = args[2] + concat(rows,args[1],true);
+            break;
+            case 4:
+            results[0] = args[2] + concat(rows,args[1],true) + args[3];
+            default:
+            results[0] = concat(rows,S_EMPTY);
+        }
+        return results;
     }
 
     private static String[] regenRow(ReplaceRule rule, String data){

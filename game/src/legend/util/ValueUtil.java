@@ -1,7 +1,10 @@
 package legend.util;
 
+import  java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class ValueUtil{
     private ValueUtil(){}
@@ -29,6 +32,10 @@ public final class ValueUtil{
 
     public static boolean isNull(Object o){
         return null == o;
+    }
+
+    public static <T> Set<T> arrayToSet(T[] array){
+        return new HashSet<>(Arrays.asList(array));
     }
 
     public static boolean matchRange(long n, long min, long max){

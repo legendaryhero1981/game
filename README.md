@@ -21,8 +21,9 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 ```
 输入 game 可以看到命令帮助信息如下：
 
+版本：V5.6
 作者：李允
-版本：V5.5
+主页：知乎 https://www.zhihu.com/people/legendaryhero1981
 
 
 参数说明：
@@ -120,23 +121,25 @@ sizeExpr    文件大小表达式，匹配的正则表达式为：(0|[1-9]\d*)([
 
 split       二维表格式文件中的列分隔符正则表达式，例如：[,;| \t]+；不指定则取默认值[ \t]+，即只使用空格或制表符作为列分隔符；可使用特殊字符占位符表达式（见regex参数）。
 
-replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项-rfcs）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式@@]规则1(参数列表)[;;规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则REGENROW、GENFINALROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(?:-([1-9]\d*))?,?；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。
+replacement 字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项-rfcs）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式@@]规则1(参数列表)[;;规则2(参数列表) ... ;;规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含原子规则DISTFINALROW、REGENROW、GENFINALROW；各事务性规则通过;;分隔，复合规则中各原子规则通过=>分隔，各参数通过,,分隔；列号表达式匹配的正则表达式为：([1-9]\d*)(?:-([1-9]\d*))?,?；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。
 
 目前支持的所有原子规则（英文字母不区分大小写）如下：
 
-LOWER(query)            将匹配query的列字符串中英文字母替换为小写，匹配的正则表达式为：(?i)(LOWER)(\((.*)\))?；可以不传参数query，即LOWER与LOWER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；
+LOWER(query)            将匹配query的列字符串中英文字母替换为小写，匹配的正则表达式为：(?i)(LOWER)(\((.*)\))?；可以不传参数query，即LOWER与LOWER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）。
 
-UPPER(query)            将匹配query的列字符串中英文字母替换为大写，匹配的正则表达式为：(?i)(UPPER)(\((.*)\))?；可以不传参数query，即UPPER与UPPER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）；
+UPPER(query)            将匹配query的列字符串中英文字母替换为大写，匹配的正则表达式为：(?i)(UPPER)(\((.*)\))?；可以不传参数query，即UPPER与UPPER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）。
 
-REPLACE(query,,replacement[,,mismatch]) 将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：(?i)(REPLACE)\((.+)\)；query为正则查询表达式，replacement为正则替换表达式，mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）；
+REPLACE(query,,replacement[,,mismatch]) 将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：(?i)(REPLACE)\((.+)\)；query为正则查询表达式，replacement为正则替换表达式，mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）。
 
 REGENROW(replacement)          根据replacement重新生成每一行数据，匹配的正则表达式为：(?i)(REGENROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式。
 
-GENFINALROW(replacement[,,join,,prefix,,suffix])          先根据replacement重新生成每一行数据（同规则REGENROW），再使用jion把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：(?i)(GENFINALROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）；
+GENFINALROW(replacement[,,join,,prefix,,suffix])          先根据replacement重新生成每一行数据（同规则REGENROW），再使用jion把所有行数据连接成一行，最后在这行数据的首尾分别加上prefix、suffix；replacement必须指定，jion、prefix、suffix可以不指定，若不指定jion则使用空字符串连接每一行数据；匹配的正则表达式为：(?i)(GENFINALROW)\((.+)\)；此规则只能作为最后一条原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式；jion为行数据连接字符串，prefix为前缀字符串，suffix为后缀字符串，均可使用特殊字符占位符表达式（见regex参数）。
+
+DISTFINALROW(replacement[,,join,,prefix,,suffix])          该规则的作用同规则GENFINALROW，区别在于它只会从根据replacement重新生成的每一行数据中取不重复的行数据。
 
 目前支持的所有列数据占位符表达式如下：
 
-#n.m# 提取通过执行原子规则获得的列数据，匹配的正则表达式为：#([1-9]\d*)\.(0|[1-9]\d*)#；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)；
+#n.m# 提取通过执行原子规则获得的列数据，匹配的正则表达式为：#([1-9]\d*)\.(0|[1-9]\d*)#；n为列号，m为原子规则执行顺序号；m的最小值为0，最大值为原子规则执行总数；m取0表示提取第n列的原始数据；例如：#1.0#（提取第1列的原始数据），#1.1#(提取对第1列执行了第1条原子规则后得到的数据)。
 
 #n-m1.m2# 提取通过执行复合规则获得的列数据，匹配的正则表达式为：#([1-9]\d*)-([1-9]\d*)(?:\.([1-9]\d*))?#；n为列号，m1为复合规则执行顺序号，m2为m1中原子规则的执行顺序号；m1的最小值为1，最大值为复合规则执行总数；m2的最小值为1，最大值为m1中原子规则执行总数，m2不指定则取最大值（即#n-m1#与#n-m1.max(m2)#等效）；例如：#1-1#（提取对第1列执行了第1条复合规则后得到的数据）；#1-1.1#（提取对第1列执行了第1条复合规则中的第1条原子规则后得到的数据）。
 
@@ -551,6 +554,14 @@ file -rfbt* (?i)`native.log`$ d:/games  "REPLACE(.*?--initialize-at-run-time=(.+
 例如：native.log文件中有3行数据为：“Detailed message:
 Error: Class initialization of com.sun.xml.bind.v2.ContextFactory failed. Use the option --initialize-at-run-time=com.sun.xml.bind.v2.ContextFactory to explicitly request delayed initialization of this class.
 Error: Class initialization of legend.Main failed. Use the option --initialize-at-run-time=legend.Main to explicitly request delayed initialization of this class.”，则执行命令后该文件数据变为最终一行数据：“--initialize-at-run-time=com.sun.xml.bind.v2.ContextFactory,legend.Main”。
+
+file -rfbt* (?i)`native.log`$ d:/games  "REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;DISTFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)" "\n" 1
+先查询再对该目录中名称（忽略大小写）为native.log的文件数据执行一系列有序的替换规则：
+1、对每行的第1列数据执行原子规则REPLACE：将所有匹配的列字符串替换为捕获组1，且将所有不匹配的列字符串替换为空字符串；
+2、对每行数据执行原子规则DISTFINALROW：将数据替换为--initialize-at-run-time=concat(#1.1#,',')；
+例如：native.log文件中有3行数据为：“Detailed message:
+Error: Class initialization of com.sun.xml.bind.v2.ContextFactory failed. Use the option --initialize-at-run-time=com.sun.xml.bind.v2.ContextFactory to explicitly request delayed initialization of this class.
+Error: Class initialization of com.sun.xml.bind.v2.ContextFactory failed. Use the option --initialize-at-run-time=com.sun.xml.bind.v2.ContextFactory to explicitly request delayed initialization of this class.”，则执行命令后该文件数据变为最终一行数据：“--initialize-at-run-time=com.sun.xml.bind.v2.ContextFactory”。
 
 file -rfil* (?i)`.il`$ E:/Decompile/DLL-ildasm
 根据配置文件./file-il.xml自动替换“E:/Decompile/DLL-ildasm”目录中所有文件扩展名为.il的文件内容。
