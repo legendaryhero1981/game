@@ -5,7 +5,7 @@ import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.regex.Matcher;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import legend.intf.ICommon;
 

@@ -1,7 +1,8 @@
 open module legend{
-    requires transitive jdk.unsupported;
-    requires transitive java.xml.bind;
     requires static org.junit.jupiter.api;
+    requires transitive jdk.unsupported;
+    requires transitive java.xml;
+    requires transitive jakarta.xml.bind;
     
     exports legend;
     exports legend.game.dos2;

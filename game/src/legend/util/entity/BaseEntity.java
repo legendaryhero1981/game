@@ -1,6 +1,6 @@
 package legend.util.entity;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import legend.intf.ICommon;
 import legend.intf.IValue;

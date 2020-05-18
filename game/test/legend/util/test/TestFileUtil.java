@@ -16,7 +16,7 @@ public class TestFileUtil extends TestBase{
     public String monk(){
         String s = "";
 //        s = "-ddo*  `2.3.3-b02`$  E:/Java/apache-maven-3.6.3/repository/org/glassfish/jaxb";
-        s = "-d~::*::-7zip+  games?`.7z`$::*::`file-7zip.xml`$  D:/360安全浏览器下载/7zip/zip::G:/cache/截图/game::D:/games  1::*::*";
+//        s = "-d~::*::-7zip+  games?`.7z`$::*::`file-7zip.xml`$  D:/360安全浏览器下载/7zip/zip::G:/cache/截图/game::D:/games  1::*::*";
 //        s = "-zimd5+  `.jar`$  G:/cache/temp/7zip/cache  G:/cache/temp/7zip/unzip  1";
 //        s = "-pimd5+  `.jar`$  G:/cache/temp/7zip/cache  1";
 //        s = "-fdf*@::-d*  .::*  F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::*  D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data::?";

@@ -6,9 +6,9 @@ import static legend.util.ValueUtil.nonEmpty;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import legend.game.run.intf.IMain;
 import legend.intf.IValue;

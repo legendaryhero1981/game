@@ -19,14 +19,14 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String VERSION = "版本：V5.6";
+    String VERSION = "版本：V5.7";
     String AUTHOR = "作者：李允";
     String HOME_PAGE = "主页：知乎 https://www.zhihu.com/people/legendaryhero1981";
     String APP_INFO = VERSION + gl(1) + AUTHOR + gl(1) + HOME_PAGE + gl(3);
     String CHARSET_GBK = "GBK";
     String CHARSET_BIG5 = "BIG5";
-    String CHARSET_UTF8 = "UTF8";
-    String CHARSET_UTF8_BOM = "UTF-8";
+    String CHARSET_UTF8 = "UTF-8";
+    String CHARSET_UTF8_BOM = "UTF-8B";
     String CHARSET_UTF16LE = "UTF-16LE";
     String CHARSET_UTF16BE = "UTF-16BE";
     String EXT_BAT = ".bat";

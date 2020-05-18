@@ -2,10 +2,10 @@ package legend.game.kcd.entity.mod;
 
 import static legend.util.ValueUtil.nonEmpty;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import legend.game.kcd.intf.IMain;
 import legend.intf.IValue;

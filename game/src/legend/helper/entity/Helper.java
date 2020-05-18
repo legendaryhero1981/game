@@ -3,10 +3,10 @@ package legend.helper.entity;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "Helper")
 @XmlType(propOrder = {"name","desc","example"})

@@ -7,10 +7,10 @@ import static legend.util.param.FileParam.convertParam;
 
 import java.util.regex.Matcher;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 import legend.intf.IValue;
 import legend.util.entity.intf.IFileSPK;
