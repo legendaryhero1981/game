@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
@@ -62,9 +60,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private ConcurrentMap<Path,Path> rePathMap;
     private ConcurrentMap<Path,List<Path>> pathsMap;
     private ConcurrentMap<Path,Long> sizeMap;
-    private BlockingDeque<Path> pathDeque;
-    private List<Path> dirCaches;
-    private List<Path> pathCaches;
+    private List<Path> dirsCache;
+    private List<Path> pathsCache;
     private Optional<Long> detailOptional;
     private Optional<Long> cmdOptional;
     private Optional<Long> progressOptional;
@@ -83,9 +80,8 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         rePathMap = new ConcurrentHashMap<>();
         pathsMap = new ConcurrentHashMap<>();
         sizeMap = new ConcurrentHashMap<>();
-        pathDeque = new LinkedBlockingDeque<>();
-        dirCaches = new ArrayList<>();
-        pathCaches = new ArrayList<>();
+        dirsCache = new ArrayList<>();
+        pathsCache = new ArrayList<>();
         filesSize = new AtomicLong();
         filesCount = new AtomicInteger();
         dirsCount = new AtomicInteger();
@@ -302,8 +298,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.setRePathMap(rePathMap);
             cache.setPathsMap(pathsMap);
             cache.setSizeMap(sizeMap);
-            cache.setPathDeque(pathDeque);
-            cache.setDirCaches(dirCaches);
+            cache.setDirsCache(dirsCache);
             cache.setPattern(pattern);
             cache.setSrcPath(srcPath);
             cache.setCacheFileSize(filesSize.get());
@@ -319,8 +314,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             rePathMap = cache.getRePathMap();
             pathsMap = cache.getPathsMap();
             sizeMap = cache.getSizeMap();
-            pathDeque = cache.getPathDeque();
-            dirCaches = cache.getDirCaches();
+            dirsCache = cache.getDirsCache();
             return true;
         }else return false;
     }
@@ -330,8 +324,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         rePathMap.clear();
         pathsMap.clear();
         sizeMap.clear();
-        pathDeque.clear();
-        dirCaches.clear();
+        dirsCache.clear();
     }
 
     public static List<FileParam> analyzeParam(String[] args){
@@ -909,28 +902,20 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         this.sizeMap = sizeMap;
     }
 
-    public BlockingDeque<Path> getPathDeque(){
-        return pathDeque;
+    public List<Path> getDirsCache(){
+        return dirsCache;
     }
 
-    private void setPathDeque(BlockingDeque<Path> pathDeque){
-        this.pathDeque = pathDeque;
+    private void setDirsCache(List<Path> dirsCache){
+        this.dirsCache = dirsCache;
     }
 
-    public List<Path> getDirCaches(){
-        return dirCaches;
+    public List<Path> getPathsCache(){
+        return pathsCache;
     }
 
-    private void setDirCaches(List<Path> dirCaches){
-        this.dirCaches = dirCaches;
-    }
-
-    public List<Path> getPathCaches(){
-        return pathCaches;
-    }
-
-    public void setPathCaches(List<Path> pathCaches){
-        this.pathCaches = pathCaches;
+    public void setPathsCache(List<Path> pathsCache){
+        this.pathsCache = pathsCache;
     }
 
     public Optional<Long> getDetailOptional(){

@@ -66,8 +66,8 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -303,7 +303,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.saveCache(CACHE);
         }catch(Exception e){
             CS.sl(gsph(ERR_EXEC_CMD_SPEC,param.toString(),e.toString()));
-            e.printStackTrace();
         }finally{
             param.getDetailOptional().ifPresent(s->CS.l(1));
         }
@@ -473,16 +472,16 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFiles(FileParam param){
-        param.getDetailOptional().ifPresent(c->param.getDirCaches().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
-        int limit = param.getLimit() - param.getDirCaches().size();
+        param.getDetailOptional().ifPresent(c->param.getDirsCache().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        int limit = param.getLimit() - param.getDirsCache().size();
         if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
     }
 
     private static void findSortedFilePaths(FileParam param){
         final boolean relative = param.meetCondition(PATH_RELATIVE);
-        List<Path> pathCaches = param.getPathCaches();
+        List<Path> pathCaches = param.getPathsCache();
         Stream<Path> dirs = param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit());
-        int limit = param.getLimit() - param.getDirCaches().size();
+        int limit = param.getLimit() - param.getDirsCache().size();
         Stream<Path> files = null;
         if(0 < limit) files = param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(limit);
         if(nonEmpty(files)) pathCaches.addAll(concat(dirs,files).collect(toList()));
@@ -512,7 +511,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     param.getFilesSize().addAndGet(a.size() * -1);
                 }
             }else if(same && file.isDirectory() || !same && !file.isDirectory()){
-                param.getDirCaches().add(p);
+                param.getDirsCache().add(p);
                 pathMap.put(a,p);
             }else param.getDirsCount().addAndGet(-1);
         });
@@ -541,7 +540,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void findSortedDirSizes(FileParam param){
         param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->param.getSizeMap().put(e.getValue(),e.getKey().size()));
-        param.getDirCaches().parallelStream().forEach(p->{
+        param.getDirsCache().parallelStream().forEach(p->{
             FileParam fp = new FileParam();
             fp.setCmd(CMD_FND_SIZ_ASC);
             fp.setPattern(PTRN_ANY);
@@ -757,7 +756,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void delNulDirs(FileParam param){
-        param.getDirCaches().stream().sorted(new PathListComparator(false)).forEach(p->{
+        param.getDirsCache().stream().sorted(new PathListComparator(false)).forEach(p->{
             if(0 == p.toFile().list().length){
                 param.getDetailOptional().ifPresent(c->CS.sl(V_DEL + N_DIR_NUL + gs(2) + p));
                 param.getCmdOptional().ifPresent(c->deleteFile(p));
@@ -793,23 +792,23 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     param.getPathsMap().put(dest.getParent(),paths);
                     find(dest.getParent(),1,(p, b)->b.isRegularFile()).parallel().forEach(p->paths.add(p));
                 }
-                param.getDirCaches().clear();
+                param.getDirsCache().clear();
                 List<Path> paths = param.getPathsMap().get(dest.getParent());
                 paths.parallelStream().filter(p->upgrade && p.getFileName().toString().toLowerCase().startsWith(src.getFileName().toString().toLowerCase()) || !upgrade && src.getFileName().toString().toLowerCase().startsWith(p.getFileName().toString().toLowerCase())).forEach(p->{
                     param.getFilesSize().addAndGet(p.toFile().length());
-                    param.getDirCaches().add(p);
+                    param.getDirsCache().add(p);
                 });
-                param.getFilesCount().addAndGet(param.getDirCaches().size());
-                param.getDirCaches().parallelStream().forEach(p->{
+                param.getFilesCount().addAndGet(param.getDirsCache().size());
+                param.getDirsCache().parallelStream().forEach(p->{
                     Path backup = param.getBackupPath().resolve(param.getDestPath().relativize(p));
                     param.getDetailOptional().ifPresent(t->showFile(new String[]{V_BAK + V_MOV,V_TO},new FileSizeMatcher(file),p,backup));
                     param.getCmdOptional().ifPresent(c->moveFile(p,backup));
                 });
-                paths.removeAll(param.getDirCaches());
+                paths.removeAll(param.getDirsCache());
             }catch(IOException ioe){
                 CS.sl(gsph(ERR_DIR_VST,dest.getParent().toString(),ioe.toString()));
             }
-            if(param.getDirCaches().isEmpty()) param.getDetailOptional().ifPresent(t->showFile(new String[]{V_ADD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
+            if(param.getDirsCache().isEmpty()) param.getDetailOptional().ifPresent(t->showFile(new String[]{V_ADD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
             else param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD + V_MOV,V_TO},new FileSizeMatcher(file),src,dest));
             param.getCmdOptional().ifPresent(c->moveFile(src,dest));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
@@ -844,7 +843,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         Path path = param.getDestPath().resolve(param.getZipName());
         CS.checkError(ERR_ZIP_FLE_CRT,new String[]{path.toString(),gsph(ERR_ZIP_FILE_SAME,path.toString())},()->param.getPathMap().containsValue(path));
         param.getCmdOptional().ifPresent(c->createZipFile(param));
-        param.getDirCaches().stream().sorted(new PathListComparator(true)).forEach(p->{
+        param.getDirsCache().stream().sorted(new PathListComparator(true)).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_CPRS + N_DIR_NUL + gs(2) + p));
             param.getCmdOptional().ifPresent(c->zipDir(param.getZipOutputStream(),param.getRootPath(),p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
@@ -1041,23 +1040,25 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         long count = 0;
         try{
             count = find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel().count();
-            param.getPathDeque().clear();
         }catch(Exception e){
             CS.sl(gsph(ERR_DIR_VST,param.getSrcPath().toString(),e.toString()));
+            e.printStackTrace();
         }
         return count;
     }
 
     private static void cacheRepaths(FileParam param){
-        if(!param.meetCondition(MATCH_FILE_ONLY) && param.meetCondition(NEED_REPATH)) param.getDirCaches().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
+        if(!param.meetCondition(MATCH_FILE_ONLY) && param.meetCondition(NEED_REPATH)) param.getDirsCache().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
     }
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
         private FileParam param;
-        boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex;
+        private Queue<Path> dirsCache;
+        private boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex;
 
         private PathMatcher(FileParam param){
             this.param = param;
+            dirsCache = new ConcurrentLinkedQueue<>();
             matchFileOnly = param.meetCondition(MATCH_FILE_ONLY);
             matchDirOnly = param.meetCondition(MATCH_DIR_ONLY);
             excludeRoot = param.meetCondition(EXCLUDE_ROOT);
@@ -1105,7 +1106,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_UGD_DIR:
                     case CMD_ZIP_DIR_DEF:
                     case CMD_PAK_DIR_DEF:
-                    if(find = find || matchPath(p)) param.getPathDeque().push(p);
+                    if(!find) find = matchPath(p);
+                    else if(!ignoreRegex) dirsCache.add(p);
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_DIR_OLY_SIZ_ASC:
                     case CMD_FND_DIR_OLY_SIZ_DSC:
@@ -1121,7 +1123,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_REN_DIR_OLY_UP_FST:
                     if(find){
                         param.getPathMap().put(a,p);
-                        param.getDirCaches().add(p);
+                        param.getDirsCache().add(p);
                     }
                 }
             }
@@ -1131,12 +1133,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
 
         private boolean matchPath(Path path){
-            BlockingDeque<Path> deque = param.getPathDeque();
-            for(Path p = deque.poll();nonEmpty(p);p = deque.poll()) if(path.startsWith(p)){
-                deque.push(p);
-                return true;
-            }
-            return false;
+            return dirsCache.parallelStream().anyMatch(p->path.startsWith(p));
         }
     }
 

@@ -46,9 +46,9 @@ public class FileMergeLogic extends BaseFileLogic implements IFileMerge{
         fp3.setSrcPath(get(fileMerge.getPath3()));
         asList(fp,fp2,fp3).parallelStream().forEach(FileUtil::dealFiles);
         final Path root = fp.getRootPath(), root2 = fp2.getRootPath(), root3 = fp3.getRootPath();
-        Set<Path> pathSet = new HashSet<>(fp.getPathCaches());
-        Set<Path> pathSet2 = new HashSet<>(fp2.getPathCaches());
-        Set<Path> pathSet3 = new HashSet<>(fp3.getPathCaches());
+        Set<Path> pathSet = new HashSet<>(fp.getPathsCache());
+        Set<Path> pathSet2 = new HashSet<>(fp2.getPathsCache());
+        Set<Path> pathSet3 = new HashSet<>(fp3.getPathsCache());
         List<Merge> merges = new ArrayList<>();
         ConcurrentMap<String,Merge> mergeMap = fileMerge.refreshMergeMap();
         pathSet.parallelStream().forEach(p->{

@@ -3,7 +3,8 @@ open module legend{
     requires transitive jdk.unsupported;
     requires transitive java.xml;
     requires transitive jakarta.xml.bind;
-    
+    requires transitive com.sun.xml.bind;
+
     exports legend;
     exports legend.game.dos2;
     exports legend.game.dos2.entity;

@@ -82,7 +82,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             if(isZipMode) cmds.add(t.cmd.toArray(new String[t.cmd.size()]));
             else{
                 Queue<String> caches = new ConcurrentLinkedQueue<>();
-                fp.getPathCaches().parallelStream().forEach(p->{
+                fp.getPathsCache().parallelStream().forEach(p->{
                     Deque<String> cmd = new ArrayDeque<>(t.cmd);
                     String name = t.getUnzipMode();
                     if(MODE_UNZIP_MD5.equals(name)) name = p.getFileName().toString() + REG_ANY + getMD5L32(p);
