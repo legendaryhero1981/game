@@ -538,10 +538,18 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                 break;
                 case CMD_ITCHG_UGD:
                 case CMD_ITCHG_RST:
+                param.setDestPath(get(s1[3]));
+                param.setBackupPath(get(s1[4]));
+                optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
+                break;
                 case CMD_UPGRADE:
                 case CMD_UGD_DIR:
                 param.setDestPath(get(s1[3]));
-                param.setBackupPath(get(s1[4]));
+                optional.filter(s->s.length > 4).ifPresent(s->{
+                    if(s[3].matches(REG_NUM)){
+                        param.setLevel(Integer.parseInt(s[4]));
+                    }else param.setBackupPath(get(s[4]));
+                });
                 optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                 break;
                 case CMD_ZIP_DEF:

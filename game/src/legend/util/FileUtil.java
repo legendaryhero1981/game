@@ -549,6 +549,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             fp.clearCache();
             final long size = fp.getFilesSize().get();
             if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
             Path path = e.getKey();
@@ -826,9 +827,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
             File file = dest.toFile();
             if(file.isFile()){
-                Path backup = param.getBackupPath().resolve(param.getDestPath().getParent().relativize(dest));
-                param.getDetailOptional().ifPresent(t->showFile(new String[]{V_BAK,V_TO},new FileSizeMatcher(file),dest,backup));
-                param.getCmdOptional().ifPresent(c->copyFile(dest,backup));
+                if(nonEmpty(param.getBackupPath())){
+                    Path backup = param.getBackupPath().resolve(param.getDestPath().getParent().relativize(dest));
+                    param.getDetailOptional().ifPresent(t->showFile(new String[]{V_BAK,V_TO},new FileSizeMatcher(file),dest,backup));
+                    param.getCmdOptional().ifPresent(c->copyFile(dest,backup));
+                }
                 param.getDetailOptional().ifPresent(t->showFile(new String[]{V_UPD},new FileSizeMatcher(e.getKey()),dest));
                 param.getCmdOptional().ifPresent(c->copyFile(src,dest));
             }else{
