@@ -60,9 +60,9 @@ public interface IMain extends ICommon{
     + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
     + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
     + "end if";
-    String CMD_VBS_PROC_GAME = "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARGS0 + EXT_EXE + "'\")";
-    String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1)
-    + "dim games" + gl(1) + CMD_VBS_PROC_GAME + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARGS1;
+    String CMD_VBS_PROC_GAME = "dim games" + gl(1) + "set games=wmi.ExecQuery(\"select * from win32_process where name='" + PH_ARGS0 + EXT_EXE + "'\")";
+    String CMD_VBS_GAME_PRIORITY = CMD_VBS_WMI_INIT + gl(1) + CMD_VBS_PROC_GAME + gl(1)
+    + "if games.count>0 then" + gl(1) + "games.ItemIndex(0).SetPriority " + PH_ARGS1 + gl(1) + "end if";
     String CMD_VBS_WATCH_TERMINATE = "for each watch in wmi.ExecQuery(wql)" + gl(1) + "watch.Terminate" + gl(1) + "next";
     String CMD_VBS_GAME_KILL = CMD_VBS_WMI_INIT + gl(1)
     + "wql=\"select * from win32_process where name='" + PH_ARGS0 + EXT_EXE + "'\"" + gl(1)

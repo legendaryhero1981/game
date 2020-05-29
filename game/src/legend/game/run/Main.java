@@ -274,6 +274,7 @@ public final class Main implements IMain{
             });
             script.append(glph(CMD_VBS_GAME_WATCH,countWaitTime(game.getWatchWait()),game.getExe(),names.toString(),paths.toString()));
         }
+        script.append(glph(CMD_VBS_RUN_DEL,caches[0]));
     }
 
     private static void writeOtherScript() throws IOException{
@@ -324,7 +325,6 @@ public final class Main implements IMain{
     }
 
     private static void writeVbsFile() throws IOException{
-        script.append(glph(CMD_VBS_RUN_DEL,caches[0]));
         caches[caches.length - 1] = script.toString();
         CS.sl(caches[0]).sl(caches[caches.length - 1]);
         write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(vbsFile),CHARSET_GBK)),caches[caches.length - 1]);
