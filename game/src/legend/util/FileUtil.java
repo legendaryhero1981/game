@@ -1045,13 +1045,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             count = find(param.getSrcPath(),param.getLevel(),new PathMatcher(param)).parallel().count();
         }catch(Exception e){
             CS.sl(gsph(ERR_DIR_VST,param.getSrcPath().toString(),e.toString()));
-            e.printStackTrace();
         }
         return count;
     }
 
     private static void cacheRepaths(FileParam param){
-        if(!param.meetCondition(MATCH_FILE_ONLY) && param.meetCondition(NEED_REPATH)) param.getDirsCache().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
+        if(param.meetCondition(NEED_REPATH)) param.getDirsCache().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
     }
 
     private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
