@@ -56,12 +56,12 @@ public class FileMerge extends BaseEntity<FileMerge> implements IFileMerge{
 
     @Override
     public FileMerge trim(){
-        path = path.trim();
-        path2 = path2.trim();
-        path3 = path3.trim();
-        mergeExecutablePath = mergeExecutablePath.trim();
-        queryRegex = queryRegex.trim();
-        pathMd5 = pathMd5.trim();
+        path = path.strip();
+        path2 = path2.strip();
+        path3 = path3.strip();
+        mergeExecutablePath = mergeExecutablePath.strip();
+        queryRegex = queryRegex.strip();
+        pathMd5 = pathMd5.strip();
         merges.parallelStream().forEach(m->m.trim());
         return this;
     }

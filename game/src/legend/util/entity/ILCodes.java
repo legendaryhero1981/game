@@ -71,7 +71,7 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
         if(partitionSize < SIZE_IL_PARTITION_MIN) partitionSize = SIZE_IL_PARTITION_MIN;
         partition = partitionSize + S_EMPTY;
         if(isEmpty(codes)){
-            errorInfo = ERR_ILCODE_NON;
+            errorInfo = ERR_ILCODE_NUL;
             return false;
         }
         if(!codes.parallelStream().anyMatch(code->{
@@ -127,9 +127,9 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
 
     @Override
     public ILCodes trim(){
-        mode = mode.trim();
-        header = header.trim();
-        partition = partition.trim();
+        mode = mode.strip();
+        header = header.strip();
+        partition = partition.strip();
         codes.parallelStream().forEach(code->code.trim());
         return this;
     }

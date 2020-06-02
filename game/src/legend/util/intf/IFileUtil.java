@@ -109,6 +109,7 @@ public interface IFileUtil extends IReplaceRule{
     String CMD_PAK_INF_DIR = "-pidir";
     String CMD_PAK_INF_MD5 = "-pimd5";
     String CMD_7ZIP = "-7zip";
+    String CMD_DSRP = "-dsrp";
     String CMD_GUID_L32 = "-gl32";
     String CMD_GUID_U32 = "-gu32";
     String CMD_MD5_L8 = "-ml8";
@@ -125,6 +126,7 @@ public interface IFileUtil extends IReplaceRule{
     String CONF_FILE_MERGE = "./file-merge.xml";
     String CONF_FILE_SPK = "./file-spk.xml";
     String CONF_FILE_7ZIP = "./file-7zip.xml";
+    String CONF_FILE_DSRP = "./file-dsrp.xml";
     String REG_RPT_ARG = "\\A[" + OPT_SIMULATE + "]+(.*)";
     String REG_NON_PROG = ".*?[" + OPT_DETAIL + OPT_SIMULATE + OPT_INSIDE + "].*?";
     String REG_OPT = "(.*?)([" + OPT_INSIDE + OPT_DETAIL + OPT_SIMULATE + OPT_EXCLUDE_ROOT + OPT_CACHE + OPT_ASK + "]+)$";
@@ -261,7 +263,8 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + CMD_PAK_INF + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中。" + gl(2)
     + CMD + CMD_PAK_INF_DIR + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名”（不包含扩展名）。" + gl(2)
     + CMD + CMD_PAK_INF_MD5 + OPTIONS + "regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。" + gl(2)
-    + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件并并行调用7-Zip控制台程序执行压缩或解压缩命令。" + gl(2)
+    + CMD + CMD_7ZIP + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压缩命令。" + gl(2)
+    + CMD + CMD_DSRP + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
     + CMD + CMD_GUID_L32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + OPTIONS + "regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全小写）。" + gl(2)
@@ -369,7 +372,8 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
     + CMD + CMD_PAK_INF_DIR + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“ .../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名”（不包含扩展名）中。" + gl(2)   
     + CMD + CMD_PAK_INF_MD5 + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。" + gl(2)   
-    + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件并并行调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
+    + CMD + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
+    + CMD + CMD_DSRP + "+ (?i)`file-dsrp.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-dsrp.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
     + CMD + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + CMD_MD5_L8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全小写）。" + gl(2)

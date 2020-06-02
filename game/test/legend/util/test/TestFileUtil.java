@@ -15,7 +15,9 @@ public class TestFileUtil extends TestBase{
     @Override
     public String monk(){
         String s = "";
-        s = "-u!*::*::*  `.class`$::*::*  D:/games/classes/jaxb/jakarta.xml.bind-api/META-INF/versions/9::D:/games/classes/jaxb/jaxb-core/META-INF/versions/9::D:/games/classes/jaxb/jaxb-impl/META-INF/versions/9  D:/games/classes/jaxb/jakarta.xml.bind-api::D:/games/classes/jaxb/jaxb-core::D:/games/classes/jaxb/jaxb-impl";
+        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
+//        s = "-7zip+  (?i)`file-7zip.xml`$  .  1";
+//        s = "-u!*::*::*  `.class`$::*::*  D:/games/classes/jaxb/jakarta.xml.bind-api/META-INF/versions/9::D:/games/classes/jaxb/jaxb-core/META-INF/versions/9::D:/games/classes/jaxb/jaxb-impl/META-INF/versions/9  D:/games/classes/jaxb/jakarta.xml.bind-api::D:/games/classes/jaxb/jaxb-core::D:/games/classes/jaxb/jaxb-impl";
 //        s = "-ddo+  `META-INF`$  D:/games/jmod/jaxb/3.0.0/unzip";
 //        s = "-d~::*::-7zip+  games?`.7z`$::*::`file-7zip.xml`$  D:/360安全浏览器下载/7zip/zip::G:/cache/截图/game::D:/games  1::*::*";
 //        s = "-zimd5+  `.jar`$  G:/cache/temp/7zip/cache  G:/cache/temp/7zip/unzip  1";

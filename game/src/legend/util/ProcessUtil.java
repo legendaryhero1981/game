@@ -42,7 +42,9 @@ public class ProcessUtil implements IProcessUtil{
         @Override
         public void accept(Process process){
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
-                reader.lines().forEach(line->CS.sl(line));
+                StringBuilder builder = new StringBuilder();
+                reader.lines().forEach(line->builder.append(line + SPRT_LINE));
+                CS.s(builder.toString());
             }catch(Exception e){
                 CS.sl(gsph(ERR_DEAL_PROC,e.toString()));
             }

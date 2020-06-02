@@ -84,10 +84,10 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
 
     @Override
     public ILCode trim(){
-        processingMode = processingMode.trim();
-        quoteMode = quoteMode.trim();
-        lineNumber = lineNumber.trim();
-        codeDesc = codeDesc.trim();
+        processingMode = processingMode.strip();
+        quoteMode = quoteMode.strip();
+        lineNumber = lineNumber.strip();
+        codeDesc = codeDesc.strip();
         return this;
     }
 

@@ -104,10 +104,10 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
 
     @Override
     public SPKHeader trim(){
-        headerFlag = headerFlag.trim();
-        headerSize = headerSize.trim();
-        fileStartPosExpr = fileStartPosExpr.trim();
-        fileSizeExpr = fileSizeExpr.trim();
+        headerFlag = headerFlag.strip();
+        headerSize = headerSize.strip();
+        fileStartPosExpr = fileStartPosExpr.strip();
+        fileSizeExpr = fileSizeExpr.strip();
         return this;
     }
 

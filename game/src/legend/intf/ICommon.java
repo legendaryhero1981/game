@@ -19,7 +19,7 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String VERSION = "版本：V5.8";
+    String VERSION = "版本：V5.9";
     String AUTHOR = "作者：李允";
     String HOME_PAGE = "主页：知乎 https://www.zhihu.com/people/legendaryhero1981";
     String APP_INFO = VERSION + gl(1) + AUTHOR + gl(1) + HOME_PAGE + gl(3);
@@ -83,6 +83,7 @@ public interface ICommon extends Cloneable{
     String N_IN = "中";
     String N_FMT = "格式";
     String N_DEAL = "处理了";
+    String N_EXEC_PATH = "可执行文件路径名";
     String V_DEAL = "处理";
     String V_INPUT = "输入";
     String V_OUTPUT = "输出";
@@ -223,8 +224,7 @@ public interface ICommon extends Cloneable{
     String ERR_EXEC_CMD = V_EXEC + N_CMD + V_FAIL + S_BANG + ERR_INFO;
     String ERR_EXEC_CMD_SPEC = V_EXEC + N_CMD + S_DQM_L + PH_ARGS0 + S_DQM_R + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
     String ERR_EXEC_FILE_MERGE = V_EXEC + N_FILE_MERGE + N_CMD + V_FAIL + S_BANG + ERR_INFO;
-    String ERR_KDIFF3_EXEC_NON = "文件整合工具KDiff3的可执行文件路径名无效或不存在！";
-    String ERR_7ZIP_EXEC_NON = "文件压缩解压工具7-Zip的可执行文件路径名无效或不存在！";
+    String ERR_KDIFF3_EXEC_NON = "文件整合工具KDiff3" + N_A + N_EXEC_PATH + V_NON_EXISTS + S_BANG;
     String ERR_RES_CLS = V_CLS + N_STM + V_FAIL + S_BANG + ERR_INFO;
     String ERR_ARG_ANLS = V_ANLS + N_ARG + V_FAIL + S_BANG + ERR_INFO;
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR + S_BANG;

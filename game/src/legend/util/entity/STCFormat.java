@@ -30,13 +30,13 @@ public class STCFormat extends BaseEntity<STCFormat> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(headerInfo.getHeaderSize()) || isEmpty(headerInfo.getHeaderFlag())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_STCF_HEADER_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_STCF_HEADER_INFO);
             return false;
         }else if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFileSizeExpr()) || isEmpty(bodyInfo.getFileStartPosExpr())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_STCF_BODY_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_STCF_BODY_INFO);
             return false;
         }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_STCF_LIST_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_STCF_LIST_INFO);
             return false;
         }else if(!headerInfo.validate()){
             errorInfo = headerInfo.errorInfo;

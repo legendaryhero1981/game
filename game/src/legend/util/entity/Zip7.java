@@ -48,7 +48,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
 
     @Override
     public Zip7 trim(){
-        zip7ExecutablePath = zip7ExecutablePath.trim();
+        zip7ExecutablePath = zip7ExecutablePath.strip();
         tasks.parallelStream().forEach(t->t.trim());
         return this;
     }
@@ -56,10 +56,10 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
     @Override
     public boolean validate(){
         if(isEmpty(zip7ExecutablePath)){
-            errorInfo = ERR_ZIP7_EXEC_NON;
+            errorInfo = ERR_ZIP7_EXEC_NUL;
             return false;
         }else if(!existsPath(get(zip7ExecutablePath))){
-            errorInfo = ERR_7ZIP_EXEC_NON;
+            errorInfo = ERR_ZIP7_EXEC_NON;
             return false;
         }
         cmds.clear();

@@ -29,11 +29,11 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
 
     @Override
     public SPKCode trim(){
-        unpackPath = unpackPath.trim();
-        repackPath = repackPath.trim();
-        filePath = filePath.trim();
-        fileName = fileName.trim();
-        queryRegex = queryRegex.trim();
+        unpackPath = unpackPath.strip();
+        repackPath = repackPath.strip();
+        filePath = filePath.strip();
+        fileName = fileName.strip();
+        queryRegex = queryRegex.strip();
         spkFormat = spkFormat.trim();
         stcFormat = stcFormat.trim();
         return this;
@@ -42,7 +42,7 @@ public class SPKCode extends BaseEntity<SPKCode> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(unpackPath) || isEmpty(repackPath) || isEmpty(filePath) || isEmpty(fileName) || isEmpty((queryRegex = convertParam(queryRegex,true)))){
-            errorInfo = ERR_SPKC_NODE_NON;
+            errorInfo = ERR_SPKC_NODE_NUL;
             return false;
         }else if(repackPath.equalsIgnoreCase(filePath)){
             errorInfo = ERR_SPKC_PATH_SAME;

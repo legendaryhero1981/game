@@ -51,23 +51,25 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
 
     @Override
     public Zip7Task trim(){
-        queryRegex = queryRegex.trim();
-        queryPath = queryPath.trim();
-        listFilePath = listFilePath.trim();
-        mode = mode.trim();
-        filePath = filePath.trim();
-        password = password.trim();
-        compression = compression.trim();
-        volumeSize = volumeSize.trim();
-        sfxModule = sfxModule.trim();
-        moreArgs = moreArgs.trim();
+        queryRegex = queryRegex.strip();
+        queryLevel = queryLevel.strip();
+        queryPath = queryPath.strip();
+        listFilePath = listFilePath.strip();
+        mode = mode.strip();
+        filePath = filePath.strip();
+        password = password.strip();
+        unzipMode = unzipMode.strip();
+        compression = compression.strip();
+        volumeSize = volumeSize.strip();
+        sfxModule = sfxModule.strip();
+        moreArgs = moreArgs.strip();
         return this;
     }
 
     @Override
     public boolean validate(){
         if(isEmpty(queryRegex) || isEmpty(queryPath) || isEmpty(listFilePath) || isEmpty(mode) || isEmpty(filePath)){
-            errorInfo = ERR_ZIP7_TASK_NON;
+            errorInfo = ERR_ZIP7_TASK_NUL;
             return false;
         }
         Matcher matcher = PTRN_NUM_NATURAL.matcher(queryLevel);

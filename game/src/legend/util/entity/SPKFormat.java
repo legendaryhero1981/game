@@ -30,13 +30,13 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
     @Override
     public boolean validate(){
         if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFileSizeExpr())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_SPKF_BODY_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_SPKF_BODY_INFO);
             return false;
         }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFileSizeExpr())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_SPKF_LIST_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_SPKF_LIST_INFO);
             return false;
         }else if(isEmpty(tailInfo.getHeaderSize()) || isEmpty(tailInfo.getHeaderFlag())){
-            errorInfo = gsph(ERR_SPKH_NODE_NON,N_SPKF_TAIL_INFO);
+            errorInfo = gsph(ERR_SPKH_NODE_NUL,N_SPKF_TAIL_INFO);
             return false;
         }else if(!bodyInfo.validate()){
             errorInfo = bodyInfo.errorInfo;

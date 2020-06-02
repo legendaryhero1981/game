@@ -87,6 +87,7 @@ import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
 import legend.util.intf.IProgress;
+import legend.util.logic.FileHandleDSRPLogic;
 import legend.util.logic.FileHandleZip7Logic;
 import legend.util.logic.FileMergeLogic;
 import legend.util.logic.FileReplaceILCodeLogic;
@@ -269,6 +270,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 break;
                 case CMD_7ZIP:
                 handleFilesWith7Zip(param);
+                break;
+                case CMD_DSRP:
+                handleFilesWithDSRP(param);
                 break;
                 case CMD_GUID_L32:
                 showMD5(param,p->getGuidL32(p));
@@ -584,6 +588,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void handleFilesWith7Zip(FileParam param){
         executeFileLogic(param,new FileHandleZip7Logic(param));
+    }
+
+    private static void handleFilesWithDSRP(FileParam param){
+        executeFileLogic(param,new FileHandleDSRPLogic(param));
     }
 
     private static void replaceFilesForSameName(FileParam param){

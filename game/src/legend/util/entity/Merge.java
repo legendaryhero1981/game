@@ -22,8 +22,8 @@ public class Merge{
     }
 
     public void trim(){
-        path = path.trim();
-        md5 = md5.trim();
+        path = path.strip();
+        md5 = md5.strip();
     }
 
     public String getPath(){

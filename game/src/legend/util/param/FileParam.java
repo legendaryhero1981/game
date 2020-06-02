@@ -209,6 +209,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_PAK_DEF:
             case CMD_PAK_INF:
             case CMD_7ZIP:
+            case CMD_DSRP:
             condition |= MATCH_FILE_ONLY;
             break;
             case CMD_PAK_INF_MD5:
@@ -270,6 +271,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         cmdOptional = of(EXEC_CMD).filter(this::meetCondition);
         progressOptional = of(SHOW_PROGRESS).filter(this::meetCondition);
         detailOptional = of(SHOW_DETAIL).filter(this::meetCondition);
+        clearCache();
     }
 
     public boolean meetCondition(long condition){
@@ -299,6 +301,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             cache.setPathsMap(pathsMap);
             cache.setSizeMap(sizeMap);
             cache.setDirsCache(dirsCache);
+            cache.setPathsCache(pathsCache);
             cache.setPattern(pattern);
             cache.setSrcPath(srcPath);
             cache.setCacheFileSize(filesSize.get());
@@ -315,6 +318,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             pathsMap = cache.getPathsMap();
             sizeMap = cache.getSizeMap();
             dirsCache = cache.getDirsCache();
+            pathsCache = cache.getPathsCache();
             return true;
         }else return false;
     }
@@ -325,6 +329,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         pathsMap.clear();
         sizeMap.clear();
         dirsCache.clear();
+        pathsCache.clear();
     }
 
     public static List<FileParam> analyzeParam(String[] args){
@@ -508,6 +513,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
                 case CMD_PAK_INF_DIR:
                 case CMD_PAK_INF_MD5:
                 case CMD_7ZIP:
+                case CMD_DSRP:
                 case CMD_GUID_L32:
                 case CMD_GUID_U32:
                 case CMD_MD5_L8:
@@ -681,6 +687,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
             case CMD_PAK_INF_DIR:
             case CMD_PAK_INF_MD5:
             case CMD_7ZIP:
+            case CMD_DSRP:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
             case CMD_MD5_L8:
@@ -922,7 +929,7 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         return pathsCache;
     }
 
-    public void setPathsCache(List<Path> pathsCache){
+    private void setPathsCache(List<Path> pathsCache){
         this.pathsCache = pathsCache;
     }
 

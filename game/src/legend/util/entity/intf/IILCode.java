@@ -17,7 +17,7 @@ public interface IILCode extends IFileUtil{
     String N_IL_CONF = EXT_IL + "编码文件的配置文件";
     String ST_FILE_IL_MISMATCH = "IL配置文件与IL源文件内容不匹配！";
     String ST_FILE_IL_CONF = V_GNRT + N_IL_CONF + S_DQM + CONF_FILE_IL + S_DQM + S_BANG;
-    String ERR_ILCODE_NON = "ILCodes节点下必须至少有一个ILCode节点！";
+    String ERR_ILCODE_NUL = "ILCodes节点下必须至少有一个ILCode节点！";
     String ERR_QUERY_REGEX = "当ILCodes::mode为" + MODE_NATIVE + "且ILCode::processingMode非" + MODE_NATIVE + "时，ILCode::queryRegex不能为空！";
     String ERR_CODE_REGEX = "当ILCodes::mode为" + MODE_NATIVE + "且ILCode::processingMode为" + MODE_REPL + "时，ILCode::codeRegex不能为空且最多只能指定2个正则表达式！";
     String ERR_LINE_NUM_FORMAT = "ILCode::lineNumber为空或格式错误！";

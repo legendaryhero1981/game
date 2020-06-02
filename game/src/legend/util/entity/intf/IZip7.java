@@ -32,8 +32,9 @@ public interface IZip7 extends IFileUtil{
     String ZIP7_EXEC_PATH = getAppPath() + "/tools/7-Zip/7z.exe";
     String N_ZIP7_CONF = "7-Zip任务处理配置文件";
     String ST_FILE_SPK_CONF = V_GNRT + N_ZIP7_CONF + S_DQM + CONF_FILE_7ZIP + S_DQM + S_BANG;
-    String ERR_ZIP7_EXEC_NON = "Zip7节点下的zip7ExecutablePath子节点值" + V_BY_NUL + S_BANG;
-    String ERR_ZIP7_TASK_NON = "Zip7::Zip7Task节点下的queryRegex或queryPath或listFilePath或mode或filePath子节点值" + V_BY_NUL + S_BANG;
+    String ERR_ZIP7_EXEC_NON = "文件压缩解压工具7-Zip" + N_A + N_EXEC_PATH + V_NON_EXISTS + S_BANG;
+    String ERR_ZIP7_EXEC_NUL = "Zip7节点下的zip7ExecutablePath子节点值" + V_BY_NUL + S_BANG;
+    String ERR_ZIP7_TASK_NUL = "Zip7::Zip7Task节点下的queryRegex或queryPath或listFilePath或mode或filePath子节点值" + V_BY_NUL + S_BANG;
     String FILE_ZIP7_COMMENT = "\n" + gs(4) + "Zip7配置节点结构说明：\n"
     + gs(4) + "Zip7节点由comment、zip7ExecutablePath、Zip7Task节点按顺序组成，comment节点必须在最前面，Zip7Task节点可以有多个。\n"
     + gs(4) + "Zip7::comment" + gs(15) + "Zip7配置节点结构说明，对执行文件压缩解压任务无影响，仅此说明而已。\n"
