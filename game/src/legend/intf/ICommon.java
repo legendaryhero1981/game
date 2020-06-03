@@ -41,6 +41,7 @@ public interface ICommon extends Cloneable{
     String EXT_ZIP = ".zip";
     String EXT_CLASS = ".class";
     String S_EMPTY = "";
+    String S_ENTER = SPRT_LINE;
     String S_SPACE = " ";
     String S_SQM = "'";
     String S_DQM = "\"";
@@ -174,6 +175,7 @@ public interface ICommon extends Cloneable{
     String SPC_SQM = "SQM";
     String SPC_DQM = "DQM";
     String SPC_BQ = "BQ";
+    String SPC_ENTER = "ENTER";
     String SPC_EMPTY = "EMPTY";
     String EXEC_KDIFF_F2 = "\"" + PH_ARGS0 + "\" \"" + PH_ARGS1 + "\" \"" + PH_ARGS2 + "\" -o \"" + PH_ARGS3 + "\"";
     String EXEC_KDIFF_F3 = "\"" + PH_ARGS0 + "\" \"" + PH_ARGS1 + "\" \"" + PH_ARGS2 + "\" \"" + PH_ARGS3 + "\" -o \"" + PH_ARGS4 + "\"";
@@ -192,6 +194,7 @@ public interface ICommon extends Cloneable{
     String REG_SPC_SQM = "(?i)" + PH_ARGS + SPC_SQM + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_DQM = "(?i)" + PH_ARGS + SPC_DQM + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_BQ = "(?i)" + PH_ARGS + SPC_BQ + "=?([1-9]?)" + PH_ARGS;
+    String REG_SPC_ENTER = "(?i)" + PH_ARGS + SPC_ENTER + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_EMPTY = "(?i)" + PH_ARGS + SPC_EMPTY + PH_ARGS;
     String REG_QUOTE_BQ = S_BQ + "(.*?)" + S_BQ;
     String REG_SPRT_CMDS = SPRT_CMDS + "+";
@@ -230,7 +233,6 @@ public interface ICommon extends Cloneable{
     String ERR_ARG_FMT = N_ARG + N_NUM + N_OR + N_ARG + N_FMT + V_ERR + S_BANG;
     String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FILE + S_SPACE + PH_ARGS0 + S_SPACE + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
     Pattern PTRN_SPC_NUL = compile(SPC_NUL);
-    Pattern PTRN_SPC_EMPTY  = compile(REG_SPC_EMPTY);
     Pattern PTRN_ANY = compile(REG_ANY);
     Pattern PTRN_QUOTE_BQ = compile(REG_QUOTE_BQ);
     Pattern PTRN_NUM = compile(REG_NUM);

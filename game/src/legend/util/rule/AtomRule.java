@@ -2,6 +2,7 @@ package legend.util.rule;
 
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.quote;
+import static legend.util.StringUtil.brph;
 import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.rule.ReplaceRuleStrategy.provideStrategy;
@@ -25,6 +26,7 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
         Matcher matcher = PTRN_RULE_ATOM.matcher(rule);
         if(matcher.matches()){
             name = matcher.group(1).toUpperCase();
+            if(TMNT_RULE_SET.contains(name)) condition |= TMNT_RULE;
             strategy = provideStrategy(name);
             String s = matcher.group(2);
             if(nonEmpty(s)){
@@ -32,9 +34,10 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
                 Matcher mnul = PTRN_SPC_NUL.matcher(S_EMPTY);
                 args = s.split(REG_SPRT_ARGS);
                 for(int i = 0;i < args.length;i++){
-                    args[i] = PTRN_SPC_EMPTY.matcher(args[i]).replaceAll(S_EMPTY);
+                    if(meetCondition(TMNT_RULE)) args[i] = brph(args[i],RULE_SPH_MAP);
+                    else args[i] = PTRN_SPC_EMPTY.matcher(args[i]).replaceAll(S_EMPTY);
                     mnul.reset(args[i]);
-                    while(mnul.find() && !engine.quotesCache.isEmpty()) if(TMNT_RULE_SET.contains(name)) mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
+                    while(mnul.find() && !engine.quotesCache.isEmpty()) if(meetCondition(TMNT_RULE)) mnul.appendReplacement(sb,quoteReplacement(engine.quotesCache.remove()));
                     else if(0 == i) mnul.appendReplacement(sb,quoteReplacement(quote(engine.quotesCache.remove())));
                     else mnul.appendReplacement(sb,quoteReplacement(quoteReplacement(engine.quotesCache.remove())));
                     args[i] = mnul.appendTail(sb).toString();

@@ -60,18 +60,27 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                 results[0] = data;
             }
             return results;
-        }),entry(RULE_GENFINALROW,(rule, data)->{
-            return genFinalRow(rule,()->regenRow(rule,data));
-        }),entry(RULE_DISTFINALROW,(rule, data)->{
-            return genFinalRow(rule,()->arrayToSet(regenRow(rule,data)));
-        }),entry(RULE_REGENROW,ReplaceRuleStrategy::regenRow));
+        }),entry(RULE_SINGLEROW,ReplaceRuleStrategy::everyRow)
+           ,entry(RULE_FINALSINGLEROW,ReplaceRuleStrategy::finalRow)
+           ,entry(RULE_DISTFINALSINGLEROW,ReplaceRuleStrategy::distFinalRow)
+           ,entry(RULE_MULTIROW,ReplaceRuleStrategy::everyRow)
+           ,entry(RULE_FINALMULTIROW,ReplaceRuleStrategy::finalRow)
+           ,entry(RULE_DISTFINALMULTIROW,ReplaceRuleStrategy::distFinalRow));
     }
 
     protected static BiFunction<ReplaceRule,String,String[]> provideStrategy(String name){
         return strategiesCache.get(name);
     }
 
-    private static <T> String[] genFinalRow(ReplaceRule rule, Supplier<T> supplier){
+    private static String[] finalRow(ReplaceRule rule, String data){
+        return finalRow(rule,()->everyRow(rule,data));
+    }
+
+    private static String[] distFinalRow(ReplaceRule rule, String data){
+        return finalRow(rule,()->arrayToSet(everyRow(rule,data)));
+    }
+
+    private static <T> String[] finalRow(ReplaceRule rule, Supplier<T> supplier){
         String[] results = new String[1], args = rule.args;
         T rows = supplier.get();
         switch(args.length){
@@ -83,13 +92,14 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             break;
             case 4:
             results[0] = args[2] + concat(rows,args[1],true) + args[3];
+            break;
             default:
             results[0] = concat(rows,S_EMPTY);
         }
         return results;
     }
 
-    private static String[] regenRow(ReplaceRule rule, String data){
+    private static String[] everyRow(ReplaceRule rule, String data){
         Map<Integer,String[][]> atomsCache = rule.engine.atomsCache;
         Map<Integer,String[][][]> complexesCache = rule.engine.complexesCache;
         final int size = atomsCache.size(), colSize = atomsCache.get(0).length, dataSize = data.length();

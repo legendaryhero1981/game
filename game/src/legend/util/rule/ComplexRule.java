@@ -26,6 +26,7 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
         for(int i = 0;i < rules.length;i++){
             AtomRule atomRule = new AtomRule(engine,rules[i]);
             atomRules[i] = atomRule;
+            if(atomRule.meetCondition(TMNT_RULE)) condition |= TMNT_RULE;
         }
         this.rule = concat(atomRules,SPRT_ATOMS);
     }

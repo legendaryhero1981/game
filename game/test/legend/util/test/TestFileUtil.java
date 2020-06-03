@@ -15,7 +15,8 @@ public class TestFileUtil extends TestBase{
     @Override
     public String monk(){
         String s = "";
-        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
+//        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
+//        s = "-rfbt+  `repack-fmg.bat`$  G:/cache/temp/ds3  REPLACE(.+,,#DQM#$0#DQM#);;FINAL-MULTI-ROW(#1.1#,,` `,,@echo off#ENTER#chcp 65001#ENTER##DQM#G:/games/DSParamEditor/DSDataRepacker#DQM# )  \n  1";
 //        s = "-7zip+  (?i)`file-7zip.xml`$  .  1";
 //        s = "-u!*::*::*  `.class`$::*::*  D:/games/classes/jaxb/jakarta.xml.bind-api/META-INF/versions/9::D:/games/classes/jaxb/jaxb-core/META-INF/versions/9::D:/games/classes/jaxb/jaxb-impl/META-INF/versions/9  D:/games/classes/jaxb/jakarta.xml.bind-api::D:/games/classes/jaxb/jaxb-core::D:/games/classes/jaxb/jaxb-impl";
 //        s = "-ddo+  `META-INF`$  D:/games/jmod/jaxb/3.0.0/unzip";
@@ -28,10 +29,10 @@ public class TestFileUtil extends TestBase{
 //        s = "-iu*  .  F:/games/Resident Evil 4/修改/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/备份/BIO4";
 //        s = "-ir*  .  F:/games/Resident Evil 4/备份/BIO4  F:/games/Resident Evil 4/BIO4  F:/games/Resident Evil 4/修改/BIO4";
 //        s = "-r*  file  d:/games  `$$$`$0`$$$`  1";
-//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@LOWER;;UPPER=>REPLACE(`.`,,`_$\\`);;REGENROW(String INST_#1-1# = #DQM##1.1##DQM#;#SQM3#$1\\2#BQ#)  \\t+  1";
-//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@UPPER=>REPLACE(\\.,,_);;REGENROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)  \\t+  1";
-//        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;GENFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
-//        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;DISTFINALROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
+//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@LOWER;;UPPER=>REPLACE(`.`,,`_$\\`);;SINGLE-ROW(String INST_#1-1# = #DQM##1.1##DQM#;#SQM3#$1\\2#BQ#)  \\t+  1";
+//        s = "-rfbt*  \\Atemp1`.txt`$  E:/Decompile/DLL-ildasm  1@@UPPER=>REPLACE(\\.,,_);;SINGLE-ROW(addInstruction(INST_#1-1#,#DQM##2.0##DQM#,#DQM=2#);)  \\t+  1";
+//        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;FINAL-SINGLE-ROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
+//        s = "-rfbt*  (?i)`native.log`$  d:/games  REPLACE(.*?--initialize-at-run-time=(.+?) .*,,$1,,#EMPTY#);;DIST-FINAL-SINGLE-ROW(#1.1#,,`,`,,--initialize-at-run-time=)  \\n  1";
 //        s = "-rfgbk*  mod  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_schinese.txt";
 //        s = "-rfbig5*  .  D:/games/jaot  D:/games/font_tchinese.txt";
 //        s = "-rfbig5*  zhCN  E:/Decompile/Code/IL/Pathfinder Kingmaker  D:/games/font_tchinese.txt";

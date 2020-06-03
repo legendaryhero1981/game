@@ -1,25 +1,33 @@
 package legend.util.rule.intf;
 
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import legend.intf.ICommon;
 
 public interface IReplaceRule extends ICommon{
+    long TMNT_RULE = 1l;
+    long MULTI_LINE = 1l << 1;
     String FLAG_COL_REPL_COMP = "-";
     String RULE_LOWER = "LOWER";
     String RULE_UPPER = "UPPER";
     String RULE_REPLACE = "REPLACE";
-    String RULE_REGENROW = "REGENROW";
-    String RULE_GENFINALROW = "GENFINALROW";
-    String RULE_DISTFINALROW = "DISTFINALROW";
+    String RULE_SINGLEROW = "SINGLE-ROW";
+    String RULE_FINALSINGLEROW = "FINAL-SINGLE-ROW";
+    String RULE_DISTFINALSINGLEROW = "DIST-FINAL-SINGLE-ROW";
+    String RULE_MULTIROW = "MULTI-ROW";
+    String RULE_FINALMULTIROW = "FINAL-MULTI-ROW";
+    String RULE_DISTFINALMULTIROW = "DIST-FINAL-MULTI-ROW";
     String REG_RULE_LOWER = "(?i)(" + RULE_LOWER + ")(\\((.*)\\))?";
     String REG_RULE_UPPER = "(?i)(" + RULE_UPPER + ")(\\((.*)\\))?";
     String REG_RULE_REPLACE = "(?i)(" + RULE_REPLACE + ")\\((.+)\\)";
-    String REG_RULE_REGENROW = "(?i)(" + RULE_REGENROW + ")\\((.+)\\)";
-    String REG_RULE_GENFINALROW = "(?i)(" + RULE_GENFINALROW + ")\\((.+)\\)";
+    String REG_RULE_REGENROW = "(?i)(" + RULE_SINGLEROW + ")\\((.+)\\)";
+    String REG_RULE_GENFINALROW = "(?i)(" + RULE_FINALSINGLEROW + ")\\((.+)\\)";
     String REG_RULE_ATOM = "(?i)(.+?)(?:\\((.*)\\))?";
     String REG_RULE_ATOM_QUOTE = "(?i)(.+?\\().+(\\))";
     String REG_COL_NUM = "(" + REG_NUM_NATURAL + ")(?:-(" + REG_NUM_NATURAL + "))?,?";
@@ -37,5 +45,7 @@ public interface IReplaceRule extends ICommon{
     Pattern PTRN_RULE_ATOM_QUOTE = compile(REG_RULE_ATOM_QUOTE);
     Pattern PTRN_COL_NUM = compile(REG_COL_NUM);
     Pattern PTRN_COL_REPL = compile(REG_COL_REPL);
-    Set<String> TMNT_RULE_SET = Set.of(RULE_REGENROW,RULE_GENFINALROW,RULE_DISTFINALROW);
+    Pattern PTRN_SPC_EMPTY = compile(REG_SPC_EMPTY);
+    Set<String> TMNT_RULE_SET = Set.of(RULE_SINGLEROW,RULE_FINALSINGLEROW,RULE_DISTFINALSINGLEROW,RULE_MULTIROW,RULE_FINALMULTIROW,RULE_DISTFINALMULTIROW);
+    Map<String,String> RULE_SPH_MAP = ofEntries(entry(REG_SPC_ENTER,S_ENTER),entry(REG_SPC_EMPTY,S_EMPTY));
 }

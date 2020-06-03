@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 
 import legend.intf.IValue;
+import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<ReplaceRuleEngine>{
@@ -33,7 +34,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     private String rule;
     private int atomsSize;
     private int complexesSize;
-    private boolean hasTerminationRule;
+    private long condition;
 
     public static IReplaceRuleEngine ProvideRuleEngine(String rule){
         return new ReplaceRuleEngine(rule);
@@ -70,20 +71,22 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         String[] r = rule.split(REG_SPRT_RULES);
         rules = new ReplaceRule[r.length];
         atomsSize = complexesSize = 0;
+        IValue<Boolean> incomplete = new SingleValue<Boolean>(false);
         for(int i = 0;i < r.length;i++){
             if(r[i].contains(SPRT_ATOMS)){
                 ComplexRule complexRule = new ComplexRule(this,r[i]);
-                for(int j = 0;j < complexRule.atomRules.length;j++) validateRule(complexRule.atomRules[j],j,complexRule.atomRules.length);
                 rules[i] = complexRule;
                 complexesSize++;
             }else{
                 rules[i] = new AtomRule(this,r[i]);
                 atomsSize++;
             }
-            validateRule(rules[i],i + 1,r.length);
+            incomplete.setValue(i < r.length - 1);
+            validateRule(rules[i],incomplete);
         }
         rule = concat(rules,SPRT_RULES);
-        hasTerminationRule = TMNT_RULE_SET.contains(rules[rules.length - 1].name);
+        condition = 0;
+        if(rules[rules.length - 1].meetCondition(TMNT_RULE)) condition |= TMNT_RULE;
     }
 
     @Override
@@ -140,7 +143,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     }
 
     private void excuteRules(){
-        final int length = hasTerminationRule ? rules.length - 1 : rules.length;
+        final int length = meetCondition(TMNT_RULE) ? rules.length - 1 : rules.length;
         if(1 > length) return;
         atomsCache.entrySet().parallelStream().forEach(entry->{
             String[][] atoms = entry.getValue();
@@ -164,7 +167,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     private List<String> dealResults(){
         List<String> results = new ArrayList<>(atomsCache.size());
         ReplaceRule replaceRule = rules[rules.length - 1];
-        if(hasTerminationRule){
+        if(meetCondition(TMNT_RULE)){
             String[] s = replaceRule.execute(replaceRule.args[0]);
             for(int i = 0;i < s.length;i++) results.add(s[i]);
         }else{
@@ -186,8 +189,12 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         return results;
     }
 
-    private void validateRule(ReplaceRule replaceRule, int index, int length){
+    private boolean meetCondition(long condition){
+        return condition == (condition & this.condition);
+    }
+
+    private void validateRule(ReplaceRule replaceRule, IValue<Boolean> incomplete){
         CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_INVALID,replaceRule.name)},()->isEmpty(replaceRule.strategy));
-        CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_TMNT,replaceRule.name)},()->TMNT_RULE_SET.contains(replaceRule.name) && index < length);
+        CS.checkError(ERR_RULE_ANLS,new String[]{gsph(ERR_RULE_TMNT,replaceRule.name)},()->replaceRule.meetCondition(TMNT_RULE) && incomplete.getValue());
     }
 }

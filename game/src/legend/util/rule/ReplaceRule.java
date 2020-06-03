@@ -10,6 +10,7 @@ public abstract class ReplaceRule implements IReplaceRule{
     protected String[] args;
     protected String rule;
     protected String name;
+    protected long condition;
 
     protected ReplaceRule(ReplaceRuleEngine engine, String rule){
         this.engine = engine;
@@ -19,6 +20,10 @@ public abstract class ReplaceRule implements IReplaceRule{
     protected abstract String[] execute(String data);
 
     protected abstract void refreshRule(String rule);
+
+    public boolean meetCondition(long condition){
+        return condition == (condition & this.condition);
+    }
 
     @Override
     public String toString(){
