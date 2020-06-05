@@ -27,7 +27,15 @@ public class DSRP extends BaseEntity<DSRP> implements IDSRP{
 
     public DSRP(){
         tasks = new ArrayList<>();
-        tasks.add(new DSRPTask());
+        DSRPTask repack = new DSRPTask();
+        repack.setDataFileRegex(REG_DSRP_DATA_REPACK);
+        repack.setDcxFileRegex(REG_DSRP_DCX_REPACK);
+        DSRPTask unpack = new DSRPTask();
+        unpack.setMode(MODE_UNZIP);
+        unpack.setDataFileRegex(REG_DSRP_DATA_UNPACK);
+        unpack.setDcxFileRegex(REG_DSRP_DCX_UNPACK);
+        tasks.add(repack);
+        tasks.add(unpack);
     }
 
     @Override
@@ -47,11 +55,12 @@ public class DSRP extends BaseEntity<DSRP> implements IDSRP{
             errorInfo = ERR_DSRP_EXEC_NON;
             return false;
         }
-        return tasks.stream().anyMatch(t->{
+        return !tasks.stream().anyMatch(t->{
             if(!t.validate()){
                 errorInfo = t.errorInfo;
-                return false;
-            }else return true;
+                return true;
+            }
+            return false;
         });
     }
 

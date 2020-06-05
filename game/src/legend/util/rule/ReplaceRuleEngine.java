@@ -10,6 +10,7 @@ import static legend.util.ValueUtil.nonEmpty;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +47,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
     }
 
     @Override
-    public List<String> execute(List<String> datas, String colSplitRegex){
+    public Collection<String> execute(Collection<String> datas, String colSplitRegex){
         if(!refreshData(datas,colSplitRegex)) return datas;
         excuteRules();
         return dealResults();
@@ -85,7 +86,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
             validateRule(rules[i],incomplete);
         }
         rule = concat(rules,SPRT_RULES);
-        condition = 0;
+        condition = ATOM_RULE;
         if(rules[rules.length - 1].meetCondition(TMNT_RULE)) condition |= TMNT_RULE;
     }
 
@@ -98,7 +99,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         refreshRule(rule);
     }
 
-    private boolean refreshData(List<String> datas, String colSplit){
+    private boolean refreshData(Collection<String> datas, String colSplit){
         atomsCache.clear();
         complexesCache.clear();
         colIndexesCache.clear();

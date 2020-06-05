@@ -6,6 +6,7 @@ import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.ValueUtil.nonNull;
 
 import java.net.URL;
 import java.net.URLDecoder;
@@ -139,18 +140,42 @@ public final class StringUtil implements IStringUtil{
         return new String(hexToBytes(hex));
     }
 
-    public static <T> String concat(T[] t, String join, boolean skipEmpty){
+    public static <T> String[] collectionToArray(Collection<T> collection, String header, String tail){
+        Object[] array = collection.toArray();
+        int size = array.length, i = 0;
+        if(nonNull(header)) size++;
+        if(nonNull(tail)) size++;
+        String[] result = new String[size];
+        if(nonNull(header)) result[i++] = header;
+        for(int j = 0;j < array.length;j++) result[i + j] = array[j].toString();
+        if(nonNull(tail)) result[i++] = tail;
+        return result;
+    }
+
+    public static <T> String[] collectionToArray(Collection<T> collection){
+        return collectionToArray(collection,null,null);
+    }
+
+    public static <T> String concat(T[] t, String join, String prefix, String suffix, boolean skipEmpty){
         if(0 == t.length) return S_EMPTY;
         int i = 0;
         for(;i < t.length && isEmpty(t[i]);i++);
         if(t.length <= i) return S_EMPTY;
-        StringBuilder builder = new StringBuilder(t[i++].toString());
+        StringBuilder builder = new StringBuilder(prefix + t[i++].toString() + suffix);
         if(skipEmpty) for(;i < t.length;i++){
             String s = t[i].toString();
-            if(nonEmpty(s)) builder.append(join + s);
+            if(nonEmpty(s)) builder.append(join + prefix + s + suffix);
         }
-        else for(;i < t.length;i++) builder.append(join + t[i].toString());
+        else for(;i < t.length;i++) builder.append(join + prefix + t[i].toString() + suffix);
         return builder.toString();
+    }
+
+    public static <T> String concat(T[] t, String join, String prefix, String suffix){
+        return concat(t,join,prefix,suffix,false);
+    }
+
+    public static <T> String concat(T[] t, String join, boolean skipEmpty){
+        return concat(t,join,S_EMPTY,S_EMPTY,skipEmpty);
     }
 
     public static <T> String concat(T[] t, String join){
@@ -161,8 +186,16 @@ public final class StringUtil implements IStringUtil{
         return concat(t,S_EMPTY);
     }
 
+    public static <T> String concat(Collection<T> collection, String join, String prefix, String suffix, boolean skipEmpty){
+        return concat(collection.toArray(new Object[0]),join,prefix,suffix,skipEmpty);
+    }
+
+    public static <T> String concat(Collection<T> collection, String join, String prefix, String suffix){
+        return concat(collection.toArray(new Object[0]),join,prefix,suffix,false);
+    }
+
     public static <T> String concat(Collection<T> collection, String join, boolean skipEmpty){
-        return concat(collection.toArray(new Object[0]),join,skipEmpty);
+        return concat(collection.toArray(new Object[0]),join,S_EMPTY,S_EMPTY,skipEmpty);
     }
 
     public static <T> String concat(Collection<T> collection, String join){

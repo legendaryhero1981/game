@@ -15,8 +15,8 @@ public class TestFileUtil extends TestBase{
     @Override
     public String monk(){
         String s = "";
-//        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
-//        s = "-rfbt+  `repack-fmg.bat`$  G:/cache/temp/ds3  REPLACE(.+,,#DQM#$0#DQM#);;FINAL-MULTI-ROW(#1.1#,,` `,,@echo off#ENTER#chcp 65001#ENTER##DQM#G:/games/DSParamEditor/DSDataRepacker#DQM# )  \n  1";
+        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
+//        s = "-rfbt*  `repack-fmg.bat`$  G:/cache/temp/ds3  REPLACE(.+,,#DQM#$0#DQM#);;FINAL-MULTI-ROW(#1.1#,,` `,,@echo off#ENTER#chcp 65001#ENTER##DQM#G:/games/DSParamEditor/DSDataRepacker#DQM# )  \n  1";
 //        s = "-7zip+  (?i)`file-7zip.xml`$  .  1";
 //        s = "-u!*::*::*  `.class`$::*::*  D:/games/classes/jaxb/jakarta.xml.bind-api/META-INF/versions/9::D:/games/classes/jaxb/jaxb-core/META-INF/versions/9::D:/games/classes/jaxb/jaxb-impl/META-INF/versions/9  D:/games/classes/jaxb/jakarta.xml.bind-api::D:/games/classes/jaxb/jaxb-core::D:/games/classes/jaxb/jaxb-impl";
 //        s = "-ddo+  `META-INF`$  D:/games/jmod/jaxb/3.0.0/unzip";

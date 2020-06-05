@@ -21,7 +21,7 @@ public abstract class ReplaceRule implements IReplaceRule{
 
     protected abstract void refreshRule(String rule);
 
-    public boolean meetCondition(long condition){
+    protected boolean meetCondition(long condition){
         return condition == (condition & this.condition);
     }
 

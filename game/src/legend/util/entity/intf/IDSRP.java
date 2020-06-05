@@ -10,8 +10,12 @@ import legend.util.intf.IFileUtil;
 
 public interface IDSRP extends IFileUtil{
     String REG_DSRP_MODE = MODE_ZIP + "|" + MODE_UNZIP;
-    String REG_DSRP_DATA = ".*(?i)(?<!`.dcx`)$";
-    String REG_DSRP_DCX = "(?i)`.dcx`$";
+    String REG_DSRP_DATA_REPACK = ".*(?i)`.`.*(?:`bnd`|`tpf`)$|(?:`.fmg.xml`)$";
+    String REG_DSRP_DCX_REPACK = "(?i)`.`.*(?:`undcx`|`bnd`|`tpf`)$";
+    String REG_DSRP_DATA_UNPACK = ".*(?i)`.`.*(?:`bnd`|`tpf`|`fmg`|`luagnl`|`luainfo`)$";
+    String REG_DSRP_DCX_UNPACK = "(?i)`.dcx`$";
+    String REG_DSRP_DOT = "\\.";
+    String REP_DSRP_HYPHEN = "-";
     String DATA_REPACKER = "DSDataRepacker";
     String DCX_REPACKER = "DSDCXRepacker";
     String CONTEXT_PATH = getAppPath() + "/tools/DSRP/";
@@ -34,6 +38,6 @@ public interface IDSRP extends IFileUtil{
     + gs(4) + "DSRPTask::queryLevel" + gs(16) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "。\n"
     + gs(4) + "DSRPTask::dataFileRegex" + gs(13) + DATA_REPACKER + "需要处理的文件名正则查询表达式，程序只会处理匹配的文件。\n"
     + gs(4) + "DSRPTask::dcxFileRegex" + gs(14) + DCX_REPACKER + "需要处理的文件名正则查询表达式，程序只会处理匹配的文件。\n"
-    + gs(4) + "特别说明：通常情况下，对于每一个DSRPTask节点，只需要修改mode和queryPath子节点值即可满足需求；针对不同的黑暗之魂系列游戏，data文件或dcx文件的文件后缀名有可能不同，这时则需要修改dataFileRegex或dcxFileRegex子节点来满足差异化需求。\n" + gs(4);
+    + gs(4) + "特别说明：通常情况下，对于每一个DSRPTask节点，dataFileRegex和dcxFileRegex子节点的值受mode子节点值影响；当mode值为0时，dataFileRegex默认值为" + REG_DSRP_DATA_REPACK + "，dcxFileRegex默认值为" + REG_DSRP_DCX_REPACK + "；当mode值为1时，dataFileRegex默认值为" + REG_DSRP_DATA_UNPACK + "，dcxFileRegex默认值为" + REG_DSRP_DCX_UNPACK + "；鉴于程序是并发调用外部程序执行任务的，为了避免读写文件冲突，对于每一个mode子节点值不同的DSRPTask节点，应该确保queryPath子节点值不同。\n" + gs(4);
     Pattern PTRN_DSRP_MODE = compile(REG_DSRP_MODE);
 }

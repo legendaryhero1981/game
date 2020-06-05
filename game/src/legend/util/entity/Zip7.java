@@ -24,7 +24,6 @@ import jakarta.xml.bind.annotation.XmlElementRef;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
-
 import legend.util.entity.intf.IZip7;
 import legend.util.param.FileParam;
 
@@ -63,7 +62,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             return false;
         }
         cmds.clear();
-        if(tasks.stream().anyMatch(t->{
+        return !tasks.stream().anyMatch(t->{
             if(!t.validate()){
                 errorInfo = t.errorInfo;
                 return true;
@@ -97,8 +96,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
                 writeFile(fp.getDestPath(),caches);
             }
             return false;
-        })) return false;
-        return true;
+        });
     }
 
     public String getZip7ExecutablePath(){

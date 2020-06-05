@@ -5,12 +5,12 @@ import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import legend.intf.ICommon;
 
 public interface IReplaceRule extends ICommon{
+    long ATOM_RULE = 0l;
     long TMNT_RULE = 1l;
     long MULTI_LINE = 1l << 1;
     String FLAG_COL_REPL_COMP = "-";
@@ -26,8 +26,8 @@ public interface IReplaceRule extends ICommon{
     String REG_RULE_LOWER = "(?i)(" + RULE_LOWER + ")(\\((.*)\\))?";
     String REG_RULE_UPPER = "(?i)(" + RULE_UPPER + ")(\\((.*)\\))?";
     String REG_RULE_REPLACE = "(?i)(" + RULE_REPLACE + ")\\((.+)\\)";
-    String REG_RULE_REGENROW = "(?i)(" + RULE_SINGLEROW + ")\\((.+)\\)";
-    String REG_RULE_GENFINALROW = "(?i)(" + RULE_FINALSINGLEROW + ")\\((.+)\\)";
+    String REG_RULE_SINGLEROW = "(?i)(" + RULE_SINGLEROW + ")\\((.+)\\)";
+    String REG_RULE_FINALSINGLEROW = "(?i)(" + RULE_FINALSINGLEROW + ")\\((.+)\\)";
     String REG_RULE_ATOM = "(?i)(.+?)(?:\\((.*)\\))?";
     String REG_RULE_ATOM_QUOTE = "(?i)(.+?\\().+(\\))";
     String REG_COL_NUM = "(" + REG_NUM_NATURAL + ")(?:-(" + REG_NUM_NATURAL + "))?,?";
@@ -45,7 +45,6 @@ public interface IReplaceRule extends ICommon{
     Pattern PTRN_RULE_ATOM_QUOTE = compile(REG_RULE_ATOM_QUOTE);
     Pattern PTRN_COL_NUM = compile(REG_COL_NUM);
     Pattern PTRN_COL_REPL = compile(REG_COL_REPL);
-    Pattern PTRN_SPC_EMPTY = compile(REG_SPC_EMPTY);
-    Set<String> TMNT_RULE_SET = Set.of(RULE_SINGLEROW,RULE_FINALSINGLEROW,RULE_DISTFINALSINGLEROW,RULE_MULTIROW,RULE_FINALMULTIROW,RULE_DISTFINALMULTIROW);
-    Map<String,String> RULE_SPH_MAP = ofEntries(entry(REG_SPC_ENTER,S_ENTER),entry(REG_SPC_EMPTY,S_EMPTY));
+    Map<String,Long> RULE_CON_MAP = ofEntries(entry(RULE_LOWER,ATOM_RULE),entry(RULE_UPPER,ATOM_RULE),entry(RULE_REPLACE,ATOM_RULE),entry(RULE_SINGLEROW,TMNT_RULE),entry(RULE_FINALSINGLEROW,TMNT_RULE),entry(RULE_DISTFINALSINGLEROW,TMNT_RULE),entry(RULE_MULTIROW,TMNT_RULE | MULTI_LINE),entry(RULE_FINALMULTIROW,TMNT_RULE | MULTI_LINE),entry(RULE_DISTFINALMULTIROW,TMNT_RULE | MULTI_LINE));
+    Map<Long,Map<String,String>> RULE_REG_MAP = ofEntries(entry(ATOM_RULE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY))),entry(TMNT_RULE | MULTI_LINE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY),entry(REG_SPC_ENTER,S_ENTER))));
 }

@@ -1,9 +1,9 @@
 package legend.util.rule.intf;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface IReplaceRuleEngine extends IReplaceRule{
-    List<String> execute(List<String> datas, String colSplitRegex);
+    Collection<String> execute(Collection<String> datas, String colSplitRegex);
 
     void refreshRule(String replaceRule);
 }

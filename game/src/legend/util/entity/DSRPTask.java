@@ -1,6 +1,9 @@
 package legend.util.entity;
 
+import static java.nio.file.Paths.get;
+import static java.util.regex.Pattern.compile;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.param.FileParam.convertParam;
 
 import java.util.regex.Matcher;
 
@@ -9,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IDSRP;
+import legend.util.param.FileParam;
 
 @XmlRootElement(name = "DSRPTask")
 @XmlType(propOrder = {"mode","queryPath","queryLevel","dataFileRegex","dcxFileRegex"})
@@ -20,11 +24,15 @@ public class DSRPTask extends BaseEntity<DSRPTask> implements IDSRP{
     @XmlElement
     private String queryLevel = S_EMPTY;
     @XmlElement
-    private String dataFileRegex = REG_DSRP_DATA;
+    private String dataFileRegex = S_EMPTY;
     @XmlElement
-    private String dcxFileRegex = REG_DSRP_DCX;
+    private String dcxFileRegex = S_EMPTY;
     @XmlTransient
     private int level = Integer.MAX_VALUE;
+    @XmlTransient
+    private FileParam dataParam;
+    @XmlTransient
+    private FileParam dcxParam;
 
     @Override
     public DSRPTask trim(){
@@ -47,6 +55,14 @@ public class DSRPTask extends BaseEntity<DSRPTask> implements IDSRP{
         matcher = PTRN_NUM_NATURAL.matcher(queryLevel);
         if(isEmpty(queryLevel) || !matcher.matches()) level = Integer.MAX_VALUE;
         else level = Integer.valueOf(queryLevel);
+        dcxParam = new FileParam();
+        dcxParam.setCmd(CMD_FND_PTH_ABS);
+        dcxParam.setOpt(OPT_INSIDE);
+        dcxParam.setPattern(compile(convertParam(dcxFileRegex,true)));
+        dcxParam.setSrcPath(get(queryPath));
+        dcxParam.setLevel(level);
+        dataParam = dcxParam.cloneValue();
+        dataParam.setPattern(compile(convertParam(dataFileRegex,true)));
         return true;
     }
 
@@ -54,23 +70,23 @@ public class DSRPTask extends BaseEntity<DSRPTask> implements IDSRP{
         return mode;
     }
 
-    public String getQueryPath(){
-        return queryPath;
+    public FileParam getDataParam(){
+        return dataParam;
     }
 
-    public String getQueryLevel(){
-        return queryLevel;
+    public FileParam getDcxParam(){
+        return dcxParam;
     }
 
-    public String getDataFileRegex(){
-        return dataFileRegex;
+    protected void setMode(String mode){
+        this.mode = mode;
     }
 
-    public String getDcxFileRegex(){
-        return dcxFileRegex;
+    protected void setDataFileRegex(String dataFileRegex){
+        this.dataFileRegex = dataFileRegex;
     }
 
-    public int getLevel(){
-        return level;
+    protected void setDcxFileRegex(String dcxFileRegex){
+        this.dcxFileRegex = dcxFileRegex;
     }
 }

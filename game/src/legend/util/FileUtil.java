@@ -483,16 +483,16 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     private static void findSortedFilePaths(FileParam param){
         final boolean relative = param.meetCondition(PATH_RELATIVE);
-        List<Path> pathCaches = param.getPathsCache();
+        List<Path> pathsCache = param.getPathsCache();
         Stream<Path> dirs = param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit());
         int limit = param.getLimit() - param.getDirsCache().size();
         Stream<Path> files = null;
         if(0 < limit) files = param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(limit);
-        if(nonEmpty(files)) pathCaches.addAll(concat(dirs,files).collect(toList()));
-        else pathCaches.addAll(dirs.collect(toList()));
-        param.getDetailOptional().ifPresent(c->pathCaches.stream().forEach(p->CS.sl(p.toString())));
+        if(nonEmpty(files)) pathsCache.addAll(concat(dirs,files).collect(toList()));
+        else pathsCache.addAll(dirs.collect(toList()));
+        param.getDetailOptional().ifPresent(c->pathsCache.stream().forEach(p->CS.sl(p.toString())));
         if(nonEmpty(param.getDestPath())){
-            param.getCmdOptional().ifPresent(c->writeFile(param.getDestPath(),pathCaches.stream().map(p->p.toString()).collect(toList())));
+            param.getCmdOptional().ifPresent(c->writeFile(param.getDestPath(),pathsCache.stream().map(p->p.toString()).collect(toList())));
             param.getDetailOptional().ifPresent(c->CS.l(1).sl(V_WRITE + N_FILE + gs(4) + param.getDestPath()));
         }
     }
@@ -567,7 +567,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             Path path = e.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
             IReplaceRuleEngine ruleEngine = ProvideRuleEngine(param.getReplacement());
-            List<String> results = ruleEngine.execute(readFile(path),param.getSplit());
+            Collection<String> results = ruleEngine.execute(readFile(path),param.getSplit());
             param.getDetailOptional().ifPresent(c->CS.sl(results,1));
             param.getCmdOptional().ifPresent(c->writeFile(path,results));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
