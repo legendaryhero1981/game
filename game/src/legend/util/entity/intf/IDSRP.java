@@ -10,9 +10,9 @@ import legend.util.intf.IFileUtil;
 
 public interface IDSRP extends IFileUtil{
     String REG_DSRP_MODE = MODE_ZIP + "|" + MODE_UNZIP;
-    String REG_DSRP_DATA_REPACK = ".*(?i)`.`.*(?:`bnd`|`tpf`)$|(?:`.fmg.xml`)$";
+    String REG_DSRP_DATA_REPACK = "(?i)(?:`.`.*(?:`bnd`|`tpf`)|`.fmg.xml`)$";
     String REG_DSRP_DCX_REPACK = "(?i)`.`.*(?:`undcx`|`bnd`|`tpf`)$";
-    String REG_DSRP_DATA_UNPACK = ".*(?i)`.`.*(?:`bnd`|`tpf`|`fmg`|`luagnl`|`luainfo`)$";
+    String REG_DSRP_DATA_UNPACK = "(?i)`.`.*(?:`bnd`|`tpf`|`fmg`|`luagnl`|`luainfo`)$";
     String REG_DSRP_DCX_UNPACK = "(?i)`.dcx`$";
     String REG_DSRP_DOT = "\\.";
     String REP_DSRP_HYPHEN = "-";

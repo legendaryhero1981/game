@@ -1061,12 +1061,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         if(param.meetCondition(NEED_REPATH)) param.getDirsCache().parallelStream().forEach(p->param.getRePathMap().put(p,param.getOutPath().resolve(param.getRootPath().relativize(p))));
     }
 
-    private static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
+    public static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
         private FileParam param;
         private Queue<Path> dirsCache;
         private boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex;
 
-        private PathMatcher(FileParam param){
+        public PathMatcher(FileParam param){
             this.param = param;
             dirsCache = new ConcurrentLinkedQueue<>();
             matchFileOnly = param.meetCondition(MATCH_FILE_ONLY);
@@ -1147,15 +1147,15 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static class FileSizeMatcher implements BooleanSupplier{
+    public static class FileSizeMatcher implements BooleanSupplier{
         private BasicFileAttributes attributes;
         private File file;
 
-        private FileSizeMatcher(BasicFileAttributes attributes){
+        public FileSizeMatcher(BasicFileAttributes attributes){
             this.attributes = attributes;
         }
 
-        private FileSizeMatcher(File file){
+        public FileSizeMatcher(File file){
             this.file = file;
         }
 
@@ -1166,11 +1166,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static class BasicFileAttributesPathComparator implements Comparator<Entry<BasicFileAttributes,Path>>{
+    public static class BasicFileAttributesPathComparator implements Comparator<Entry<BasicFileAttributes,Path>>{
         private boolean order;
 
-        private BasicFileAttributesPathComparator(boolean order){
-            this.order = order;
+        public BasicFileAttributesPathComparator(boolean ascending){
+            order = ascending;
         }
 
         @Override
@@ -1190,11 +1190,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static class PathPathComparator implements Comparator<Entry<Path,Path>>{
+    public static class PathPathComparator implements Comparator<Entry<Path,Path>>{
         private boolean order;
 
-        private PathPathComparator(boolean order){
-            this.order = order;
+        public PathPathComparator(boolean ascending){
+            order = ascending;
         }
 
         @Override
@@ -1214,11 +1214,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static class PathLongComparator implements Comparator<Entry<Path,Long>>{
+    public static class PathLongComparator implements Comparator<Entry<Path,Long>>{
         private boolean order;
 
-        private PathLongComparator(boolean order){
-            this.order = order;
+        public PathLongComparator(boolean ascending){
+            order = ascending;
         }
 
         @Override
@@ -1228,11 +1228,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    private static class PathListComparator implements Comparator<Path>{
+    public static class PathListComparator implements Comparator<Path>{
         private boolean order;
 
-        private PathListComparator(boolean order){
-            this.order = order;
+        public PathListComparator(boolean ascending){
+            order = ascending;
         }
 
         @Override

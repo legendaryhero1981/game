@@ -2,6 +2,7 @@ package legend.util.logic;
 
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static legend.util.FileUtil.dealFiles;
 import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.ProcessUtil.handleProcess;
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 
+import legend.util.FileUtil.PathListComparator;
 import legend.util.entity.DSRP;
 import legend.util.entity.intf.IDSRP;
 import legend.util.param.FileParam;
@@ -52,7 +54,7 @@ public class FileHandleDSRPLogic extends BaseFileLogic implements IDSRP{
                         else pathsCache.add(p1);
                     });
                     param.getPathsCache().clear();
-                    param.getPathsCache().addAll(pathsCache);
+                    param.getPathsCache().addAll(pathsCache.parallelStream().sorted(new PathListComparator(false)).collect(toList()));
                 });
                 exec(dcxParam,dcxExecPath,builder);
             }else{
