@@ -38,6 +38,6 @@ public interface IDSRP extends IFileUtil{
     + gs(4) + "DSRPTask::queryLevel" + gs(16) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "。\n"
     + gs(4) + "DSRPTask::dataFileRegex" + gs(13) + DATA_REPACKER + "需要处理的文件名正则查询表达式，程序只会处理匹配的文件。\n"
     + gs(4) + "DSRPTask::dcxFileRegex" + gs(14) + DCX_REPACKER + "需要处理的文件名正则查询表达式，程序只会处理匹配的文件。\n"
-    + gs(4) + "特别说明：通常情况下，对于每一个DSRPTask节点，dataFileRegex和dcxFileRegex子节点的值受mode子节点值影响；当mode值为0时，dataFileRegex默认值为" + REG_DSRP_DATA_REPACK + "，dcxFileRegex默认值为" + REG_DSRP_DCX_REPACK + "；当mode值为1时，dataFileRegex默认值为" + REG_DSRP_DATA_UNPACK + "，dcxFileRegex默认值为" + REG_DSRP_DCX_UNPACK + "；鉴于程序是并发调用外部程序执行任务的，为了避免读写文件冲突，对于每一个mode子节点值不同的DSRPTask节点，应该确保queryPath子节点值不同。\n" + gs(4);
+    + gs(4) + "特别说明：通常情况下，对于每一个DSRPTask节点，dataFileRegex和dcxFileRegex子节点的值受mode子节点值影响；当mode值为0时，dataFileRegex默认值为“" + REG_DSRP_DATA_REPACK + "”，dcxFileRegex默认值为“" + REG_DSRP_DCX_REPACK + "”；当mode值为1时，dataFileRegex默认值为“" + REG_DSRP_DATA_UNPACK + "”，dcxFileRegex默认值为“" + REG_DSRP_DCX_UNPACK + "”；鉴于程序是并发调用外部程序执行任务的，为了避免读写文件冲突，对于每一个mode子节点值不同的DSRPTask节点，应该确保queryPath子节点值不同。\n" + gs(4);
     Pattern PTRN_DSRP_MODE = compile(REG_DSRP_MODE);
 }

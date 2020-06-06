@@ -17,7 +17,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 
 import legend.util.entity.DSRP;
@@ -55,7 +57,21 @@ public class FileHandleDSRPLogic extends BaseFileLogic implements IDSRP{
                 exec(dcxParam,dcxExecPath,builder);
             }else{
                 exec(dcxParam,dcxExecPath,builder);
-                exec(dataParam,dataExecPath,builder);
+                final Set<Path> pathSet = new ConcurrentSkipListSet<>();
+                for(int size = -1;size != pathSet.size();){
+                    size = pathSet.size();
+                    exec(dataParam,dataExecPath,builder,param->{
+                        if(!pathSet.isEmpty()){
+                            Collection<Path> pathsCache = new ConcurrentLinkedQueue<>();
+                            param.getPathsCache().parallelStream().filter(p->!pathSet.contains(p)).forEach(p->{
+                                pathSet.add(p);
+                                pathsCache.add(p);
+                            });
+                            param.getPathsCache().clear();
+                            param.getPathsCache().addAll(pathsCache);
+                        }else pathSet.addAll(param.getPathsCache());
+                    });
+                }
             }
             param.getDetailOptional().ifPresent(c->CS.s(builder.toString()));
             param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(amount,1,scale),PROGRESS_SCALE));
@@ -67,6 +83,7 @@ public class FileHandleDSRPLogic extends BaseFileLogic implements IDSRP{
         dealFiles(param);
         if(nonEmpty(consumers)) for(Consumer<FileParam> consumer : consumers) consumer.accept(param);
         String[] cmds = collectionToArray(param.getPathsCache(),path,null);
+        if(2 > cmds.length) return;
         String cmd = concat(cmds,S_SPACE,true);
         builder.append(gl(1) + glph(ST_PRG_EXTN_START,cmd));
         String duration = getDurationString(t->handleProcess(process->{
