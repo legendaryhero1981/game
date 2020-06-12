@@ -46,5 +46,5 @@ public interface IReplaceRule extends ICommon{
     Pattern PTRN_COL_NUM = compile(REG_COL_NUM);
     Pattern PTRN_COL_REPL = compile(REG_COL_REPL);
     Map<String,Long> RULE_CON_MAP = ofEntries(entry(RULE_LOWER,ATOM_RULE),entry(RULE_UPPER,ATOM_RULE),entry(RULE_REPLACE,ATOM_RULE),entry(RULE_SINGLEROW,TMNT_RULE),entry(RULE_FINALSINGLEROW,TMNT_RULE),entry(RULE_DISTFINALSINGLEROW,TMNT_RULE),entry(RULE_MULTIROW,TMNT_RULE | MULTI_LINE),entry(RULE_FINALMULTIROW,TMNT_RULE | MULTI_LINE),entry(RULE_DISTFINALMULTIROW,TMNT_RULE | MULTI_LINE));
-    Map<Long,Map<String,String>> RULE_REG_MAP = ofEntries(entry(ATOM_RULE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY))),entry(TMNT_RULE | MULTI_LINE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY),entry(REG_SPC_ENTER,S_ENTER))));
+    Map<Long,Map<String,String>> RULE_REG_MAP = ofEntries(entry(ATOM_RULE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY))),entry(TMNT_RULE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY))),entry(TMNT_RULE | MULTI_LINE,ofEntries(entry(REG_SPC_EMPTY,S_EMPTY),entry(REG_SPC_ENTER,S_ENTER))));
 }
