@@ -33,7 +33,7 @@ import legend.intf.IValue;
 import legend.util.intf.IConsoleUtil.UnitType;
 import legend.util.intf.IFileUtil;
 
-public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
+public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private Path srcPath;
     private Path destPath;
     private Path backupPath;
@@ -46,7 +46,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
     private String zipName;
     private String cmd;
     private String opt;
-    private long condition;
     private long minSize;
     private long maxSize;
     private int limit;
@@ -272,10 +271,6 @@ public class FileParam implements IFileUtil,IValue<FileParam>,AutoCloseable{
         progressOptional = of(SHOW_PROGRESS).filter(this::meetCondition);
         detailOptional = of(SHOW_DETAIL).filter(this::meetCondition);
         clearCache();
-    }
-
-    public boolean meetCondition(long condition){
-        return condition == (condition & this.condition);
     }
 
     public boolean meetFilesSize(long size){
