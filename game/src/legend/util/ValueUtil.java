@@ -1,6 +1,7 @@
 package legend.util;
 
-import  java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,6 +33,16 @@ public final class ValueUtil{
 
     public static boolean isNull(Object o){
         return null == o;
+    }
+
+    public static <T> Collection<T> arrayToUniqueCollection(T[] array){
+        Collection<T> collection = new ArrayList<>();
+        Set<T> set = new HashSet<>();
+        for(T t : array) if(!set.contains(t)){
+            set.add(t);
+            collection.add(t);
+        }
+        return collection;
     }
 
     public static <T> Set<T> arrayToSet(T[] array){

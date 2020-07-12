@@ -4,7 +4,7 @@ import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
 import static legend.util.StringUtil.concat;
-import static legend.util.ValueUtil.arrayToSet;
+import static legend.util.ValueUtil.arrayToUniqueCollection;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
@@ -77,7 +77,7 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
     }
 
     private static String[] distFinalRow(ReplaceRule rule, String data){
-        return finalRow(rule,()->arrayToSet(everyRow(rule,data)));
+        return finalRow(rule,()->arrayToUniqueCollection(everyRow(rule,data)));
     }
 
     private static <T> String[] finalRow(ReplaceRule rule, Supplier<T> supplier){
