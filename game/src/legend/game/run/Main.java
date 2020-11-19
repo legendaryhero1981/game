@@ -259,8 +259,8 @@ public final class Main implements IMain{
         Matcher matcher = PTRN_PATH_NAME.matcher(game.getAgentExecutablePath());
         if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
         else script.append(glph(CMD_VBS_RUN_GAME,game.getPath(),game.getExe(),game.getArgs()));
-        if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));
         if(nonEmpty(caches[2])) script.append(glph(CMD_VBS_SLEEP,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,caches[2])).append(glph(CMD_VBS_RUN_DEL,caches[2]));
+        if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(TIME_SECOND_MAX))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));
         // BAT脚本方式实现进程监控
         // if(nonEmpty(caches[3]))
         // script.append(glph(CMD_VBS_SLEEP,countWaitTime(WAIT_TIME))).append(glph(CMD_VBS_RUN,caches[3])).append(glph(CMD_VBS_RUN_DEL,caches[3]));
