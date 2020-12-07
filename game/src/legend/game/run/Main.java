@@ -217,7 +217,7 @@ public final class Main implements IMain{
         }else game = gameMap.get(id);
         // 数据验证
         CS.checkError(ERR_ID_NON,new String[]{RUN_FILE_CONFIG,id},()->isEmpty(game));
-        CS.checkError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,game.getId()},()->!game.trim().validate());
+        CS.checkError(ERR_EXE_NUL,new String[]{RUN_FILE_CONFIG,id},()->!game.trim().validate());
         return games;
     }
 
@@ -257,7 +257,7 @@ public final class Main implements IMain{
     private static void writeMainScript(){
         if(nonEmpty(caches[1])) script.append(glph(CMD_VBS_RUN,caches[1])).append(glph(CMD_VBS_RUN_DEL,caches[1])).append(glph(CMD_VBS_SLEEP,countWaitTime(game.getBeforeWait())));
         Matcher matcher = PTRN_PATH_NAME.matcher(game.getAgentExecutablePath());
-        if(!isEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
+        if(nonEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
         else script.append(glph(CMD_VBS_RUN_GAME,game.getPath(),game.getExe(),game.getArgs()));
         if(nonEmpty(caches[2])) script.append(glph(CMD_VBS_SLEEP,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,caches[2])).append(glph(CMD_VBS_RUN_DEL,caches[2]));
         if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(TIME_SECOND_MAX))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));

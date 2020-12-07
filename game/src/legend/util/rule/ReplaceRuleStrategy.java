@@ -150,13 +150,13 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
                             y = limitValue(indexes[j][1],1,complexes[x].length) - 1;
                             z = limitValue(indexes[j][2],1,complexes[x][y].length) - 1;
                             results[i] += complexes[x][y][z];
-                        }else results[i] += S_EMPTY;
+                        }
                         break;
                         case 2:
                         if(0 < atoms[x].length){
                             y = limitValue(indexes[j][1],0,atoms[x].length - 1);
                             results[i] += atoms[x][y];
-                        }else results[i] += S_EMPTY;
+                        }
                         break;
                         default:
                         results[i] += matches[x];
