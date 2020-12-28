@@ -241,6 +241,11 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_DEL_DIR_OLY_NUL:
                 delNulFiles(param);
                 break;
+                case CMD_DEL_OLD_VER:
+                case CMD_DEL_DIR_OLD_VER:
+                case CMD_DEL_DIR_OLY_OLD_VER:
+                delOldVersions(param);
+                break;
                 case CMD_MOVE:
                 case CMD_MOV_DIR:
                 case CMD_MOV_DIR_OLY:
@@ -774,6 +779,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
+    private static void delOldVersions(FileParam param) {
+        ;
+    }
+    
     private static void moveFiles(FileParam param){
         param.getRePathMap().entrySet().stream().sorted(new PathPathComparator(true)).forEach(e->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_MOV + N_DIR_NUL + gs(2) + e.getKey() + V_TO + e.getValue()));

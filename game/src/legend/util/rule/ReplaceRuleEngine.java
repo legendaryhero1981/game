@@ -104,6 +104,7 @@ public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<Replac
         complexesCache.clear();
         colIndexesCache.clear();
         if(isEmpty(datas)) return false;
+        if(isEmpty(colSplit)) colSplit = REG_SPRT_COLS;
         final int datasSize = datas.size();
         String[] data = datas.toArray(new String[datasSize]);
         for(int i = 0,j,k,l;i < datasSize;i++){

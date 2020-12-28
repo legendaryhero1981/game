@@ -69,8 +69,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
     private int cacheDirsCount;
 
     public FileParam(){
-        zipName = replacement = sizeExpr = cmd = opt = S_EMPTY;
-        split = REG_SPRT_COLS;
+        zipName = replacement = sizeExpr = split = cmd = opt = S_EMPTY;
         minSize = 0l;
         maxSize = Long.MAX_VALUE;
         limit = level = Integer.MAX_VALUE;
@@ -178,6 +177,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_REN_DIR_OLY_UP_FST:
             case CMD_DEL_DIR_OLY:
             case CMD_DEL_DIR_OLY_NUL:
+            case CMD_DEL_DIR_OLY_OLD_VER:
             condition |= MATCH_DIR_ONLY;
             case CMD_REN_DIR:
             case CMD_REN_DIR_LOW:
@@ -185,6 +185,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_REN_DIR_UP_FST:
             case CMD_DEL_DIR:
             case CMD_DEL_DIR_NUL:
+            case CMD_DEL_DIR_OLD_VER:
             condition |= NEED_CLEAR_CACHE;
             break;
             case CMD_MOV_DIR_OLY:
@@ -225,8 +226,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_REN_UP_FST:
             case CMD_DELETE:
             case CMD_MOVE:
-            case CMD_JSON_ENC:
-            case CMD_JSON_DEC:
+            case CMD_DEL_OLD_VER:
             condition |= NEED_CLEAR_CACHE;
             case CMD_COPY:
             case CMD_UPGRADE:
@@ -246,6 +246,8 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_REP_FLE_SN:
             case CMD_REP_FLE_MEG:
             case CMD_REP_FLE_SPK:
+            case CMD_JSON_ENC:
+            case CMD_JSON_DEC:
             condition |= MATCH_FILE_ONLY;
         }
         if(opt.contains(OPT_CACHE)){
@@ -523,6 +525,18 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
                 case CMD_REP_FLE_SPK:
                 optional.filter(s->s.length > 3).ifPresent(s->param.setLevel(Integer.parseInt(s[3])));
                 break;
+                case CMD_DEL_OLD_VER:
+                case CMD_DEL_DIR_OLD_VER:
+                case CMD_DEL_DIR_OLY_OLD_VER:
+                optional.filter(s->s.length == 4).ifPresent(s->{
+                    if(s[3].matches(REG_NUM)) param.setLevel(Integer.parseInt(s[3]));
+                    else param.setSplit(s[3]);
+                });
+                optional.filter(s->s.length > 4).ifPresent(s->{
+                    param.setSplit(s[3]);
+                    param.setLevel(Integer.parseInt(s[4]));
+                });
+                break;
                 case CMD_COPY:
                 case CMD_CPY_DIR:
                 case CMD_CPY_DIR_OLY:
@@ -656,7 +670,11 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             s += dp + S_SPACE + limit + S_SPACE + level;
             break;
             case CMD_REP_FLE_BT:
-            s += rp + spt + S_SPACE + level;
+            s += rp;
+            case CMD_DEL_OLD_VER:
+            case CMD_DEL_DIR_OLD_VER:
+            case CMD_DEL_DIR_OLY_OLD_VER:
+            s += spt + S_SPACE + level;
             break;
             case CMD_RENAME:
             case CMD_REN_DIR:
