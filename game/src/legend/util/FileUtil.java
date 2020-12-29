@@ -779,10 +779,22 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         });
     }
 
-    private static void delOldVersions(FileParam param) {
-        ;
+    private static void delOldVersions(FileParam param){
+        Queue<Path> dirsCache = new ConcurrentLinkedQueue<>(param.getDirsCache());
+        dirsCache.parallelStream().forEach(p1->{
+            if(param.getDirsCache().parallelStream().anyMatch(p2->!p1.equals(p2) && p1.startsWith(p2))) dirsCache.remove(p1);
+        });
+        param.getDirsCache().clear();
+        param.getDirsCache().addAll(dirsCache);
+        param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->{
+            if(param.getDirsCache().parallelStream().anyMatch(p->e.getValue().startsWith(p))) param.getPathMap().remove(e.getKey());
+        });
+        param.getDirsCount().set(param.getDirsCache().size());
+        param.getFilesCount().set((int)param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).count());
+        param.getDetailOptional().ifPresent(c->param.getDirsCache().stream().sorted(new PathListComparator(true)).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
     }
-    
+
     private static void moveFiles(FileParam param){
         param.getRePathMap().entrySet().stream().sorted(new PathPathComparator(true)).forEach(e->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_MOV + N_DIR_NUL + gs(2) + e.getKey() + V_TO + e.getValue()));
@@ -1095,6 +1107,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_DEL_DIR_NUL:
                     if(find = find && 0 == a.size()) param.getPathMap().put(a,p);
                     break;
+                    case CMD_DEL_DIR_OLD_VER:
+                    case CMD_DEL_DIR_OLY_OLD_VER:
+                    if(find = find && !matchPath(p)) param.getPathMap().put(a,p);
+                    break;
                     default:
                     find = find && param.meetFilesSize(a.size());
                     if(find || (find = matchPath(p) && param.meetFilesSize(a.size()))) param.getPathMap().put(a,p);
@@ -1106,8 +1122,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_FND_DIR:
                     case CMD_FND_DIR_SIZ_ASC:
                     case CMD_FND_DIR_SIZ_DSC:
-                    case CMD_FND_DIR_DIR_SIZ_ASC:
-                    case CMD_FND_DIR_DIR_SIZ_DSC:
                     case CMD_FND_PTH_DIR_ABS:
                     case CMD_FND_PTH_DIR_RLT:
                     case CMD_FND_DIR_SAM:
@@ -1128,6 +1142,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(!find) find = matchPath(p);
                     else if(!ignoreRegex) dirsCache.add(p);
                     case CMD_FND_DIR_OLY:
+                    case CMD_FND_DIR_DIR_SIZ_ASC:
+                    case CMD_FND_DIR_DIR_SIZ_DSC:
                     case CMD_FND_DIR_OLY_SIZ_ASC:
                     case CMD_FND_DIR_OLY_SIZ_DSC:
                     case CMD_FND_PTH_DIR_OLY_ABS:
@@ -1141,6 +1157,14 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_REN_DIR_OLY_UP:
                     case CMD_REN_DIR_OLY_UP_FST:
                     if(find){
+                        param.getPathMap().put(a,p);
+                        param.getDirsCache().add(p);
+                    }
+                    break;
+                    case CMD_DEL_DIR_OLD_VER:
+                    case CMD_DEL_DIR_OLY_OLD_VER:
+                    if(find = find && !matchPath(p)){
+                        dirsCache.add(p);
                         param.getPathMap().put(a,p);
                         param.getDirsCache().add(p);
                     }
