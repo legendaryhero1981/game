@@ -63,6 +63,8 @@ public interface ICommon extends Cloneable{
     String N_ERR_INFO = "错误信息：";
     String N_FILE = "文件";
     String N_FILE_NUL = "空文件";
+    String N_VER_NEW = "新版本";
+    String N_VER_OLD = "老版本";
     String N_FILE_MERGE = "文件整合";
     String N_PATH_NAME = "路径名";
     String N_DIR = "目录";

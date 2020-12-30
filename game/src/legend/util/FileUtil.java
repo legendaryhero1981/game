@@ -86,6 +86,7 @@ import legend.intf.IValue;
 import legend.util.intf.ICharsetDetectorUtil.Language;
 import legend.util.intf.IConsoleUtil;
 import legend.util.intf.IFileUtil;
+import legend.util.intf.IFileVersion;
 import legend.util.intf.IProgress;
 import legend.util.logic.FileHandleDSRPLogic;
 import legend.util.logic.FileHandleZip7Logic;
@@ -94,6 +95,7 @@ import legend.util.logic.FileReplaceILCodeLogic;
 import legend.util.logic.FileReplaceSPKCodeLogic;
 import legend.util.logic.intf.ILogic;
 import legend.util.param.FileParam;
+import legend.util.param.FileVersion;
 import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
 
@@ -780,19 +782,30 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void delOldVersions(FileParam param){
-        Queue<Path> dirsCache = new ConcurrentLinkedQueue<>(param.getDirsCache());
-        dirsCache.parallelStream().forEach(p1->{
-            if(param.getDirsCache().parallelStream().anyMatch(p2->!p1.equals(p2) && p1.startsWith(p2))) dirsCache.remove(p1);
-        });
-        param.getDirsCache().clear();
-        param.getDirsCache().addAll(dirsCache);
-        param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->{
-            if(param.getDirsCache().parallelStream().anyMatch(p->e.getValue().startsWith(p))) param.getPathMap().remove(e.getKey());
-        });
-        param.getDirsCount().set(param.getDirsCache().size());
-        param.getFilesCount().set((int)param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).count());
-        param.getDetailOptional().ifPresent(c->param.getDirsCache().stream().sorted(new PathListComparator(true)).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
-        param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        IFileVersion iFileVersion = new FileVersion();
+        Queue<Queue<FileVersion>> fileVersionLists = iFileVersion.getSortedFileVersions(param);
+        param.getProgressOptional().ifPresent(c->PG.reset(param.getDirsCount().get() + param.getFilesCount().get(),PROGRESS_POSITION));
+        fileVersionLists.stream().forEach(fileVersions->fileVersions.stream().forEach(fileVersion->{
+            Path path = fileVersion.getPath();
+            if(fileVersion.isNewest()){
+                if(fileVersion.isFile()) param.getDetailOptional().ifPresent(c->showFile(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
+                else param.getDetailOptional().ifPresent(c->showDir(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
+            }else if(fileVersion.isFile()){
+                param.getCmdOptional().ifPresent(c->deleteFile(path));
+                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
+            }else{
+                FileParam fp = new FileParam();
+                fp.setCmd(CMD_DEL_DIR);
+                fp.setOpt(OPT_INSIDE);
+                fp.setPattern(PTRN_ANY);
+                fp.setSrcPath(path);
+                dealFiles(fp);
+                fp.clearCache();
+                param.meetFilesSize(fp.getFilesSize().get());
+                param.getDetailOptional().ifPresent(c->showDir(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
+            }
+            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+        }));
     }
 
     private static void moveFiles(FileParam param){
@@ -1166,7 +1179,6 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find = find && !matchPath(p)){
                         dirsCache.add(p);
                         param.getPathMap().put(a,p);
-                        param.getDirsCache().add(p);
                     }
                 }
             }
