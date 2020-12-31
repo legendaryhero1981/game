@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 
-import legend.util.FileUtil.PathListComparator;
+import legend.util.FileUtil.PathComparator;
 import legend.util.entity.DSRP;
 import legend.util.entity.intf.IDSRP;
 import legend.util.param.FileParam;
@@ -54,7 +54,7 @@ public class FileHandleDSRPLogic extends BaseFileLogic implements IDSRP{
                         else pathsCache.add(p1);
                     });
                     param.getPathsCache().clear();
-                    param.getPathsCache().addAll(pathsCache.parallelStream().sorted(new PathListComparator(false)).collect(toList()));
+                    param.getPathsCache().addAll(pathsCache.parallelStream().sorted(new PathComparator(false)).collect(toList()));
                 });
                 exec(dcxParam,dcxExecPath,builder);
             }else{

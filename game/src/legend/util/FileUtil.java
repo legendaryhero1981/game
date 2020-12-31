@@ -483,18 +483,18 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void findSortedFiles(FileParam param){
-        param.getDetailOptional().ifPresent(c->param.getDirsCache().stream().sorted(new PathListComparator(true)).limit(param.getLimit()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        param.getDetailOptional().ifPresent(c->param.getDirsCache().stream().sorted(new PathComparator(true)).limit(param.getLimit()).forEach(p->showDir(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
         int limit = param.getLimit() - param.getDirsCache().size();
-        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathListComparator(true)).limit(limit).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
+        if(0 < limit) param.getDetailOptional().ifPresent(c->param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(m->of(m.getValue())).sorted(new PathComparator(true)).limit(limit).forEach(p->showFile(new String[]{V_FIND},new FileSizeMatcher(p.toFile()),p)));
     }
 
     private static void findSortedFilePaths(FileParam param){
         final boolean relative = param.meetCondition(PATH_RELATIVE);
         List<Path> pathsCache = param.getPathsCache();
-        Stream<Path> dirs = param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(param.getLimit());
+        Stream<Path> dirs = param.getPathMap().entrySet().stream().filter(e->e.getKey().isDirectory()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathComparator(true)).limit(param.getLimit());
         int limit = param.getLimit() - param.getDirsCache().size();
         Stream<Path> files = null;
-        if(0 < limit) files = param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathListComparator(true)).limit(limit);
+        if(0 < limit) files = param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(relative ? param.getRootPath().relativize(e.getValue()) : e.getValue())).sorted(new PathComparator(true)).limit(limit);
         if(nonEmpty(files)) pathsCache.addAll(concat(dirs,files).collect(toList()));
         else pathsCache.addAll(dirs.collect(toList()));
         param.getDetailOptional().ifPresent(c->pathsCache.stream().forEach(p->CS.sl(p.toString())));
@@ -772,7 +772,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void delNulDirs(FileParam param){
-        param.getDirsCache().stream().sorted(new PathListComparator(false)).forEach(p->{
+        param.getDirsCache().stream().sorted(new PathComparator(false)).forEach(p->{
             if(0 == p.toFile().list().length){
                 param.getDetailOptional().ifPresent(c->CS.sl(V_DEL + N_DIR_NUL + gs(2) + p));
                 param.getCmdOptional().ifPresent(c->deleteFile(p));
@@ -782,8 +782,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     private static void delOldVersions(FileParam param){
-        IFileVersion iFileVersion = new FileVersion();
-        Queue<Queue<FileVersion>> fileVersionLists = iFileVersion.getSortedFileVersions(param);
+        IFileVersion<FileParam,FileVersion> iFileVersion = new FileVersion();
+        List<List<FileVersion>> fileVersionLists = iFileVersion.getSortedFileVersions(param);
         param.getProgressOptional().ifPresent(c->PG.reset(param.getDirsCount().get() + param.getFilesCount().get(),PROGRESS_POSITION));
         fileVersionLists.stream().forEach(fileVersions->fileVersions.stream().forEach(fileVersion->{
             Path path = fileVersion.getPath();
@@ -796,11 +796,14 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             }else{
                 FileParam fp = new FileParam();
                 fp.setCmd(CMD_DEL_DIR);
-                fp.setOpt(OPT_INSIDE);
+                if(param.getCmdOptional().isPresent()) fp.setOpt(OPT_INSIDE);
+                else fp.setOpt(OPT_INSIDE + OPT_SIMULATE);
                 fp.setPattern(PTRN_ANY);
                 fp.setSrcPath(path);
                 dealFiles(fp);
                 fp.clearCache();
+                CACHE.getDirsCount().addAndGet(-fp.getDirsCount().get());
+                CACHE.getFilesCount().addAndGet(-fp.getFilesCount().get());
                 param.meetFilesSize(fp.getFilesSize().get());
                 param.getDetailOptional().ifPresent(c->showDir(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
             }
@@ -821,12 +824,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.getCmdOptional().ifPresent(c->moveFile(src,dest));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
-        param.getRePathMap().keySet().stream().sorted(new PathListComparator(false)).forEach(p->param.getCmdOptional().ifPresent(c->deleteFile(p)));
+        param.getRePathMap().keySet().stream().sorted(new PathComparator(false)).forEach(p->param.getCmdOptional().ifPresent(c->deleteFile(p)));
     }
 
     private static void interchangeFiles(FileParam param){
         final boolean upgrade = param.meetCondition(INTERCHANGE_UPGRADE);
-        param.getPathMap().values().stream().sorted(new PathListComparator(true)).forEach(src->{
+        param.getPathMap().values().stream().sorted(new PathComparator(true)).forEach(src->{
             File file = src.toFile();
             Path dest = param.getDestPath().resolve(param.getSrcPath().relativize(src));
             if(dest.getParent().toFile().isDirectory()) try{
@@ -888,12 +891,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         Path path = param.getDestPath().resolve(param.getZipName());
         CS.checkError(ERR_ZIP_FLE_CRT,new String[]{path.toString(),gsph(ERR_ZIP_FILE_SAME,path.toString())},()->param.getPathMap().containsValue(path));
         param.getCmdOptional().ifPresent(c->createZipFile(param));
-        param.getDirsCache().stream().sorted(new PathListComparator(true)).forEach(p->{
+        param.getDirsCache().stream().sorted(new PathComparator(true)).forEach(p->{
             param.getDetailOptional().ifPresent(c->CS.sl(V_CPRS + N_DIR_NUL + gs(2) + p));
             param.getCmdOptional().ifPresent(c->zipDir(param.getZipOutputStream(),param.getRootPath(),p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
-        param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(e.getValue())).sorted(new PathListComparator(true)).forEach(p->{
+        param.getPathMap().entrySet().stream().filter(e->e.getKey().isRegularFile()).flatMap(e->of(e.getValue())).sorted(new PathComparator(true)).forEach(p->{
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_CPRS},new FileSizeMatcher(p.toFile()),p));
             param.getCmdOptional().ifPresent(c->zipFile(param.getZipOutputStream(),param.getRootPath(),p));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
@@ -1273,10 +1276,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
     }
 
-    public static class PathListComparator implements Comparator<Path>{
+    public static class PathComparator implements Comparator<Path>{
         private boolean order;
 
-        public PathListComparator(boolean ascending){
+        public PathComparator(boolean ascending){
             order = ascending;
         }
 

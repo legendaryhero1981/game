@@ -261,7 +261,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         if(REG_ANY.equals(pattern.pattern())) condition |= IGNORE_REGEX;
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
         if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
-        if(opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE)) condition |= SHOW_DETAIL;
+        if(!opt.contains(OPT_INSIDE) && (opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE))) condition |= SHOW_DETAIL;
         if(opt.contains(OPT_EXCLUDE_ROOT)){
             condition |= EXCLUDE_ROOT;
             rootPath = srcPath;

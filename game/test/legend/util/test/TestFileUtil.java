@@ -15,9 +15,7 @@ public class TestFileUtil extends TestBase{
     @Override
     public String monk(){
         String s = "";
-        s = "-dov!*  .  E:/Java/eclipse/SpringToolSuite/plugins  _   ";
-        s = "-ddov!*  .  E:/Java/eclipse/SpringToolSuite/plugins  _   ";
-        s = "-ddoov!*  .  E:/Java/eclipse/SpringToolSuite/plugins  _  ";
+        s = "-ddov!*  .  E:/Java/eclipse/SpringToolSuite/plugins  _   1";
 //        s = "-fddsd!*  .  d:/games";
 //        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
 //        s = "-rfbt*  (?i)`武器うんちく.fmg.xml`$  G:/cache/temp/ds3  REPLACE(\\A(<text id=#DQM#\\d+#DQM#>).*,,$1,,#EMPTY#);;DIST-FINAL-MULTI-ROW(#1.1#,,#ENTER#)  \n  1";
