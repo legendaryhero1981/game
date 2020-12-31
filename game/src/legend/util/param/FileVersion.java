@@ -65,7 +65,16 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
         });
         List<List<FileVersion>> fileVersionsList = new ArrayList<>();
         Map<String,Queue<FileVersion>> fileVersionsMap = new ConcurrentHashMap<>();
-        fileVersionQuque.parallelStream().forEach(fileVersion->fileVersionsMap.computeIfAbsent(fileVersion.name,s->new ConcurrentLinkedQueue<>()).add(fileVersion));
+        fileVersionQuque.parallelStream().forEach(fv1->{
+            Queue<FileVersion> fileVersions = fileVersionsMap.computeIfAbsent(fv1.name,s->new ConcurrentLinkedQueue<>());
+            if(isEmpty(fileVersions)) fileVersions.add(fv1);
+            else if(fv1.versions.size() == fileVersions.peek().versions.size() && fileVersions.parallelStream().allMatch(fv2->{
+                List<Long> vs1 = fv1.versions, vs2 = fv2.versions;
+                int i = 0;
+                for(;i < vs1.size() && vs1.get(i) == vs2.get(i);i++);
+                return i < vs1.size();
+            })) fileVersions.add(fv1);
+        });
         fileVersionsMap.entrySet().parallelStream().filter(e->1 == e.getValue().size()).forEach(e->fileVersionsMap.remove(e.getKey()));
         param.getFilesCount().set(0);
         param.getDirsCount().set(0);
@@ -95,6 +104,11 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
         fileVersion.versions = new ArrayList<>();
         for(matcher = PTRN_NUM.matcher(matcher.group(2));matcher.find();fileVersion.versions.add(Long.parseLong(matcher.group())));
         return fileVersion;
+    }
+
+    @Override
+    public String toString(){
+        return path.toString();
     }
 
     public Path getPath(){
@@ -140,7 +154,7 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
             List<Long> vs1 = fv1.versions, vs2 = fv2.versions;
             int i = 0;
             for(;i < vs1.size() && i < vs2.size() && vs1.get(i) == vs2.get(i);i++);
-            return i == vs1.size() || i == vs2.size() ? (order ? (vs1.size() > vs2.size() ? 1 : -1) : (vs1.size() < vs2.size() ? 1 : -1)) : (order ? (vs1.get(i) > vs2.get(i) ? 1 : -1) : (vs1.get(i) < vs2.get(i) ? 1 : -1));
+            return i == vs1.size() || i == vs2.size() ? 0 : order ? (vs1.get(i) > vs2.get(i) ? 1 : -1) : (vs1.get(i) < vs2.get(i) ? 1 : -1);
         }
     }
 }
