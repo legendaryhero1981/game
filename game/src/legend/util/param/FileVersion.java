@@ -63,11 +63,10 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
                 if(nonEmpty(fileVersion)) fileVersionQuque.add(fileVersion);
             }
         });
-        List<List<FileVersion>> fileVersionsList = new ArrayList<>();
         Map<String,Queue<FileVersion>> fileVersionsMap = new ConcurrentHashMap<>();
         fileVersionQuque.parallelStream().forEach(fv1->{
             Queue<FileVersion> fileVersions = fileVersionsMap.computeIfAbsent(fv1.name,s->new ConcurrentLinkedQueue<>());
-            if(isEmpty(fileVersions)) fileVersions.add(fv1);
+            if(fileVersions.isEmpty()) fileVersions.add(fv1);
             else if(fv1.versions.size() == fileVersions.peek().versions.size() && fileVersions.parallelStream().allMatch(fv2->{
                 List<Long> vs1 = fv1.versions, vs2 = fv2.versions;
                 int i = 0;
@@ -78,9 +77,10 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
         fileVersionsMap.entrySet().parallelStream().filter(e->1 == e.getValue().size()).forEach(e->fileVersionsMap.remove(e.getKey()));
         param.getFilesCount().set(0);
         param.getDirsCount().set(0);
+        List<List<FileVersion>> fileVersionLists = new ArrayList<>();
         fileVersionsMap.entrySet().stream().sorted(new StringQueueComparator(false)).forEach(e->{
             List<FileVersion> fileVersions = e.getValue().parallelStream().sorted(new FileVersionComparator(false)).collect(toList());
-            fileVersionsList.add(fileVersions);
+            fileVersionLists.add(fileVersions);
             fileVersions.get(0).isNewest = true;
             fileVersions.parallelStream().forEach(fileVersion->{
                 if(fileVersion.isFile){
@@ -89,7 +89,7 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
                 }else param.getDirsCount().incrementAndGet();
             });
         });
-        return fileVersionsList;
+        return fileVersionLists;
     }
 
     private FileVersion generateFileVersion(Entry<BasicFileAttributes,Path> entry, Pattern pattern){

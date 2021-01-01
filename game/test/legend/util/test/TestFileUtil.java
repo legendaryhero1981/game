@@ -15,6 +15,7 @@ public class TestFileUtil extends TestBase{
     @Override
     public String monk(){
         String s = "";
+        s = "-ddoov!*  \\d+\\.  E:/Java/apache-maven  ";
         s = "-dov!*  `.jar`$  E:/Java/apache-maven  ";
 //        s = "-fddsd!*  .  d:/games";
 //        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";

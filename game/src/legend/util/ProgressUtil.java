@@ -74,7 +74,7 @@ public final class ProgressUtil implements IProgressUtil{
         @Override
         public void finish(){
             service.execute(()->await(finish,ERR_RUN));
-            sleep(SLEEP * 2,ERR_RUN);
+            sleep(SLEEP * 2);
         }
 
         @Override
@@ -112,7 +112,7 @@ public final class ProgressUtil implements IProgressUtil{
         @Override
         public void stop(){
             service.execute(()->await(stop,ERR_STOP));
-            sleep(SLEEP + 2,ERR_RUN);
+            sleep(SLEEP + 2);
         }
 
         @Override
@@ -184,17 +184,17 @@ public final class ProgressUtil implements IProgressUtil{
                     int e = end.get();
                     if(b > n) for(int i = MIN;i < b && State.RUN == state.get();i++){
                         CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > i ? 2 : 1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                        sleep(SLEEP,ERR_RUN);
+                        sleep(SLEEP);
                     }
                     else if(e > n) for(int i = b;i < e && State.RUN == state.get();i++,n = progress.get()){
                         CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(10 > n ? 2 : 1).s(n + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                        sleep(SLEEP,ERR_RUN);
+                        sleep(SLEEP);
                     }
                     else for(int i = e;i < MAX && State.RUN == state.get();i++){
                         CS.s(COMPLETE,i < MID ? i : MID).s(REMAINER,MID - i).s(1).s(i + STYLE).s(COMPLETE,i - MID).s(REMAINER,i > MID ? MAX - i : MID).s(RETURN);
-                        sleep(SLEEP,ERR_RUN);
+                        sleep(SLEEP);
                     }
-                }else sleep(1,ERR_RUN);
+                }else sleep(1);
             }
             CS.s(COMPLETE,MID).s(MAX + STYLE).s(COMPLETE,MID).l(2);
         }
@@ -207,11 +207,11 @@ public final class ProgressUtil implements IProgressUtil{
             }
         }
 
-        private void sleep(long sleep, String error){
+        private void sleep(long sleep){
             try{
                 Thread.sleep(sleep);
             }catch(InterruptedException e){
-                CS.sl(gsph(error,e.toString()));
+                CS.sl(gsph(ERR_RUN,e.toString()));
             }
         }
     }

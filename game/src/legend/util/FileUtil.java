@@ -785,30 +785,33 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         IFileVersion<FileParam,FileVersion> iFileVersion = new FileVersion();
         List<List<FileVersion>> fileVersionLists = iFileVersion.getSortedFileVersions(param);
         param.getProgressOptional().ifPresent(c->PG.reset(param.getDirsCount().get() + param.getFilesCount().get(),PROGRESS_POSITION));
-        fileVersionLists.stream().forEach(fileVersions->fileVersions.stream().forEach(fileVersion->{
-            Path path = fileVersion.getPath();
-            if(fileVersion.isNewest()){
-                if(fileVersion.isFile()) param.getDetailOptional().ifPresent(c->showFile(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
-                else param.getDetailOptional().ifPresent(c->showDir(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
-            }else if(fileVersion.isFile()){
-                param.getCmdOptional().ifPresent(c->deleteFile(path));
-                param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
-            }else{
-                FileParam fp = new FileParam();
-                fp.setCmd(CMD_DEL_DIR);
-                if(param.getCmdOptional().isPresent()) fp.setOpt(OPT_INSIDE);
-                else fp.setOpt(OPT_INSIDE + OPT_SIMULATE);
-                fp.setPattern(PTRN_ANY);
-                fp.setSrcPath(path);
-                dealFiles(fp);
-                fp.clearCache();
-                CACHE.getDirsCount().addAndGet(-fp.getDirsCount().get());
-                CACHE.getFilesCount().addAndGet(-fp.getFilesCount().get());
-                param.meetFilesSize(fp.getFilesSize().get());
-                param.getDetailOptional().ifPresent(c->showDir(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
-            }
-            param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
-        }));
+        fileVersionLists.stream().forEach(fileVersions->{
+            fileVersions.stream().forEach(fileVersion->{
+                Path path = fileVersion.getPath();
+                if(fileVersion.isNewest()){
+                    if(fileVersion.isFile()) param.getDetailOptional().ifPresent(c->showFile(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
+                    else param.getDetailOptional().ifPresent(c->showDir(new String[]{V_FIND + N_VER_NEW},new FileSizeMatcher(path.toFile()),path));
+                }else if(fileVersion.isFile()){
+                    param.getCmdOptional().ifPresent(c->deleteFile(path));
+                    param.getDetailOptional().ifPresent(c->showFile(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
+                }else{
+                    FileParam fp = new FileParam();
+                    fp.setCmd(CMD_DEL_DIR);
+                    if(param.getCmdOptional().isPresent()) fp.setOpt(OPT_INSIDE);
+                    else fp.setOpt(OPT_INSIDE + OPT_SIMULATE);
+                    fp.setPattern(PTRN_ANY);
+                    fp.setSrcPath(path);
+                    dealFiles(fp);
+                    fp.clearCache();
+                    CACHE.getDirsCount().addAndGet(-fp.getDirsCount().get());
+                    CACHE.getFilesCount().addAndGet(-fp.getFilesCount().get());
+                    param.meetFilesSize(fp.getFilesSize().get());
+                    param.getDetailOptional().ifPresent(c->showDir(new String[]{V_DEL + N_VER_OLD},new FileSizeMatcher(path.toFile()),path));
+                }
+                param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
+            });
+            param.getDetailOptional().ifPresent(s->CS.l(1));
+        });
     }
 
     private static void moveFiles(FileParam param){
