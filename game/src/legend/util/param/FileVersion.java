@@ -1,7 +1,6 @@
 package legend.util.param;
 
 import static java.util.regex.Pattern.compile;
-import static java.util.regex.Pattern.quote;
 import static java.util.stream.Collectors.toList;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
@@ -48,7 +47,7 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
     @Override
     public List<List<FileVersion>> getSortedFileVersions(FileParam param){
         Queue<FileVersion> fileVersionQuque = new ConcurrentLinkedQueue<>();
-        Pattern pattern = compile(nonEmpty(param.getSplit()) ? gsph(REG_FILE_VER,quote(param.getSplit())) : REG_FILE_VER_DEF);
+        Pattern pattern = compile(nonEmpty(param.getSplit()) ? gsph(REG_FILE_VER,param.getSplit()) : REG_FILE_VER_DEF);
         param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).forEach(e1->{
             if(param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).anyMatch(e2->!e1.getValue().equals(e2.getValue()) && e1.getValue().startsWith(e2.getValue()))) param.getPathMap().remove(e1.getKey());
             else{
@@ -136,8 +135,12 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
             String s1 = e1.getKey(), s2 = e2.getKey();
             if(n1 == n2){
                 int l1 = s1.length(), l2 = s2.length();
-                return l1 == l2 ? s1.compareTo(s2) : l1 < l2 ? 1 : -1;
+                return l1 == l2 ? s1.compareTo(s2) : sort(l1,l2);
             }
+            return sort(n1,n2);
+        }
+
+        private int sort(int n1, int n2){
             return order ? (n1 > n2 ? 1 : -1) : (n1 < n2 ? 1 : -1);
         }
     }

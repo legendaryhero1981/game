@@ -467,7 +467,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
                 break;
                 case CMD_REP_FLE_BT:
                 param.setReplacement(s2[3]);
-                optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(s[4]));
+                optional.filter(s->s.length > 4).ifPresent(s->param.setSplit(mbq.reset(s2[4]).find() ? quote(s[4]) : s[4]));
                 optional.filter(s->s.length > 5).ifPresent(s->param.setLevel(Integer.parseInt(s[5])));
                 break;
                 case CMD_REP_FLE_IL:
@@ -530,10 +530,10 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
                 case CMD_DEL_DIR_OLY_OLD_VER:
                 optional.filter(s->s.length == 4).ifPresent(s->{
                     if(s[3].matches(REG_NUM)) param.setLevel(Integer.parseInt(s[3]));
-                    else param.setSplit(s[3]);
+                    else param.setSplit(mbq.reset(s2[3]).find() ? quote(s[3]) : s[3]);
                 });
                 optional.filter(s->s.length > 4).ifPresent(s->{
-                    param.setSplit(s[3]);
+                    param.setSplit(mbq.reset(s2[3]).find() ? quote(s[3]) : s[3]);
                     param.setLevel(Integer.parseInt(s[4]));
                 });
                 break;
