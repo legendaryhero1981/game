@@ -7,7 +7,7 @@ public interface IConsoleUtil extends ICommon{
         NON,B,KB,MB,GB,TB
     }
 
-    int UNIT_SIZE = 0x400;
+    int RADIX_SIZE = 0x400;
     String SIZE_TB = "TB";
     String SIZE_GB = "GB";
     String SIZE_MB = "MB";

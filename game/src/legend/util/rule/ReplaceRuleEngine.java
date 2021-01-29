@@ -24,9 +24,9 @@ import legend.util.param.SingleValue;
 import legend.util.rule.intf.IReplaceRuleEngine;
 
 public final class ReplaceRuleEngine implements IReplaceRuleEngine,IValue<ReplaceRuleEngine>{
-    protected Map<Integer,String[][]> atomsCache = new ConcurrentHashMap<>();
-    protected Map<Integer,String[][][]> complexesCache = new ConcurrentHashMap<>();
-    protected Deque<String> quotesCache = new ArrayDeque<>();
+    protected final Map<Integer,String[][]> atomsCache = new ConcurrentHashMap<>();
+    protected final Map<Integer,String[][][]> complexesCache = new ConcurrentHashMap<>();
+    protected final Deque<String> quotesCache = new ArrayDeque<>();
     private Set<Integer> colIndexesCache = new HashSet<>();
     private ReplaceRule[] rules;
     private Matcher mbq = PTRN_QUOTE_BQ.matcher(S_EMPTY);

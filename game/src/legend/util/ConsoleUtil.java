@@ -246,18 +246,18 @@ public final class ConsoleUtil implements IConsoleUtil{
 
         public long divideSize(long size, int n){
             for(int i = 0;i < n;i++)
-                size /= UNIT_SIZE;
+                size /= RADIX_SIZE;
             return size;
         }
 
         public long multiplySize(long size, int n){
             for(int i = 0;i < n;i++)
-                size *= UNIT_SIZE;
+                size *= RADIX_SIZE;
             return size;
         }
 
         public long modSize(long size){
-            return size % UNIT_SIZE;
+            return size % RADIX_SIZE;
         }
     }
 }

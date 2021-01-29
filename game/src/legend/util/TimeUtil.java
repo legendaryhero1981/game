@@ -60,11 +60,11 @@ public final class TimeUtil implements ITimeUtil{
     }
 
     public static String getDurationString(long time){
-        long hour = time / UNIT_MILLI / UNIT_SECOND / UNIT_MINUTE;
-        long minute = time / UNIT_MILLI / UNIT_SECOND % UNIT_MINUTE;
-        long second = time / UNIT_MILLI % UNIT_SECOND;
-        long milli = time % UNIT_MILLI;
-        return hour + "时" + minute + "分" + second + "秒" + milli + "毫秒";
+        long hour = time / RADIX_MILLI / RADIX_SECOND / RADIX_MINUTE;
+        long minute = time / RADIX_MILLI / RADIX_SECOND % RADIX_MINUTE;
+        long second = time / RADIX_MILLI % RADIX_SECOND;
+        long milli = time % RADIX_MILLI;
+        return hour + UNIT_HOUR + minute + UNIT_MINUTE + second + UNIT_SECOND + milli + UNIT_MILLI;
     }
 
     public static void resetTime(){
@@ -115,11 +115,11 @@ public final class TimeUtil implements ITimeUtil{
     }
 
     public static String getTotalDurationString(long totalTime){
-        long hour = totalTime / UNIT_MILLI / UNIT_SECOND / UNIT_MINUTE;
-        long minute = totalTime / UNIT_MILLI / UNIT_SECOND % UNIT_MINUTE;
-        long second = totalTime / UNIT_MILLI % UNIT_SECOND;
-        long milli = totalTime % UNIT_MILLI;
-        return hour + "时" + minute + "分" + second + "秒" + milli + "毫秒";
+        long hour = totalTime / RADIX_MILLI / RADIX_SECOND / RADIX_MINUTE;
+        long minute = totalTime / RADIX_MILLI / RADIX_SECOND % RADIX_MINUTE;
+        long second = totalTime / RADIX_MILLI % RADIX_SECOND;
+        long milli = totalTime % RADIX_MILLI;
+        return hour + UNIT_HOUR + minute + UNIT_MINUTE + second + UNIT_SECOND + milli + UNIT_MILLI;
     }
 
     public static void resetTotalTime(){
