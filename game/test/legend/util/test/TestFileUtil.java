@@ -16,8 +16,8 @@ public class TestFileUtil extends TestBase{
     public String monk(){
         String s = "";
         s = "-dov!*  `.jar`$  E:/Java/apache-maven  ";
-        s = "-ddoov!*  \\d+\\.  E:/Java/apache-maven  ";
-//        s = "-fddsd!*  .  d:/games";
+        s = "-ddoov!*~  \\d+\\.  E:/Java/apache-maven  ";
+//        s = "-fddsd!*  .  f:/games  10gb  10";
 //        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
 //        s = "-rfbt*  (?i)`武器うんちく.fmg.xml`$  G:/cache/temp/ds3  REPLACE(\\A(<text id=#DQM#\\d+#DQM#>).*,,$1,,#EMPTY#);;DIST-FINAL-MULTI-ROW(#1.1#,,#ENTER#)  \\n  1";
 //        s = "-rfbt*  `repack-fmg.bat`$  G:/cache/temp/ds3  REPLACE(.+,,#DQM#$0#DQM#);;FINAL-MULTI-ROW(#1.1#,,` `,,@echo off#ENTER#chcp 65001#ENTER##DQM#G:/games/DSParamEditor/DSDataRepacker#DQM# )  \\n  1";

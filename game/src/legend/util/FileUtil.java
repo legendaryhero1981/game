@@ -543,6 +543,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     protected static void findSortedDirSizes(FileParam param){
+        param.getFilesCount().set(0);
+        param.getDirsCount().set(0);
+        param.getFilesSize().set(0l);
         param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e->param.getSizeMap().put(e.getValue(),e.getKey().size()));
         param.getDirsCache().parallelStream().forEach(p->{
             FileParam fp = new FileParam();
@@ -551,15 +554,21 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             fp.setSrcPath(p);
             cachePaths(fp);
             fp.clearCache();
-            final long size = fp.getFilesSize().get();
-            if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
+            param.getSizeMap().put(p,fp.getFilesSize().get());
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
-        param.getDetailOptional().ifPresent(c->param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
+        param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
             Path path = e.getKey();
-            if(path.toFile().isFile()) CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_FILE + gs(4) + path.toString());
-            else CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_DIR + gs(4) + path.toString());
-        }));
+            if(path.toFile().isFile()){
+                param.getFilesCount().incrementAndGet();
+                param.meetFilesSize(e.getValue());
+                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_FILE + gs(4) + path.toString()));
+            }else{
+                param.getDirsCount().incrementAndGet();
+                param.meetFilesSize(e.getValue());
+                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_DIR + gs(4) + path.toString()));
+            }
+        });
     }
 
     protected static void replaceFilesForSameName(FileParam param){
