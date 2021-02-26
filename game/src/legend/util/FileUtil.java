@@ -554,7 +554,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             fp.setSrcPath(p);
             cachePaths(fp);
             fp.clearCache();
-            param.getSizeMap().put(p,fp.getFilesSize().get());
+            final long size = fp.getFilesSize().get();
+            if(param.meetFilesSize(size)) param.getSizeMap().put(p,size);
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));
         });
         param.getSizeMap().entrySet().stream().sorted(new PathLongComparator(param.meetCondition(ORDER_ASC))).limit(param.getLimit()).forEach(e->{
