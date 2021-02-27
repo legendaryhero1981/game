@@ -632,11 +632,11 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         String sp = getWrapedParam(srcPath);
         String dp = getWrapedParam(destPath);
         String bp = getWrapedParam(backupPath);
-        String se = getWrapedParam(sizeExpr);
+        String se = getWrapedParam(sizeExpr,DFT_SIZE_EXPR);
         String spt = getWrapedParam(split);
         String rp = getWrapedParam(replacement);
         String zn = getWrapedParam(zipName);
-        String s = CMD + cmd + opt + regex + sp;
+        String s = CMD + S_SPACE + cmd + opt + regex + sp;
         switch(cmd){
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:
@@ -746,8 +746,8 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         return s;
     }
 
-    private static String getWrapedParam(Object param){
-        return nonEmpty(param) ? S_SPACE + S_DQM + param + S_DQM : S_EMPTY;
+    private static String getWrapedParam(Object... params){
+        return nonEmpty(params[0]) ? S_SPACE + S_DQM + params[0] + S_DQM : 1 < params.length ? S_SPACE + S_DQM + params[1] + S_DQM : S_EMPTY;
     }
 
     public Path getSrcPath(){
