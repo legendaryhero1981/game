@@ -747,7 +747,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
     }
 
     private static String getWrapedParam(Object... params){
-        return nonEmpty(params[0]) ? S_SPACE + S_DQM + params[0] + S_DQM : 1 < params.length ? S_SPACE + S_DQM + params[1] + S_DQM : S_EMPTY;
+        return nonEmpty(params[0]) ? S_SPACE + S_DQM + params[0] + S_DQM : 1 < params.length && nonEmpty(params[1]) ? S_SPACE + S_DQM + params[1] + S_DQM : S_EMPTY;
     }
 
     public Path getSrcPath(){
