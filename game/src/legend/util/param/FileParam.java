@@ -283,39 +283,39 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
 
     public void saveCache(FileParam cache){
         if(meetCondition(CAN_USE_CACHE)){
-            cache.getFilesSize().addAndGet(filesSize.addAndGet(cache.getCacheFileSize()));
-            cache.getFilesCount().addAndGet(filesCount.addAndGet(cache.getCacheFilesCount()));
-            cache.getDirsCount().addAndGet(dirsCount.addAndGet(cache.getCacheDirsCount()));
+            cache.filesSize.addAndGet(filesSize.addAndGet(cache.cacheFileSize));
+            cache.filesCount.addAndGet(filesCount.addAndGet(cache.cacheFilesCount));
+            cache.dirsCount.addAndGet(dirsCount.addAndGet(cache.cacheDirsCount));
         }else{
-            cache.getFilesSize().addAndGet(filesSize.get());
-            cache.getFilesCount().addAndGet(filesCount.get());
-            cache.getDirsCount().addAndGet(dirsCount.get());
+            cache.filesSize.addAndGet(filesSize.get());
+            cache.filesCount.addAndGet(filesCount.get());
+            cache.dirsCount.addAndGet(dirsCount.get());
         }
         if(meetCondition(CAN_SAVE_CACHE)){
             cache.clearCache();
-            cache.setPathMap(pathMap);
-            cache.setRePathMap(rePathMap);
-            cache.setPathsMap(pathsMap);
-            cache.setSizeMap(sizeMap);
-            cache.setDirsCache(dirsCache);
-            cache.setPathsCache(pathsCache);
-            cache.setPattern(pattern);
-            cache.setSrcPath(srcPath);
-            cache.setCacheFileSize(filesSize.get());
-            cache.setCacheFilesCount(filesCount.get());
-            cache.setCacheDirsCount(dirsCount.get());
+            cache.pathMap = pathMap;
+            cache.rePathMap = rePathMap;
+            cache.pathsMap = pathsMap;
+            cache.sizeMap = sizeMap;
+            cache.dirsCache = dirsCache;
+            cache.pathsCache = pathsCache;
+            cache.pattern = pattern;
+            cache.srcPath = srcPath;
+            cache.cacheFileSize = filesSize.get();
+            cache.cacheFilesCount = filesCount.get();
+            cache.cacheDirsCount = dirsCount.get();
         }else if(meetCondition(NEED_CLEAR_CACHE)) cache.clearCache();
     }
 
     public boolean useCache(FileParam cache){
         if(meetCondition(CAN_USE_CACHE)){
             clearCache();
-            pathMap = cache.getPathMap();
-            rePathMap = cache.getRePathMap();
-            pathsMap = cache.getPathsMap();
-            sizeMap = cache.getSizeMap();
-            dirsCache = cache.getDirsCache();
-            pathsCache = cache.getPathsCache();
+            pathMap = cache.pathMap;
+            rePathMap = cache.rePathMap;
+            pathsMap = cache.pathsMap;
+            sizeMap = cache.sizeMap;
+            dirsCache = cache.dirsCache;
+            pathsCache = cache.pathsCache;
             return true;
         }else return false;
     }
@@ -902,48 +902,24 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         return pathMap;
     }
 
-    private void setPathMap(ConcurrentMap<BasicFileAttributes,Path> pathMap){
-        this.pathMap = pathMap;
-    }
-
     public ConcurrentMap<Path,Path> getRePathMap(){
         return rePathMap;
-    }
-
-    private void setRePathMap(ConcurrentMap<Path,Path> rePathMap){
-        this.rePathMap = rePathMap;
     }
 
     public ConcurrentMap<Path,List<Path>> getPathsMap(){
         return pathsMap;
     }
 
-    private void setPathsMap(ConcurrentMap<Path,List<Path>> pathsMap){
-        this.pathsMap = pathsMap;
-    }
-
     public ConcurrentMap<Path,Long> getSizeMap(){
         return sizeMap;
-    }
-
-    private void setSizeMap(ConcurrentMap<Path,Long> sizeMap){
-        this.sizeMap = sizeMap;
     }
 
     public List<Path> getDirsCache(){
         return dirsCache;
     }
 
-    private void setDirsCache(List<Path> dirsCache){
-        this.dirsCache = dirsCache;
-    }
-
     public List<Path> getPathsCache(){
         return pathsCache;
-    }
-
-    private void setPathsCache(List<Path> pathsCache){
-        this.pathsCache = pathsCache;
     }
 
     public Optional<Long> getDetailOptional(){
@@ -962,23 +938,11 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         return cacheFileSize;
     }
 
-    private void setCacheFileSize(long cacheFileSize){
-        this.cacheFileSize = cacheFileSize;
-    }
-
     public int getCacheFilesCount(){
         return cacheFilesCount;
     }
 
-    private void setCacheFilesCount(int cacheFilesCount){
-        this.cacheFilesCount = cacheFilesCount;
-    }
-
     public int getCacheDirsCount(){
         return cacheDirsCount;
-    }
-
-    private void setCacheDirsCount(int cacheDirsCount){
-        this.cacheDirsCount = cacheDirsCount;
     }
 }
