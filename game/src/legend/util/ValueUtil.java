@@ -35,6 +35,11 @@ public final class ValueUtil{
         return null == o;
     }
 
+    @SafeVarargs
+    public static <T> void addNonEmptyElements(Collection<T> c, T... ta){
+        for(T t : ta) if(nonEmpty(t)) c.add(t);
+    }
+
     public static <T> Collection<T> arrayToUniqueCollection(T[] array){
         Collection<T> collection = new ArrayList<>();
         Set<T> set = new HashSet<>();

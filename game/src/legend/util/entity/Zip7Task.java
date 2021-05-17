@@ -1,8 +1,8 @@
 package legend.util.entity;
 
-import static java.util.Arrays.asList;
 import static legend.util.ConsoleUtil.FS;
 import static legend.util.StringUtil.concat;
+import static legend.util.ValueUtil.addNonEmptyElements;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 
@@ -14,7 +14,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
-
 import legend.util.entity.intf.IZip7;
 
 @XmlRootElement(name = "Zip7Task")
@@ -93,8 +92,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         }else volumeSize = ZIP7_ARG_VOL_DEF;
         if(nonEmpty(password)) password = ZIP7_ARG_PW + password;
         cmd.clear();
-        if(ZIP7_ARG_ZIP.equals(mode)) cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs));
-        else cmd.addAll(asList(mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL));
+        if(ZIP7_ARG_ZIP.equals(mode)) addNonEmptyElements(cmd,mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs);
+        else addNonEmptyElements(cmd,mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL);
         return true;
     }
 
