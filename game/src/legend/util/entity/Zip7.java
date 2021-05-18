@@ -9,6 +9,7 @@ import static legend.util.FileUtil.writeFile;
 import static legend.util.MD5Util.getMD5L32;
 import static legend.util.StringUtil.getFileNameWithoutSuffix;
 import static legend.util.StringUtil.gs;
+import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.param.FileParam.convertParam;
 
@@ -68,9 +69,9 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
                 return true;
             }
             makeDirs(get(t.getFilePath()));
-            final boolean isZipMode = ZIP7_ARG_ZIP.equals(t.getMode());
+            final boolean isZipMode = ZIP7_ARG_ZIP.equals(t.getMode()), isZipModeDefault = MODE_ZIP_DEF.equals(t.getZipMode());
             FileParam fp = new FileParam();
-            fp.setCmd(isZipMode ? CMD_FND_PTH_DIR_ABS : CMD_FND_PTH_ABS);
+            fp.setCmd(isZipMode ? isZipModeDefault ? CMD_FND_PTH_DIR_RLT : CMD_FND_PTH_DIR_ABS : CMD_FND_PTH_ABS);
             fp.setOpt(OPT_INSIDE);
             fp.setPattern(compile(convertParam(t.getQueryRegex(),true)));
             fp.setSrcPath(get(t.getQueryPath()));
@@ -78,8 +79,13 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             fp.setLevel(t.getLevel());
             dealFiles(fp);
             t.cmd.addFirst(zip7ExecutablePath);
-            if(isZipMode) cmds.add(t.cmd.toArray(new String[t.cmd.size()]));
-            else{
+            if(isZipMode){
+                if(isZipModeDefault){
+                    String[] context = gsph(ZIP7_CONTEXT,get(t.getQueryPath()).getParent().toString()).split(SPC_NUL);
+                    for(int i = context.length - 1;i >= 0;i--) t.cmd.addFirst(context[i]);
+                }else t.cmd.add(MODE_ZIP_SPF.equals(t.getZipMode()) ? ZIP7_ARG_SPF : ZIP7_ARG_SPF2);
+                cmds.add(t.cmd.toArray(new String[t.cmd.size()]));
+            }else{
                 Queue<String> caches = new ConcurrentLinkedQueue<>();
                 fp.getPathsCache().parallelStream().forEach(p->{
                     Deque<String> cmd = new ArrayDeque<>(t.cmd);

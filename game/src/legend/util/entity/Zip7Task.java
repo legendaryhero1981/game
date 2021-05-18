@@ -17,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import legend.util.entity.intf.IZip7;
 
 @XmlRootElement(name = "Zip7Task")
-@XmlType(propOrder = {"queryRegex","queryLevel","queryPath","listFilePath","mode","filePath","unzipMode","password","compression","volumeSize","sfxModule","moreArgs"})
+@XmlType(propOrder = {"queryRegex","queryLevel","queryPath","listFilePath","mode","filePath","zipMode","unzipMode","password","compression","volumeSize","sfxModule","moreArgs"})
 public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     @XmlElement
     private String queryRegex = REG_ANY;
@@ -31,6 +31,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
     private String mode = MODE_ZIP;
     @XmlElement
     private String filePath = S_EMPTY;
+    @XmlElement
+    private String zipMode = MODE_ZIP_DEF;
     @XmlElement
     private String unzipMode = MODE_UNZIP_MD5;
     @XmlElement
@@ -92,8 +94,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         }else volumeSize = ZIP7_ARG_VOL_DEF;
         if(nonEmpty(password)) password = ZIP7_ARG_PW + password;
         cmd.clear();
-        if(ZIP7_ARG_ZIP.equals(mode)) addNonEmptyElements(cmd,mode,password,ZIP7_ARG_SPF,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs);
-        else addNonEmptyElements(cmd,mode,password,ZIP7_ARG_SPF,ZIP7_ARG_YES_ALL);
+        if(ZIP7_ARG_ZIP.equals(mode)) addNonEmptyElements(cmd,mode,password,compression,volumeSize,sfxModule,filePath,ZIP7_ARG_LIST_FILE + listFilePath,moreArgs);
+        else addNonEmptyElements(cmd,mode,password,ZIP7_ARG_YES_ALL);
         return true;
     }
 
@@ -120,6 +122,10 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
 
     public String getFilePath(){
         return filePath;
+    }
+
+    public String getZipMode(){
+        return zipMode;
     }
 
     public String getUnzipMode(){
