@@ -13,6 +13,7 @@ import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.param.FileParam.convertParam;
 
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -81,7 +82,9 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             t.cmd.addFirst(zip7ExecutablePath);
             if(isZipMode){
                 if(isZipModeDefault){
-                    String[] context = gsph(ZIP7_CONTEXT,get(t.getQueryPath()).getParent().toString()).split(SPC_NUL);
+                    Path path = get(t.getQueryPath());
+                    path = isEmpty(path.getParent()) ? path : path.getParent();
+                    String[] context = gsph(ZIP7_CONTEXT,path.toString()).split(SPC_NUL);
                     for(int i = context.length - 1;i >= 0;i--) t.cmd.addFirst(context[i]);
                 }else t.cmd.add(MODE_ZIP_SPF.equals(t.getZipMode()) ? ZIP7_ARG_SPF : ZIP7_ARG_SPF2);
                 cmds.add(t.cmd.toArray(new String[t.cmd.size()]));

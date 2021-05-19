@@ -79,6 +79,8 @@ public class Zip7Task extends BaseEntity<Zip7Task> implements IZip7{
         matcher = PTRN_ZIP7_MODE.matcher(mode);
         if(!matcher.matches() || MODE_ZIP.equals(mode)) mode = ZIP7_ARG_ZIP;
         else mode = ZIP7_ARG_UNZIP;
+        matcher = PTRN_ZIP7_MODE_ZIP.matcher(zipMode);
+        if(isEmpty(zipMode) || !matcher.matches()) zipMode = MODE_ZIP_DEF;
         matcher = PTRN_ZIP7_MODE_UNZIP.matcher(unzipMode);
         if(isEmpty(unzipMode) || !matcher.matches()) unzipMode = MODE_UNZIP_MD5;
         if(nonEmpty(sfxModule)) if(!matcher.reset(sfxModule).matches() || MODE_ZIP.equals(sfxModule)) sfxModule = ZIP7_ARG_SFX_GUI;

@@ -11,6 +11,7 @@ import legend.util.intf.IFileUtil;
 public interface IZip7 extends IFileUtil{
     long ZIP7_VOL_SIZE_DEF = 1l << 30;
     String REG_ZIP7_MODE = MODE_ZIP + "|" + MODE_UNZIP;
+    String REG_ZIP7_MODE_ZIP = MODE_ZIP_DEF + "|" + MODE_ZIP_SPF + "|" + MODE_ZIP_SPF2;
     String REG_ZIP7_MODE_UNZIP = MODE_UNZIP_MD5 + "|" + MODE_UNZIP_DIR + "|" + MODE_UNZIP_MEG;
     String REG_ZIP7_COMP = "[013579]";
     String REG_ZIP7_VOL = "(" + REG_NUM_NATURAL + ")([bkmgBKMG])";
@@ -58,6 +59,7 @@ public interface IZip7 extends IFileUtil{
     + gs(4) + "Zip7Task::moreArgs" + gs(10) + "执行7z命令所需的其他原生参数，可以指定用空格字符间隔的多个参数；具体的参数详情可查看7z命令的帮助文件7-zip.chm。\n"
     + gs(4) + "特别说明：基于实用性考虑，程序只支持压缩（a）和解压缩（x）这两条原生命令的参数；Zip7Task节点中各子节点相对于7z原生命令参数的映射关系为：mode＝＞(0＝＞a),(1＝＞x)，zipMode＝＞(1＝＞-spf),(2＝＞-spf2)，filePath＝＞-o{dir_path}或base_archive_name，listFilePath＝＞@listfile，password＝＞-p{password}，compression＝＞-mx=[ 0 | 1 | 3 | 5 | 7 | 9 ]，volumeSize＝＞-v{Size}[ b | k | m | g]，sfxModule＝＞(0＝＞-sfx7z.sfx),(1＝＞-sfx7zCon.sfx)。\n" + gs(4);
     Pattern PTRN_ZIP7_MODE = compile(REG_ZIP7_MODE);
+    Pattern PTRN_ZIP7_MODE_ZIP = compile(REG_ZIP7_MODE_ZIP);
     Pattern PTRN_ZIP7_MODE_UNZIP = compile(REG_ZIP7_MODE_UNZIP);
     Pattern PTRN_ZIP7_COMP = compile(REG_ZIP7_COMP);
     Pattern PTRN_ZIP7_VOL = compile(REG_ZIP7_VOL);
