@@ -31,7 +31,7 @@ public interface IZip7 extends IFileUtil{
     String ZIP7_ARG_SFX = "-sfx";
     String ZIP7_ARG_SFX_GUI = ZIP7_ARG_SFX + "7z.sfx";
     String ZIP7_ARG_SFX_CON = ZIP7_ARG_SFX + "7zCon.sfx";
-    String ZIP7_CONTEXT = "cmd" + SPC_NUL + "/c" + SPC_NUL + "start" + SPC_NUL + "/D" + SPC_NUL + PH_ARGS0;
+    String ZIP7_CONTEXT = "cmd" + SPC_NUL + "/c" + SPC_NUL + "start" + SPC_NUL + "/WAIT" + SPC_NUL + "/D" + SPC_NUL + PH_ARGS0;
     String ZIP7_EXEC_PATH = getAppPath() + "/tools/7-Zip/7z.exe";
     String N_ZIP7_CONF = "7-Zip任务处理配置文件";
     String ST_FILE_SPK_CONF = V_GNRT + N_ZIP7_CONF + S_DQM + CONF_FILE_7ZIP + S_DQM + S_BANG;
