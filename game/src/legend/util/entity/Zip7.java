@@ -70,9 +70,10 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
                 return true;
             }
             makeDirs(get(t.getFilePath()));
-            final boolean isZipMode = ZIP7_ARG_ZIP.equals(t.getMode()), isZipModeDefault = MODE_ZIP_DEF.equals(t.getZipMode());
+            Path path = get(t.getQueryPath());
+            final boolean isZipMode = ZIP7_ARG_ZIP.equals(t.getMode()), isZipModeDefault = MODE_ZIP_DEF.equals(t.getZipMode()), isRootPath = isEmpty(path.getParent());
             FileParam fp = new FileParam();
-            fp.setCmd(isZipMode ? isZipModeDefault ? CMD_FND_PTH_DIR_RLT : CMD_FND_PTH_DIR_ABS : CMD_FND_PTH_ABS);
+            fp.setCmd(isZipMode ? isZipModeDefault ? isRootPath ? CMD_FND_PTH_RLT : CMD_FND_PTH_DIR_RLT : CMD_FND_PTH_DIR_ABS : CMD_FND_PTH_ABS);
             fp.setOpt(OPT_INSIDE);
             fp.setPattern(compile(convertParam(t.getQueryRegex(),true)));
             fp.setSrcPath(get(t.getQueryPath()));
@@ -82,8 +83,7 @@ public class Zip7 extends BaseEntity<Zip7> implements IZip7{
             t.cmd.addFirst(zip7ExecutablePath);
             if(isZipMode){
                 if(isZipModeDefault){
-                    Path path = get(t.getQueryPath());
-                    path = isEmpty(path.getParent()) ? path : path.getParent();
+                    path = isRootPath ? path : path.getParent();
                     String[] context = gsph(ZIP7_CONTEXT,path.toString()).split(SPC_NUL);
                     for(int i = context.length - 1;i >= 0;i--) t.cmd.addFirst(context[i]);
                 }else t.cmd.add(MODE_ZIP_SPF.equals(t.getZipMode()) ? ZIP7_ARG_SPF : ZIP7_ARG_SPF2);
