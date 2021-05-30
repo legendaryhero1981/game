@@ -1126,6 +1126,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 switch(param.getCmd()){
                     case CMD_DEL_NUL:
                     case CMD_DEL_DIR_NUL:
+                    case CMD_DEL_DIR_OLY_NUL:
                     if(find = find && 0 == a.size()) param.getPathMap().put(a,p);
                     break;
                     case CMD_DEL_DIR_OLD_VER:
