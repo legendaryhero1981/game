@@ -1105,24 +1105,26 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     public static class PathMatcher implements BiPredicate<Path,BasicFileAttributes>{
         private FileParam param;
-        private Queue<Path> dirsCache;
-        private boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex;
+        private Queue<Path> dirsCache, diffDirsCache;
+        private boolean matchFileOnly, matchDirOnly, excludeRoot, ignoreRegex, queryDifferent;
 
         public PathMatcher(FileParam param){
             this.param = param;
             dirsCache = new ConcurrentLinkedQueue<>();
+            diffDirsCache = new ConcurrentLinkedQueue<>();
             matchFileOnly = param.meetCondition(MATCH_FILE_ONLY);
             matchDirOnly = param.meetCondition(MATCH_DIR_ONLY);
             excludeRoot = param.meetCondition(EXCLUDE_ROOT);
             ignoreRegex = param.meetCondition(IGNORE_REGEX);
+            queryDifferent = param.meetCondition(QUERY_DIFFERENT);
         }
 
         @Override
         public boolean test(Path p, BasicFileAttributes a){
             boolean find = false;
             if(a.isRegularFile()){
-                if(matchDirOnly && !(find = matchPath(p))) return false;
-                find = find || ignoreRegex ? true : param.getPattern().matcher(p.getFileName().toString()).find();
+                if(queryDifferent && (ignoreRegex || diffDirsCache.parallelStream().anyMatch(path->p.startsWith(path))) || matchDirOnly && !(find = matchPath(p,false))) return false;
+                find = find || ignoreRegex ? true : queryDifferent ? !param.getPattern().matcher(p.getFileName().toString()).find() : param.getPattern().matcher(p.getFileName().toString()).find();
                 switch(param.getCmd()){
                     case CMD_DEL_NUL:
                     case CMD_DEL_DIR_NUL:
@@ -1131,15 +1133,17 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     break;
                     case CMD_DEL_DIR_OLD_VER:
                     case CMD_DEL_DIR_OLY_OLD_VER:
-                    if(find = find && !matchPath(p)) param.getPathMap().put(a,p);
+                    if(find = find && !matchPath(p,false)) param.getPathMap().put(a,p);
                     break;
                     default:
-                    find = find && param.meetFilesSize(a.size());
-                    if(find || (find = matchPath(p) && param.meetFilesSize(a.size()))) param.getPathMap().put(a,p);
+                    find = find || !matchFileOnly && matchPath(p,true);
+                    if(find && param.meetFilesSize(a.size())) param.getPathMap().put(a,p);
                 }
             }else if(a.isDirectory()){
-                if(matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
-                find = ignoreRegex ? ignoreRegex : param.getPattern().matcher(p.getFileName().toString()).find();
+                if(ignoreRegex && queryDifferent || matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
+                find = ignoreRegex ? true : queryDifferent ? !param.getPattern().matcher(p.getFileName().toString()).find() : param.getPattern().matcher(p.getFileName().toString()).find();
+                if(queryDifferent) if(find) find = !diffDirsCache.parallelStream().anyMatch(path->p.startsWith(path));
+                else diffDirsCache.add(p);
                 switch(param.getCmd()){
                     case CMD_FND_DIR:
                     case CMD_FND_DIR_SIZ_ASC:
@@ -1161,7 +1165,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_UGD_DIR:
                     case CMD_ZIP_DIR_DEF:
                     case CMD_PAK_DIR_DEF:
-                    if(!find) find = matchPath(p);
+                    if(!find) find = matchPath(p,true);
                     else if(!ignoreRegex) dirsCache.add(p);
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_DIR_DIR_SIZ_ASC:
@@ -1185,9 +1189,9 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     break;
                     case CMD_DEL_DIR_OLD_VER:
                     case CMD_DEL_DIR_OLY_OLD_VER:
-                    if(find = find && !matchPath(p)){
-                        dirsCache.add(p);
+                    if(find = find && !matchPath(p,false)){
                         param.getPathMap().put(a,p);
+                        dirsCache.add(p);
                     }
                 }
             }
@@ -1196,7 +1200,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             return find;
         }
 
-        private boolean matchPath(Path path){
+        private boolean matchPath(Path path, boolean checkDifferent){
+            if(checkDifferent && queryDifferent) return false;
             return dirsCache.parallelStream().anyMatch(p->path.startsWith(p));
         }
     }

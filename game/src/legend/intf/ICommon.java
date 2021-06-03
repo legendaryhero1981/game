@@ -19,7 +19,7 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String VERSION = "版本：V6.1";
+    String VERSION = "版本：V6.2";
     String AUTHOR = "作者：李允";
     String HOME_PAGE = "主页：知乎 https://www.zhihu.com/people/legendaryhero1981";
     String APP_INFO = VERSION + gl(1) + AUTHOR + gl(1) + HOME_PAGE + gl(3);
@@ -134,6 +134,7 @@ public interface ICommon extends Cloneable{
     String OPT_DETAIL = "+";
     String OPT_SIMULATE = "*";
     String OPT_EXCLUDE_ROOT = "!";
+    String OPT_DIFF = "^";
     String OPT_CACHE = "@";
     String OPT_ASK = "?";
     String PH_ARGS = "#";

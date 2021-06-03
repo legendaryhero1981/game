@@ -64,7 +64,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
     private Optional<Long> detailOptional;
     private Optional<Long> cmdOptional;
     private Optional<Long> progressOptional;
-    private long cacheFileSize;
+    private long cacheFilesSize;
     private int cacheFilesCount;
     private int cacheDirsCount;
 
@@ -262,6 +262,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         if(!opt.matches(REG_NON_PROG)) condition |= SHOW_PROGRESS;
         if(!opt.contains(OPT_SIMULATE)) condition |= EXEC_CMD;
         if(!opt.contains(OPT_INSIDE) && (opt.contains(OPT_DETAIL) || opt.contains(OPT_SIMULATE))) condition |= SHOW_DETAIL;
+        if(opt.contains(OPT_DIFF)) condition |= QUERY_DIFFERENT;
         if(opt.contains(OPT_EXCLUDE_ROOT)){
             condition |= EXCLUDE_ROOT;
             rootPath = srcPath;
@@ -283,7 +284,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
 
     public void saveCache(FileParam cache){
         if(meetCondition(CAN_USE_CACHE)){
-            cache.filesSize.addAndGet(filesSize.addAndGet(cache.cacheFileSize));
+            cache.filesSize.addAndGet(filesSize.addAndGet(cache.cacheFilesSize));
             cache.filesCount.addAndGet(filesCount.addAndGet(cache.cacheFilesCount));
             cache.dirsCount.addAndGet(dirsCount.addAndGet(cache.cacheDirsCount));
         }else{
@@ -301,7 +302,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             cache.pathsCache = pathsCache;
             cache.pattern = pattern;
             cache.srcPath = srcPath;
-            cache.cacheFileSize = filesSize.get();
+            cache.cacheFilesSize = filesSize.get();
             cache.cacheFilesCount = filesCount.get();
             cache.cacheDirsCount = dirsCount.get();
         }else if(meetCondition(NEED_CLEAR_CACHE)) cache.clearCache();
@@ -932,10 +933,6 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
 
     public Optional<Long> getProgressOptional(){
         return progressOptional;
-    }
-
-    public long getCacheFileSize(){
-        return cacheFileSize;
     }
 
     public int getCacheFilesCount(){
