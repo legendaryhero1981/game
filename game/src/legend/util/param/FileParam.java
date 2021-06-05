@@ -629,6 +629,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
     }
 
     private String getWholeCommand(){
+        String cmdOption = getWrapedParam(cmd + opt);
         String regex = getWrapedParam(pattern);
         String sp = getWrapedParam(srcPath);
         String dp = getWrapedParam(destPath);
@@ -637,7 +638,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         String spt = getWrapedParam(split);
         String rp = getWrapedParam(replacement);
         String zn = getWrapedParam(zipName);
-        String s = CMD + S_SPACE + cmd + opt + regex + sp;
+        String s = CMD + S_SPACE + cmdOption + regex + sp;
         switch(cmd){
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:

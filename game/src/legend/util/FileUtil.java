@@ -1136,7 +1136,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find = find && !matchPath(p,false)) param.getPathMap().put(a,p);
                     break;
                     default:
-                    find = find || !matchFileOnly && matchPath(p,true);
+                    find = find || !matchFileOnly && matchPath(p,queryDifferent);
                     if(find && param.meetFilesSize(a.size())) param.getPathMap().put(a,p);
                 }
             }else if(a.isDirectory()){
@@ -1165,7 +1165,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     case CMD_UGD_DIR:
                     case CMD_ZIP_DIR_DEF:
                     case CMD_PAK_DIR_DEF:
-                    if(!find) find = matchPath(p,true);
+                    if(!find) find = matchPath(p,queryDifferent);
                     else if(!ignoreRegex) dirsCache.add(p);
                     case CMD_FND_DIR_OLY:
                     case CMD_FND_DIR_DIR_SIZ_ASC:
@@ -1201,8 +1201,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         }
 
         private boolean matchPath(Path path, boolean checkDifferent){
-            if(checkDifferent && queryDifferent) return false;
-            return dirsCache.parallelStream().anyMatch(p->path.startsWith(p));
+            return checkDifferent ? false : dirsCache.parallelStream().anyMatch(p->path.startsWith(p));
         }
     }
 
