@@ -1136,8 +1136,8 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                     if(find = find && !matchPath(p,false)) param.getPathMap().put(a,p);
                     break;
                     default:
-                    find = find || !matchFileOnly && matchPath(p,queryDifferent);
-                    if(find && param.meetFilesSize(a.size())) param.getPathMap().put(a,p);
+                    find = (find || !matchFileOnly && matchPath(p,queryDifferent)) && param.meetFilesSize(a.size());
+                    if(find) param.getPathMap().put(a,p);
                 }
             }else if(a.isDirectory()){
                 if(ignoreRegex && queryDifferent || matchFileOnly || excludeRoot && p.equals(param.getSrcPath())) return false;
