@@ -5,53 +5,54 @@ import static legend.util.StringUtil.hexToBytes;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.convertParam;
 
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
-
 import legend.intf.IValue;
 import legend.util.entity.intf.IFileSPK;
 import legend.util.param.SingleValue;
 
 @XmlRootElement(name = "SPKHeader")
-@XmlType(propOrder = {"headerSize","headerFlag","fileStartPosExpr","fileSizeExpr"})
+@XmlType(propOrder = {"headerSize","headerFlag","recordSizeExpr","fileStartPosExpr","fileSizeExpr","filePathExpr"})
 public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlElement
     private String headerSize = S_EMPTY;
     @XmlElement
     private String headerFlag = S_EMPTY;
     @XmlElement
+    private String recordSizeExpr = S_EMPTY;
+    @XmlElement
     private String fileStartPosExpr = S_EMPTY;
     @XmlElement
     private String fileSizeExpr = S_EMPTY;
+    @XmlElement
+    private String filePathExpr = S_EMPTY;
     @XmlTransient
     protected MetaData headerSizeData = new MetaData();
     @XmlTransient
     protected MetaData headerFlagData = new MetaData();
     @XmlTransient
+    protected MetaData recordSizeData = new MetaData();
+    @XmlTransient
     protected MetaData fileStartPosData = new MetaData();
     @XmlTransient
     protected MetaData fileSizeData = new MetaData();
+    @XmlTransient
+    protected MetaData filePathData = new MetaData();
 
     public static final class MetaData{
-        protected int offset;
         protected int size;
+        protected int offset;
         protected int position;
-        protected int nextPosition;
         protected int deviation;
         protected byte[] bytes;
         protected byte[] nulbytes;
-
-        public int getOffset(){
-            return offset;
-        }
-
-        public void setOffset(int offset){
-            this.offset = offset;
-        }
+        protected int pathLength;
+        protected Path filePath;
 
         public int getSize(){
             return size;
@@ -61,20 +62,20 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             this.size = size;
         }
 
+        public int getOffset(){
+            return offset;
+        }
+
+        public void setOffset(int offset){
+            this.offset = offset;
+        }
+
         public int getPosition(){
             return position;
         }
 
         public void setPosition(int position){
             this.position = position;
-        }
-
-        public int getNextPosition(){
-            return nextPosition;
-        }
-
-        public void setNextPosition(int nextPosition){
-            this.nextPosition = nextPosition;
         }
 
         public int getDeviation(){
@@ -100,14 +101,32 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         public void setNulbytes(byte[] nulbytes){
             this.nulbytes = nulbytes;
         }
+
+        public int getPathLength(){
+            return pathLength;
+        }
+
+        public void setPathLength(int pathLength){
+            this.pathLength = pathLength;
+        }
+
+        public Path getFilePath(){
+            return filePath;
+        }
+
+        public void setFilePath(Path filePath){
+            this.filePath = filePath;
+        }
     }
 
     @Override
     public SPKHeader trim(){
         headerFlag = headerFlag.strip();
         headerSize = headerSize.strip();
+        recordSizeExpr = recordSizeExpr.strip();
         fileStartPosExpr = fileStartPosExpr.strip();
         fileSizeExpr = fileSizeExpr.strip();
+        filePathExpr = filePathExpr.strip();
         return this;
     }
 
@@ -126,8 +145,10 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             if(matcher.matches()) headerFlagData.bytes = hexToBytes(matcher.group(1));
             else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
         }
+        if(nonEmpty(recordSizeExpr) && value.getValue()) validateSizeExpr(value,recordSizeData,recordSizeExpr,"recordSizeExpr");
         if(nonEmpty(fileStartPosExpr) && value.getValue()) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
         if(nonEmpty(fileSizeExpr) && value.getValue()) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
+        if(nonEmpty(filePathExpr) && value.getValue()) validateSizeExpr(value,filePathData,filePathExpr,"filePathExpr");
         return value.getValue();
     }
 
@@ -135,7 +156,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         Matcher matcher = PTRN_SPK_SIZE_EXPR.matcher(expr);
         if(matcher.matches()){
             metaData.offset = Integer.parseInt(matcher.group(1));
-            String size = matcher.group(3);
+            String size = matcher.group(2);
             metaData.size = nonEmpty(size) ? Integer.parseInt(size) : 1;
         }else{
             errorInfo = gsph(ERR_SPKH_EXPR_FMT,field);
@@ -143,12 +164,16 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         }
     }
 
-    public MetaData getSizeData(){
+    public MetaData getHeaderSizeData(){
         return headerSizeData;
     }
 
-    public MetaData getFlagData(){
+    public MetaData getHeaderFlagData(){
         return headerFlagData;
+    }
+
+    public MetaData getRecordSizeData(){
+        return recordSizeData;
     }
 
     public MetaData getFileStartPosData(){
@@ -159,6 +184,10 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return fileSizeData;
     }
 
+    public MetaData getFilePathData(){
+        return filePathData;
+    }
+
     protected String getHeaderSize(){
         return headerSize;
     }
@@ -167,11 +196,19 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return headerFlag;
     }
 
+    protected String getRecordSizeExpr(){
+        return recordSizeExpr;
+    }
+
     protected String getFileStartPosExpr(){
         return fileStartPosExpr;
     }
 
     protected String getFileSizeExpr(){
         return fileSizeExpr;
+    }
+
+    protected String getFilePathExpr(){
+        return filePathExpr;
     }
 }

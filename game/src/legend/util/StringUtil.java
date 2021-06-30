@@ -93,21 +93,25 @@ public final class StringUtil implements IStringUtil{
         return bytes;
     }
 
-    public static int bytesIndexOfBytes(byte[] lb, byte[] sb, boolean reverse){
-        if(reverse) return bytesIndexOfBytes(lb,sb,lb.length - 1,reverse);
-        else return bytesIndexOfBytes(lb,sb,0,reverse);
+    public static int bytesIndexOfBytes(byte[] large, byte[] small, boolean reverse){
+        if(reverse) return bytesIndexOfBytes(large,small,large.length - 1,1,reverse);
+        else return bytesIndexOfBytes(large,small,0,1,reverse);
     }
 
-    public static int bytesIndexOfBytes(byte[] lb, byte[] sb, int lbOffset, boolean reverse){
-        if(lb.length < sb.length || 0 > lbOffset || lb.length < lbOffset + 1) return -1;
-        if(reverse) for(int i = lbOffset,j,k;i >= 0;i--){
-            for(j = sb.length - 1,k = i;j >= 0 && i >= 0 && sb[j--] == lb[i--];);
-            if(j == -1) return k - sb.length + 1;
+    public static int bytesIndexOfBytes(byte[] large, byte[] small, int largeOffset, boolean reverse){
+        return bytesIndexOfBytes(large,small,largeOffset,1,reverse);
+    }
+
+    public static int bytesIndexOfBytes(byte[] large, byte[] small, int largeOffset, int step, boolean reverse){
+        if(large.length < small.length || 0 > largeOffset || 1 > step || large.length < largeOffset + 1) return -2;
+        if(reverse) for(int i = largeOffset,j,k;i >= 0;i -= step){
+            for(j = small.length - 1,k = i;j >= 0 && i >= 0 && small[j--] == large[i--];);
+            if(j == -1) return k - small.length + 1;
             i = k;
         }
-        else for(int i = lbOffset,j,k;i < lb.length;i++){
-            for(j = 0,k = i;j < sb.length && i < lb.length && sb[j++] == lb[i++];);
-            if(j == sb.length) return k;
+        else for(int i = largeOffset,j,k;i < large.length;i += step){
+            for(j = 0,k = i;j < small.length && i < large.length && small[j++] == large[i++];);
+            if(j == small.length) return k;
             i = k;
         }
         return -1;

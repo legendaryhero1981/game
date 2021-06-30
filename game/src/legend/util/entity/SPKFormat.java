@@ -6,7 +6,6 @@ import static legend.util.ValueUtil.isEmpty;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
-
 import legend.util.entity.intf.IFileSPK;
 
 @XmlRootElement(name = "SPKFormat")
@@ -29,7 +28,7 @@ public class SPKFormat extends BaseEntity<SPKFormat> implements IFileSPK{
 
     @Override
     public boolean validate(){
-        if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFileSizeExpr())){
+        if(isEmpty(bodyInfo.getHeaderSize()) || isEmpty(bodyInfo.getHeaderFlag()) || isEmpty(bodyInfo.getFileSizeExpr()) || isEmpty(bodyInfo.getFilePathExpr())){
             errorInfo = gsph(ERR_SPKH_NODE_NUL,N_SPKF_BODY_INFO);
             return false;
         }else if(isEmpty(listInfo.getHeaderSize()) || isEmpty(listInfo.getHeaderFlag()) || isEmpty(listInfo.getFileSizeExpr())){

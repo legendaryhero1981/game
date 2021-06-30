@@ -12,8 +12,7 @@ import static legend.util.JaxbUtil.convertToObject;
 import static legend.util.StringUtil.bytesIndexOfBytes;
 import static legend.util.StringUtil.fillBytes;
 import static legend.util.StringUtil.gsph;
-import static legend.util.ValueUtil.isEmpty;
-import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.ValueUtil.nonNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -47,90 +46,112 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 fp.setPattern(compile(spkCode.getQueryRegex()));
                 fp.setSrcPath(get(spkCode.getUnpackPath()));
                 dealFiles(fp);
-                // 处理.stc编码文件
-                byte[] stcCache = readBinaryFormFile(stcPath);
+                // .stc和.spk编码文件数据更新处理
+                final byte[] stcCache = readBinaryFormFile(stcPath);
                 ByteBuffer stcBuffer = wrap(stcCache).order(ByteOrder.LITTLE_ENDIAN);
                 STCFormat stcFormat = spkCode.getStcFormat();
                 SPKHeader stcHeader = stcFormat.getHeaderInfo();
                 SPKHeader stcBody = stcFormat.getBodyInfo();
-                SPKHeader stcList = stcFormat.getListInfo();
-                int deviation = bytesIndexOfBytes(stcCache,stcList.getFlagData().getBytes(),true) + stcList.getSizeData().getSize();
-                String[] filePaths = new String(stcCache,deviation,stcCache.length - deviation - 1,CHARSET_UTF8).split(SPC_NUL);
-                MetaData[] metaDatas = new MetaData[filePaths.length];
-                fp.getPathMap().entrySet().parallelStream().forEach(e->{
-                    for(int i = 0,offset,size;i < filePaths.length;i++) if(e.getValue().endsWith(get(filePaths[i]))){
-                        MetaData metaData = new SPKHeader.MetaData();
-                        offset = stcHeader.getSizeData().getSize() + i * stcBody.getSizeData().getSize();
-                        size = (int)e.getKey().size();
-                        metaData.setOffset(offset);
-                        metaData.setSize(size);
-                        size -= stcBuffer.getInt(offset + stcBody.getFileSizeData().getOffset() - 1);
-                        if(0 != size){
-                            stcBuffer.putInt(offset + stcBody.getFileSizeData().getOffset() - 1,metaData.getSize());
-                            metaData.setDeviation(size);
-                            if(0 > size) metaData.setNulbytes(fillBytes(0,-size));
-                        }
-                        metaData.setPosition(stcBuffer.getInt(offset + stcBody.getFileStartPosData().getOffset() - 1));
-                        if(filePaths.length > i + 1) metaData.setNextPosition(stcBuffer.getInt(offset + stcBody.getSizeData().getSize() + stcBody.getFileStartPosData().getOffset() - 1));
-                        metaData.setBytes(readBinaryFormFile(e.getValue()));
-                        metaDatas[i] = metaData;
-                        return;
-                    }
-                });
-                writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
-                // 处理.spk编码文件
-                byte[] spkOriginal = readBinaryFormFile(spkPath);
-                byte[] spkCache = new byte[spkOriginal.length];
-                ByteBuffer spkBuffer = wrap(spkCache).order(ByteOrder.LITTLE_ENDIAN);
+                // SPKHeader stcList = stcFormat.getListInfo();
+                final byte[] spkOriginal = readBinaryFormFile(spkPath);
+                final byte[] spkCache = new byte[spkOriginal.length];
+                ByteBuffer spkReader = wrap(spkOriginal).order(ByteOrder.LITTLE_ENDIAN);
+                ByteBuffer spkWriter = wrap(spkCache).order(ByteOrder.LITTLE_ENDIAN);
                 SPKFormat spkFormat = spkCode.getSpkFormat();
                 SPKHeader spkBody = spkFormat.getBodyInfo();
                 SPKHeader spkList = spkFormat.getListInfo();
                 SPKHeader spkTail = spkFormat.getTailInfo();
-                byte[] bodyFlags = spkBody.getFlagData().getBytes();
-                byte[] listFlags = spkList.getFlagData().getBytes();
-                byte[] tailFlags = spkTail.getFlagData().getBytes();
-                MetaData metaData = null;
-                for(int i = 0,j = (deviation = 0),k;i < metaDatas.length;i++,j = deviation){
-                    deviation = bytesIndexOfBytes(spkOriginal,bodyFlags,deviation + spkBody.getSizeData().getSize(),false);
-                    if(-1 == deviation) deviation = bytesIndexOfBytes(spkOriginal,listFlags,j + spkBody.getSizeData().getSize(),false);
-                    if(nonEmpty(metaDatas[i])){
-                        k = spkBody.getFileSizeData().getOffset() - 1;
-                        spkBuffer.put(spkOriginal,j,k);
-                        for(k += j,j = 0;j < spkBody.getFileSizeData().getSize();j++) spkBuffer.putInt(metaDatas[i].getSize());
-                        j = k + 4 * j;
-                        k = metaDatas[i].getPosition() - j;
-                        if(isEmpty(metaData)) spkBuffer.put(spkOriginal,j,k);
-                        else if(0 > metaData.getDeviation()){
-                            spkBuffer.put(spkOriginal,j,k);
-                            spkBuffer.put(metaData.getNulbytes());
-                        }else spkBuffer.put(spkOriginal,j,k - metaData.getDeviation());
-                        spkBuffer.put(metaDatas[i].getBytes());
-                        metaData = metaDatas[i];
-                    }else if(nonEmpty(metaData)){
-                        k = metaData.getNextPosition();
-                        if(0 > metaData.getDeviation()){
-                            spkBuffer.put(spkOriginal,j,k - j);
-                            spkBuffer.put(metaData.getNulbytes());
-                        }else spkBuffer.put(spkOriginal,j,k - j - metaData.getDeviation());
-                        spkBuffer.put(spkOriginal,k,deviation - k);
-                        metaData = null;
-                    }else spkBuffer.put(spkOriginal,j,deviation - j);
+                int deviation = bytesIndexOfBytes(stcCache,stcHeader.getHeaderFlagData().getBytes(),false) + stcHeader.getRecordSizeData().getOffset() - 1;
+                final int dataSize = stcBuffer.getInt(deviation);
+                CS.checkError(ERR_SPK_ANLS,new String[]{stcPath.toString()},()->1 > dataSize);
+                final byte[] pathCache = new byte[255];
+                MetaData[] stcDatas = new MetaData[dataSize], spkDatas = new MetaData[dataSize];
+                for(int i = 0;i < dataSize;i++){
+                    stcDatas[i] = new SPKHeader.MetaData();
+                    deviation = stcHeader.getHeaderSizeData().getSize() + i * stcBody.getHeaderSizeData().getSize();
+                    stcDatas[i].setSize(stcBuffer.getInt(deviation + stcBody.getFileSizeData().getOffset() - 1));
+                    stcDatas[i].setOffset(deviation);
+                    stcDatas[i].setPosition(stcBuffer.getInt(deviation + stcBody.getFileStartPosData().getOffset() - 1));
+                    spkDatas[i] = new SPKHeader.MetaData();
+                    spkDatas[i].setSize(stcDatas[i].getSize());
+                    spkDatas[i].setPosition(stcDatas[i].getPosition());
+                    if(0 == i) spkDatas[i].setOffset(0);
+                    else{
+                        spkDatas[i].setOffset(stcDatas[i - 1].getPosition() + stcDatas[i - 1].getSize());
+                        spkDatas[i - 1].setDeviation(spkDatas[i].getOffset() - spkDatas[i - 1].getOffset());
+                    }
+                    spkDatas[i].setPathLength(spkReader.getShort(spkDatas[i].getOffset() + spkBody.getFilePathData().getOffset() - 1));
+                    spkReader.position(spkDatas[i].getOffset() + spkBody.getHeaderSizeData().getSize());
+                    spkReader.get(pathCache,0,spkDatas[i].getPathLength());
+                    spkDatas[i].setFilePath(get(new String(pathCache,0,spkDatas[i].getPathLength())));
                 }
-                for(int i = 0,j = deviation,k;i < metaDatas.length;i++,j = deviation){
-                    deviation = bytesIndexOfBytes(spkOriginal,listFlags,deviation + spkList.getSizeData().getSize(),false);
-                    if(-1 == deviation) deviation = bytesIndexOfBytes(spkOriginal,tailFlags,j + spkList.getSizeData().getSize(),false);
-                    if(nonEmpty(metaDatas[i])){
-                        k = spkList.getFileSizeData().getOffset() - 1;
-                        spkBuffer.put(spkOriginal,j,k);
-                        for(k += j,j = 0;j < spkList.getFileSizeData().getSize();j++) spkBuffer.putInt(metaDatas[i].getSize());
+                spkDatas[dataSize - 1].setDeviation(spkDatas[dataSize - 1].getPosition() + spkDatas[dataSize - 1].getSize() - spkDatas[dataSize - 1].getOffset());
+                fp.getPathMap().entrySet().parallelStream().forEach(e->{
+                    for(int i = 0,size1,size2,mc;i < dataSize;i++){
+                        if(e.getValue().endsWith(spkDatas[i].getFilePath())){
+                            spkDatas[i].setBytes(readBinaryFormFile(e.getValue()));
+                            size1 = (int)e.getKey().size();
+                            size2 = spkDatas[i].getSize();
+                            spkDatas[i].setSize(size1);
+                            if(size1 != size2){
+                                stcBuffer.putInt(stcDatas[i].getOffset() + stcBody.getFileSizeData().getOffset() - 1,size1);
+                                if(dataSize > i + 1){
+                                    size2 = size1 + spkBody.getHeaderSizeData().getSize() + spkDatas[i + 1].getPathLength();
+                                    mc = (SPK_MODULUS - size2 % SPK_MODULUS) % SPK_MODULUS;
+                                    if(0 < mc) spkDatas[i + 1].setNulbytes(fillBytes(0,mc));
+                                    stcDatas[i].setDeviation(size2 + mc + stcDatas[i].getPosition() - stcDatas[i + 1].getPosition());
+                                }
+                            }
+                        }
+                    }
+                });
+                deviation = stcDatas[0].getDeviation();
+                for(int i = 1;i < stcDatas.length;i++){
+                    if(0 != deviation){
+                        stcDatas[i].setPosition(stcDatas[i].getPosition() + deviation);
+                        stcBuffer.putInt(stcDatas[i].getOffset() + stcBody.getFileStartPosData().getOffset() - 1,stcDatas[i].getPosition());
+                    }
+                    deviation += stcDatas[i].getDeviation();
+                }
+                for(int i = 0,j;i < dataSize;i++){
+                    j = spkDatas[i].getOffset();
+                    if(nonNull(spkDatas[i].getBytes())){
+                        deviation = spkBody.getFileSizeData().getOffset() - 1;
+                        spkWriter.put(spkOriginal,j,deviation);
+                        for(deviation += j,j = 0;j < spkBody.getFileSizeData().getSize();j++) spkWriter.putInt(spkDatas[i].getSize());
+                        j = deviation + 4 * j;
+                        if(nonNull(spkDatas[i].getNulbytes())){
+                            deviation = spkBody.getHeaderSizeData().getSize() + spkDatas[i].getPathLength() + spkDatas[i].getOffset() - j;
+                            spkWriter.put(spkOriginal,j,deviation);
+                            spkWriter.put(spkDatas[i].getNulbytes());
+                        }else spkWriter.put(spkOriginal,j,spkDatas[i].getPosition() - j);
+                        spkWriter.put(spkDatas[i].getBytes());
+                    }else spkWriter.put(spkOriginal,j,spkDatas[i].getDeviation());
+                    if(dataSize > i + 1 && spkDatas[i + 1].getOffset() != spkWriter.position()){
+                        deviation = spkWriter.position();
+                    }
+                }
+                deviation = spkDatas[dataSize - 1].getOffset() + spkDatas[dataSize - 1].getDeviation();
+                byte[] listFlags = spkList.getHeaderFlagData().getBytes();
+                byte[] tailFlags = spkTail.getHeaderFlagData().getBytes();
+                for(int i = 0,j = deviation;i < stcDatas.length;i++,j = deviation){
+                    deviation = bytesIndexOfBytes(spkOriginal,listFlags,deviation + spkList.getHeaderSizeData().getSize(),false);
+                    if(0 > deviation) deviation = bytesIndexOfBytes(spkOriginal,tailFlags,j + spkList.getHeaderSizeData().getSize(),false);
+                    if(nonNull(spkDatas[i].getBytes())){
+                        int k = spkList.getFileSizeData().getOffset() - 1;
+                        spkWriter.put(spkOriginal,j,k);
+                        for(k += j,j = 0;j < spkList.getFileSizeData().getSize();j++) spkWriter.putInt(spkDatas[i].getSize());
                         j = k + 4 * j;
                     }
-                    spkBuffer.put(spkOriginal,j,deviation - j);
+                    spkWriter.put(spkOriginal,j,deviation - j);
                 }
-                spkBuffer.put(spkOriginal,deviation,spkOriginal.length - deviation);
+                spkWriter.put(spkOriginal,deviation,spkOriginal.length - deviation);
+                // 保存已更新数据的.stc和.spk编码文件
+                writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
                 writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
             }catch(Exception e){
                 CS.sl(gsph(ERR_INFO,e.toString()));
+                e.printStackTrace();
             }
         });
     }
