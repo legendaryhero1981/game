@@ -54,9 +54,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 SPKHeader stcBody = stcFormat.getBodyInfo();
                 // SPKHeader stcList = stcFormat.getListInfo();
                 final byte[] spkOriginal = readBinaryFormFile(spkPath);
-                final byte[] spkCache = new byte[spkOriginal.length];
                 ByteBuffer spkReader = wrap(spkOriginal).order(ByteOrder.LITTLE_ENDIAN);
-                ByteBuffer spkWriter = wrap(spkCache).order(ByteOrder.LITTLE_ENDIAN);
                 SPKFormat spkFormat = spkCode.getSpkFormat();
                 SPKHeader spkBody = spkFormat.getBodyInfo();
                 SPKHeader spkList = spkFormat.getListInfo();
@@ -113,6 +111,8 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                     }
                     deviation += stcDatas[i].getDeviation();
                 }
+                final byte[] spkCache = new byte[spkOriginal.length + deviation];
+                ByteBuffer spkWriter = wrap(spkCache).order(ByteOrder.LITTLE_ENDIAN);
                 for(int i = 0,j;i < dataSize;i++){
                     j = spkDatas[i].getOffset();
                     if(nonNull(spkDatas[i].getBytes())){
@@ -127,9 +127,6 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                         }else spkWriter.put(spkOriginal,j,spkDatas[i].getPosition() - j);
                         spkWriter.put(spkDatas[i].getBytes());
                     }else spkWriter.put(spkOriginal,j,spkDatas[i].getDeviation());
-                    if(dataSize > i + 1 && spkDatas[i + 1].getOffset() != spkWriter.position()){
-                        deviation = spkWriter.position();
-                    }
                 }
                 deviation = spkDatas[dataSize - 1].getOffset() + spkDatas[dataSize - 1].getDeviation();
                 byte[] listFlags = spkList.getHeaderFlagData().getBytes();
@@ -151,7 +148,6 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
             }catch(Exception e){
                 CS.sl(gsph(ERR_INFO,e.toString()));
-                e.printStackTrace();
             }
         });
     }
