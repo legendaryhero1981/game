@@ -1,5 +1,6 @@
 package legend.util.test;
 
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.file.Paths.get;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
@@ -8,11 +9,15 @@ import static legend.util.StringUtil.getAppPath;
 import static legend.util.StringUtil.getClassPath;
 import static legend.util.StringUtil.getFileNameWithSuffix;
 import static legend.util.StringUtil.getFileNameWithoutSuffix;
+import static legend.util.StringUtil.hexToBytes;
+import static legend.util.ValueUtil.intToUnsignedInt;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +31,18 @@ import legend.util.test.model.GCDModel;
 public class TestArithmetic implements ICommon{
     @Test
     public void test(){
-        testRegex();
+        testByteBuffer();
+    }
+
+    public void testByteBuffer(){
+        byte[] bytes = hexToBytes("ffffffff");
+        ByteBuffer buffer = wrap(bytes).order(ByteOrder.BIG_ENDIAN);
+        int b = buffer.getInt();
+        long n = intToUnsignedInt(b);
+        CS.sl(n + S_EMPTY);
+        buffer.putInt(0,(int)n);
+        b = buffer.rewind().getInt();
+        CS.sl(b + S_EMPTY);
     }
 
     // @Test

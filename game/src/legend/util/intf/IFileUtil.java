@@ -292,7 +292,7 @@ public interface IFileUtil extends IReplaceRule{
     + "单条命令示例：" + gl(2)
     + CMD + S_SPACE + CMD_FIND + "+ (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\"" + gl(1) + "查询该目录中名称以_cn.strings（忽略大小写）结尾的所有文件，.与strings中间可以包含0到2个任意字符。" + gl(2)
     + CMD + S_SPACE + CMD_FND_DIR + "+ (?i)strings$ \"F:/games/Fallout 4\"" + gl(1) + "查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。" + gl(2)
-    + CMD + S_SPACE + CMD_FND_DIR + "^!+ \\A(修改|备份|Mods)$ \"F:/games/Pathfinder Kingmaker Definitive Edition\"" + gl(1) + "查询该目录中名称不为“修改、备份、Mods”且不在名称为“修改、备份、Mods”的目录中的所有文件和目录。" + gl(2)
+    + CMD + S_SPACE + "\"" + CMD_FND_DIR + "^!+\" \\A(修改|备份|Mods)$ \"F:/games/Pathfinder Kingmaker Definitive Edition\"" + gl(1) + "查询该目录中名称不为“修改、备份、Mods”且不在名称为“修改、备份、Mods”的目录中的所有文件和目录。" + gl(2)
     + CMD + S_SPACE + CMD_FND_DIR_OLY + "+ . \"F:/games/KingdomComeDeliverance/修改/Mods\" 0 1" + gl(1) + "查询该目录中的第一级目录。" + gl(2)
     + CMD + S_SPACE + CMD_FND_SAM + "+ . \"F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\" \"D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data\"" + gl(1) + "查询“F:/games/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录中的所有文件；且只匹配在“D:/360安全浏览器下载/Pillars of Eternity II Deadfire/PillarsOfEternityII_Data”目录的同一相对路径中存在的同名文件。" + gl(2)
     + CMD + S_SPACE + CMD_FND_SAM_MD5 + "+ (?i)\\.param$ \"D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd\" \"G:/games/DSParamEditor/gameparam-parambnd\"" + gl(1) + "查询“D:/Sekiro Shadows Die Twice/param/gameparam/gameparam-parambnd”目录中的所有文件；且只匹配在“G:/games/DSParamEditor/gameparam-parambnd”目录的同一相对路径中存在且文件内容相同的同名文件。" + gl(2)

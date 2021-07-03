@@ -1,6 +1,6 @@
 package legend.util.entity;
 
-import static legend.util.StringUtil.gsph;
+import static legend.util.StringUtil.glph;
 import static legend.util.StringUtil.hexToBytes;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.convertParam;
@@ -136,14 +136,16 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         if(nonEmpty(headerSize)){
             Matcher matcher = PTRN_SPK_SIZE.matcher(headerSize);
             if(!matcher.matches()){
-                errorInfo = gsph(ERR_SPKH_EXPR_FMT,"headerSize");
+                errorInfo = glph(ERR_SPKH_EXPR_FMT,"headerSize");
                 value.setValue(false);
             }else headerSizeData.size = Integer.parseInt(headerSize);
         }
         if(nonEmpty(headerFlag) && value.getValue()){
             Matcher matcher = PTRN_SPK_FLAG_HEX.matcher(headerFlag);
-            if(matcher.matches()) headerFlagData.bytes = hexToBytes(matcher.group(1));
-            else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
+            if(matcher.matches()){
+                if(0 == matcher.group(1).length() % 2) headerFlagData.bytes = hexToBytes(matcher.group(1));
+                else errorInfo += glph(ERR_SPKH_HEX_FMT,"headerFlag");
+            }else headerFlagData.bytes = convertParam(headerFlag,false).getBytes();
         }
         if(nonEmpty(recordSizeExpr) && value.getValue()) validateSizeExpr(value,recordSizeData,recordSizeExpr,"recordSizeExpr");
         if(nonEmpty(fileStartPosExpr) && value.getValue()) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
@@ -159,7 +161,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             String size = matcher.group(2);
             metaData.size = nonEmpty(size) ? Integer.parseInt(size) : 1;
         }else{
-            errorInfo = gsph(ERR_SPKH_EXPR_FMT,field);
+            errorInfo += glph(ERR_SPKH_EXPR_FMT,field);
             value.setValue(false);
         }
     }

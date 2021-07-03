@@ -54,6 +54,10 @@ public final class ValueUtil{
         return new HashSet<>(Arrays.asList(array));
     }
 
+    public static long intToUnsignedInt(int n){
+        return n & 0xffffffffl;
+    }
+
     public static boolean matchRange(long n, long min, long max){
         return min <= n && max >= n;
     }

@@ -170,6 +170,8 @@ public interface ICommon extends Cloneable{
     String MODE_UNZIP_MD5 = "0";
     String MODE_UNZIP_DIR = "1";
     String MODE_UNZIP_MEG = "2";
+    String MODE_NORMAL = "0";
+    String MODE_BIGGER = "1";
     String FLAG_DEBUG = "#";
     String FLAG_MOD = "*";
     String FLAG_ADD = "+";

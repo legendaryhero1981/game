@@ -9,6 +9,7 @@ import legend.util.intf.IFileUtil;
 
 public interface IFileSPK extends IFileUtil{
     int SPK_MODULUS = 4096;
+    int SPK_MAX_SIZE = Integer.MAX_VALUE - 8;
     String REG_SPK_SIZE = "\\A" + REG_NUM_NATURAL + "$";
     String REG_SPK_SIZE_EXPR = "\\A(" + REG_NUM_NATURAL + ")(?:[-,;](" + REG_NUM_NATURAL + "))?$";
     String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-f]+)$";
@@ -26,9 +27,11 @@ public interface IFileSPK extends IFileUtil{
     String ERR_SPKC_PATH_SAME = "repackPath与filePath不能为同一路径" + S_BANG;
     String ERR_SPKH_NODE_NUL = PH_ARGS0 + V_BY_NUL + S_BANG;
     String ERR_SPKH_EXPR_FMT = PH_ARGS0 + "节点值对应的正则表达式格式" + V_ERR + S_BANG;
+    String ERR_SPKH_HEX_FMT = PH_ARGS0 + "节点值对应的16进制字符串表达式格式" + V_ERR + S_BANG;
     String FILE_SPK_COMMENT = "\n" + gs(4) + "FileSPK配置节点结构说明：\n"
-    + gs(4) + "FileSPK节点由comment、SPKCode节点按顺序组成，comment节点必须在最前面，SPKCode节点可以有多个。\n"
+    + gs(4) + "FileSPK节点由comment、fileSizeMode、SPKCode节点按顺序组成，comment节点必须在最前面，SPKCode节点可以有多个。\n"
     + gs(4) + "FileSPK::comment" + gs(24) + "FileSPK配置节点结构说明，对文件重新打包无影响，仅此说明而已。\n"
+    + gs(4) + "FileSPK::fileSizeMode" + gs(19) + EXT_SPK + "文件大小模式，取值范围为：" + MODE_NORMAL + "," + MODE_BIGGER + "，默认值为" + MODE_NORMAL + "；取" + MODE_NORMAL + "表示普通模式，即处理的文件大小上限为" + SPK_MAX_SIZE + "字节；取" + MODE_BIGGER + "表示大文件模式，即处理的文件大小不受限制。\n"
     + gs(4) + "FileSPK::SPKCode" + gs(24) + "SPK编码对象，包含了自动修改" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件所需的所有参数。\n"
     + gs(4) + "SPKCode节点由节点unpackPath、repackPath、filePath、fileName、queryRegex、STCFormat、SPKFormat按顺序组成。\n"
     + gs(4) + "SPKCode::unpackPath" + gs(21) + EXT_SPK + "文件解包路径，也是SPKCode::queryRegex进行正则查询匹配的输入路径。\n"
@@ -41,8 +44,8 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "STCFormat::HeaderInfo" + gs(19) + EXT_STC + "文件中文件头部信息。\n"
     + gs(4) + "STCFormat::HeaderInfo节点由节点headerSize、headerFlag、recordSizeExpr按顺序组成。\n"
     + gs(4) + "STCFormat::HeaderInfo::headerSize" + gs(7) + "文件头部的头部大小（以字节为单位的自然数，下同）。\n"
-    + gs(4) + "STCFormat::HeaderInfo::headerFlag" + gs(7) + "文件头部的头部起始标志；支持16进制字符串表达式（匹配的正则表达式为：" + REG_SPK_FLAG_HEX + "）、引用表达式及特殊字符占位符表达式（下同）。\n"
-    + gs(4) + "STCFormat::HeaderInfo::recordSizeExpr" + gs(7) + "文件头部的记录个数表达式；形如：起始位置[-,;][个数]，若不指定个数，程序会取默认值1个；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "。\n"
+    + gs(4) + "STCFormat::HeaderInfo::headerFlag" + gs(7) + "文件头部的头部起始标志；支持16进制字符串表达式（匹配的正则表达式为：" + REG_SPK_FLAG_HEX + "，且字符个数必须为偶数）、引用表达式及特殊字符占位符表达式（下同）。\n"
+    + gs(4) + "STCFormat::HeaderInfo::recordSizeExpr" + gs(3) + "文件头部的记录个数表达式；形如：起始位置[-,;][个数]，若不指定个数，程序会取默认值1个；匹配的正则表达式为：" + REG_SPK_SIZE_EXPR + "。\n"
     + gs(4) + "STCFormat::BodyInfo" + gs(21) + EXT_STC + "文件中对象主体信息。\n"
     + gs(4) + "STCFormat::BodyInfo节点由节点headerSize、headerFlag、fileStartPosExpr、fileSizeExpr按顺序组成。\n"
     + gs(4) + "STCFormat::BodyInfo::headerSize" + gs(9) + "对象主体的头部大小。\n"
