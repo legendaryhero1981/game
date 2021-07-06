@@ -14,7 +14,7 @@ public interface IFileSPK extends IFileUtil{
     String REG_SPK_SIZE_EXPR = "\\A(" + REG_NUM_NATURAL + ")(?:[-,;](" + REG_NUM_NATURAL + "))?$";
     String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-f]+)$";
     String N_SPK_CONF = EXT_SPK + "编码文件的配置文件";
-    String N_SPKF_BODY_INFO = "SPKFormat::BodyInfo节点下的headerSize或headerFlag或fileSizeExpr或filePathExpr子节点值";
+    String N_SPKF_BODY_INFO = "SPKFormat::BodyInfo节点下的headerSize或headerFlag或fileSizeExpr或pathSizeExpr子节点值";
     String N_SPKF_LIST_INFO = "SPKFormat::ListInfo节点下的headerSize或headerFlag或fileSizeExpr子节点值";
     String N_SPKF_TAIL_INFO = "SPKFormat::TailInfo节点下的headerSize或headerFlag子节点值";
     String N_STCF_HEADER_INFO = "STCFormat::HeaderInfo节点下的headerSize或headerFlag或recordSizeExpr子节点值";
@@ -59,11 +59,11 @@ public interface IFileSPK extends IFileUtil{
     + gs(4) + "SPKCode::SPKFormat" + gs(22) + EXT_SPK + "文件数据格式对象，用于解析该文件的数据结构。\n"
     + gs(4) + "SPKFormat节点由节点BodyInfo、ListInfo、TailInfo按顺序组成，描述了整个" + EXT_SPK + "文件的数据结构。\n"
     + gs(4) + "SPKFormat::BodyInfo" + gs(21) + EXT_SPK + "文件中对象主体信息。\n"
-    + gs(4) + "SPKFormat::BodyInfo节点由节点headerSize、headerFlag、fileSizeExpr、filePathExpr按顺序组成。\n"
+    + gs(4) + "SPKFormat::BodyInfo节点由节点headerSize、headerFlag、fileSizeExpr、pathSizeExpr按顺序组成。\n"
     + gs(4) + "SPKFormat::BodyInfo::headerSize" + gs(9) + "对象主体的头部大小。\n"
     + gs(4) + "SPKFormat::BodyInfo::headerFlag" + gs(9) + "对象主体的头部起始标志。\n"
     + gs(4) + "SPKFormat::BodyInfo::fileSizeExpr" + gs(7) + "对象主体中文件大小表达式。\n"
-    + gs(4) + "SPKFormat::BodyInfo::filePathExpr" + gs(7) + "对象主体中文件路径名长度表达式。\n"
+    + gs(4) + "SPKFormat::BodyInfo::pathSizeExpr" + gs(7) + "对象主体中文件路径名长度表达式。\n"
     + gs(4) + "SPKFormat::ListInfo" + gs(21) + EXT_SPK + "文件中对象列表信息。\n"
     + gs(4) + "SPKFormat::ListInfo节点由节点headerSize、headerFlag、fileSizeExpr按顺序组成。\n"
     + gs(4) + "SPKFormat::ListInfo::headerSize" + gs(9) + "对象列表的头部大小。\n"

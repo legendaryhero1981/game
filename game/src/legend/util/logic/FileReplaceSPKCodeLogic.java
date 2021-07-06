@@ -44,21 +44,23 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
             try(FileParam fileParam = new FileParam()){
                 Path stcPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_STC);
                 Path spkPath = get(spkCode.getFilePath(),spkCode.getFileName() + EXT_SPK);
+                Path stcRepackPath = get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC);
+                Path spkRepackPath = get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK);
                 CS.checkError(ERR_SPK_NON,new String[]{stcPath.toString(),spkPath.toString()},()->!existsPath(stcPath) || !existsPath(spkPath));
                 // 正则查询所有匹配的已修改文件
                 fileParam.setCmd(CMD_FIND);
                 fileParam.setPattern(compile(spkCode.getQueryRegex()));
                 fileParam.setSrcPath(get(spkCode.getUnpackPath()));
                 dealFiles(fileParam);
-                if(MODE_NORMAL.equals(fileSPK.getFileSizeMode())) dealFileWithNormalSzie(fileParam,spkCode,stcPath,spkPath);
-                else dealFileWithBiggerSzie(fileParam,spkCode,stcPath,spkPath);
+                if(MODE_NORMAL.equals(fileSPK.getFileSizeMode())) dealFileWithNormalSzie(fileParam,spkCode,stcPath,spkPath,stcRepackPath,spkRepackPath);
+                else dealFileWithBiggerSzie(fileParam,spkCode,stcPath,spkPath,stcRepackPath,spkRepackPath);
             }catch(Exception e){
                 CS.sl(gsph(ERR_INFO,e.toString()));
             }
         });
     }
 
-    private void dealFileWithNormalSzie(FileParam fileParam, SPKCode spkCode, Path stcPath, Path spkPath){
+    private void dealFileWithNormalSzie(FileParam fileParam, SPKCode spkCode, Path stcPath, Path spkPath, Path stcRepackPath, Path spkRepackPath){
         // .stc和.spk编码文件数据更新处理
         STCFormat stcFormat = spkCode.getStcFormat();
         SPKHeader stcHeader = stcFormat.getHeaderInfo();
@@ -74,25 +76,25 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
         int deviation = bytesIndexOfBytes(stcCache,stcHeader.getHeaderFlagData().getBytes(),false) + stcHeader.getRecordSizeData().getOffset() - 1;
         final int dataSize = stcBuffer.getInt(deviation);
         CS.checkError(ERR_SPK_ANLS,new String[]{stcPath.toString()},()->1 > dataSize);
-        final byte[] pathCache = new byte[255];
+        final byte[] pathCache = new byte[MAX_SIZE_FILE_PATH];
         MetaData[] stcDatas = new MetaData[dataSize], spkDatas = new MetaData[dataSize];
         for(int i = 0;i < dataSize;i++){
             stcDatas[i] = new SPKHeader.MetaData();
             deviation = stcHeader.getHeaderSizeData().getSize() + i * stcBody.getHeaderSizeData().getSize();
-            stcDatas[i].setSize(stcBuffer.getInt(deviation + stcBody.getFileSizeData().getOffset() - 1));
             stcDatas[i].setOffset(deviation);
             stcDatas[i].setPosition(stcBuffer.getInt(deviation + stcBody.getFileStartPosData().getOffset() - 1));
+            stcDatas[i].setSize(stcBuffer.getInt(deviation + stcBody.getFileSizeData().getOffset() - 1));
             spkDatas[i] = new SPKHeader.MetaData();
-            spkDatas[i].setSize(stcDatas[i].getSize());
-            spkDatas[i].setPosition(stcDatas[i].getPosition());
             if(0 == i) spkDatas[i].setOffset(0);
             else{
                 spkDatas[i].setOffset(stcDatas[i - 1].getPosition() + stcDatas[i - 1].getSize());
                 spkDatas[i - 1].setDeviation(spkDatas[i].getOffset() - spkDatas[i - 1].getOffset());
             }
-            spkDatas[i].setPathLength(spkReader.getShort(spkDatas[i].getOffset() + spkBody.getFilePathData().getOffset() - 1));
-            spkReader.position(spkDatas[i].getOffset() + spkBody.getHeaderSizeData().getSize()).get(pathCache,0,spkDatas[i].getPathLength());
-            spkDatas[i].setFilePath(get(new String(pathCache,0,spkDatas[i].getPathLength())));
+            spkDatas[i].setPosition(stcDatas[i].getPosition());
+            spkDatas[i].setSize(stcDatas[i].getSize());
+            spkDatas[i].setPathSize(spkReader.getShort(spkDatas[i].getOffset() + spkBody.getPathSizeData().getOffset() - 1));
+            spkReader.position(spkDatas[i].getOffset() + spkBody.getHeaderSizeData().getSize()).get(pathCache,0,spkDatas[i].getPathSize());
+            spkDatas[i].setFilePath(get(new String(pathCache,0,spkDatas[i].getPathSize())));
         }
         spkDatas[dataSize - 1].setDeviation(spkDatas[dataSize - 1].getPosition() + spkDatas[dataSize - 1].getSize() - spkDatas[dataSize - 1].getOffset());
         fileParam.getPathMap().entrySet().parallelStream().forEach(e->{
@@ -105,7 +107,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                     if(size1 != size2){
                         stcBuffer.putInt(stcDatas[i].getOffset() + stcBody.getFileSizeData().getOffset() - 1,size1);
                         if(dataSize > i + 1){
-                            size2 = size1 + spkBody.getHeaderSizeData().getSize() + spkDatas[i + 1].getPathLength();
+                            size2 = size1 + spkBody.getHeaderSizeData().getSize() + spkDatas[i + 1].getPathSize();
                             mc = (SPK_MODULUS - size2 % SPK_MODULUS) % SPK_MODULUS;
                             stcDatas[i].setDeviation(size2 + mc + stcDatas[i].getPosition() - stcDatas[i + 1].getPosition());
                             if(0 < mc) spkDatas[i + 1].setNulbytes(fillBytes(0,mc));
@@ -132,7 +134,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
                 for(deviation += j,j = 0;j < spkBody.getFileSizeData().getSize();j++) spkWriter.putInt(spkDatas[i].getSize());
                 j = deviation + 4 * j;
                 if(nonNull(spkDatas[i].getNulbytes())){
-                    deviation = spkBody.getHeaderSizeData().getSize() + spkDatas[i].getPathLength() + spkDatas[i].getOffset() - j;
+                    deviation = spkBody.getHeaderSizeData().getSize() + spkDatas[i].getPathSize() + spkDatas[i].getOffset() - j;
                     spkWriter.put(spkOriginal,j,deviation);
                     spkWriter.put(spkDatas[i].getNulbytes());
                 }else spkWriter.put(spkOriginal,j,spkDatas[i].getPosition() - j);
@@ -155,11 +157,11 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
         }
         spkWriter.put(spkOriginal,deviation,spkOriginal.length - deviation);
         // 保存已更新数据的.stc和.spk编码文件
-        writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_STC),stcCache);
-        writeBinaryToFile(get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK),spkCache);
+        writeBinaryToFile(stcRepackPath,stcCache);
+        writeBinaryToFile(spkRepackPath,spkCache);
     }
 
-    private void dealFileWithBiggerSzie(FileParam fileParam, SPKCode spkCode, Path stcPath, Path spkPath) throws Exception{
+    private void dealFileWithBiggerSzie(FileParam fileParam, SPKCode spkCode, Path stcPath, Path spkPath, Path stcRepackPath, Path spkRepackPath) throws Exception{
         // .stc和.spk编码文件数据更新处理
         STCFormat stcFormat = spkCode.getStcFormat();
         SPKHeader stcHeader = stcFormat.getHeaderInfo();
@@ -173,12 +175,17 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
         int deviation = bytesIndexOfBytes(stcCache,stcHeader.getHeaderFlagData().getBytes(),false) + stcHeader.getRecordSizeData().getOffset() - 1;
         final int dataSize = stcBuffer.getInt(deviation);
         CS.checkError(ERR_SPK_ANLS,new String[]{stcPath.toString()},()->1 > dataSize);
-        final byte[] pathCache = new byte[255];
-        MetaData[] stcDatas = new MetaData[dataSize], spkDatas = new MetaData[dataSize];
-        final Path spkRepackPath = get(spkCode.getRepackPath(),spkCode.getFileName() + EXT_SPK);
         try(FileChannel readChannel = open(spkPath,StandardOpenOption.READ);
             FileChannel writeChannel = open(spkRepackPath,StandardOpenOption.CREATE)){
-            int r = (int)(readChannel.size() % Integer.MAX_VALUE), p = (int)(readChannel.size() / Integer.MAX_VALUE);
+            final byte[] pathCache = new byte[MAX_SIZE_FILE_PATH];
+            MetaData[] metaDatas = new MetaData[dataSize];
+            for(int i = 0;i < dataSize;i++){
+                metaDatas[i] = new SPKHeader.MetaData();
+                deviation = stcHeader.getHeaderSizeData().getSize() + i * stcBody.getHeaderSizeData().getSize();
+                metaDatas[i].setOffset(deviation);
+                metaDatas[i].setPosition(stcBuffer.getInt(deviation + stcBody.getFileStartPosData().getOffset() - 1));
+                metaDatas[i].setSize(stcBuffer.getInt(deviation + stcBody.getFileSizeData().getOffset() - 1));
+            }
         }
     }
 }

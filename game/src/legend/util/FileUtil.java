@@ -563,10 +563,10 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             param.meetFilesSize(e.getValue());
             if(path.toFile().isFile()){
                 param.getFilesCount().incrementAndGet();
-                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_FILE + gs(4) + path.toString()));
+                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.TB).sl(gs(4) + N_FILE + gs(4) + path.toString()));
             }else{
                 param.getDirsCount().incrementAndGet();
-                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.GB).sl(gs(4) + N_DIR + gs(4) + path.toString()));
+                param.getDetailOptional().ifPresent(c->CS.formatSize(e.getValue(),UnitType.TB).sl(gs(4) + N_DIR + gs(4) + path.toString()));
             }
         });
     }

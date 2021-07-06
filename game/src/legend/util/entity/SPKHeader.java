@@ -17,7 +17,7 @@ import legend.util.entity.intf.IFileSPK;
 import legend.util.param.SingleValue;
 
 @XmlRootElement(name = "SPKHeader")
-@XmlType(propOrder = {"headerSize","headerFlag","recordSizeExpr","fileStartPosExpr","fileSizeExpr","filePathExpr"})
+@XmlType(propOrder = {"headerSize","headerFlag","recordSizeExpr","fileStartPosExpr","fileSizeExpr","pathSizeExpr"})
 public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlElement
     private String headerSize = S_EMPTY;
@@ -30,7 +30,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlElement
     private String fileSizeExpr = S_EMPTY;
     @XmlElement
-    private String filePathExpr = S_EMPTY;
+    private String pathSizeExpr = S_EMPTY;
     @XmlTransient
     protected MetaData headerSizeData = new MetaData();
     @XmlTransient
@@ -42,7 +42,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
     @XmlTransient
     protected MetaData fileSizeData = new MetaData();
     @XmlTransient
-    protected MetaData filePathData = new MetaData();
+    protected MetaData pathSizeData = new MetaData();
 
     public static final class MetaData{
         protected int size;
@@ -51,7 +51,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         protected int deviation;
         protected byte[] bytes;
         protected byte[] nulbytes;
-        protected int pathLength;
+        protected int pathSize;
         protected Path filePath;
 
         public int getSize(){
@@ -102,12 +102,12 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             this.nulbytes = nulbytes;
         }
 
-        public int getPathLength(){
-            return pathLength;
+        public int getPathSize(){
+            return pathSize;
         }
 
-        public void setPathLength(int pathLength){
-            this.pathLength = pathLength;
+        public void setPathSize(int pathSize){
+            this.pathSize = pathSize;
         }
 
         public Path getFilePath(){
@@ -126,7 +126,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         recordSizeExpr = recordSizeExpr.strip();
         fileStartPosExpr = fileStartPosExpr.strip();
         fileSizeExpr = fileSizeExpr.strip();
-        filePathExpr = filePathExpr.strip();
+        pathSizeExpr = pathSizeExpr.strip();
         return this;
     }
 
@@ -150,7 +150,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         if(nonEmpty(recordSizeExpr) && value.getValue()) validateSizeExpr(value,recordSizeData,recordSizeExpr,"recordSizeExpr");
         if(nonEmpty(fileStartPosExpr) && value.getValue()) validateSizeExpr(value,fileStartPosData,fileStartPosExpr,"fileStartPosExpr");
         if(nonEmpty(fileSizeExpr) && value.getValue()) validateSizeExpr(value,fileSizeData,fileSizeExpr,"fileSizeExpr");
-        if(nonEmpty(filePathExpr) && value.getValue()) validateSizeExpr(value,filePathData,filePathExpr,"filePathExpr");
+        if(nonEmpty(pathSizeExpr) && value.getValue()) validateSizeExpr(value,pathSizeData,pathSizeExpr,"pathSizeExpr");
         return value.getValue();
     }
 
@@ -186,8 +186,8 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return fileSizeData;
     }
 
-    public MetaData getFilePathData(){
-        return filePathData;
+    public MetaData getPathSizeData(){
+        return pathSizeData;
     }
 
     protected String getHeaderSize(){
@@ -210,7 +210,7 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         return fileSizeExpr;
     }
 
-    protected String getFilePathExpr(){
-        return filePathExpr;
+    protected String getPathSizeExpr(){
+        return pathSizeExpr;
     }
 }

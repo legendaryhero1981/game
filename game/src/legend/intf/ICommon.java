@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 public interface ICommon extends Cloneable{
     int BLOCK_SIZE_FILE = 1 << 20;
+    int MAX_SIZE_FILE_PATH = (1 << 8) - 1;
     byte[] BOM_UTF16LE = {(byte)0xff,(byte)0xfe};
     byte[] BOM_UTF16BE = {(byte)0xfe,(byte)0xff};
     byte[] BOM_UTF8 = {(byte)0xef,(byte)0xbb,(byte)0xbf};
