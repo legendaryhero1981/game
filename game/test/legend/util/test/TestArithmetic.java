@@ -43,6 +43,8 @@ public class TestArithmetic implements ICommon{
         buffer.putInt(0,(int)n);
         b = buffer.rewind().getInt();
         CS.sl(b + S_EMPTY);
+        long m = (1l << 32) - 1;
+        CS.sl(m + S_EMPTY).sl((int)m + S_EMPTY);
     }
 
     // @Test

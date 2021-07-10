@@ -49,10 +49,15 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
         protected int offset;
         protected int position;
         protected int deviation;
+        protected long longSize;
+        protected long longOffset;
+        protected long longPosition;
+        protected long longDeviation;
         protected byte[] bytes;
         protected byte[] nulbytes;
         protected int pathSize;
         protected Path filePath;
+        protected boolean mod;
 
         public int getSize(){
             return size;
@@ -86,6 +91,38 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
             this.deviation = deviation;
         }
 
+        public long getLongSize(){
+            return longSize;
+        }
+
+        public void setLongSize(long longSize){
+            this.longSize = longSize;
+        }
+
+        public long getLongOffset(){
+            return longOffset;
+        }
+
+        public void setLongOffset(long longOffset){
+            this.longOffset = longOffset;
+        }
+
+        public long getLongPosition(){
+            return longPosition;
+        }
+
+        public void setLongPosition(long longPosition){
+            this.longPosition = longPosition;
+        }
+
+        public long getLongDeviation(){
+            return longDeviation;
+        }
+
+        public void setLongDeviation(long longDeviation){
+            this.longDeviation = longDeviation;
+        }
+
         public byte[] getBytes(){
             return bytes;
         }
@@ -116,6 +153,14 @@ public class SPKHeader extends BaseEntity<SPKHeader> implements IFileSPK{
 
         public void setFilePath(Path filePath){
             this.filePath = filePath;
+        }
+
+        public boolean isMod(){
+            return mod;
+        }
+
+        public void setMod(boolean mod){
+            this.mod = mod;
         }
     }
 

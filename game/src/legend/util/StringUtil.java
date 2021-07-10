@@ -5,6 +5,7 @@ import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.ValueUtil.nonNull;
 
@@ -83,8 +84,8 @@ public final class StringUtil implements IStringUtil{
         return result;
     }
 
-    public static byte[] fillBytes(int n, int size){
-        return fillBytes((byte)n,size);
+    public static byte[] fillBytes(int b, int size){
+        return fillBytes((byte)b,size);
     }
 
     public static byte[] fillBytes(byte b, int size){
@@ -93,23 +94,51 @@ public final class StringUtil implements IStringUtil{
         return bytes;
     }
 
-    public static int bytesIndexOfBytes(byte[] large, byte[] small, boolean reverse){
-        if(reverse) return bytesIndexOfBytes(large,small,large.length - 1,1,reverse);
-        else return bytesIndexOfBytes(large,small,0,1,reverse);
+    public static int fillBytes(byte[] bytes, int pos, int b, int size){
+        return fillBytes(bytes,pos,(byte)b,size);
     }
 
-    public static int bytesIndexOfBytes(byte[] large, byte[] small, int largeOffset, boolean reverse){
-        return bytesIndexOfBytes(large,small,largeOffset,1,reverse);
+    public static int fillBytes(byte[] bytes, int pos, byte b, int size){
+        pos = limitValue(pos,0,bytes.length - 1);
+        size = limitValue(size,1,bytes.length);
+        int i = pos;
+        for(;i < size;i++) bytes[i] = b;
+        return i;
     }
 
-    public static int bytesIndexOfBytes(byte[] large, byte[] small, int largeOffset, int step, boolean reverse){
-        if(large.length < small.length || 0 > largeOffset || 1 > step || large.length < largeOffset + 1) return -2;
-        if(reverse) for(int i = largeOffset,j,k;i >= 0;i -= step){
+    public static int fillBytes(byte[] dest, byte[] src){
+        return fillBytes(dest,src,0);
+    }
+
+    public static int fillBytes(byte[] dest, byte[] src, int pos){
+        return fillBytes(dest,src,pos,src.length);
+    }
+
+    public static int fillBytes(byte[] dest, byte[] src, int pos, int count){
+        pos = limitValue(pos,0,dest.length - 1);
+        count = limitValue(count,1,src.length);
+        int i = 0;
+        for(;i < src.length && i < count && pos + i < dest.length;i++) dest[pos + i] = src[i];
+        return pos + i;
+    }
+
+    public static int indexOfBytes(byte[] large, byte[] small, boolean reverse){
+        if(reverse) return indexOfBytes(large,small,large.length - 1,1,reverse);
+        else return indexOfBytes(large,small,0,1,reverse);
+    }
+
+    public static int indexOfBytes(byte[] large, byte[] small, int pos, boolean reverse){
+        return indexOfBytes(large,small,pos,1,reverse);
+    }
+
+    public static int indexOfBytes(byte[] large, byte[] small, int pos, int step, boolean reverse){
+        if(large.length < small.length || 0 > pos || 1 > step || large.length < pos + 1) return -2;
+        if(reverse) for(int i = pos,j,k;i >= 0;i -= step){
             for(j = small.length - 1,k = i;j >= 0 && i >= 0 && small[j--] == large[i--];);
             if(j == -1) return k - small.length + 1;
             i = k;
         }
-        else for(int i = largeOffset,j,k;i < large.length;i += step){
+        else for(int i = pos,j,k;i < large.length;i += step){
             for(j = 0,k = i;j < small.length && i < large.length && small[j++] == large[i++];);
             if(j == small.length) return k;
             i = k;

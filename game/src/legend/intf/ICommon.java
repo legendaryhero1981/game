@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public interface ICommon extends Cloneable{
     int BLOCK_SIZE_FILE = 1 << 20;
-    int MAX_SIZE_FILE_PATH = (1 << 8) - 1;
+    int MAX_SIZE_FILE_PATH = 256;
     byte[] BOM_UTF16LE = {(byte)0xff,(byte)0xfe};
     byte[] BOM_UTF16BE = {(byte)0xfe,(byte)0xff};
     byte[] BOM_UTF8 = {(byte)0xef,(byte)0xbb,(byte)0xbf};
@@ -20,7 +20,7 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String VERSION = "版本：V6.2";
+    String VERSION = "版本：V6.3.20210710";
     String AUTHOR = "作者：李允";
     String HOME_PAGE = "主页：知乎 https://www.zhihu.com/people/legendaryhero1981";
     String APP_INFO = VERSION + gl(1) + AUTHOR + gl(1) + HOME_PAGE + gl(3);

@@ -21,30 +21,10 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 ```
 输入 game 可以看到命令帮助信息如下：
 
-版本：V6.2
+版本：V6.3.20210710
 作者：李允
 主页：知乎 https://www.zhihu.com/people/legendaryhero1981
 
-参数说明：
-
-game il|file|run|eoc|kcd|poe
-
-命令列表：
-
-il      IL语言帮助命令，可查询和配置管理IL指令和IL语句的帮助信息。
-
-file    游戏文件处理命令，通过正则匹配批量查询和处理目录和文件。
-
-run     参数化运行游戏，通过配置文件对所有游戏可执行文件进行统一管理。
-
-eoc     神界：原罪2 汉化文件处理。
-
-kcd     天国：拯救 汉化文件和Mod整合处理。
-
-poe     永恒之柱2：死火 汉化文件和Mod文件处理。
-
-
-输入 game file
 
 命令参数：
 
@@ -410,7 +390,7 @@ file -f+ (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4/Data/Strings"
 file -fd+ (?i)strings$ "F:/games/Fallout 4"
 查询该目录中名称以strings（忽略大小写）结尾的所有文件和目录及其中所有文件。
 
-file -fd^!+ \A(修改|备份|Mods)$ "F:/games/Pathfinder Kingmaker Definitive Edition"
+file "-fd^!+" \A(修改|备份|Mods)$ "F:/games/Pathfinder Kingmaker Definitive Edition"
 查询该目录中名称不为“修改、备份、Mods”且不在名称为“修改、备份、Mods”的目录中的所有文件和目录。
 
 file -fdo+ . "F:/games/KingdomComeDeliverance/修改/Mods" 0 1
