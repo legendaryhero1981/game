@@ -638,7 +638,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         String spt = getWrapedParam(split);
         String rp = getWrapedParam(replacement);
         String zn = getWrapedParam(zipName);
-        String s = CMD + S_SPACE + cmdOption + regex + sp;
+        String s = CMD + cmdOption + regex + sp;
         switch(cmd){
             case CMD_FND_SIZ_ASC:
             case CMD_FND_SIZ_DSC:
