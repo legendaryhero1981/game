@@ -5,7 +5,7 @@ import static java.util.regex.Pattern.quote;
 import static legend.util.StringUtil.brph;
 import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.nonEmpty;
-import static legend.util.rule.ReplaceRuleStrategy.provideStrategy;
+import static legend.util.rule.ReplaceRuleStrategy.ProvideRuleStrategy;
 
 import java.util.regex.Matcher;
 
@@ -28,7 +28,7 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
             name = matcher.group(1).toUpperCase();
             if(!RULE_CON_MAP.containsKey(name)) return;
             condition = RULE_CON_MAP.get(name);
-            strategy = provideStrategy(name);
+            strategy = ProvideRuleStrategy(name);
             String arg = matcher.group(2);
             if(nonEmpty(arg)){
                 StringBuilder sb = new StringBuilder();

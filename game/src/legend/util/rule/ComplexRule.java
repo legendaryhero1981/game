@@ -1,7 +1,7 @@
 package legend.util.rule;
 
 import static legend.util.StringUtil.concat;
-import static legend.util.rule.ReplaceRuleStrategy.provideStrategy;
+import static legend.util.rule.ReplaceRuleStrategy.ProvideRuleStrategy;
 
 import legend.intf.IValue;
 
@@ -11,7 +11,7 @@ public class ComplexRule extends ReplaceRule implements IValue<ComplexRule>{
     protected ComplexRule(ReplaceRuleEngine engine, String rule){
         super(engine,rule);
         name = SPRT_ATOMS;
-        strategy = provideStrategy(name);
+        strategy = ProvideRuleStrategy(name);
     }
 
     @Override

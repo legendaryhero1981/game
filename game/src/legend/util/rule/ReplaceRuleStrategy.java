@@ -49,26 +49,27 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             String[] results = new String[1], args = rule.args;
             switch(args.length){
                 case 2:
-                results[0] = data.replaceAll(args[0],args[1]);
+                Matcher logic = compile(args[1]).matcher(REG_REPL_LOGIC);
+                if(logic.find()){
+                    ;
+                }else results[0] = data.replaceAll(args[0],args[1]);
                 break;
                 case 3:
-                Matcher matcher = compile(args[0]).matcher(data);
-                if(matcher.find()) results[0] = matcher.replaceAll(args[1]);
+                Matcher query = compile(args[0]).matcher(data);
+                logic = compile(args[1]).matcher(REG_REPL_LOGIC);
+                if(logic.find()){
+                    ;
+                }else if(query.find()) results[0] = query.replaceAll(args[1]);
                 else results[0] = args[2];
                 break;
                 default:
                 results[0] = data;
             }
             return results;
-        }),entry(RULE_SINGLEROW,ReplaceRuleStrategy::everyRow)
-           ,entry(RULE_FINALSINGLEROW,ReplaceRuleStrategy::finalRow)
-           ,entry(RULE_DISTFINALSINGLEROW,ReplaceRuleStrategy::distFinalRow)
-           ,entry(RULE_MULTIROW,ReplaceRuleStrategy::everyRow)
-           ,entry(RULE_FINALMULTIROW,ReplaceRuleStrategy::finalRow)
-           ,entry(RULE_DISTFINALMULTIROW,ReplaceRuleStrategy::distFinalRow));
+        }),entry(RULE_SINGLEROW,ReplaceRuleStrategy::everyRow),entry(RULE_FINALSINGLEROW,ReplaceRuleStrategy::finalRow),entry(RULE_DISTFINALSINGLEROW,ReplaceRuleStrategy::distFinalRow),entry(RULE_MULTIROW,ReplaceRuleStrategy::everyRow),entry(RULE_FINALMULTIROW,ReplaceRuleStrategy::finalRow),entry(RULE_DISTFINALMULTIROW,ReplaceRuleStrategy::distFinalRow));
     }
 
-    protected static BiFunction<ReplaceRule,String,String[]> provideStrategy(String name){
+    protected static BiFunction<ReplaceRule,String,String[]> ProvideRuleStrategy(String name){
         return strategiesCache.get(name);
     }
 

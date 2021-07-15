@@ -21,8 +21,7 @@ public class TestFileUtil extends TestBase{
         s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
         s = "-rfspk+  (?i)`file-spk.xml`$  D:/360安全浏览器下载/GF  1";
 //        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
-//        s = "-rfbt*  (?i)`武器うんちく.fmg.xml`$  G:/cache/temp/ds3  REPLACE(\\A(<text id=#DQM#\\d+#DQM#>).*,,$1,,#EMPTY#);;DIST-FINAL-MULTI-ROW(#1.1#,,#ENTER#)  \\n  1";
-//        s = "-rfbt*  `repack-fmg.bat`$  G:/cache/temp/ds3  REPLACE(.+,,#DQM#$0#DQM#);;FINAL-MULTI-ROW(#1.1#,,` `,,@echo off#ENTER#chcp 65001#ENTER##DQM#G:/games/DSParamEditor/DSDataRepacker#DQM# )  \\n  1";
+        s = "-rfbt*  `temp2.txt`$  E:/Decompile/DLL-ildasm  REPLACE(-,,_);;MULTI-ROW(String #1.1# = #DQM##1.0##DQM#;#ENTER#String #2.1# = #DQM##2.0##DQM#;#ENTER#String #3.1# = #DQM##3.0##DQM#;#ENTER#String #4.1# = #DQM##4.0##DQM#;#ENTER#)  \\s  1";
 //        s = "-7zip+  (?i)`file-7zip.xml`$  .  1";
         return s;
     }

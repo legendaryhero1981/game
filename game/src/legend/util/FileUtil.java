@@ -357,6 +357,33 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         return readFile(path,CHARSET_UTF8);
     }
 
+    public static List<String> readFileWithoutBom(Path path, String charsetName){
+        List<String> results = readFile(path,charsetName);
+        if(nonEmpty(results)){
+            String data = results.get(0);
+            try{
+                switch(charsetName){
+                    case CHARSET_UTF8:
+                    data = data.replaceFirst(new String(BOM_UTF8,CHARSET_UTF8),S_EMPTY);
+                    break;
+                    case CHARSET_UTF16BE:
+                    data = data.replaceFirst(new String(BOM_UTF16BE,CHARSET_UTF16BE),S_EMPTY);
+                    break;
+                    case CHARSET_UTF16LE:
+                    data = data.replaceFirst(new String(BOM_UTF16LE,CHARSET_UTF16LE),S_EMPTY);
+                }
+            }catch(UnsupportedEncodingException ex){
+                CS.sl(gsph(ERR_FLE_ANLS,path.toString(),ex.toString()));
+            }
+            results.set(0,data);
+        }
+        return results;
+    }
+
+    public static List<String> readFileWithoutBom(Path path){
+        return readFileWithoutBom(path,CHARSET_UTF8);
+    }
+
     public static void writeFile(Path path, Collection<String> lines, String charsetName){
         try{
             write(makeDirs(path),lines,forName(charsetName));
@@ -600,7 +627,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
             Path path = e.getValue();
             param.getDetailOptional().ifPresent(c->showFile(new String[]{V_REPL},new FileSizeMatcher(e.getKey()),path));
             IReplaceRuleEngine ruleEngine = ProvideRuleEngine(param.getReplacement());
-            Collection<String> results = ruleEngine.execute(readFile(path),param.getSplit());
+            Collection<String> results = ruleEngine.execute(readFileWithoutBom(path),param.getSplit());
             param.getDetailOptional().ifPresent(c->CS.sl(results,1));
             param.getCmdOptional().ifPresent(c->writeFile(path,results));
             param.getProgressOptional().ifPresent(c->PG.update(1,PROGRESS_SCALE));

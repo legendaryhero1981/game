@@ -21,6 +21,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+import legend.intf.IValue;
 import legend.util.entity.FileSPK;
 import legend.util.entity.SPKCode;
 import legend.util.entity.SPKFormat;
@@ -194,7 +195,7 @@ public class FileReplaceSPKCodeLogic extends BaseFileLogic implements IFileSPK{
             metaDatas[i].setPathSize(spkLastBuffer.getShort(spkBody.getPathSizeData().getOffset() - 1));
             spkLastBuffer.position(spkBody.getHeaderSizeData().getSize()).get(pathCache,0,metaDatas[i].getPathSize());
             metaDatas[i].setFilePath(get(new String(pathCache,0,metaDatas[0].getPathSize())));
-            final SingleValue<Path> filePath = new SingleValue<>(null);
+            final IValue<Path> filePath = new SingleValue<>(null);
             for(;i < dataSize;i++){
                 boolean hasNext = dataSize > i + 1;
                 if(hasNext){

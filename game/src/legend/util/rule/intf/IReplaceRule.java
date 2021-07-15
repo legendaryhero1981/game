@@ -34,6 +34,7 @@ public interface IReplaceRule extends ICommon{
     String REG_COL_REPL_ATOM = PH_ARGS + "(" + REG_NUM_NATURAL + ")\\.(0|" + REG_NUM_NATURAL + ")" + PH_ARGS;
     String REG_COL_REPL_COMP = PH_ARGS + "(" + REG_NUM_NATURAL + ")" + FLAG_COL_REPL_COMP + "(" + REG_NUM_NATURAL + ")(?:\\.(" + REG_NUM_NATURAL + "))?" + PH_ARGS;
     String REG_COL_REPL = REG_COL_REPL_ATOM + "|" + REG_COL_REPL_COMP;
+    String REG_REPL_LOGIC = "(?i)" + PH_ARGS + "(.+?)\\(.+\\)" + PH_ARGS;
     String ERR_RULE_ANLS = "列字符串替换表达式解析错误！" + ERR_INFO;
     String ERR_RULE_FMT = "字符串替换表达式格式错误！";
     String ERR_RULE_COL_NUM = "列号表达式无效！";

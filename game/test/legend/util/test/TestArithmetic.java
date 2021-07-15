@@ -29,11 +29,21 @@ import legend.util.entity.Zip7;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
-    @Test
+    // @Test
     public void test(){
-        testByteBuffer();
+        testRealNumber();
     }
 
+    // @Test
+    public void testRealNumber(){
+        String i = "1234567890";
+        String l = "1234567890123456789";
+        String f = ".123456785";// float类型数据8位精度。
+        String d = ".123456789012345678901234567890";// double类型数据17位精度。
+        CS.sl(Integer.valueOf(i) + S_EMPTY).sl(Long.valueOf(l) + S_EMPTY).sl(Float.valueOf(f) + S_EMPTY).sl(Double.valueOf(d) + S_EMPTY);
+    }
+
+    // @Test
     public void testByteBuffer(){
         byte[] bytes = hexToBytes("ffffffff");
         ByteBuffer buffer = wrap(bytes).order(ByteOrder.BIG_ENDIAN);
@@ -47,13 +57,23 @@ public class TestArithmetic implements ICommon{
         CS.sl(m + S_EMPTY).sl((int)m + S_EMPTY);
     }
 
-    // @Test
+    @Test
     public void testRegex(){
         Matcher matcher = null;
-        String s = "";
-        s = "03.009.0004.201805142235-RELEASE";
+        String s = "03.009.0004.201805142235-RELEASE";
         matcher = PTRN_NUM.matcher(s);
         while(matcher.find()) CS.sl(Long.parseLong(matcher.group()) + "");
+        s = ".123";
+        matcher = PTRN_NUM_REAL.matcher(s);
+        CS.sl(s + matcher.matches());
+        s = "123.";
+        CS.sl(s + matcher.reset(s).matches());
+        s = "123.123";
+        CS.sl(s + matcher.reset(s).matches());
+        s = ".123.";
+        CS.sl(s + matcher.reset(s).matches());
+        s = ".";
+        CS.sl(s + matcher.reset(s).matches());
     }
 
     // @Test
@@ -209,7 +229,6 @@ public class TestArithmetic implements ICommon{
         CS.sl("最大公约数为：" + model.getMax() + "\n最小公倍数为：" + model.getMin());
     }
 
-    // @Test
     /**
      * Oracle 的标准Java HotSpot VM的默认设置-XX:TieredStopAtLevel=4，
      * 会导致后面打印出/而不是-1，而字符/是字符0的ascii码-1；
@@ -217,6 +236,7 @@ public class TestArithmetic implements ICommon{
      * <p>
      * 这是C2编译器处理int类型转字符类型的错误，自java8起一直未修复。
      */
+    // @Test
     public void testC2Error(){
         C2Error hello = new C2Error();
         for(int i = 0;i < 50_000;i++) hello.test();
