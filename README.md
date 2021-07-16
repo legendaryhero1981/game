@@ -19,9 +19,8 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 # 功能描述
 
 ```
-输入 game 可以看到命令帮助信息如下：
-
-版本：V6.3.20210710
+输入 game file
+版本：V6.4.20210716
 作者：李允
 主页：知乎 https://www.zhihu.com/people/legendaryhero1981
 
@@ -70,7 +69,7 @@ LOWER(query)                                                  将匹配query的�
 
 UPPER(query)                                                  将匹配query的列字符串中英文字母替换为大写，匹配的正则表达式为：(?i)(UPPER)(\((.*)\))?；可以不传参数query，即UPPER与UPPER(.)等效但更高效；query为正则查询表达式，可使用特殊字符占位符表达式（见regex参数）。
 
-REPLACE(query,,replacement[,,mismatch])                       将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：(?i)(REPLACE)\((.+)\)；query为正则查询表达式，replacement为正则替换表达式，mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）。
+REPLACE(query,,replacement[,,mismatch])                       将匹配query的列字符串的子串替换为replacement，将不匹配query的列字符串替换为mismatch，mismatch可以不指定；匹配的正则表达式为：(?i)(REPLACE)\((.+)\)；query为正则查询表达式，replacement为正则替换表达式且支持逻辑方法（形如：#逻辑方法表达式#，匹配的正则表达式为：(?i)#(.+?)\((\d),(.+?)\)#），mismatch表示不匹配query时则使用该字符串替换原始字符串；可使用特殊字符占位符表达式（见regex参数）。
 
 SINGLE-ROW(replacement)                                       根据replacement重新生成每一行数据，匹配的正则表达式为：(?i)(SINGLE-ROW)\((.+)\)；此规则为终止原子规则使用，即只能放在规则列表的最后面；replacement为行数据正则替换表达式，可使用特殊字符占位符表达式（见regex参数）和列数据占位符表达式。
 
@@ -83,6 +82,40 @@ MULTI-ROW(replacement)                                        该规则的作用
 FINAL-MULTI-ROW(replacement[,,join,,prefix,,suffix])          该规则的作用同规则FINAL-SINGLE-ROW，区别在于支持特殊字符占位符表达式#ENTER=n#，以便支持多行字符串。
 
 DIST-FINAL-MULTI-ROW(replacement[,,join,,prefix,,suffix])     该规则的作用同规则DIST-FINAL-SINGLE-ROW，区别在于支持特殊字符占位符表达式#ENTER=n#，以便支持多行字符串。
+
+目前原子规则REPLACE支持的所有逻辑方法（英文字母不区分大小写）如下：
+
+ADD-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value += variable后再将value返回并替换旧值。
+
+ADD-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value += variable后再将value返回并替换旧值。
+
+ADD-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value += variable后再将value返回并替换旧值。
+
+ADD-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value += variable后再将value返回并替换旧值。
+
+SUB-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value -= variable后再将value返回并替换旧值。
+
+SUB-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value -= variable后再将value返回并替换旧值。
+
+SUB-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value -= variable后再将value返回并替换旧值。
+
+SUB-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value -= variable后再将value返回并替换旧值。
+
+MUL-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value *= variable后再将value返回并替换旧值。
+
+MUL-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value *= variable后再将value返回并替换旧值。
+
+MUL-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value *= variable后再将value返回并替换旧值。
+
+MUL-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value *= variable后再将value返回并替换旧值。
+
+DIV-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
+
+DIV-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
+
+DIV-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
+
+DIV-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
 
 目前支持的所有列数据占位符表达式如下：
 
@@ -497,6 +530,11 @@ file -rdou (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 
 file -rdouf (?i)_cn(\..{0,2}strings$) "F:/games/Fallout 4"
 先查询再将该目录中所有匹配的目录名中英单词首字母替换为大写。
+
+file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm REPLACE(value=#DQM#([.]?\d+|\d+[.]\d*)#DQM#,,value=#DQM##MUL-FLOAT(1,1.5)##DQM#) \n 1
+先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：
+1、对每行的所有列数据执行原子规则REPLACE：使用逻辑方法MUL-FLOAT将查询字符串中捕获组编号为1的所有value变量的值替换为原来的1.5倍；
+例如：temp1.txt文件中有1行数据为：“<addBonus operator="ADD_PREMULT" type="WEAPON_MAINHAND_DAMAGE" value="15"/><addBonus operator="ADD_PREMULT" type="WEAPON_MAINHAND_INTERRUPT" value="10"/>”，则执行命令后该文件数据变为：“<addBonus operator="ADD_PREMULT" type="WEAPON_MAINHAND_DAMAGE" value="22.5"/><addBonus operator="ADD_PREMULT" type="WEAPON_MAINHAND_INTERRUPT" value="15.0"/>”。
 
 file -rfbt* (?i)\A`temp1.txt`$ E:/Decompile/DLL-ildasm "1@@LOWER;;UPPER=>REPLACE(\.,,_);;SINGLE-ROW(String INST_#1-1# = #DQM##1.1##DQM#;)" "\t+" 1
 先查询再对该目录中名称（忽略大小写）为temp1.txt的文件数据执行一系列有序的替换规则：
