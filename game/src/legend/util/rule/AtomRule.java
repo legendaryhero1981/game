@@ -45,7 +45,7 @@ public class AtomRule extends ReplaceRule implements IValue<AtomRule>{
                 }
                 matcher = PTRN_RULE_ATOM_QUOTE.matcher(rule);
                 if(matcher.matches()) rule = matcher.group(1).concat(concat(args,SPRT_ARGS)).concat(matcher.group(2));
-            }
+            }else args = new String[0];
         }
         this.rule = rule;
     }

@@ -35,6 +35,10 @@ public interface IReplaceLogic extends ICommon{
     String REG_DIV_LONG = "(?i)(" + DIV_LONG + ")\\((\\d)" + REG_SPRT_ARGS + "(" + REG_NUM_NATURAL + ")\\)";
     String REG_DIV_FLOAT = "(?i)(" + DIV_FLOAT + ")\\((\\d)" + REG_SPRT_ARGS + "(" + REG_NUM_REAL + ")\\)";
     String REG_DIV_DOUBLE = "(?i)(" + DIV_DOUBLE + ")\\((\\d)" + REG_SPRT_ARGS + "(" + REG_NUM_REAL + ")\\)";
-    String ERR_REPL_LOGIC = "替换逻辑" + PH_ARGS0 + "执行时出错！" + N_ERR_INFO + PH_ARGS1;
-    String ERR_LOGIC_ANLS = "逻辑方法" + PH_ARGS0 + "参数表达式解析错误！";
+    String REG_LOGIC_FUNC = "(?i)" + PH_ARGS + "(.+?)\\((\\d)" + SPRT_ARGS_FUNC + "(.+?)\\)" + PH_ARGS;
+    String ERR_LOGIC_FUNC = "执行逻辑方法" + PH_ARGS0 + "时出错！" + N_ERR_INFO + PH_ARGS1;
+    String ERR_LOGIC_INVALID = "无效的逻辑方法！";
+    String ERR_LOGIC_GROUP = "参数表达式中捕获组编号大于查询表达式中指定的捕获组个数！";
+    String ERR_LOGIC_NUM = "整型参数格式错误！";
+    String ERR_LOGIC_REAL = "浮点型参数格式错误！";
 }

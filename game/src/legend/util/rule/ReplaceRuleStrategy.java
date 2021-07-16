@@ -3,11 +3,14 @@ package legend.util.rule;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static java.util.regex.Pattern.compile;
+import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.concat;
 import static legend.util.ValueUtil.arrayToUniqueCollection;
 import static legend.util.ValueUtil.isEmpty;
+import static legend.util.ValueUtil.isNull;
 import static legend.util.ValueUtil.limitValue;
 import static legend.util.ValueUtil.nonEmpty;
+import static legend.util.rule.ReplaceLogicStrategy.ProvideReplaceLogic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,30 +50,41 @@ public final class ReplaceRuleStrategy implements IReplaceRule{
             return new String[]{data};
         }),entry(RULE_REPLACE,(rule, data)->{
             String[] results = new String[1], args = rule.args;
-            switch(args.length){
-                case 2:
-                Matcher logic = compile(args[1]).matcher(REG_REPL_LOGIC);
-                if(logic.find()){
-                    ;
-                }else results[0] = data.replaceAll(args[0],args[1]);
-                break;
-                case 3:
-                Matcher query = compile(args[0]).matcher(data);
-                logic = compile(args[1]).matcher(REG_REPL_LOGIC);
-                if(logic.find()){
-                    ;
-                }else if(query.find()) results[0] = query.replaceAll(args[1]);
+            if(1 < args.length){
+                Matcher queryMatcher = compile(args[0]).matcher(data), logicMatcher = compile(REG_LOGIC_FUNC).matcher(args[1]);
+                if(queryMatcher.find()){
+                    if(logicMatcher.find()){
+                        StringBuilder queryBuilder = new StringBuilder(), logicBuilder = new StringBuilder();
+                        doReplaceLogic(queryMatcher,logicMatcher,queryBuilder,logicBuilder,args[1]);
+                        while(queryMatcher.find()) doReplaceLogic(queryMatcher,logicMatcher,queryBuilder,logicBuilder,args[1]);
+                        queryMatcher.appendTail(queryBuilder);
+                        results[0] = queryBuilder.toString();
+                    }else results[0] = queryMatcher.replaceAll(args[1]);
+                }else if(2 == args.length) results[0] = data;
                 else results[0] = args[2];
-                break;
-                default:
-                results[0] = data;
-            }
+            }else results[0] = data;
             return results;
         }),entry(RULE_SINGLEROW,ReplaceRuleStrategy::everyRow),entry(RULE_FINALSINGLEROW,ReplaceRuleStrategy::finalRow),entry(RULE_DISTFINALSINGLEROW,ReplaceRuleStrategy::distFinalRow),entry(RULE_MULTIROW,ReplaceRuleStrategy::everyRow),entry(RULE_FINALMULTIROW,ReplaceRuleStrategy::finalRow),entry(RULE_DISTFINALMULTIROW,ReplaceRuleStrategy::distFinalRow));
     }
 
     protected static BiFunction<ReplaceRule,String,String[]> ProvideRuleStrategy(String name){
         return strategiesCache.get(name);
+    }
+
+    private static void doReplaceLogic(Matcher queryMatcher, Matcher logicMatcher, StringBuilder queryBuilder, StringBuilder logicBuilder, String logicExpr){
+        int groupCount = queryMatcher.groupCount();
+        logicMatcher.reset(logicExpr);
+        while(logicMatcher.find()){
+            String name = logicMatcher.group(1).toUpperCase(), variable = logicMatcher.group(3);
+            BiFunction<String,String,String> logicStrategy = ProvideReplaceLogic(name);
+            CS.checkError(ERR_LOGIC_FUNC,new String[]{name,ERR_LOGIC_INVALID},()->isNull(logicStrategy));
+            int group = Integer.valueOf(logicMatcher.group(2));
+            CS.checkError(ERR_LOGIC_FUNC,new String[]{name,ERR_LOGIC_GROUP},()->groupCount < group);
+            logicMatcher.appendReplacement(logicBuilder,logicStrategy.apply(queryMatcher.group(group),variable));
+        }
+        logicMatcher.appendTail(logicBuilder);
+        queryMatcher.appendReplacement(queryBuilder,logicBuilder.toString());
+        logicBuilder.delete(0,logicBuilder.length());
     }
 
     private static String[] finalRow(ReplaceRule rule, String data){
