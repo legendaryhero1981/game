@@ -29,18 +29,20 @@ import legend.util.entity.Zip7;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
-    // @Test
+     @Test
     public void test(){
         testRealNumber();
     }
 
     // @Test
     public void testRealNumber(){
-        String i = "1234567890";
-        String l = "1234567890123456789";
-        String f = ".123456785";// float类型数据8位精度。
-        String d = ".123456789012345678901234567890";// double类型数据17位精度。
-        CS.sl(Integer.valueOf(i) + S_EMPTY).sl(Long.valueOf(l) + S_EMPTY).sl(Float.valueOf(f) + S_EMPTY).sl(Double.valueOf(d) + S_EMPTY);
+        int i = Integer.valueOf("1234567890");
+        long l = Long.valueOf("1234567890123456789");
+        float f = Float.valueOf(".123456785");// float类型数据8位精度。
+        double d = Double.valueOf(".123456789012345678901234567890");// double类型数据17位精度。
+        float mf = f % (f + 1.2f);
+        double md = f % d;
+        CS.sl(i + S_EMPTY).sl(l + S_EMPTY).sl(f + S_EMPTY).sl(d + S_EMPTY).sl(mf + S_EMPTY).sl(md + S_EMPTY);
     }
 
     // @Test
@@ -57,7 +59,7 @@ public class TestArithmetic implements ICommon{
         CS.sl(m + S_EMPTY).sl((int)m + S_EMPTY);
     }
 
-    @Test
+    // @Test
     public void testRegex(){
         Matcher matcher = null;
         String s = "03.009.0004.201805142235-RELEASE";
