@@ -219,7 +219,8 @@ public interface ICommon extends Cloneable{
     String REG_FILE_NAME = "(.*)(\\..*)";
     String REG_NUM = "\\d+";
     String REG_NUM_NATURAL = "[1-9]\\d*";
-    String REG_NUM_REAL = "[.]?" + REG_NUM + "|" + REG_NUM + "[.]\\d*";
+    String REG_NUM_ROUND = "-?(0|" + REG_NUM_NATURAL + ")";
+    String REG_NUM_REAL = "-?([.]?" + REG_NUM + "|" + REG_NUM + "[.]\\d*)";
     String REG_ANY = ".";
     String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
     String REG_XML_CDATA = XML_CDATA_START + "(.*)" + XML_CDATA_END;
@@ -249,6 +250,7 @@ public interface ICommon extends Cloneable{
     Pattern PTRN_QUOTE_BQ = compile(REG_QUOTE_BQ);
     Pattern PTRN_NUM = compile(REG_NUM);
     Pattern PTRN_NUM_NATURAL = compile(REG_NUM_NATURAL);
+    Pattern PTRN_NUM_ROUND = compile(REG_NUM_ROUND);
     Pattern PTRN_NUM_REAL = compile(REG_NUM_REAL);
     Pattern PTRN_PATH_NAME = compile(REG_PATH_NAME);
     Pattern PTRN_FILE_NAME = compile(REG_FILE_NAME);

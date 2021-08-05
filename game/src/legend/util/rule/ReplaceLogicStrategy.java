@@ -139,7 +139,7 @@ public class ReplaceLogicStrategy implements IReplaceLogic{
 
     private static void checkErrorFromNumber(String name, String... vars){
         for(String var : vars){
-            Matcher matcher = PTRN_NUM_NATURAL.matcher(var);
+            Matcher matcher = PTRN_NUM_ROUND.matcher(var);
             CS.checkError(ERR_LOGIC_FUNC,new String[]{name,ERR_LOGIC_NUM},()->!matcher.matches());
         }
     }

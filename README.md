@@ -20,7 +20,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 
 ```
 输入 game file
-版本：V6.4.20210716
+版本：V6.5.20210805
 作者：李允
 主页：知乎 https://www.zhihu.com/people/legendaryhero1981
 
@@ -116,6 +116,22 @@ DIV-LONG(group,variable)       group为query中指定的捕获组编号，取值
 DIV-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
 
 DIV-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value /= variable后再将value返回并替换旧值。
+
+MOD-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value %= variable后再将value返回并替换旧值。
+
+MOD-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value %= variable后再将value返回并替换旧值。
+
+MOD-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value %= variable后再将value返回并替换旧值。
+
+MOD-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行value %= variable后再将value返回并替换旧值。
+
+POW-INT(group,variable)        group为query中指定的捕获组编号，取值范围为0~9；variable为整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行方法Math.pow(value,variable)后再将值返回并替换旧值。
+
+POW-LONG(group,variable)       group为query中指定的捕获组编号，取值范围为0~9；variable为长整型变量，设捕获组group对应的数值为value，则执行此方法等效于执行方法Math.pow(value,variable)后再将值返回并替换旧值。
+
+POW-FLOAT(group,variable)      group为query中指定的捕获组编号，取值范围为0~9；variable为单精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行方法Math.pow(value,variable)后再将值返回并替换旧值。
+
+POW-DOUBLE(group,variable)     group为query中指定的捕获组编号，取值范围为0~9；variable为双精度浮点型变量，设捕获组group对应的数值为value，则执行此方法等效于执行方法Math.pow(value,variable)后再将值返回并替换旧值。
 
 目前支持的所有列数据占位符表达式如下：
 

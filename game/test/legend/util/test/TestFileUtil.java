@@ -23,7 +23,7 @@ public class TestFileUtil extends TestBase{
 //        s = "-dsrp+  (?i)`file-dsrp.xml`$  .  1";
 //        s = "-7zip+  (?i)`file-7zip.xml`$  .  1";
 //        s = "-rfbt*  `temp2.txt`$  E:/Decompile/DLL-ildasm  REPLACE(-,,_);;MULTI-ROW(String #1.1# = #DQM##1.0##DQM#;#ENTER#String #2.1# = #DQM##2.0##DQM#;#ENTER#String #3.1# = #DQM##3.0##DQM#;#ENTER#String #4.1# = #DQM##4.0##DQM#;)  \\s  1";
-//        s = "-rfbt*  `temp2.txt`$  E:/Decompile/DLL-ildasm  REPLACE(value=#DQM#([.]?\\d+|\\d+[.]\\d*)#DQM#,,value=#DQM##POW-FLOAT(1,0.75)##DQM#)  \\n  1";
+        s = "-rfbt*  `temp2.txt`$  E:/Decompile/DLL-ildasm  REPLACE(value=#DQM#(-?([.]?\\d+|\\d+[.]\\d*))#DQM#,,value=#DQM##POW-FLOAT(1,0.75)##DQM#)  \\n  1";
         return s;
     }
 }
