@@ -29,7 +29,6 @@ import static legend.util.TimeUtil.decTotalDuration;
 import static legend.util.TimeUtil.getDurationString;
 import static legend.util.TimeUtil.getTotalDurationString;
 import static legend.util.TimeUtil.incTotalDuration;
-import static legend.util.TimeUtil.resetTime;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
 import static legend.util.param.FileParam.analyzeParam;
@@ -122,7 +121,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 if(!PTRN_ASK_NO.matcher(line).find()){
                     if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
                     else countDuration(t->dealFiles(FP));
-                }else resetTime();
+                }
             }else if(progress) countDuration(t->PG.runUntillFinish(FileUtil::dealFiles));
             else countDuration(t->dealFiles(FP));
             if(opt.contains(OPT_SIMULATE)) CS.s(V_SMLT + gsph(ST_CMD_DONE,command) + N_DEAL + FP.getDirsCount().get() + N_AN + N_DIR + S_COMMA + FP.getFilesCount().get() + N_AN + N_FILE + S_BRACKET_L + N_SIZE + S_COLON).formatSize(param.getFilesSize().get(),UnitType.TB).s(S_BRACKET_R + S_SEMICOLON + N_TIME + S_COLON + getDurationString() + S_PERIOD).l(2);
@@ -193,7 +192,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 replaceFilesWithSPK(param);
                 break;
                 case CMD_7ZIP:
-                handleFilesWith7Zip(param);
+                handleFilesWithZip7(param);
                 break;
                 case CMD_DSRP:
                 handleFilesWithDSRP(param);
@@ -642,7 +641,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
         executeFileLogic(param,new FileReplaceSPKCodeLogic(param));
     }
 
-    protected static void handleFilesWith7Zip(FileParam param){
+    protected static void handleFilesWithZip7(FileParam param){
         executeFileLogic(param,new FileHandleZip7Logic(param));
     }
 

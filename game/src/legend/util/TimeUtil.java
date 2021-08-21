@@ -1,23 +1,23 @@
 package legend.util;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.time.LocalDateTime.now;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.ValueUtil.isEmpty;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import legend.util.intf.ITimeUtil;
 
 public final class TimeUtil implements ITimeUtil{
-    private static AtomicLong time;
-    private static AtomicLong totalTime;
+    private static ThreadLocal<Long> time;
+    private static ThreadLocal<Long> totalTime;
     static{
-        time = new AtomicLong();
-        totalTime = new AtomicLong();
+        time = withInitial(()->0l);
+        totalTime = withInitial(()->0l);
     }
 
     private TimeUtil(){}
@@ -67,15 +67,11 @@ public final class TimeUtil implements ITimeUtil{
         return hour + UNIT_HOUR + minute + UNIT_MINUTE + second + UNIT_SECOND + milli + UNIT_MILLI;
     }
 
-    public static void resetTime(){
-        time.set(0);
-    }
-
     public static <T> T incTotalDuration(Supplier<T> supplier){
         LocalTime start = LocalTime.now();
         T t = supplier.get();
         LocalTime end = LocalTime.now();
-        totalTime.addAndGet(start.until(end,ChronoUnit.MILLIS));
+        totalTime.set(totalTime.get() + start.until(end,ChronoUnit.MILLIS));
         return t;
     }
 
@@ -83,7 +79,7 @@ public final class TimeUtil implements ITimeUtil{
         LocalTime start = LocalTime.now();
         T t = supplier.get();
         LocalTime end = LocalTime.now();
-        totalTime.addAndGet(start.until(end,ChronoUnit.MILLIS) * -1);
+        totalTime.set(totalTime.get() + start.until(end,ChronoUnit.MILLIS) * -1);
         return t;
     }
 
@@ -91,14 +87,14 @@ public final class TimeUtil implements ITimeUtil{
         LocalTime start = LocalTime.now();
         consumer.accept(null);
         LocalTime end = LocalTime.now();
-        totalTime.addAndGet(start.until(end,ChronoUnit.MILLIS));
+        totalTime.set(totalTime.get() + start.until(end,ChronoUnit.MILLIS));
     }
 
     public static <T> void decTotalDuration(Consumer<T> consumer){
         LocalTime start = LocalTime.now();
         consumer.accept(null);
         LocalTime end = LocalTime.now();
-        totalTime.addAndGet(start.until(end,ChronoUnit.MILLIS) * -1);
+        totalTime.set(totalTime.get() + start.until(end,ChronoUnit.MILLIS) * -1);
     }
 
     public static <T> String getTotalDurationString(Consumer<T> consumer){
@@ -123,6 +119,6 @@ public final class TimeUtil implements ITimeUtil{
     }
 
     public static void resetTotalTime(){
-        totalTime.set(0);
+        totalTime.set(0l);
     }
 }
