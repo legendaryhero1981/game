@@ -57,9 +57,7 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
         });
         Map<String,Queue<FileVersion>> fileVersionsMap = new ConcurrentHashMap<>();
         fileVersionQueue.parallelStream().forEach(fv->fileVersionsMap.computeIfAbsent(fv.name,s->new ConcurrentLinkedQueue<>()).add(fv));
-        System.out.println(fileVersionsMap.size());
         fileVersionsMap.entrySet().stream().filter(e->1 == e.getValue().size()).flatMap(e->of(e.getKey())).forEach(k->fileVersionsMap.remove(k));
-        System.out.println(fileVersionsMap.size());
         param.getFilesCount().set(0);
         param.getDirsCount().set(0);
         List<List<FileVersion>> fileVersionLists = new ArrayList<>();
