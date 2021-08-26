@@ -2,6 +2,7 @@ package legend.util.param;
 
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.of;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
@@ -46,33 +47,19 @@ public class FileVersion implements IFileVersion<FileParam,FileVersion>,IValue<F
 
     @Override
     public List<List<FileVersion>> getSortedFileVersions(FileParam param){
-        Queue<FileVersion> fileVersionQuque = new ConcurrentLinkedQueue<>();
+        Queue<FileVersion> fileVersionQueue = new ConcurrentLinkedQueue<>();
         Pattern pattern = compile(nonEmpty(param.getSplit()) ? gsph(REG_FILE_VER,param.getSplit()) : REG_FILE_VER_DEF);
-        param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).forEach(e1->{
-            if(param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).anyMatch(e2->!e1.getValue().equals(e2.getValue()) && e1.getValue().startsWith(e2.getValue()))) param.getPathMap().remove(e1.getKey());
-            else{
+        param.getPathMap().entrySet().parallelStream().forEach(e1->{
+            if(param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).allMatch(e2->e1.getValue().equals(e2.getValue()) || !e1.getValue().startsWith(e2.getValue()))){
                 FileVersion fileVersion = generateFileVersion(e1,pattern);
-                if(nonEmpty(fileVersion)) fileVersionQuque.add(fileVersion);
-            }
-        });
-        param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isRegularFile()).forEach(e1->{
-            if(param.getPathMap().entrySet().parallelStream().filter(e->e.getKey().isDirectory()).anyMatch(e2->e1.getValue().startsWith(e2.getValue()))) param.getPathMap().remove(e1.getKey());
-            else{
-                FileVersion fileVersion = generateFileVersion(e1,pattern);
-                if(nonEmpty(fileVersion)) fileVersionQuque.add(fileVersion);
+                if(nonEmpty(fileVersion)) fileVersionQueue.add(fileVersion);
             }
         });
         Map<String,Queue<FileVersion>> fileVersionsMap = new ConcurrentHashMap<>();
-        fileVersionQuque.parallelStream().forEach(fv1->{
-            Queue<FileVersion> fileVersions = fileVersionsMap.computeIfAbsent(fv1.name,s->new ConcurrentLinkedQueue<>());
-            if(fileVersions.isEmpty() || fv1.versions.size() == fileVersions.peek().versions.size() && fileVersions.parallelStream().allMatch(fv2->{
-                List<Long> vs1 = fv1.versions, vs2 = fv2.versions;
-                int i = 0;
-                for(;i < vs1.size() && vs1.get(i) == vs2.get(i);i++);
-                return i < vs1.size();
-            })) fileVersions.add(fv1);
-        });
-        fileVersionsMap.entrySet().parallelStream().filter(e->1 == e.getValue().size()).forEach(e->fileVersionsMap.remove(e.getKey()));
+        fileVersionQueue.parallelStream().forEach(fv->fileVersionsMap.computeIfAbsent(fv.name,s->new ConcurrentLinkedQueue<>()).add(fv));
+        System.out.println(fileVersionsMap.size());
+        fileVersionsMap.entrySet().stream().filter(e->1 == e.getValue().size()).flatMap(e->of(e.getKey())).forEach(k->fileVersionsMap.remove(k));
+        System.out.println(fileVersionsMap.size());
         param.getFilesCount().set(0);
         param.getDirsCount().set(0);
         List<List<FileVersion>> fileVersionLists = new ArrayList<>();
