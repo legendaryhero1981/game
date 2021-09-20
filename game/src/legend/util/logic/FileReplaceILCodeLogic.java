@@ -70,7 +70,7 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
                         if(-1 != i) return;
                         code.setLineNumer(j + 2,l);
                     }else{
-                        l += j + 2;
+                        l = j + 2;
                         code.setLineNumer(l,l);
                     }
                     codes.add(code);
