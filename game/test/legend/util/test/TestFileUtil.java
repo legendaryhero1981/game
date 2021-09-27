@@ -17,6 +17,7 @@ public class TestFileUtil extends TestBase{
         String s = "";
         s = "-dov!*  `.jar`$  E:/Java/apache-maven  ";
         s = "-ddoov!*  \\d$  E:/Java/apache-maven  ";
+        s = "-rfil+  (?i)`assembly-csharp.il`$  E:/Decompile/DLL-ildasm  E:/Decompile/Code/IL/Pathfinder Wrath of the Righteous/Assembly-CSharp.il.xml  1";
 //        s = "-fdo^*!  \\A(修改|备份|Mods)$  f:/games/Pathfinder Kingmaker Definitive Edition";
 //        s = "-rfspk+  (?i)`file-spk.xml`$  .  1";
 //        s = "-rfspk+  (?i)`file-spk.xml`$  D:/360安全浏览器下载/GF  1";

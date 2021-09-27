@@ -11,6 +11,8 @@ public interface IFileSPK extends IFileUtil{
     int SPK_MODULUS = 4096;
     int SPK_MAX_SIZE_NORMAL = Integer.MAX_VALUE - 8;
     long SPK_MAX_SIZE_BIGGER = (1l << 32) - 1;
+    String MODE_NORMAL = "0";
+    String MODE_BIGGER = "1";
     String REG_SPK_SIZE = "\\A" + REG_NUM_NATURAL + "$";
     String REG_SPK_SIZE_EXPR = "\\A(" + REG_NUM_NATURAL + ")(?:[-,;](" + REG_NUM_NATURAL + "))?$";
     String REG_SPK_FLAG_HEX = "(?i)\\A0x([0-9a-f]+)$";

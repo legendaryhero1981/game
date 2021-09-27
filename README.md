@@ -20,7 +20,7 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 
 ```
 输入 game file
-版本：V6.5.20210805
+版本：V6.5.20210927
 作者：李允
 主页：知乎 https://www.zhihu.com/people/legendaryhero1981
 

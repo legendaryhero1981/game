@@ -37,6 +37,14 @@ public interface IFileUtil extends IReplaceRule{
     long NEED_CLEAR_CACHE = 1l << 62;
     int PROGRESS_POSITION = 50;
     float PROGRESS_SCALE = (100 - PROGRESS_POSITION) / 100f;
+    String MODE_ZIP = "0";
+    String MODE_ZIP_DEF = "0";
+    String MODE_ZIP_SPF = "1";
+    String MODE_ZIP_SPF2 = "2";
+    String MODE_UNZIP = "1";
+    String MODE_UNZIP_MD5 = "0";
+    String MODE_UNZIP_DIR = "1";
+    String MODE_UNZIP_MEG = "2";
     String DFT_SIZE_EXPR = "0";
     String CMD = "file";
     String CMD_FIND = "-f";

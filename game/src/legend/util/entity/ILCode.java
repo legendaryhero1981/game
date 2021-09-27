@@ -62,7 +62,7 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
 
     @Override
     public boolean validate(){
-        if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD.equals(processingMode)) processingMode = MODE_NATIVE;
+        if(!MODE_NATIVE.equals(processingMode) && !MODE_REPL.equals(processingMode) && !MODE_ADD_AFTER.equals(processingMode) && !MODE_ADD_BEFORE.equals(processingMode)) processingMode = MODE_NATIVE;
         if(!MODE_NATIVE.equals(quoteMode) && !MODE_REPL.equals(quoteMode)) quoteMode = MODE_NATIVE;
         Matcher matcher = PTRN_LINE_NUMBER.matcher(lineNumber);
         if(!matcher.matches()){
@@ -70,12 +70,12 @@ public class ILCode extends BaseEntity<ILCode> implements IILCode{
             return false;
         }
         startLine = Integer.parseInt(matcher.group(1));
-        endLine = nonEmpty(matcher.group(3)) ? Integer.parseInt(matcher.group(3)) : startLine;
-        if(!MODE_ADD.equals(processingMode) && startLine > endLine){
+        endLine = nonEmpty(matcher.group(2)) ? Integer.parseInt(matcher.group(2)) : startLine;
+        if(!MODE_ADD_AFTER.equals(processingMode) && !MODE_ADD_BEFORE.equals(processingMode) && startLine > endLine){
             errorInfo = gsph(ERR_LINE_NUM_VAL_LESS,lineNumber);
             return false;
         }
-        if(MODE_ADD.equals(processingMode) && startLine != endLine){
+        if((MODE_ADD_AFTER.equals(processingMode) || MODE_ADD_BEFORE.equals(processingMode)) && startLine != endLine){
             errorInfo = gsph(ERR_LINE_NUM_VAL_EQUAL,lineNumber);
             return false;
         }

@@ -109,11 +109,11 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
                 for(int i = 0;i < codes.size() - 1;){
                     code = codes.get(i);
                     ILCode nextCode = codes.get(++i);
-                    if(MODE_ADD.equals(nextCode.getProcessingMode()) && nextCode.startLine != code.endLine){
+                    if((MODE_ADD_AFTER.equals(nextCode.getProcessingMode()) || MODE_ADD_BEFORE.equals(nextCode.getProcessingMode())) && nextCode.startLine != code.endLine){
                         errorInfo = gsph(ERR_LINE_NUM_ADJION_ADD,nextCode.getLineNumber(),code.getLineNumber());
                         return false;
                     }
-                    if(!MODE_ADD.equals(nextCode.getProcessingMode()) && nextCode.startLine != code.endLine + 1){
+                    if(!MODE_ADD_AFTER.equals(nextCode.getProcessingMode()) && !MODE_ADD_BEFORE.equals(nextCode.getProcessingMode()) && nextCode.startLine != code.endLine + 1){
                         errorInfo = gsph(ERR_LINE_NUM_ADJION_OTHER,nextCode.getLineNumber(),code.getLineNumber());
                         return false;
                     }
@@ -144,11 +144,11 @@ public class ILCodes extends BaseEntity<ILCodes> implements IILCode{
             code = ilCodes.get(i);
             if(0 == i){
                 start = 1;
-                end = MODE_ADD.equals(code.getProcessingMode()) ? code.getStartLine() : code.getStartLine() - 1;
+                end = MODE_REPL.equals(code.getProcessingMode()) ? code.getStartLine() - 1 : code.getStartLine();
                 if(0 < end) addNativeCode(start,end);
             }else{
                 start = ilCodes.get(i - 1).getEndLine() + 1;
-                end = MODE_ADD.equals(code.getProcessingMode()) ? code.getStartLine() : code.getStartLine() - 1;
+                end = MODE_REPL.equals(code.getProcessingMode()) ? code.getStartLine() - 1 : code.getStartLine();
                 addNativeCode(start,end);
             }
             codes.add(code);

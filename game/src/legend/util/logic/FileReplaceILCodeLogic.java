@@ -60,19 +60,16 @@ public class FileReplaceILCodeLogic extends BaseFileLogic implements IILCode{
                     if(l == i) return;
                     for(;0 <= i && 0 <= j && queryRegexCache.get(i).matcher(datas.get(j)).find();i--,j--);
                     if(-1 != i) return;
-                    j += l;
                     if(MODE_REPL.equals(code.getProcessingMode())){
                         List<Pattern> codeRegexCache = code.refreshCodeRegexCache(false);
-                        for(l = 0,i = codeRegexCache.size() - 1;0 <= i && headerSize <= j && partitionSize * 2 > p - j;j--) if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
+                        for(i = codeRegexCache.size() - 1,j += l,l = 0;0 <= i && headerSize <= j && partitionSize * 2 > p - j;j--) if(codeRegexCache.get(i).matcher(datas.get(j)).find()){
                             if(0 == l) l = j + 1;
                             i--;
                         }
                         if(-1 != i) return;
                         code.setLineNumer(j + 2,l);
-                    }else{
-                        l = j + 2;
-                        code.setLineNumer(l,l);
-                    }
+                    }else if(MODE_ADD_AFTER.equals(code.getProcessingMode())) code.setLineNumer(j + l + 2,j + l + 2);
+                    else code.setLineNumer(j + 1,j + 1);
                     codes.add(code);
                     caches.remove(c);
                 });
