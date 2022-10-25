@@ -82,6 +82,7 @@ public class Main implements IMain{
                 default:
                 CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
+            dealFiles(srcParam);
         }catch(Exception e){
             CS.checkError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
