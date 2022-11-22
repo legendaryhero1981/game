@@ -15,14 +15,14 @@ public class TestRun extends TestBase{
     @Override
     public String monk(){
         String s = "";
-        // s = "-c ew F:/games/The Evil Within EvilWithin 恶灵附身";
-        s = "-v";
-        // s = "-x sg";
+        // s = "-c  ew  F:/games/The Evil Within EvilWithin  恶灵附身";
+//        s = "-v";
+         s = "-x  eldr";
         // s = "-la";
-        // s = "-l ew";
+        // s = "-l  ew";
         // s = "-d bio4";
-        s = "-a  remn  F:/games/Remnant/Remnant/Binaries/Win64  Remnant-Win64-Shipping  遗迹：灰烬重生";
-        // s = "-k ew";
+//        s = "-a  remn  F:/games/Remnant/Remnant/Binaries/Win64  Remnant-Win64-Shipping  遗迹：灰烬重生";
+        // s = "-k  ew";
         return s;
     }
 }

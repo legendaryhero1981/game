@@ -12,6 +12,7 @@ import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.glph;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
+import static legend.util.StringUtil.rph;
 import static legend.util.TimeUtil.runWithConsole;
 import static legend.util.ValueUtil.isEmpty;
 import static legend.util.ValueUtil.nonEmpty;
@@ -257,7 +258,7 @@ public final class Main implements IMain{
     private static void writeMainScript(){
         if(nonEmpty(caches[1])) script.append(glph(CMD_VBS_RUN,caches[1])).append(glph(CMD_VBS_RUN_DEL,caches[1])).append(glph(CMD_VBS_SLEEP,countWaitTime(game.getBeforeWait())));
         Matcher matcher = PTRN_PATH_NAME.matcher(game.getAgentExecutablePath());
-        if(nonEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),game.getAgentArgs()));
+        if(nonEmpty(game.getAgentExecutablePath()) && matcher.find()) script.append(glph(CMD_VBS_RUN_AGENT,matcher.group(1),matcher.group(2),rph(game.getAgentArgs(),S_DQM,gs(S_DQM,2))));
         else script.append(glph(CMD_VBS_RUN_GAME,game.getPath(),game.getExe(),game.getArgs()));
         if(nonEmpty(caches[2])) script.append(glph(CMD_VBS_SLEEP,countWaitTime(game.getAfterWait()))).append(glph(CMD_VBS_RUN,caches[2])).append(glph(CMD_VBS_RUN_DEL,caches[2]));
         if(nonEmpty(game.getPriority())) script.append(glph(CMD_VBS_SLEEP,countWaitTime(TIME_SECOND_MAX))).append(glph(CMD_VBS_GAME_PRIORITY,game.getExe(),game.getPriority()));
