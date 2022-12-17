@@ -16,7 +16,7 @@ public interface IMain extends ICommon{
     String EXE_GAME= "game.exe";
     String EXE_RUN = "run.exe";
     String BAT_RUN = "run-javaw.bat";
-    String NATIVE_RUN = "game run" ;
+    String NATIVE_RUN = "game  run" ;
     String MODULE_RUN = "legend/legend.game.run.Main";
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
@@ -50,13 +50,18 @@ public interface IMain extends ICommon{
     String CMD_VBS_RUN_PROC = "sh.Run \"cmd /c wmic process where \"\"name='" + PH_ARGS0 + EXT_EXE + "'\"\" call SetPriority " + PH_ARGS1 + "\",0,true";
     String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
     String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
-    + "dim processes,target" + gl(1)
-    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_RUN + "' or name='" + EXE_GAME + "' and commandline like '%" + NATIVE_RUN + "%'\")" + gl(1)    + "if processes.count=0 then" + gl(1)
+    + "dim processes,target,mode" + gl(1)
+    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_RUN + "'\")" + gl(1)
+    + "if processes.count=0 then" + gl(1)
+    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_GAME + "' and commandline like '" + NATIVE_RUN + "%'\")" + gl(1)
+    + "if processes.count=0 then" + gl(1)
     + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_JAVA + "' and commandline like '%" + MODULE_RUN + "%'\")" + gl(1)
-    + "if processes.count=0 then" + gl(1) + "WScript.Quit" + gl(1) + "end if" + gl(1)
+    + "if processes.count=0 then" + gl(1) + "WScript.Quit" + gl(1) + "else mode=2" + gl(1) + "end if" + gl(1)
+    + "else mode=1" + gl(1) + "end if" + gl(1) + "else mode=0" + gl(1) + "end if" + gl(1)
     + "dim regex,matches" + gl(1)
     + "set regex=New RegExp" + gl(1)
     + "regex.pattern=\".+" + gs(SPRT_FILE,2) + "\"" + gl(1)
+    + "if mode=2 then" + gl(1)
     + "set matches=regex.Execute(processes.ItemIndex(0).CommandLine)" + gl(1)
     + "target=matches(0)&\"" + BAT_RUN + "\"" + gl(1)
     + "else target=processes.ItemIndex(0).ExecutablePath" + gl(1)
@@ -86,10 +91,16 @@ public interface IMain extends ICommon{
     + "end if";
     String CMD_VBS_SC_INIT = CMD_VBS_PROC_RUN + gl(1) + "dim shortcut";
     String CMD_VBS_SC_CRT = "set shortcut=sh.CreateShortcut(sh.SpecialFolders(\"Desktop\")&\"" + SPRT_FILE + PH_ARGS0 + EXT_LNK + "\")";
-    String CMD_VBS_SC_ARG = "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARGS0 + "\"";
+    String CMD_VBS_SC_ARG_AND_WD = "if mode=1 then" + gl(1)
+    + "shortcut.Arguments=\"run " + CMD_EXEC + " " + PH_ARGS0 + "\"" + gl(1)
+    + "set matches=regex.Execute(processes.ItemIndex(0).ExecutablePath)" + gl(1)
+    + "shortcut.WorkingDirectory=matches(0)" + gl(1)
+    + "else" + gl(1)
+    + "shortcut.Arguments=\"" + CMD_EXEC + " " + PH_ARGS0 + "\"" + gl(1)
+    + "shortcut.WorkingDirectory=\"" + PH_ARGS1 + "\"" + gl(1)
+    + "end if";
     String CMD_VBS_SC_IL = "shortcut.IconLocation=\"" + PH_ARGS0 + SPRT_FILE + PH_ARGS1 + ",0\"";
     String CMD_VBS_SC_DESC = "shortcut.Description=\"" + PH_ARGS0 + "\"";
-    String CMD_VBS_SC_WD = "shortcut.WorkingDirectory=\"" + PH_ARGS0 + "\"";
     String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
     String CMD_VBS_SC_WS = "shortcut.WindowStyle=7";
     String CMD_VBS_SC_SAVE = "shortcut.Save";

@@ -239,10 +239,9 @@ public final class Main implements IMain{
 
     private static void cacheLinkScript(Game game){
         script.append(glph(CMD_VBS_SC_CRT,game.getName()));
-        script.append(glph(CMD_VBS_SC_ARG,game.getId()));
+        script.append(glph(CMD_VBS_SC_ARG_AND_WD,game.getId(),game.getPath()));
         script.append(glph(CMD_VBS_SC_IL,game.getPath(),nonEmpty(game.getIcon()) ? game.getIcon() : game.getExe() + EXT_EXE));
         script.append(glph(CMD_VBS_SC_DESC,game.getComment()));
-        script.append(glph(CMD_VBS_SC_WD,game.getPath()));
         script.append(gl(CMD_VBS_SC_TP));
         script.append(gl(CMD_VBS_SC_WS));
         script.append(gl(CMD_VBS_SC_SAVE));

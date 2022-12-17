@@ -75,6 +75,7 @@ public class Main implements IMain{
                 srcParam.setCmd(IFileUtil.CMD_FIND);
                 srcParam.setPattern(compile(args[1]));
                 srcParam.setSrcPath(get(args[2]));
+                dealFiles(srcParam);
                 break;
                 case POE_OBJ_GUID:
                 srcParam.setReplacement(args[1]);
@@ -82,7 +83,6 @@ public class Main implements IMain{
                 default:
                 CS.checkError(ERR_ARG_ANLS,new String[]{ERR_ARG_FMT});
             }
-            dealFiles(srcParam);
         }catch(Exception e){
             CS.checkError(ERR_EXEC_CMD,new String[]{e.toString()});
         }
