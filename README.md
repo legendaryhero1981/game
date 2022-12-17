@@ -20,10 +20,6 @@ PC游戏Mod修改工具集命令行程序，目前基于64位JDK11开发，建�
 
 ```
 输入 game file
-版本：V6.6.20221203
-作者：李允
-主页：知乎 https://www.zhihu.com/people/legendaryhero1981
-
 
 命令参数：
 
