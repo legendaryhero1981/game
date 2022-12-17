@@ -13,8 +13,10 @@ public interface IMain extends ICommon{
     String RUN_FILE_LOG = "./run.log";
     String RUN_FILE_CONFIG = "./run.xml";
     String EXE_JAVA = "java.exe";
+    String EXE_GAME= "game.exe";
     String EXE_RUN = "run.exe";
     String BAT_RUN = "run-javaw.bat";
+    String NATIVE_RUN = "game run" ;
     String MODULE_RUN = "legend/legend.game.run.Main";
     String TIME_SECOND_MIN = "1";
     String TIME_SECOND_MAX = "60";
@@ -49,8 +51,7 @@ public interface IMain extends ICommon{
     String CMD_VBS_WMI_INIT = "dim wmi" + gl(1) + "set wmi=GetObject(\"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2\")";
     String CMD_VBS_PROC_RUN = CMD_VBS_WMI_INIT + gl(1)
     + "dim processes,target" + gl(1)
-    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_RUN + "'\")" + gl(1)
-    + "if processes.count=0 then" + gl(1)
+    + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_RUN + "' or name='" + EXE_GAME + "' and commandline like '%" + NATIVE_RUN + "%'\")" + gl(1)    + "if processes.count=0 then" + gl(1)
     + "set processes=wmi.ExecQuery(\"select * from win32_process where name='" + EXE_JAVA + "' and commandline like '%" + MODULE_RUN + "%'\")" + gl(1)
     + "if processes.count=0 then" + gl(1) + "WScript.Quit" + gl(1) + "end if" + gl(1)
     + "dim regex,matches" + gl(1)
