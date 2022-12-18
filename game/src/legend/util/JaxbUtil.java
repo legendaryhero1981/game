@@ -4,6 +4,7 @@ import static java.lang.String.valueOf;
 import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.gsph;
 import static legend.util.ValueUtil.isEmpty;
+import static java.nio.charset.Charset.forName;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -32,7 +33,7 @@ public final class JaxbUtil implements IJaxbUtil{
     }
 
     public static void convertToXml(Path path, Object object, boolean fragment){
-        convertToXml(path,object,CHARSET_UTF8,fragment);
+        convertToXml(path,object,CHARSET_GBK,fragment);
     }
 
     public static void convertToXml(Path path, Object object, String encoding, boolean fragment){
@@ -56,7 +57,7 @@ public final class JaxbUtil implements IJaxbUtil{
     public static <T> T convertToObject(Path path, Class<T> c, boolean lexical){
         T t = null;
         try{
-            Source source = new SAXSource(new InputSource(new BufferedReader(new FileReader(path.toFile()))));
+            Source source = new SAXSource(new InputSource(new BufferedReader(new FileReader(path.toFile(),forName(CHARSET_GBK)))));
             JAXBResult jaxbResult = new JAXBResult(JAXBContext.newInstance(c));
             if(lexical) jaxbResult.setLexicalHandler(new LexicalHandlerImpl(jaxbResult));
             TransformerFactory.newInstance().newTransformer().transform(source,jaxbResult);

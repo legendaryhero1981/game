@@ -353,7 +353,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static List<String> readFile(Path path){
-        return readFile(path,CHARSET_UTF8);
+        return readFile(path,CHARSET_GBK);
     }
 
     public static List<String> readFileWithoutBom(Path path, String charsetName){
@@ -380,7 +380,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static List<String> readFileWithoutBom(Path path){
-        return readFileWithoutBom(path,CHARSET_UTF8);
+        return readFileWithoutBom(path,CHARSET_GBK);
     }
 
     public static void writeFile(Path path, Collection<String> lines, String charsetName){
@@ -392,7 +392,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
     }
 
     public static void writeFile(Path path, Collection<String> lines){
-        writeFile(path,lines,CHARSET_UTF8);
+        writeFile(path,lines,CHARSET_GBK);
     }
 
     public static void writeFileWithUTF8Bom(Path path, String data){
@@ -436,6 +436,7 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 if(4 > length) return;
                 offset = 3;
                 length -= offset;
+                charsetSrc = CHARSET_UTF8;
                 break;
                 case CHARSET_UTF16LE:
                 case CHARSET_UTF16BE:
@@ -443,7 +444,12 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 offset = 2;
                 length -= offset;
             }
-            String data = new String(bytes,offset,length,charsetSrc);
+            String data = S_EMPTY;
+            try{
+                data = new String(bytes,offset,length,charsetSrc);
+            }catch(UnsupportedEncodingException e){
+                data = new String(bytes,offset,length,CHARSET_GBK);
+            }
             if(CHARSET_UTF8_BOM.equalsIgnoreCase(charsetDest)) writeFileWithUTF8Bom(path,data);
             else if(CHARSET_UTF16LE.equalsIgnoreCase(charsetDest)) writeFileWithUTF16LEBom(path,data);
             else if(CHARSET_UTF16BE.equalsIgnoreCase(charsetDest)) writeFileWithUTF16BEBom(path,data);

@@ -307,7 +307,7 @@ public final class Main implements IMain{
             caches[index] = batFile.getCanonicalPath();
             caches[caches.length - 1] = script.toString();
             CS.sl(caches[index]).sl(caches[caches.length - 1]);
-            write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(batFile),CHARSET_UTF8)),caches[caches.length - 1]);
+            write(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(batFile),CHARSET_GBK)),caches[caches.length - 1]);
             script.delete(0,script.length());
         }
     }

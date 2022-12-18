@@ -6,6 +6,7 @@ import static legend.util.ConsoleUtil.CS;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.gs;
 import static legend.util.StringUtil.gsph;
+import static java.nio.charset.Charset.forName;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,8 +20,8 @@ public final class JsonUtil implements IJsonUtil{
 
     public static void trimJson(Path path){
         try{
-            List<String> lines = readAllLines(path);
-            write(path,trimJson(lines).getBytes(CHARSET_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
+            List<String> lines = readAllLines(path,forName(CHARSET_GBK));
+            write(path,trimJson(lines).getBytes(CHARSET_GBK),StandardOpenOption.TRUNCATE_EXISTING);
         }catch(IOException e){
             CS.sl(gsph(ERR_JSON_PARSE,e.toString()));
         }
@@ -34,8 +35,8 @@ public final class JsonUtil implements IJsonUtil{
 
     public static void formatJson(Path path){
         try{
-            String s = trimJson(readAllLines(path));
-            write(path,formatJson(s).getBytes(CHARSET_UTF8),StandardOpenOption.TRUNCATE_EXISTING);
+            String s = trimJson(readAllLines(path,forName(CHARSET_GBK)));
+            write(path,formatJson(s).getBytes(CHARSET_GBK),StandardOpenOption.TRUNCATE_EXISTING);
         }catch(IOException e){
             CS.sl(gsph(ERR_JSON_PARSE,e.toString()));
         }
