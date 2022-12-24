@@ -104,7 +104,7 @@ public interface IMain extends ICommon{
     String CMD_VBS_SC_TP = "shortcut.TargetPath=target";
     String CMD_VBS_SC_WS = "shortcut.WindowStyle=7";
     String CMD_VBS_SC_SAVE = "shortcut.Save";
-    String CMD_BAT_CHCP_GBK = "chcp gbk";
+    String CMD_BAT_CHCP_GBK = "chcp 936";
     String CMD_BAT_PROC_DEL_BY_NAME = "wmic process where \"name='" + PH_ARGS0 + "'\" delete";
     String CMD_BAT_PROC_DEL_BY_PATH = "wmic process where \"executablepath='" + PH_ARGS0 + "'\" delete";
     String CMD_BAT_GAME_WATCH = CMD_BAT_CHCP_GBK + gl(1)
