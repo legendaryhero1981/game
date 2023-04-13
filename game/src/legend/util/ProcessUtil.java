@@ -41,7 +41,7 @@ public class ProcessUtil implements IProcessUtil{
     private static class ProcessHandler implements Consumer<Process>{
         @Override
         public void accept(Process process){
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),CHARSET_GBK))){
                 StringBuilder builder = new StringBuilder();
                 reader.lines().forEach(line->builder.append(line + SPRT_LINE));
                 CS.s(builder.toString());

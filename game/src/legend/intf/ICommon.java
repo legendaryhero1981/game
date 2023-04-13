@@ -20,7 +20,7 @@ public interface ICommon extends Cloneable{
     String SPRT_LINE = System.lineSeparator();
     String SPRT_FILE = File.separator;
     String SPRT_FILE_ZIP = "/";
-    String VERSION = "版本：V6.9";
+    String VERSION = "版本：V7.0";
     String AUTHOR = "作者：李允";
     String HOME_PAGE = "主页：知乎 https://www.zhihu.com/people/legendaryhero1981";
     String APP_INFO = VERSION + gl(1) + AUTHOR + gl(1) + HOME_PAGE + gl(3);
@@ -30,6 +30,7 @@ public interface ICommon extends Cloneable{
     String CHARSET_UTF8_BOM = "UTF-8B";
     String CHARSET_UTF16LE = "UTF-16LE";
     String CHARSET_UTF16BE = "UTF-16BE";
+    String CONTEXT_CMD_PREFIX = "cmd /c start /wait \"\" ";
     String EXT_BAT = ".bat";
     String EXT_VBS = ".vbs";
     String EXT_EXE = ".exe";
@@ -194,6 +195,7 @@ public interface ICommon extends Cloneable{
     String REG_SPC_BQ = "(?i)" + PH_ARGS + SPC_BQ + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_ENTER = "(?i)" + PH_ARGS + SPC_ENTER + "=?([1-9]?)" + PH_ARGS;
     String REG_SPC_EMPTY = "(?i)" + PH_ARGS + SPC_EMPTY + PH_ARGS;
+    String REG_QUOTE_DMQ = S_DQM + "(.*?)" + S_DQM;
     String REG_QUOTE_BQ = S_BQ + "(.*?)" + S_BQ;
     String REG_SPRT_CMDS = SPRT_CMDS + "+";
     String REG_SPRT_FIELDS = SPRT_FIELDS + "+";
@@ -209,6 +211,8 @@ public interface ICommon extends Cloneable{
     String REG_NUM_ROUND = "-?(0|" + REG_NUM_NATURAL + ")";
     String REG_NUM_REAL = "-?([.]?" + REG_NUM + "|" + REG_NUM + "[.]\\d*)";
     String REG_ANY = ".";
+    String REG_BLANK = "\\s+";
+    String REG_NON_BLANK = "\\S+";
     String REG_XML_NOTE = XML_NOTE_START + "(.*)" + XML_NOTE_END;
     String REG_XML_CDATA = XML_CDATA_START + "(.*)" + XML_CDATA_END;
     String REG_LOCAL_RELEASE = FLAG_DEBUG + ".*?" + FLAG_DEBUG;
@@ -234,6 +238,8 @@ public interface ICommon extends Cloneable{
     String ERR_LOG_FLE_CRT = V_CRT + N_LOG + N_FILE + S_SPACE + PH_ARGS0 + S_SPACE + V_FAIL + S_BANG + N_ERR_INFO + PH_ARGS1;
     Pattern PTRN_SPC_NUL = compile(SPC_NUL);
     Pattern PTRN_ANY = compile(REG_ANY);
+    Pattern PTRN_NON_BLANK = compile(REG_NON_BLANK);
+    Pattern PTRN_QUOTE_DMQ = compile(REG_QUOTE_DMQ);
     Pattern PTRN_QUOTE_BQ = compile(REG_QUOTE_BQ);
     Pattern PTRN_NUM = compile(REG_NUM);
     Pattern PTRN_NUM_NATURAL = compile(REG_NUM_NATURAL);

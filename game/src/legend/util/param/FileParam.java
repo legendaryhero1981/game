@@ -210,6 +210,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_PAK_INF:
             case CMD_7ZIP:
             case CMD_DSRP:
+            case CMD_CMD:
             condition |= MATCH_FILE_ONLY;
             break;
             case CMD_PAK_INF_MD5:
@@ -242,7 +243,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_REP_FLE_IL:
             case CMD_REG_FLE_GBK:
             case CMD_REG_FLE_BIG5:
-            case CMD_REG_FLE_CS:
+            case CMD_REP_FLE_CS:
             case CMD_REP_FLE_SN:
             case CMD_REP_FLE_MEG:
             case CMD_REP_FLE_SPK:
@@ -484,7 +485,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
                 case CMD_RENAME:
                 case CMD_REN_DIR:
                 case CMD_REN_DIR_OLY:
-                case CMD_REG_FLE_CS:
+                case CMD_REP_FLE_CS:
                 sb1.delete(0,sb1.length());
                 mbq.reset(s2[3]);
                 while(mbq.find()) mbq.appendReplacement(sb1,quoteReplacement(quoteReplacement(mbq.group(1))));
@@ -512,6 +513,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
                 case CMD_PAK_INF_MD5:
                 case CMD_7ZIP:
                 case CMD_DSRP:
+                case CMD_CMD:
                 case CMD_GUID_L32:
                 case CMD_GUID_U32:
                 case CMD_MD5_L8:
@@ -681,7 +683,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_RENAME:
             case CMD_REN_DIR:
             case CMD_REN_DIR_OLY:
-            case CMD_REG_FLE_CS:
+            case CMD_REP_FLE_CS:
             s += rp;
             case CMD_REN_LOW:
             case CMD_REN_DIR_LOW:
@@ -703,6 +705,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
             case CMD_PAK_INF_MD5:
             case CMD_7ZIP:
             case CMD_DSRP:
+            case CMD_CMD:
             case CMD_GUID_L32:
             case CMD_GUID_U32:
             case CMD_MD5_L8:

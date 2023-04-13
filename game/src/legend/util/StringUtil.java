@@ -11,7 +11,9 @@ import static legend.util.ValueUtil.nonNull;
 
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -171,6 +173,15 @@ public final class StringUtil implements IStringUtil{
 
     public static String hexToString(String hex){
         return new String(hexToBytes(hex));
+    }
+
+    public static String[] cmdStringToArray(String cmdLine){
+        Deque<String> quotes = new ArrayDeque<>();
+        Matcher matcher = PTRN_QUOTE_DMQ.matcher(cmdLine);
+        while(matcher.find()) quotes.add(matcher.group(0));
+        String[] cmds = matcher.replaceAll(SPC_NUL).split(REG_BLANK);
+        for(int i = 0;i < cmds.length;i++) if(SPC_NUL.equals(cmds[i]) && !quotes.isEmpty()) cmds[i] = quotes.remove();
+        return cmds;
     }
 
     public static <T> String[] collectionToArray(Collection<T> collection, String header, String tail){

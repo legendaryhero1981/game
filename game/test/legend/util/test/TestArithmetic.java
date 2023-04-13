@@ -29,9 +29,9 @@ import legend.util.entity.Zip7;
 import legend.util.test.model.GCDModel;
 
 public class TestArithmetic implements ICommon{
-     @Test
+    @Test
     public void test(){
-        testRealNumber();
+        testRegex();
     }
 
     // @Test
@@ -62,20 +62,12 @@ public class TestArithmetic implements ICommon{
     // @Test
     public void testRegex(){
         Matcher matcher = null;
-        String s = "03.009.0004.201805142235-RELEASE";
-        matcher = PTRN_NUM.matcher(s);
-        while(matcher.find()) CS.sl(Long.parseLong(matcher.group()) + "");
-        s = ".123";
-        matcher = PTRN_NUM_REAL.matcher(s);
-        CS.sl(s + matcher.matches());
-        s = "123.";
-        CS.sl(s + matcher.reset(s).matches());
-        s = "123.123";
-        CS.sl(s + matcher.reset(s).matches());
-        s = ".123.";
-        CS.sl(s + matcher.reset(s).matches());
-        s = ".";
-        CS.sl(s + matcher.reset(s).matches());
+        Pattern pattern = compile("\\QRollProbability(class OwnedByGravity.Game.World.Effects.WorldEffectContext context,\\E");
+        String s = "RollProbability(class OwnedByGravity.Game.World.Effects.WorldEffectContext context,";
+        matcher = pattern.matcher(s);
+        CS.sl(matcher.find() + S_EMPTY);
+        String[] codes = PTRN_SPRT_CODE.split(S_EMPTY);
+        CS.sl(codes.length + S_EMPTY);
     }
 
     // @Test

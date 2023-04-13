@@ -15,7 +15,7 @@ public class TestMain extends TestBase{
     @Override
     public String monk(){
         String cmd = "";
-        // cmd = "il";
+        // cmd += "il";
         // cmd += "file";
         cmd += "run";
         // cmd += "eoc";

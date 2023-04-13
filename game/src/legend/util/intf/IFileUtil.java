@@ -91,7 +91,7 @@ public interface IFileUtil extends IReplaceRule{
     String CMD_REP_FLE_SPK = "-rfspk";
     String CMD_REG_FLE_GBK = "-rfgbk";
     String CMD_REG_FLE_BIG5 = "-rfbig5";
-    String CMD_REG_FLE_CS = "-rfcs";
+    String CMD_REP_FLE_CS = "-rfcs";
     String CMD_COPY = "-c";
     String CMD_CPY_DIR = "-cd";
     String CMD_CPY_DIR_OLY = "-cdo";
@@ -123,6 +123,7 @@ public interface IFileUtil extends IReplaceRule{
     String CMD_PAK_INF_MD5 = "-pimd5";
     String CMD_7ZIP = "-7zip";
     String CMD_DSRP = "-dsrp";
+    String CMD_CMD = "-cmd";
     String CMD_GUID_L32 = "-gl32";
     String CMD_GUID_U32 = "-gu32";
     String CMD_MD5_L8 = "-ml8";
@@ -179,7 +180,7 @@ public interface IFileUtil extends IReplaceRule{
     + "level" + gs(10) + "文件目录最大查询层数；取值范围为：1~" + Integer.MAX_VALUE + "，不指定或超过取值范围则取默认值" + Integer.MAX_VALUE + "。" + gl(2)
     + "sizeExpr" + gs(7) + "文件大小表达式，匹配的正则表达式为：" + REG_FLE_SIZ + "；取值范围为：0~" + Long.MAX_VALUE + "B，不指定则取默认值0B；例如：100B（不小于100字节），10KB（不小于10千字节），1-100MB（介于1兆字节到100兆字节之间），500MB;1GB（介于500兆字节到1千兆字节之间），2,1GB（介于2千兆字节到1千兆字节之间），800,800（等于800字节）。" + gl(2)
     + "split" + gs(10) + "分隔符字符串，可作为二维表格式文件中的列分隔符正则表达式，例如：[,;| \\t]+；不指定则取默认值[ \\t]+，即只使用空格或制表符作为列分隔符正则表达式；也可作为文件或目录名称中分隔名称和版本号的分隔符，不指定则取默认值空字符串（版本号从匹配的第一个数字字符串+英文点号字符开始，版本号左边的字符串则为名称）；可使用特殊字符占位符表达式（见regex参数）。" + gl(2)
-    + "replacement" + gs(4) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REG_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELDS + "]规则1(参数列表)[" + SPRT_RULES + "规则2(参数列表) ... " + SPRT_RULES + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含终止原子规则" + concat(RULE_CON_MAP.values().parallelStream().filter(c->c==(c&TMNT_RULE)),S_PAUSE) + "；各事务性规则通过" + SPRT_RULES + "分隔，复合规则中各原子规则通过" + SPRT_ATOMS + "分隔，各参数通过" + SPRT_ARGS + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。" + gl(2)
+    + "replacement" + gs(4) + "字符串替换表达式，可作为文件名正则替换表达式（可使用特殊字符占位符表达式（见regex参数））；也可作为字符集编码名称（见命令选项" + CMD_REP_FLE_CS + "）；还可作为二维表格式文件中的列字符串替换表达式，格式为：[列号表达式" + SPRT_FIELDS + "]规则1(参数列表)[" + SPRT_RULES + "规则2(参数列表) ... " + SPRT_RULES + "规则n(参数列表)]；若不指定列号表达式则对所有列执行指定的规则；规则具备事务性，简单规则仅由1个原子规则组成，复合规则由多个原子规则组成且不能包含终止原子规则" + concat(RULE_CON_MAP.values().parallelStream().filter(c->c==(c&TMNT_RULE)),S_PAUSE) + "；各事务性规则通过" + SPRT_RULES + "分隔，复合规则中各原子规则通过" + SPRT_ATOMS + "分隔，各参数通过" + SPRT_ARGS + "分隔；列号表达式匹配的正则表达式为：" + REG_COL_NUM + "；例如：1（取第1列）；1,3,5（取1、3、5列）；1-3（取1、2、3列）；1,4-6（取1、4、5、6列）。" + gl(2)
     + "目前支持的所有列字符串替换表达式专用的特殊字符占位符表达式（英文字母不区分大小写）如下：" + gl(2)
     + "#ENTER=n#" + gs(6) + "换行符占位符表达式（终止原子规则专用），匹配的正则表达式为：" + REG_SPC_ENTER + "；ENTER表示换行符，n为个数，=可以不写；基于性能考虑，n的取值范围限定为1~9，表示替换为n个换行符；例如：#ENTER#（替换为1个换行符）,#ENTER1#（替换为1个换行符）,#ENTER=2#（替换为2个换行符）。" + gl(2)
     + "#EMPTY#" + gs(8) + "空字符串占位符表达式（所有规则通用），匹配的正则表达式为：" + REG_SPC_EMPTY + "；表示一个空字符串，一般作为命令参数占位符；例如：#EMPTY#（程序将自动替换为空字符串）。" + gl(2)
@@ -280,7 +281,7 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + S_SPACE + CMD_REP_FLE_SPK + OPTIONS + " regex src [level]" + gl(1) + "根据regex获得src中所有匹配的配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)
     + CMD + S_SPACE + CMD_REG_FLE_GBK + OPTIONS + " regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在简体中文字符串，则将简体中文字符串的全集保存到文件dest。" + gl(2)
     + CMD + S_SPACE + CMD_REG_FLE_BIG5 + OPTIONS + " regex src dest [level]" + gl(1) + "根据regex提取src目录中所有匹配文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件dest；若无匹配文件或所有匹配文件中都不存在繁体中文字符串，则将繁体中文字符串的全集保存到文件dest。" + gl(2)
-    + CMD + S_SPACE + CMD_REG_FLE_CS + OPTIONS + " regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
+    + CMD + S_SPACE + CMD_REP_FLE_CS + OPTIONS + " regex src replacement [level]" + gl(1) + "根据regex将src中所有匹配文件的字符集编码转换为replacement编码；建议replacement的取值范围为（英文字母不区分大小写）：" + CHARSET_GBK + "，" + CHARSET_BIG5 + "，" + CHARSET_UTF8 + "（不带BOM），" + CHARSET_UTF8_BOM + "（带BOM），" + CHARSET_UTF16LE + "（带BOM），" + CHARSET_UTF16BE + "（带BOM）；原始文件字符集编码将被程序自动识别，目前不支持中文简繁编码之间的相互转换。" + gl(2)
     + CMD + S_SPACE + CMD_COPY + OPTIONS + " regex src dest [level]" + gl(1) + "根据regex复制src中文件到dest中。" + gl(2)
     + CMD + S_SPACE + CMD_CPY_DIR + OPTIONS + " regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配文件和目录及其中所有文件到dest中。" + gl(2)
     + CMD + S_SPACE + CMD_CPY_DIR_OLY + OPTIONS + " regex src dest [level]" + gl(1) + "根据regex复制src中所有匹配的目录及其中所有文件到dest中。" + gl(2)
@@ -310,8 +311,9 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + S_SPACE + CMD_PAK_INF + OPTIONS + " regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中。" + gl(2)
     + CMD + S_SPACE + CMD_PAK_INF_DIR + OPTIONS + " regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件名分类；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名”（不包含扩展名）。" + gl(2)
     + CMD + S_SPACE + CMD_PAK_INF_MD5 + OPTIONS + " regex src [level]" + gl(1) + "根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。" + gl(2)
-    + CMD + S_SPACE + CMD_7ZIP + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压缩命令。" + gl(2)
-    + CMD + S_SPACE + CMD_DSRP + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
+    + CMD + S_SPACE + CMD_CMD + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的命令脚本文件，再逐一解析这些文件后按照每行一条命令的模式并发执行命令；此命令最适合的使用场景是并发执行多条耗时长的命令（譬如IO操作），若需要执行经过了数据筛选后得到的命令脚本文件，建议与" + CMD_REP_FLE_BT + "命令选项联合使用（即执行一条组合命令）。" + gl(2)
+    + CMD + S_SPACE + CMD_7ZIP + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的配置文件，再逐一解析这些文件后并发调用7-Zip控制台程序执行压缩或解压缩命令。" + gl(2)
+    + CMD + S_SPACE + CMD_DSRP + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的配置文件，再逐一解析这些文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
     + CMD + S_SPACE + CMD_GUID_L32 + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + S_SPACE + CMD_GUID_U32 + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + S_SPACE + CMD_MD5_L8 + OPTIONS + " regex src [level]" + gl(1) + "根据regex查找src中的文件，显示文件对应的8位MD5（英文字母全小写）。" + gl(2)
@@ -397,7 +399,7 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + S_SPACE + CMD_REP_FLE_SPK + "* (?i)`file-spk.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-spk.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件以完成" + EXT_SPK + "文件和其相对应的同名" + EXT_STC + "文件的修改。" + gl(2)
     + CMD + S_SPACE + CMD_REG_FLE_GBK + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_schinese.txt" + gl(1) + "提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的简体中文字符串，并将去重复字符后的简体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件“.../font_schinese.txt”。" + gl(2)
     + CMD + S_SPACE + CMD_REG_FLE_BIG5 + "* (?i)`.json`$ \"E:/Decompile/Code/IL/Pathfinder Kingmaker\" D:/games/font_tchinese.txt" + gl(1) + "提取“.../Pathfinder Kingmaker”目录中所有文件扩展名为.json的文件中的繁体中文字符串，并将去重复字符后的繁体中文字符串以" + CHARSET_UTF16LE + "编码格式保存到文件“.../font_tchinese.txt”。" + gl(2)
-    + CMD + S_SPACE + CMD_REG_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将“E:/Decompile/DLL-ildasm”目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
+    + CMD + S_SPACE + CMD_REP_FLE_CS + "* (?i)`.txt`$ E:/Decompile/DLL-ildasm gbk" + gl(1) + "先查询再将“E:/Decompile/DLL-ildasm”目录中所有扩展名为.txt的文件的字符集编码转换为gbk编码。" + gl(2)
     + CMD + S_SPACE + CMD_COPY + " (?i)_cn(\\..{0,2}strings$) \"F:/games/Fallout 4/Data/Strings\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Strings”目录中所有匹配文件复制到“.../备份”目录中。" + gl(2)
     + CMD + S_SPACE + CMD_CPY_DIR + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配文件和目录及其中所有文件复制到“.../备份”目录中。" + gl(2)
     + CMD + S_SPACE + CMD_CPY_DIR_OLY + " (?i).{0,2}strings$ \"F:/games/Fallout 4/Data\" \"F:/games/Fallout 4/备份\"" + gl(1) + "先查询再将“.../Data”目录中所有匹配的目录及其中所有文件复制到“.../备份”目录中。" + gl(2)
@@ -427,8 +429,9 @@ public interface IFileUtil extends IReplaceRule{
     + CMD + S_SPACE + CMD_PAK_INF + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到该文件所在目录中。" + gl(2)   
     + CMD + S_SPACE + CMD_PAK_INF_DIR + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“ .../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名”（不包含扩展名）中。" + gl(2)   
     + CMD + S_SPACE + CMD_PAK_INF_MD5 + " (?i)`.pak`$ \"F:/games/KingdomComeDeliverance/修改/Mods\"" + gl(1) + "先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。" + gl(2)   
-    + CMD + S_SPACE + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
-    + CMD + S_SPACE + CMD_DSRP + "+ (?i)`file-dsrp.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-dsrp.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
+    + CMD + S_SPACE + CMD_CMD + "+ (?i)`curl.txt`$ \"F:/我的云盘/游戏/Wartales\" 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以curl.txt结尾（英文字母忽略大小写）的所有命令脚本文件，再逐一解析这些文件后按照每行一条命令的模式并发执行命令。" + gl(2)
+    + CMD + S_SPACE + CMD_7ZIP + "+ (?i)`file-7zip.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些文件后并发调用7-Zip控制台程序执行压缩或解压命令。" + gl(2)
+    + CMD + S_SPACE + CMD_DSRP + "+ (?i)`file-dsrp.xml`$ . 1" + gl(1) + "先查询获得当前目录中（不包含子目录）文件名以file-dsrp.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。" + gl(2)
     + CMD + S_SPACE + CMD_GUID_L32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。" + gl(2)
     + CMD + S_SPACE + CMD_GUID_U32 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全大写）。" + gl(2)
     + CMD + S_SPACE + CMD_MD5_L8 + "+ (?i)`assembly-csharp.dll` \"F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed\"" + gl(1) + "显示该目录中名称为Assembly-CSharp.dll的文件对应的8位MD5（英文字母全小写）。" + gl(2)

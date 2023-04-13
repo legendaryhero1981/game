@@ -19,6 +19,8 @@ import static legend.util.ConsoleUtil.IN;
 import static legend.util.JsonUtil.formatJson;
 import static legend.util.JsonUtil.trimJson;
 import static legend.util.MD5Util.getMD5L32;
+import static legend.util.ProcessUtil.handleProcess;
+import static legend.util.StringUtil.cmdStringToArray;
 import static legend.util.StringUtil.getFileNameWithoutSuffix;
 import static legend.util.StringUtil.gl;
 import static legend.util.StringUtil.glph;
@@ -36,6 +38,7 @@ import static legend.util.rule.ReplaceRuleEngine.ProvideRuleEngine;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -197,13 +201,16 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
                 case CMD_DSRP:
                 handleFilesWithDSRP(param);
                 break;
+                case CMD_CMD:
+                handleFilesWithCmd(param);
+                break;
                 case CMD_REG_FLE_GBK:
                 regenFileWithGBK(param);
                 break;
                 case CMD_REG_FLE_BIG5:
                 regenFileWithBIG5(param);
                 break;
-                case CMD_REG_FLE_CS:
+                case CMD_REP_FLE_CS:
                 regenFileCharset(param);
                 break;
                 case CMD_RENAME:
@@ -653,6 +660,26 @@ public final class FileUtil implements IFileUtil,IConsoleUtil{
 
     protected static void handleFilesWithDSRP(FileParam param){
         executeFileLogic(param,new FileHandleDSRPLogic(param));
+    }
+
+    protected static void handleFilesWithCmd(FileParam param){
+        executeFileLogic(param,path->{
+            List<String> cmds = readFile(path).parallelStream().distinct().filter(cmd->PTRN_NON_BLANK.asPredicate().test(cmd)).map(cmd->CONTEXT_CMD_PREFIX + cmd).collect(toList());
+            final float amount = cmds.size(), scale = 1 / param.getPathMap().size();
+            cmds.parallelStream().forEach(cmd->{
+                final StringBuilder builder = new StringBuilder(gl(1) + glph(ST_PRG_EXTN_START,cmd));
+                final String duration = getDurationString(t->handleProcess(process->{
+                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(),CHARSET_GBK))){
+                        reader.lines().forEach(line->builder.append(line + SPRT_LINE));
+                    }catch(Exception e){
+                        builder.append(glph(ERR_EXEC_CMD_SPEC,cmd,e.toString()));
+                    }
+                },cmdStringToArray(cmd)));
+                builder.append(gl(1) + gsph(ST_PRG_EXTN_DONE,cmd) + N_TIME + S_COLON + duration + S_PERIOD);
+                param.getDetailOptional().ifPresent(c->CS.sl(builder.toString()));
+                param.getProgressOptional().ifPresent(c->PG.update(PG.countUpdate(amount,1,scale),PROGRESS_SCALE));
+            });
+        });
     }
 
     protected static void regenFileWithGBK(FileParam param){
