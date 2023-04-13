@@ -390,11 +390,14 @@ file -pidir[~+*!^@?] regex src [level]
 file -pimd5[~+*!^@?] regex src [level]
 根据regex将src中所有匹配的压缩文件解包到该文件所在目录中，且压缩文件的解压缩路径按照压缩文件内容对应的32位md5码；即该压缩文件的解压缩路径为“压缩文件路径/压缩文件名.md5码”。
 
+file -cmd[~+*!^@?] regex src [level]
+根据regex查找src中的命令脚本文件，再逐一解析这些文件后按照每行一条命令的模式并发执行命令；此命令最适合的使用场景是并发执行多条耗时长的命令（譬如IO操作），若需要执行经过了数据筛选后得到的命令脚本文件，建议与-rfbt命令选项联合使用（即执行一条组合命令）。
+
 file -7zip[~+*!^@?] regex src [level]
-根据regex查找src中的文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压缩命令。
+根据regex查找src中的配置文件，再逐一解析这些文件后并发调用7-Zip控制台程序执行压缩或解压缩命令。
 
 file -dsrp[~+*!^@?] regex src [level]
-根据regex查找src中的文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。
+根据regex查找src中的配置文件，再逐一解析这些文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。
 
 file -gl32[~+*!^@?] regex src [level]
 根据regex查找src中的文件，显示文件对应的36位GUID（英文字母全小写）。
@@ -688,11 +691,14 @@ file -pidir (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
 file -pimd5 (?i)`.pak`$ "F:/games/KingdomComeDeliverance/修改/Mods"
 先查询再将“.../Mods”目录中所有匹配文件解包到“该文件所在目录/压缩文件名.md5码”中。
 
+file -cmd+ (?i)`curl.txt`$ "F:/我的云盘/游戏/Wartales" 1
+先查询获得当前目录中（不包含子目录）文件名以curl.txt结尾（英文字母忽略大小写）的所有命令脚本文件，再逐一解析这些文件后按照每行一条命令的模式并发执行命令。
+
 file -7zip+ (?i)`file-7zip.xml`$ . 1
-先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用7-Zip控制台程序执行压缩或解压命令。
+先查询获得当前目录中（不包含子目录）文件名以file-7zip.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些文件后并发调用7-Zip控制台程序执行压缩或解压命令。
 
 file -dsrp+ (?i)`file-dsrp.xml`$ . 1
-先查询获得当前目录中（不包含子目录）文件名以file-dsrp.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些配置文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。
+先查询获得当前目录中（不包含子目录）文件名以file-dsrp.xml结尾（英文字母忽略大小写）的所有配置文件，再逐一解析这些文件后并发调用黑暗之魂系列游戏的专用控制台程序执行打包或解包命令。
 
 file -gl32+ (?i)`assembly-csharp.dll` "F:/games/Pathfinder Kingmaker Beneath the Stolen Lands/Kingmaker_Data/Managed"
 显示该目录中名称为Assembly-CSharp.dll的文件对应的36位GUID（英文字母全小写）。
