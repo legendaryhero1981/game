@@ -254,7 +254,7 @@ public class FileParam extends BaseParam implements IFileUtil,IValue<FileParam>,
         if(opt.contains(OPT_CACHE)){
             condition |= ENABLE_CACHE;
             if(!meetCondition(NEED_CLEAR_CACHE)) condition |= CAN_SAVE_CACHE;
-        }else if(nonEmpty(cache) && !cache.getPathMap().isEmpty() && !meetCondition(IS_QUERY_COMMAND)){
+        }else if(nonEmpty(cache) && !cache.getPathMap().isEmpty()){
             condition |= CAN_USE_CACHE;
             pattern = cache.pattern;
             srcPath = cache.srcPath;
